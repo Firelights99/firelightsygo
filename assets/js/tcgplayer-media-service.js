@@ -84,20 +84,20 @@ class TCGPlayerMediaService {
         };
     }
 
-    // Initialize generic TCG assets that can be adapted for Yu-Gi-Oh!
+    // Initialize Yu-Gi-Oh! specific assets only
     initializeGenericAssets() {
         return {
-            // Use actual TCGPlayer assets we found
+            // Use Yu-Gi-Oh! specific professional assets
             professional: {
-                'card_game_banner': 'https://8946057.fs1.hubspotusercontent-na1.net/hubfs/8946057/tcgplayer-website-2024/hubdb/2024%20Pro%20Banner%20Uploads/GZCG/Godzilla%20Card%20Game%20-%20Launch/godzilla-card-game-launch-banner.jpeg',
-                'trading_cards': 'https://8946057.fs1.hubspotusercontent-na1.net/hubfs/8946057/tcgplayer-website-2024/hubdb/2024%20Pro%20Banner%20Uploads/MTG/Magic_The%20Gathering%20-%20Edge%20of%20Eternities/magic_edge-of-eternities_banners.jpeg'
+                'card_game_banner': 'https://images.ygoprodeck.com/images/cards/89631139.jpg', // Blue-Eyes White Dragon
+                'trading_cards': 'https://images.ygoprodeck.com/images/cards/46986414.jpg' // Dark Magician
             },
             
-            // Fallback to high-quality generic assets
+            // Fallback to Yu-Gi-Oh! specific assets only
             fallback: {
-                'store_banner': 'https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=1200&h=400&fit=crop',
-                'card_collection': 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
-                'tournament': 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&h=600&fit=crop'
+                'store_banner': 'https://images.ygoprodeck.com/images/cards/89631139.jpg', // Blue-Eyes White Dragon
+                'card_collection': 'https://images.ygoprodeck.com/images/cards/46986414.jpg', // Dark Magician
+                'tournament': 'https://images.ygoprodeck.com/images/cards/26077387.jpg' // Sky Striker Ace - Raye
             }
         };
     }
