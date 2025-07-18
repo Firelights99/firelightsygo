@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home | Firelight Duel Academy - Premier Yu-Gi-Oh! Singles Store</title>
-    <meta name="description" content="Your premier destination for Yu-Gi-Oh! single cards. Buy, sell, and trade with confidence. Competitive buylist prices and store credit system.">
+    <title>Home | Firelight Duel Academy - Premier Yu-Gi-Oh! Trading Card Store</title>
+    <meta name="description" content="Your premier destination for Yu-Gi-Oh! single cards, sealed products, and competitive play. Professional TCG store with competitive buylist prices and store credit system.">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/components/advanced-layout.css">
     <link rel="stylesheet" href="assets/css/pages/yugioh-store.css">
     <link rel="stylesheet" href="assets/css/components/yugioh-image-enhancements.css">
     <link rel="stylesheet" href="assets/css/components/tcgplayer-media-integration.css">
@@ -18,6 +20,7 @@
                 <div class="site-branding">
                     <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Firelight Duel Academy" class="site-logo">
                     <h1 class="site-name">Firelight Duel Academy</h1>
+                    <p class="site-tagline">Yu-Gi-Oh! Trading Cards & Competitive Play</p>
                 </div>
                 <div class="header-actions">
                     <div class="search-container">
@@ -39,14 +42,77 @@
             <div class="nav-container">
                 <ul class="nav-tabs">
                     <li><a href="index.html" class="nav-link active">Home</a></li>
-                    <li><a href="singles.html" class="nav-link">Singles</a></li>
-                    <li><a href="buylist.html" class="nav-link">Buylist</a></li>
-                    <li><a href="decks.html" class="nav-link">Popular Decks</a></li>
-                    <li><a href="account.html" class="nav-link">My Account</a></li>
-                    <li><a href="contact.html" class="nav-link">Contact</a></li>
+                    <li><a href="pages/singles.html" class="nav-link">Singles</a></li>
+                    <li><a href="pages/sealed.html" class="nav-link">Sealed Products</a></li>
+                    <li><a href="pages/buylist.html" class="nav-link">Buylist</a></li>
+                    <li><a href="pages/decks.html" class="nav-link">Popular Decks</a></li>
+                    <li><a href="pages/events.html" class="nav-link">Events</a></li>
+                    <li><a href="pages/account.html" class="nav-link">My Account</a></li>
                 </ul>
             </div>
         </nav>
+
+        <!-- Promotional Banners Section -->
+        <section class="promotional-banners">
+            <div class="banner-carousel">
+                <div class="banner-slide active">
+                    <img src="https://images.ygoprodeck.com/images/cards/76375976.jpg" alt="Snake-Eye Ash" class="banner-image">
+                    <div class="banner-overlay">
+                        <div class="banner-content">
+                            <h2>Snake-Eye Fire Kings</h2>
+                            <p>Dominate the meta with the latest competitive archetype</p>
+                            <a href="pages/singles.html?archetype=Snake-Eye" class="banner-cta">Shop Snake-Eye</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="banner-slide">
+                    <img src="https://images.ygoprodeck.com/images/cards/28776350.jpg" alt="Kashtira Fenrir" class="banner-image">
+                    <div class="banner-overlay">
+                        <div class="banner-content">
+                            <h2>Kashtira Powerhouse</h2>
+                            <p>Build the ultimate Kashtira deck with our complete selection</p>
+                            <a href="pages/singles.html?archetype=Kashtira" class="banner-cta">Shop Kashtira</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="banner-slide">
+                    <img src="https://images.ygoprodeck.com/images/cards/14558127.jpg" alt="Ash Blossom" class="banner-image">
+                    <div class="banner-overlay">
+                        <div class="banner-content">
+                            <h2>Hand Trap Essentials</h2>
+                            <p>Stock up on competitive staples for tournament play</p>
+                            <a href="pages/singles.html?category=Hand-Traps" class="banner-cta">Shop Hand Traps</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="banner-controls">
+                <button class="banner-prev" onclick="previousBanner()">‹</button>
+                <button class="banner-next" onclick="nextBanner()">›</button>
+            </div>
+        </section>
+
+        <!-- Quick Categories -->
+        <section class="quick-categories">
+            <div class="category-grid">
+                <a href="pages/singles.html?filter=new" class="category-card">
+                    <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="New Releases">
+                    <h3>NEW RELEASES</h3>
+                </a>
+                <a href="pages/singles.html?filter=restock" class="category-card">
+                    <img src="https://images.ygoprodeck.com/images/cards/46986414.jpg" alt="Restocks">
+                    <h3>RESTOCKS</h3>
+                </a>
+                <a href="pages/singles.html?filter=preorder" class="category-card">
+                    <img src="https://images.ygoprodeck.com/images/cards/26077387.jpg" alt="Pre-Orders">
+                    <h3>PRE-ORDERS</h3>
+                </a>
+                <a href="pages/singles.html?filter=bestselling" class="category-card">
+                    <img src="https://images.ygoprodeck.com/images/cards/95440946.jpg" alt="Best Selling">
+                    <h3>BEST SELLING</h3>
+                </a>
+            </div>
+        </section>
 
         <!-- Shopping Cart Modal -->
         <div id="cart-modal" class="cart-modal" style="display: none;">
@@ -93,201 +159,103 @@
         <!-- Main Content Area -->
         <main class="content-area">
             
-            <!-- Hero Section -->
-            <section class="hero-section">
-                <div class="hero-content">
-                    <h2>Premier Yu-Gi-Oh! Singles Store</h2>
-                    <p>Discover thousands of Yu-Gi-Oh! single cards with competitive pricing powered by TCGPlayer data. Build your perfect deck with our extensive inventory.</p>
-                    <div class="hero-actions">
-                        <a href="singles.html" class="cta-button primary">Browse Singles</a>
-                        <a href="buylist.html" class="cta-button secondary">Sell Your Cards</a>
-                    </div>
+            <!-- Yu-Gi-Oh! Main Section -->
+            <section class="yugioh-main-section">
+                <div class="game-logo-container">
+                    <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Yu-Gi-Oh! Logo" class="game-logo">
                 </div>
-                <div class="hero-image">
-                    <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Yu-Gi-Oh! Cards" class="hero-img">
+                <div class="game-links">
+                    <a href="pages/singles.html" class="game-link singles-link">SINGLES</a>
+                    <a href="pages/sealed.html" class="game-link sealed-link">SEALED</a>
                 </div>
-            </section>
-
-            <!-- Featured Cards Section -->
-            <section class="featured-cards">
-                <h2>Meta-Relevant Cards</h2>
-                <p class="section-subtitle">Popular competitive cards and frequently purchased singles</p>
-                <div id="featured-cards-grid" class="cards-grid loading">
-                    <div class="loading-spinner">Loading featured cards...</div>
+                <div class="game-background">
+                    <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Yu-Gi-Oh! Background" class="background-image">
                 </div>
             </section>
 
-            <!-- Yu-Gi-Oh! Professional Promotions -->
-            <section class="tcgplayer-promotions">
-                <div class="promotional-banner" onclick="window.location.href='singles.html'">
-                    <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Yu-Gi-Oh! Professional Trading Card Store" class="banner-image" style="object-fit: cover; width: 100%; height: 200px; filter: brightness(0.7);">
-                    <div class="promotional-content">
-                        <h2>Professional Yu-Gi-Oh! Singles</h2>
-                        <p>Experience the quality and service that sets us apart from other card stores. Authentic Yu-Gi-Oh! cards, competitive pricing, professional grading.</p>
-                        <a href="singles.html" class="promotional-cta">Browse Our Collection</a>
-                    </div>
-                    <div class="professional-badge">Yu-Gi-Oh! Certified</div>
+            <!-- Buylist Banner -->
+            <section class="buylist-banner">
+                <div class="buylist-scroll">
+                    <span class="buylist-text">$ WE BUY YOUR CARDS! $</span>
+                    <span class="buylist-text">$ WE BUY YOUR CARDS! $</span>
+                    <span class="buylist-text">$ WE BUY YOUR CARDS! $</span>
+                    <span class="buylist-text">$ WE BUY YOUR CARDS! $</span>
+                    <span class="buylist-text">$ WE BUY YOUR CARDS! $</span>
+                </div>
+                <a href="pages/buylist.html" class="buylist-link">Visit Our Buylist</a>
+            </section>
+
+            <!-- Yu-Gi-Oh! Categories -->
+            <section class="yugioh-categories">
+                <h2>Yu-Gi-Oh! Categories</h2>
+                <div class="categories-grid">
+                    <a href="pages/singles.html?category=meta" class="category-item">
+                        <img src="https://images.ygoprodeck.com/images/cards/76375976.jpg" alt="Meta Cards">
+                        <h3>META CARDS</h3>
+                    </a>
+                    <a href="pages/singles.html?category=staples" class="category-item">
+                        <img src="https://images.ygoprodeck.com/images/cards/14558127.jpg" alt="Staples">
+                        <h3>STAPLES</h3>
+                    </a>
+                    <a href="pages/singles.html?category=archetypes" class="category-item">
+                        <img src="https://images.ygoprodeck.com/images/cards/28776350.jpg" alt="Archetypes">
+                        <h3>ARCHETYPES</h3>
+                    </a>
+                    <a href="pages/singles.html?category=collectors" class="category-item">
+                        <img src="https://images.ygoprodeck.com/images/cards/46986414.jpg" alt="Collector Cards">
+                        <h3>COLLECTOR CARDS</h3>
+                    </a>
+                    <a href="pages/singles.html?category=budget" class="category-item">
+                        <img src="https://images.ygoprodeck.com/images/cards/26077387.jpg" alt="Budget Cards">
+                        <h3>BUDGET BUILDS</h3>
+                    </a>
+                    <a href="pages/singles.html?category=vintage" class="category-item">
+                        <img src="https://images.ygoprodeck.com/images/cards/95440946.jpg" alt="Vintage Cards">
+                        <h3>VINTAGE</h3>
+                    </a>
                 </div>
             </section>
 
-            <!-- Latest Yu-Gi-Oh! Sets -->
-            <section class="latest-sets">
-                <h2>Latest Yu-Gi-Oh! Sets</h2>
-                <div class="set-showcase">
-                    <div class="set-card" onclick="browseSet('POTE')">
-                        <div class="set-banner">
-                            <img src="https://images.ygoprodeck.com/images/cards/76375976.jpg" alt="Power of the Elements" loading="lazy">
-                        </div>
-                        <div class="set-info">
-                            <h3 class="set-name">Power of the Elements</h3>
-                            <p class="set-code">POTE</p>
-                            <p class="set-description">Featuring Snake-Eye archetype and competitive meta cards for tournament play.</p>
-                            <button class="browse-set-btn" onclick="browseSet('POTE')">Browse Set</button>
-                        </div>
+            <!-- Store Locations -->
+            <section class="store-locations">
+                <div class="location-card">
+                    <h3>MAIN STORE</h3>
+                    <h4>123 Duel Monsters Lane, Card City, CC 12345</h4>
+                    <h4>Downtown & Main Intersection</h4>
+                    <a href="tel:555-123-3835" class="phone-link">555-123-DUEL</a>
+                    <div class="store-badges">
+                        <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Tournament Certified" class="badge">
+                        <img src="https://images.ygoprodeck.com/images/cards/46986414.jpg" alt="Official Store" class="badge">
+                        <img src="https://images.ygoprodeck.com/images/cards/26077387.jpg" alt="Konami Approved" class="badge">
                     </div>
-                    
-                    <div class="set-card" onclick="browseSet('CYAC')">
-                        <div class="set-banner">
-                            <img src="https://images.ygoprodeck.com/images/cards/86066372.jpg" alt="Cyberstorm Access" loading="lazy">
-                        </div>
-                        <div class="set-info">
-                            <h3 class="set-name">Cyberstorm Access</h3>
-                            <p class="set-code">CYAC</p>
-                            <p class="set-description">Modern Link monsters and Cyberse support cards for competitive decks.</p>
-                            <button class="browse-set-btn" onclick="browseSet('CYAC')">Browse Set</button>
-                        </div>
-                    </div>
-                    
-                    <div class="set-card" onclick="browseSet('PHHY')">
-                        <div class="set-banner">
-                            <img src="https://images.ygoprodeck.com/images/cards/28776350.jpg" alt="Photon Hypernova" loading="lazy">
-                        </div>
-                        <div class="set-info">
-                            <h3 class="set-name">Photon Hypernova</h3>
-                            <p class="set-code">PHHY</p>
-                            <p class="set-description">Kashtira archetype and powerful meta-relevant cards for tournament play.</p>
-                            <button class="browse-set-btn" onclick="browseSet('PHHY')">Browse Set</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Popular Archetypes -->
-            <section class="popular-archetypes">
-                <h2>Popular Archetypes</h2>
-                <div class="archetypes-grid">
-                    <div class="archetype-card" onclick="browseArchetype('Blue-Eyes')">
-                        <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Blue-Eyes">
-                        <h3>Blue-Eyes</h3>
-                    </div>
-                    <div class="archetype-card" onclick="browseArchetype('Dark Magician')">
-                        <img src="https://images.ygoprodeck.com/images/cards/46986414.jpg" alt="Dark Magician">
-                        <h3>Dark Magician</h3>
-                    </div>
-                    <div class="archetype-card" onclick="browseArchetype('Sky Striker')">
-                        <img src="https://images.ygoprodeck.com/images/cards/26077387.jpg" alt="Sky Striker">
-                        <h3>Sky Striker</h3>
-                    </div>
-                    <div class="archetype-card" onclick="browseArchetype('Eldlich')">
-                        <img src="https://images.ygoprodeck.com/images/cards/95440946.jpg" alt="Eldlich">
-                        <h3>Eldlich</h3>
-                    </div>
-                    <div class="archetype-card" onclick="browseArchetype('Snake-Eye')">
-                        <img src="https://images.ygoprodeck.com/images/cards/76375976.jpg" alt="Snake-Eye">
-                        <h3>Snake-Eye</h3>
-                    </div>
-                    <div class="archetype-card" onclick="browseArchetype('Kashtira')">
-                        <img src="https://images.ygoprodeck.com/images/cards/28776350.jpg" alt="Kashtira">
-                        <h3>Kashtira</h3>
-                    </div>
-                    <div class="archetype-card" onclick="browseArchetype('Purrely')">
-                        <img src="https://images.ygoprodeck.com/images/cards/95286165.jpg" alt="Purrely">
-                        <h3>Purrely</h3>
-                    </div>
-                    <div class="archetype-card" onclick="browseArchetype('Tearlaments')">
-                        <img src="https://images.ygoprodeck.com/images/cards/572850.jpg" alt="Tearlaments">
-                        <h3>Tearlaments</h3>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Modern Meta Section -->
-            <section class="modern-meta">
-                <h2>Modern Yu-Gi-Oh! Meta</h2>
-                <div class="meta-categories">
-                    <div class="meta-category">
-                        <img src="https://images.ygoprodeck.com/images/cards/14558127.jpg" alt="Hand Traps">
-                        <h3>Hand Traps</h3>
-                        <p>Essential disruption cards like Ash Blossom, Maxx "C", and Nibiru</p>
-                        <button onclick="browseArchetype('Hand Traps')" class="browse-btn">Browse Hand Traps</button>
-                    </div>
-                    <div class="meta-category">
-                        <img src="https://images.ygoprodeck.com/images/cards/86066372.jpg" alt="Extra Deck Staples">
-                        <h3>Extra Deck Staples</h3>
-                        <p>Must-have Link, Synchro, and Xyz monsters for competitive play</p>
-                        <button onclick="browseArchetype('Extra Deck')" class="browse-btn">Browse Staples</button>
-                    </div>
-                    <div class="meta-category">
-                        <img src="https://images.ygoprodeck.com/images/cards/44362883.jpg" alt="Fusion Support">
-                        <h3>Fusion Support</h3>
-                        <p>Modern fusion cards including Branded, Despia, and more</p>
-                        <button onclick="browseArchetype('Fusion')" class="browse-btn">Browse Fusion</button>
-                    </div>
-                    <div class="meta-category">
-                        <img src="https://images.ygoprodeck.com/images/cards/32731036.jpg" alt="Ritual Support">
-                        <h3>Ritual Support</h3>
-                        <p>Voiceless Voice, Drytron, and other ritual archetypes</p>
-                        <button onclick="browseArchetype('Ritual')" class="browse-btn">Browse Ritual</button>
+                    <div class="store-image">
+                        <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Store Interior" class="location-bg">
                     </div>
                 </div>
             </section>
 
             <!-- Store Features -->
             <section class="store-features">
-                <h2>Why Choose Firelight Duel Academy?</h2>
                 <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">💰</div>
-                        <h3>Competitive Buylist</h3>
-                        <p>Get top dollar for your cards with our competitive buylist program. 10% bonus when choosing store credit!</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">📊</div>
-                        <h3>TCGPlayer Pricing</h3>
-                        <p>All prices based on real-time TCGPlayer market data for fair and competitive pricing.</p>
-                    </div>
-                    <div class="feature-card">
+                    <div class="feature-item">
                         <div class="feature-icon">🚚</div>
-                        <h3>Fast Shipping</h3>
-                        <p>Free shipping on orders over $50. Secure packaging ensures your cards arrive safely.</p>
+                        <h3>FAST & FREE* SHIPPING</h3>
+                        <p>Expedited Shipping to Canada and the USA with *Free shipping for qualifying orders!</p>
                     </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">🔒</div>
-                        <h3>Secure Transactions</h3>
-                        <p>All transactions secured by Square with buyer protection and encrypted payment processing.</p>
+                    <div class="feature-item">
+                        <div class="feature-icon">🎯</div>
+                        <h3>TOURNAMENT EVENTS</h3>
+                        <p>We host daily events at our store! Whether new to the hobby or a seasoned duelist, we have something for you!</p>
                     </div>
-                </div>
-            </section>
-
-            <!-- Business Hours -->
-            <section class="business-hours">
-                <h2>Store Hours</h2>
-                <div class="hours-table">
-                    <div class="hour-row">
-                        <span class="day-name">Monday - Thursday</span>
-                        <span class="day-time">10:00 AM - 8:00 PM</span>
+                    <div class="feature-item">
+                        <div class="feature-icon">💰</div>
+                        <h3>LOYALTY DISCOUNTS</h3>
+                        <p>Each purchase made helps you level up your loyalty tier, unlocking discounts on almost everything we sell!</p>
                     </div>
-                    <div class="hour-row">
-                        <span class="day-name">Friday</span>
-                        <span class="day-time">10:00 AM - 10:00 PM</span>
-                    </div>
-                    <div class="hour-row">
-                        <span class="day-name">Saturday</span>
-                        <span class="day-time">9:00 AM - 10:00 PM</span>
-                    </div>
-                    <div class="hour-row">
-                        <span class="day-name">Sunday</span>
-                        <span class="day-time">12:00 PM - 6:00 PM</span>
+                    <div class="feature-item">
+                        <div class="feature-icon">🛡️</div>
+                        <h3>PRE-ORDER PROTECTION</h3>
+                        <p>Our Pre-Order Price Protection makes sure that if we lower the price before an item's release, you are credited the difference!</p>
                     </div>
                 </div>
             </section>
@@ -348,6 +316,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="assets/js/components/advanced-functionality.js"></script>
     <script src="assets/js/services/yugioh-api-service.js"></script>
     <script src="assets/js/services/yugioh-image-service.js"></script>
     <script src="assets/js/services/tcgplayer-media-service.js"></script>
