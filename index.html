@@ -3,349 +3,265 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home | Firelight Duel Academy - Premier Yu-Gi-Oh! Trading Card Store</title>
-    <meta name="description" content="Your premier destination for Yu-Gi-Oh! single cards, sealed products, and competitive play. Professional TCG store with competitive buylist prices and store credit system.">
-    <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="assets/css/components/advanced-layout.css">
-    <link rel="stylesheet" href="assets/css/pages/yugioh-store.css">
-    <link rel="stylesheet" href="assets/css/components/yugioh-image-enhancements.css">
-    <link rel="stylesheet" href="assets/css/components/tcgplayer-media-integration.css">
+    <title>Firelight Duel Academy | Modern Yu-Gi-Oh! TCG Store</title>
+    <meta name="description" content="Your premier destination for Yu-Gi-Oh! single cards, competitive play, and tournament events. Modern TCG store with real-time pricing and advanced search.">
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="assets/css/modern-tcg-store.css">
     <link rel="icon" href="https://images.ygoprodeck.com/images/cards/89631139.jpg">
+    
+    <!-- Meta tags for SEO -->
+    <meta property="og:title" content="Firelight Duel Academy - Modern Yu-Gi-Oh! TCG Store">
+    <meta property="og:description" content="Premium Yu-Gi-Oh! singles, competitive pricing, and tournament events.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://images.ygoprodeck.com/images/cards/89631139.jpg">
 </head>
 <body>
-    <div class="page-wrapper">
-        <!-- Top Header Bar -->
-        <header class="top-header">
-            <div class="header-container">
-                <div class="site-branding">
-                    <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Firelight Duel Academy" class="site-logo">
-                    <h1 class="site-name">Firelight Duel Academy</h1>
-                    <p class="site-tagline">Yu-Gi-Oh! Trading Cards & Competitive Play</p>
-                </div>
-                <div class="header-actions">
-                    <div class="search-container">
-                        <input type="text" id="card-search" placeholder="Search Yu-Gi-Oh! cards..." class="search-input">
-                        <button class="search-btn" onclick="performSearch()">🔍</button>
-                    </div>
-                    <div class="user-actions">
-                        <button class="account-btn" onclick="showLogin()">👤 Account</button>
-                        <button class="cart-btn" onclick="openCart()">
-                            🛒 Cart <span class="cart-count">0</span>
-                        </button>
-                    </div>
+    <!-- Modern Header -->
+    <header class="modern-header">
+        <div class="header-container">
+            <!-- Brand Section -->
+            <div class="brand-section">
+                <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Firelight Duel Academy" class="brand-logo">
+                <div class="brand-text">
+                    <a href="index.html" class="brand-name">Firelight Duel Academy</a>
+                    <span class="brand-tagline">Modern Yu-Gi-Oh! TCG Store</span>
                 </div>
             </div>
-        </header>
 
-        <!-- Navigation Tabs -->
-        <nav class="main-navigation">
-            <div class="nav-container">
-                <ul class="nav-tabs">
+            <!-- Navigation Section -->
+            <nav class="nav-section">
+                <ul class="nav-links">
                     <li><a href="index.html" class="nav-link active">Home</a></li>
                     <li><a href="pages/singles.html" class="nav-link">Singles</a></li>
-                    <li><a href="pages/decks.html" class="nav-link">Popular Decks</a></li>
+                    <li><a href="pages/decks.html" class="nav-link">Decks</a></li>
                     <li><a href="pages/events.html" class="nav-link">Events</a></li>
-                    <li><a href="pages/account.html" class="nav-link">My Account</a></li>
+                    <li><a href="pages/account.html" class="nav-link">Account</a></li>
                 </ul>
-            </div>
-        </nav>
+            </nav>
 
-        <!-- Promotional Banners Section -->
-        <section class="promotional-banners">
-            <div class="banner-carousel">
-                <div class="banner-slide active">
-                    <img src="https://images.ygoprodeck.com/images/cards/76375976.jpg" alt="Snake-Eye Ash" class="banner-image">
-                    <div class="banner-overlay">
-                        <div class="banner-content">
-                            <h2>Snake-Eye Fire Kings</h2>
-                            <p>Dominate the meta with the latest competitive archetype</p>
-                            <a href="pages/singles.html?archetype=Snake-Eye" class="banner-cta">Shop Snake-Eye</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="banner-slide">
-                    <img src="https://images.ygoprodeck.com/images/cards/28776350.jpg" alt="Kashtira Fenrir" class="banner-image">
-                    <div class="banner-overlay">
-                        <div class="banner-content">
-                            <h2>Kashtira Powerhouse</h2>
-                            <p>Build the ultimate Kashtira deck with our complete selection</p>
-                            <a href="pages/singles.html?archetype=Kashtira" class="banner-cta">Shop Kashtira</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="banner-slide">
-                    <img src="https://images.ygoprodeck.com/images/cards/14558127.jpg" alt="Ash Blossom" class="banner-image">
-                    <div class="banner-overlay">
-                        <div class="banner-content">
-                            <h2>Hand Trap Essentials</h2>
-                            <p>Stock up on competitive staples for tournament play</p>
-                            <a href="pages/singles.html?category=Hand-Traps" class="banner-cta">Shop Hand Traps</a>
-                        </div>
-                    </div>
+            <!-- Search Section -->
+            <div class="search-section">
+                <div class="search-container">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="Search Yu-Gi-Oh! cards...">
                 </div>
             </div>
-            <div class="banner-controls">
-                <button class="banner-prev" onclick="previousBanner()">‹</button>
-                <button class="banner-next" onclick="nextBanner()">›</button>
+
+            <!-- Action Section -->
+            <div class="action-section">
+                <button class="action-btn" onclick="tcgStore.openCart()">
+                    🛒 Cart
+                    <span class="cart-badge" style="display: none;">0</span>
+                </button>
+                <a href="pages/account.html" class="action-btn">
+                    👤 Account
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main style="max-width: 1400px; margin: 0 auto; padding: var(--space-8) var(--space-6);">
+        
+        <!-- Hero Section -->
+        <section style="text-align: center; padding: var(--space-20) 0; background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); border-radius: var(--radius-2xl); color: white; margin-bottom: var(--space-12);">
+            <div style="max-width: 800px; margin: 0 auto; padding: 0 var(--space-6);">
+                <h1 style="font-size: 3.5rem; font-weight: 700; margin-bottom: var(--space-6); line-height: 1.1;">
+                    Premium Yu-Gi-Oh! Singles
+                </h1>
+                <p style="font-size: 1.25rem; margin-bottom: var(--space-8); opacity: 0.9; line-height: 1.6;">
+                    Discover the latest meta cards, competitive staples, and rare collectibles. 
+                    Real-time pricing powered by YGOPRODeck API.
+                </p>
+                <div style="display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap;">
+                    <a href="pages/singles.html" style="padding: var(--space-4) var(--space-8); background: var(--secondary-color); color: var(--gray-900); text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; transition: var(--transition-fast); text-transform: uppercase; letter-spacing: 0.05em;">
+                        Browse Singles
+                    </a>
+                    <a href="pages/events.html" style="padding: var(--space-4) var(--space-8); background: rgba(255,255,255,0.1); color: white; text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; transition: var(--transition-fast); text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid rgba(255,255,255,0.2);">
+                        View Events
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Meta Cards -->
+        <section style="margin-bottom: var(--space-16);">
+            <div style="text-align: center; margin-bottom: var(--space-8);">
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
+                    Meta Cards & Live Pricing
+                </h2>
+                <p style="font-size: 1.125rem; color: var(--gray-600); max-width: 600px; margin: 0 auto;">
+                    Current competitive staples with real-time market data and price trends
+                </p>
+            </div>
+            
+            <div id="meta-cards-grid" class="modern-card-grid">
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text">Loading meta cards...</p>
+                </div>
             </div>
         </section>
 
         <!-- Quick Categories -->
-        <section class="quick-categories">
-            <div class="category-grid">
-                <a href="pages/singles.html?filter=new" class="category-card">
-                    <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="New Releases">
-                    <h3>NEW RELEASES</h3>
+        <section style="margin-bottom: var(--space-16);">
+            <div style="text-align: center; margin-bottom: var(--space-8);">
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
+                    Popular Categories
+                </h2>
+                <p style="font-size: 1.125rem; color: var(--gray-600);">
+                    Explore our most sought-after card categories
+                </p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-6);">
+                <a href="pages/singles.html?archetype=Snake-Eye" style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); overflow: hidden; text-decoration: none; transition: var(--transition-normal); border: 1px solid var(--gray-200);" class="interactive-hover">
+                    <div style="aspect-ratio: 16/9; background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); display: flex; align-items: center; justify-content: center;">
+                        <span style="font-size: 3rem;">🔥</span>
+                    </div>
+                    <div style="padding: var(--space-5);">
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Snake-Eye</h3>
+                        <p style="color: var(--gray-600); font-size: 0.875rem;">Latest meta archetype dominating tournaments</p>
+                    </div>
                 </a>
-                <a href="pages/singles.html?filter=restock" class="category-card">
-                    <img src="https://images.ygoprodeck.com/images/cards/46986414.jpg" alt="Restocks">
-                    <h3>RESTOCKS</h3>
+                
+                <a href="pages/singles.html?archetype=Kashtira" style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); overflow: hidden; text-decoration: none; transition: var(--transition-normal); border: 1px solid var(--gray-200);" class="interactive-hover">
+                    <div style="aspect-ratio: 16/9; background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%); display: flex; align-items: center; justify-content: center;">
+                        <span style="font-size: 3rem;">⚡</span>
+                    </div>
+                    <div style="padding: var(--space-5);">
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Kashtira</h3>
+                        <p style="color: var(--gray-600); font-size: 0.875rem;">Powerful banish-based strategy</p>
+                    </div>
                 </a>
-                <a href="pages/singles.html?filter=preorder" class="category-card">
-                    <img src="https://images.ygoprodeck.com/images/cards/26077387.jpg" alt="Pre-Orders">
-                    <h3>PRE-ORDERS</h3>
+                
+                <a href="pages/singles.html?category=Hand-Traps" style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); overflow: hidden; text-decoration: none; transition: var(--transition-normal); border: 1px solid var(--gray-200);" class="interactive-hover">
+                    <div style="aspect-ratio: 16/9; background: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-dark) 100%); display: flex; align-items: center; justify-content: center;">
+                        <span style="font-size: 3rem;">🛡️</span>
+                    </div>
+                    <div style="padding: var(--space-5);">
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Hand Traps</h3>
+                        <p style="color: var(--gray-600); font-size: 0.875rem;">Essential competitive staples</p>
+                    </div>
                 </a>
-                <a href="pages/singles.html?filter=bestselling" class="category-card">
-                    <img src="https://images.ygoprodeck.com/images/cards/95440946.jpg" alt="Best Selling">
-                    <h3>BEST SELLING</h3>
+                
+                <a href="pages/singles.html?filter=classic" style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); overflow: hidden; text-decoration: none; transition: var(--transition-normal); border: 1px solid var(--gray-200);" class="interactive-hover">
+                    <div style="aspect-ratio: 16/9; background: linear-gradient(135deg, var(--gray-600) 0%, var(--gray-700) 100%); display: flex; align-items: center; justify-content: center;">
+                        <span style="font-size: 3rem;">⭐</span>
+                    </div>
+                    <div style="padding: var(--space-5);">
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Classic Cards</h3>
+                        <p style="color: var(--gray-600); font-size: 0.875rem;">Nostalgic favorites and iconic monsters</p>
+                    </div>
                 </a>
             </div>
         </section>
 
-        <!-- Shopping Cart Modal -->
-        <div id="cart-modal" class="cart-modal" style="display: none;">
-            <div class="cart-panel">
-                <button class="cart-close" onclick="closeCart()">×</button>
-                <h3>Shopping Cart</h3>
-                <div id="cart-items" class="cart-items">
-                    <p class="empty-cart">Your cart is empty. Start browsing our Yu-Gi-Oh! singles!</p>
+        <!-- Store Features -->
+        <section style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-12); margin-bottom: var(--space-16); border: 1px solid var(--gray-200);">
+            <div style="text-align: center; margin-bottom: var(--space-10);">
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
+                    Why Choose Firelight Duel Academy?
+                </h2>
+                <p style="font-size: 1.125rem; color: var(--gray-600); max-width: 600px; margin: 0 auto;">
+                    Experience the future of Yu-Gi-Oh! card shopping with our modern platform
+                </p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-8);">
+                <div style="text-align: center; padding: var(--space-6);">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4); font-size: 2rem;">
+                        🚀
+                    </div>
+                    <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Real-Time Pricing</h3>
+                    <p style="color: var(--gray-600); line-height: 1.6;">Live market data powered by YGOPRODeck API ensures you always get competitive prices on every card.</p>
                 </div>
-                <div class="cart-summary" style="display: none;">
-                    <div class="cart-totals">
-                        <div class="cart-subtotal">
-                            <span>Subtotal: $<span id="cart-subtotal">0.00</span></span>
-                        </div>
-                        <div class="cart-discount" id="cart-discount" style="display: none;">
-                            <span>Discount: -$<span id="discount-amount">0.00</span></span>
-                        </div>
-                        <div class="cart-shipping">
-                            <span>Shipping: <span id="shipping-cost">FREE</span></span>
-                        </div>
-                        <div class="cart-total">
-                            <strong>Total: $<span id="cart-total">0.00</span></strong>
-                        </div>
+                
+                <div style="text-align: center; padding: var(--space-6);">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4); font-size: 2rem;">
+                        🎯
                     </div>
-                    <div class="discount-section">
-                        <input type="text" id="discount-code" placeholder="Discount code" class="discount-input">
-                        <button onclick="applyDiscountCode()" class="apply-discount-btn">Apply</button>
+                    <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Tournament Events</h3>
+                    <p style="color: var(--gray-600); line-height: 1.6;">Weekly locals, monthly championships, and special events for duelists of all skill levels.</p>
+                </div>
+                
+                <div style="text-align: center; padding: var(--space-6);">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-dark) 100%); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4); font-size: 2rem;">
+                        ⚡
                     </div>
-                    <div class="cart-buttons">
-                        <button class="checkout-btn" onclick="yugiohStore.proceedToCheckout()">Secure Checkout</button>
-                        <button class="continue-btn" onclick="closeCart()">Continue Shopping</button>
-                        <button class="clear-cart-btn" onclick="yugiohStore.clearCart()">Clear Cart</button>
+                    <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Lightning Fast</h3>
+                    <p style="color: var(--gray-600); line-height: 1.6;">Modern interface with instant search, advanced filtering, and seamless card browsing experience.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action -->
+        <section style="text-align: center; padding: var(--space-16) var(--space-6); background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%); border-radius: var(--radius-2xl); color: white;">
+            <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: var(--space-4);">
+                Ready to Duel?
+            </h2>
+            <p style="font-size: 1.125rem; margin-bottom: var(--space-8); opacity: 0.9; max-width: 500px; margin-left: auto; margin-right: auto;">
+                Join thousands of duelists who trust Firelight Duel Academy for their Yu-Gi-Oh! needs.
+            </p>
+            <div style="display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap;">
+                <a href="pages/singles.html" style="padding: var(--space-4) var(--space-8); background: var(--primary-color); color: white; text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; transition: var(--transition-fast); text-transform: uppercase; letter-spacing: 0.05em;">
+                    Start Shopping
+                </a>
+                <a href="pages/events.html" style="padding: var(--space-4) var(--space-8); background: transparent; color: white; text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; transition: var(--transition-fast); text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid rgba(255,255,255,0.3);">
+                    Join Events
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer style="background: var(--gray-900); color: white; padding: var(--space-12) var(--space-6) var(--space-6); margin-top: var(--space-20);">
+        <div style="max-width: 1400px; margin: 0 auto;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-8); margin-bottom: var(--space-8);">
+                <div>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: var(--space-4); color: var(--secondary-color);">Firelight Duel Academy</h3>
+                    <p style="color: rgba(255,255,255,0.8); line-height: 1.6; margin-bottom: var(--space-4);">Your premier destination for Yu-Gi-Oh! singles, competitive play, and tournament events.</p>
+                    <div style="display: flex; gap: var(--space-3);">
+                        <span style="font-size: 1.5rem;">📧</span>
+                        <span style="font-size: 1.5rem;">📞</span>
+                        <span style="font-size: 1.5rem;">📍</span>
                     </div>
                 </div>
-                <div class="payment-info">
-                    <p>Secure payment powered by Square</p>
-                    <div class="payment-logos">
-                        <span>💳</span><span>🍎</span><span>📱</span><span>💰</span>
-                    </div>
+                
+                <div>
+                    <h4 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-4); color: var(--secondary-color);">Quick Links</h4>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: var(--space-2);"><a href="pages/singles.html" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: var(--transition-fast);">Browse Singles</a></li>
+                        <li style="margin-bottom: var(--space-2);"><a href="pages/decks.html" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: var(--transition-fast);">Popular Decks</a></li>
+                        <li style="margin-bottom: var(--space-2);"><a href="pages/events.html" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: var(--transition-fast);">Events</a></li>
+                        <li style="margin-bottom: var(--space-2);"><a href="pages/account.html" style="color: rgba(255,255,255,0.8); text-decoration: none; transition: var(--transition-fast);">My Account</a></li>
+                    </ul>
                 </div>
+                
+                <div>
+                    <h4 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-4); color: var(--secondary-color);">Store Info</h4>
+                    <p style="color: rgba(255,255,255,0.8); margin-bottom: var(--space-2);">📍 123 Duel Monsters Lane</p>
+                    <p style="color: rgba(255,255,255,0.8); margin-bottom: var(--space-2);">📞 (555) 123-DUEL</p>
+                    <p style="color: rgba(255,255,255,0.8); margin-bottom: var(--space-2);">📧 info@firelightduelacademy.com</p>
+                </div>
+            </div>
+            
+            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: var(--space-6); text-align: center;">
+                <p style="color: rgba(255,255,255,0.6); font-size: 0.875rem;">
+                    &copy; 2025 Firelight Duel Academy. All rights reserved. | Yu-Gi-Oh! is a trademark of Konami Digital Entertainment.
+                </p>
             </div>
         </div>
-
-        <!-- Main Content Area -->
-        <main class="content-area">
-            
-            <!-- Meta Cards with Prices Section -->
-            <section class="meta-cards-section">
-                <div class="section-header">
-                    <h2>Meta Cards & Prices</h2>
-                    <p>Current competitive staples and their market prices</p>
-                </div>
-                <div id="meta-cards-grid" class="meta-cards-grid loading">
-                    <div class="loading-spinner">Loading meta cards...</div>
-                </div>
-            </section>
-
-            <!-- Store Locations -->
-            <section class="store-locations">
-                <div class="location-card">
-                    <h3>MAIN STORE</h3>
-                    <h4>123 Duel Monsters Lane, Card City, CC 12345</h4>
-                    <h4>Downtown & Main Intersection</h4>
-                    <a href="tel:555-123-3835" class="phone-link">555-123-DUEL</a>
-                    <div class="store-badges">
-                        <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Tournament Certified" class="badge">
-                        <img src="https://images.ygoprodeck.com/images/cards/46986414.jpg" alt="Official Store" class="badge">
-                        <img src="https://images.ygoprodeck.com/images/cards/26077387.jpg" alt="Konami Approved" class="badge">
-                    </div>
-                    <div class="store-image">
-                        <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Store Interior" class="location-bg">
-                    </div>
-                </div>
-            </section>
-
-            <!-- Store Features -->
-            <section class="store-features">
-                <div class="features-grid">
-                    <div class="feature-item">
-                        <div class="feature-icon">🚚</div>
-                        <h3>FAST & FREE* SHIPPING</h3>
-                        <p>Expedited Shipping to Canada and the USA with *Free shipping for qualifying orders!</p>
-                    </div>
-                    <div class="feature-item">
-                        <div class="feature-icon">🎯</div>
-                        <h3>TOURNAMENT EVENTS</h3>
-                        <p>We host daily events at our store! Whether new to the hobby or a seasoned duelist, we have something for you!</p>
-                    </div>
-                    <div class="feature-item">
-                        <div class="feature-icon">💰</div>
-                        <h3>LOYALTY DISCOUNTS</h3>
-                        <p>Each purchase made helps you level up your loyalty tier, unlocking discounts on almost everything we sell!</p>
-                    </div>
-                    <div class="feature-item">
-                        <div class="feature-icon">🛡️</div>
-                        <h3>PRE-ORDER PROTECTION</h3>
-                        <p>Our Pre-Order Price Protection makes sure that if we lower the price before an item's release, you are credited the difference!</p>
-                    </div>
-                </div>
-            </section>
-
-        </main>
-
-        <!-- Footer -->
-        <footer class="site-footer">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Firelight Duel Academy</h3>
-                    <p>Your premier destination for Yu-Gi-Oh! singles</p>
-                    <div class="contact-info">
-                        <p>📧 info@firelightduelacademy.com</p>
-                        <p>📞 (555) 123-DUEL</p>
-                        <p>📍 123 Duel Monsters Lane, Card City, CC 12345</p>
-                    </div>
-                </div>
-                
-                <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="pages/singles.html">Browse Singles</a></li>
-                        <li><a href="pages/account.html">My Account</a></li>
-                        <li><a href="pages/events.html">Events</a></li>
-                        <li><a href="pages/decks.html">Popular Decks</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-section">
-                    <h4>Policies</h4>
-                    <ul>
-                        <li><a href="shipping.html">Shipping Info</a></li>
-                        <li><a href="returns.html">Return Policy</a></li>
-                        <li><a href="privacy.html">Privacy Policy</a></li>
-                        <li><a href="terms.html">Terms of Service</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-section">
-                    <h4>Payment Methods</h4>
-                    <div class="payment-logos">
-                        <span title="Credit Cards">💳</span>
-                        <span title="Apple Pay">🍎</span>
-                        <span title="Google Pay">�</span>
-                        <span title="PayPal">💰</span>
-                        <span title="Store Credit">🎫</span>
-                    </div>
-                    <p class="secure-notice">🔒 Secure checkout by Square</p>
-                </div>
-            </div>
-            
-            <div class="footer-bottom">
-                <p>&copy; 2025 Firelight Duel Academy. All rights reserved.</p>
-                <p>Yu-Gi-Oh! is a trademark of Konami Digital Entertainment.</p>
-            </div>
-        </footer>
-    </div>
+    </footer>
 
     <!-- Scripts -->
-    <script src="assets/js/services/ygoprodeck-api.js"></script>
-    <script src="assets/js/components/advanced-functionality.js"></script>
-    <script src="assets/js/services/pricecharting-api-service.js"></script>
-    <script src="assets/js/services/yugioh-api-service.js"></script>
-    <script src="assets/js/services/yugioh-image-service.js"></script>
-    <script src="assets/js/services/tcgplayer-media-service.js"></script>
-    <script src="assets/js/services/tcgplayer-api-service.js"></script>
-    <script src="assets/js/pages/yugioh-store.js"></script>
-    <script>
-        // Load meta cards on page load
-        document.addEventListener('DOMContentLoaded', async function() {
-            await loadMetaCards();
-        });
-
-        async function loadMetaCards() {
-            const grid = document.getElementById('meta-cards-grid');
-            
-            try {
-                const metaCards = await window.ygoproAPI.getMetaCards();
-                
-                if (metaCards.length === 0) {
-                    grid.innerHTML = '<p class="no-cards">No meta cards available at the moment.</p>';
-                    return;
-                }
-
-                grid.classList.remove('loading');
-                grid.innerHTML = '';
-
-                metaCards.slice(0, 8).forEach(card => {
-                    const formattedCard = window.ygoproAPI.formatCardForDisplay(card);
-                    const cardElement = createMetaCardElement(formattedCard);
-                    grid.appendChild(cardElement);
-                });
-            } catch (error) {
-                console.error('Error loading meta cards:', error);
-                grid.innerHTML = '<p class="error">Failed to load meta cards. Please try again later.</p>';
-            }
-        }
-
-        function createMetaCardElement(card) {
-            const cardDiv = document.createElement('div');
-            cardDiv.className = 'meta-card';
-            cardDiv.onclick = () => window.location.href = window.ygoproAPI.getProductPageURL(card);
-            
-            const priceChangeClass = card.priceChange.direction;
-            const priceChangeSymbol = card.priceChange.direction === 'up' ? '↗' : 
-                                    card.priceChange.direction === 'down' ? '↘' : '→';
-            const priceChangeText = card.priceChange.direction === 'stable' ? '$0.00' : 
-                                  (card.priceChange.direction === 'up' ? '+' : '-') + '$' + card.priceChange.amount;
-
-            cardDiv.innerHTML = `
-                <img src="${card.image}" alt="${card.name}" loading="lazy">
-                <div class="card-info">
-                    <h3>${card.name}</h3>
-                    <p class="card-type">${card.type}</p>
-                    <div class="price-info">
-                        <span class="current-price">$${card.price}</span>
-                        <span class="price-trend ${priceChangeClass}">${priceChangeSymbol} ${priceChangeText}</span>
-                    </div>
-                    <button class="add-to-cart-btn" onclick="event.stopPropagation(); addToCart('${card.name}', ${card.price})">Add to Cart</button>
-                </div>
-            `;
-            
-            return cardDiv;
-        }
-
-        function addToCart(cardName, price) {
-            // Add to cart functionality
-            console.log(`Adding ${cardName} to cart for $${price}`);
-            
-            // Update cart count
-            const cartCount = document.querySelector('.cart-count');
-            const currentCount = parseInt(cartCount.textContent) || 0;
-            cartCount.textContent = currentCount + 1;
-            
-            // Show success message
-            alert(`${cardName} added to cart!`);
-        }
-    </script>
+    <script src="assets/js/modern-tcg-store.js"></script>
 </body>
 </html>
