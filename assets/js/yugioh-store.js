@@ -340,6 +340,13 @@ class YugiohStore {
     }
 
     // Utility Functions
+    formatPrice(amount, currency = 'CAD') {
+        return new Intl.NumberFormat('en-CA', {
+            style: 'currency',
+            currency: currency
+        }).format(amount);
+    }
+
     getCardPrice(card, condition = 'near_mint') {
         // Simulate pricing based on card characteristics and condition
         const basePrice = this.apiService.calculateBasePrice(card);

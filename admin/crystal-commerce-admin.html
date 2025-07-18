@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crystal Commerce Integration - Admin Panel</title>
+    <link rel="stylesheet" href="../assets/css/yugioh-store.css">
+    <style>
+        .admin-panel {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        
+        .admin-header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .admin-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        
+        .status-connected { background: var(--success-color); }
+        .status-disconnected { background: var(--danger-color); }
+        .status-pending { background: var(--warning-color); }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-right: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: var(--dark-color);
+        }
+        
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--light-color);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .inventory-table th,
+        .inventory-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .inventory-table th {
+            background: var(--light-color);
+            font-weight: 600;
+        }
+        
+        .log-entry {
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-left: 3px solid var(--border-color);
+            background: var(--light-color);
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .log-error { border-left-color: var(--danger-color); }
+        .log-success { border-left-color: var(--success-color); }
+        .log-warning { border-left-color: var(--warning-color); }
+        
+        .pricing-info {
+            background: var(--light-color);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <header class="top-header">
+            <div class="header-container">
+                <div class="site-branding">
+                    <h1 class="site-name">Crystal Commerce Admin Panel</h1>
+                </div>
+                <div class="header-actions">
+                    <a href="../index.html" class="btn btn-secondary">Back to Store</a>
+                </div>
+            </div>
+        </header>
+
+        <main class="admin-panel">
+            <div class="admin-header">
+                <h1>Crystal Commerce Integration Management</h1>
+                <p>Manage your Crystal Commerce connection and inventory synchronization</p>
+            </div>
+
+            <!-- Connection Status -->
+            <div class="admin-section">
+                <h2>Connection Status</h2>
+                <div id="connection-status">
+                    <span class="status-indicator status-disconnected"></span>
+                    <span id="status-text">Not Connected</span>
+                </div>
+                <div class="pricing-info">
+                    <h3>💰 Crystal Commerce Pricing Information</h3>
+                    <p><strong>Crystal Commerce is a paid service</strong> - it's not a free API but a complete e-commerce platform:</p>
+                    <ul>
+                        <li><strong>Monthly Subscription:</strong> Starting at $50-100+ per month</li>
+                        <li><strong>Full Platform:</strong> Includes website, POS system, inventory management</li>
+                        <li><strong>Multi-channel Sales:</strong> eBay, Amazon, TCGPlayer integration</li>
+                        <li><strong>2M+ Product Catalog:</strong> Access to their complete catalog</li>
+                        <li><strong>Live Support:</strong> Daily Zoom calls at 11am and 3pm PT</li>
+                    </ul>
+                    <p><strong>To get started:</strong> Contact Crystal Commerce at (866) 213-4611 or join their daily support calls.</p>
+                </div>
+            </div>
+
+            <!-- Configuration -->
+            <div class="admin-section">
+                <h2>Configuration</h2>
+                <form id="cc-config-form">
+                    <div class="form-group">
+                        <label for="store-id">Store ID</label>
+                        <input type="text" id="store-id" placeholder="Your Crystal Commerce Store ID">
+                        <small>Provided by Crystal Commerce when you sign up</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="api-key">API Key</label>
+                        <input type="password" id="api-key" placeholder="Your Crystal Commerce API Key">
+                        <small>Keep this secure - never share your API key</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="sync-interval">Sync Interval (minutes)</label>
+                        <select id="sync-interval">
+                            <option value="15">15 minutes</option>
+                            <option value="30" selected>30 minutes</option>
+                            <option value="60">1 hour</option>
+                            <option value="120">2 hours</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Connect to Crystal Commerce</button>
+                    <button type="button" id="test-connection" class="btn btn-secondary">Test Connection</button>
+                    <button type="button" id="disconnect" class="btn btn-danger">Disconnect</button>
+                </form>
+            </div>
+
+            <!-- Statistics -->
+            <div class="admin-section">
+                <h2>Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-products">0</div>
+                        <div>Total Products</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="in-stock-items">0</div>
+                        <div>In Stock Items</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="last-sync">Never</div>
+                        <div>Last Sync</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="cache-size">0</div>
+                        <div>Cache Entries</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory Management -->
+            <div class="admin-section">
+                <h2>Inventory Management</h2>
+                <div style="margin-bottom: 1rem;">
+                    <button id="sync-now" class="btn btn-primary">Sync Now</button>
+                    <button id="clear-cache" class="btn btn-secondary">Clear Cache</button>
+                    <button id="export-inventory" class="btn btn-secondary">Export Inventory</button>
+                </div>
+                
+                <div id="inventory-container">
+                    <p>Connect to Crystal Commerce to view inventory</p>
+                </div>
+            </div>
+
+            <!-- Activity Log -->
+            <div class="admin-section">
+                <h2>Activity Log</h2>
+                <div id="activity-log">
+                    <div class="log-entry">System initialized</div>
+                </div>
+                <button id="clear-log" class="btn btn-secondary">Clear Log</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="../assets/js/crystal-commerce-integration.js"></script>
+    <script>
+        class CrystalCommerceAdmin {
+            constructor() {
+                this.ccIntegration = new CrystalCommerceIntegration();
+                this.activityLog = [];
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.loadSavedConfig();
+                this.updateUI();
+                this.startStatusUpdates();
+            }
+
+            setupEventListeners() {
+                // Configuration form
+                document.getElementById('cc-config-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.connectToCrystalCommerce();
+                });
+
+                // Buttons
+                document.getElementById('test-connection').addEventListener('click', () => {
+                    this.testConnection();
+                });
+
+                document.getElementById('disconnect').addEventListener('click', () => {
+                    this.disconnect();
+                });
+
+                document.getElementById('sync-now').addEventListener('click', () => {
+                    this.syncInventory();
+                });
+
+                document.getElementById('clear-cache').addEventListener('click', () => {
+                    this.clearCache();
+                });
+
+                document.getElementById('clear-log').addEventListener('click', () => {
+                    this.clearLog();
+                });
+
+                document.getElementById('export-inventory').addEventListener('click', () => {
+                    this.exportInventory();
+                });
+
+                // Listen for inventory updates
+                window.addEventListener('inventoryUpdated', (e) => {
+                    this.logActivity(`Inventory updated: ${e.detail.count} items from ${e.detail.source}`, 'success');
+                    this.updateUI();
+                });
+            }
+
+            async connectToCrystalCommerce() {
+                const storeId = document.getElementById('store-id').value;
+                const apiKey = document.getElementById('api-key').value;
+
+                if (!storeId || !apiKey) {
+                    this.logActivity('Store ID and API Key are required', 'error');
+                    return;
+                }
+
+                this.logActivity('Attempting to connect to Crystal Commerce...', 'info');
+
+                try {
+                    const success = await this.ccIntegration.initialize(storeId, apiKey);
+                    
+                    if (success) {
+                        this.logActivity('Successfully connected to Crystal Commerce', 'success');
+                        this.saveConfig(storeId, apiKey);
+                    } else {
+                        this.logActivity('Failed to connect to Crystal Commerce', 'error');
+                    }
+                } catch (error) {
+                    this.logActivity(`Connection error: ${error.message}`, 'error');
+                }
+
+                this.updateUI();
+            }
+
+            async testConnection() {
+                this.logActivity('Testing Crystal Commerce connection...', 'info');
+                
+                try {
+                    await this.ccIntegration.testConnection();
+                    this.logActivity('Connection test successful', 'success');
+                } catch (error) {
+                    this.logActivity(`Connection test failed: ${error.message}`, 'error');
+                }
+            }
+
+            disconnect() {
+                this.ccIntegration.disconnect();
+                this.clearSavedConfig();
+                this.logActivity('Disconnected from Crystal Commerce', 'info');
+                this.updateUI();
+            }
+
+            async syncInventory() {
+                this.logActivity('Starting inventory sync...', 'info');
+                
+                try {
+                    const success = await this.ccIntegration.syncInventory();
+                    
+                    if (success) {
+                        this.logActivity('Inventory sync completed successfully', 'success');
+                    } else {
+                        this.logActivity('Inventory sync failed', 'error');
+                    }
+                } catch (error) {
+                    this.logActivity(`Sync error: ${error.message}`, 'error');
+                }
+
+                this.updateUI();
+            }
+
+            clearCache() {
+                this.ccIntegration.clearCache();
+                this.logActivity('Cache cleared', 'info');
+                this.updateUI();
+            }
+
+            exportInventory() {
+                const inventory = this.ccIntegration.getLocalInventory();
+                
+                if (inventory.length === 0) {
+                    this.logActivity('No inventory to export', 'warning');
+                    return;
+                }
+
+                const csv = this.convertToCSV(inventory);
+                this.downloadCSV(csv, 'crystal-commerce-inventory.csv');
+                this.logActivity(`Exported ${inventory.length} inventory items`, 'success');
+            }
+
+            convertToCSV(data) {
+                if (data.length === 0) return '';
+
+                const headers = Object.keys(data[0]);
+                const csvContent = [
+                    headers.join(','),
+                    ...data.map(row => 
+                        headers.map(header => 
+                            JSON.stringify(row[header] || '')
+                        ).join(',')
+                    )
+                ].join('\n');
+
+                return csvContent;
+            }
+
+            downloadCSV(csv, filename) {
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            }
+
+            updateUI() {
+                const status = this.ccIntegration.getStatus();
+                
+                // Update connection status
+                const statusIndicator = document.querySelector('.status-indicator');
+                const statusText = document.getElementById('status-text');
+                
+                if (status.connected) {
+                    statusIndicator.className = 'status-indicator status-connected';
+                    statusText.textContent = `Connected (Store: ${status.storeId})`;
+                } else {
+                    statusIndicator.className = 'status-indicator status-disconnected';
+                    statusText.textContent = 'Not Connected';
+                }
+
+                // Update statistics
+                const inventory = this.ccIntegration.getLocalInventory();
+                document.getElementById('total-products').textContent = inventory.length;
+                document.getElementById('in-stock-items').textContent = inventory.filter(item => item.quantity > 0).length;
+                document.getElementById('cache-size').textContent = status.cacheSize;
+
+                // Update inventory table
+                this.updateInventoryTable(inventory);
+            }
+
+            updateInventoryTable(inventory) {
+                const container = document.getElementById('inventory-container');
+                
+                if (inventory.length === 0) {
+                    container.innerHTML = '<p>No inventory data available</p>';
+                    return;
+                }
+
+                const table = document.createElement('table');
+                table.className = 'inventory-table';
+                
+                // Create header
+                const thead = document.createElement('thead');
+                thead.innerHTML = `
+                    <tr>
+                        <th>Name</th>
+                        <th>Set</th>
+                        <th>Rarity</th>
+                        <th>Condition</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Last Updated</th>
+                    </tr>
+                `;
+                table.appendChild(thead);
+
+                // Create body
+                const tbody = document.createElement('tbody');
+                inventory.slice(0, 50).forEach(item => { // Show first 50 items
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.name}</td>
+                        <td>${item.set || 'N/A'}</td>
+                        <td>${item.rarity || 'N/A'}</td>
+                        <td>${item.condition}</td>
+                        <td>${item.quantity}</td>
+                        <td>$${parseFloat(item.price || 0).toFixed(2)}</td>
+                        <td>${new Date(item.last_updated).toLocaleDateString()}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                table.appendChild(tbody);
+
+                container.innerHTML = '';
+                container.appendChild(table);
+
+                if (inventory.length > 50) {
+                    const note = document.createElement('p');
+                    note.textContent = `Showing first 50 of ${inventory.length} items`;
+                    note.style.marginTop = '1rem';
+                    note.style.fontStyle = 'italic';
+                    container.appendChild(note);
+                }
+            }
+
+            logActivity(message, type = 'info') {
+                const timestamp = new Date().toLocaleTimeString();
+                const entry = { message, type, timestamp };
+                this.activityLog.unshift(entry);
+                
+                // Keep only last 100 entries
+                if (this.activityLog.length > 100) {
+                    this.activityLog = this.activityLog.slice(0, 100);
+                }
+
+                this.updateActivityLog();
+            }
+
+            updateActivityLog() {
+                const logContainer = document.getElementById('activity-log');
+                logContainer.innerHTML = this.activityLog.map(entry => 
+                    `<div class="log-entry log-${entry.type}">
+                        [${entry.timestamp}] ${entry.message}
+                    </div>`
+                ).join('');
+            }
+
+            clearLog() {
+                this.activityLog = [];
+                this.updateActivityLog();
+            }
+
+            saveConfig(storeId, apiKey) {
+                localStorage.setItem('cc_config', JSON.stringify({
+                    storeId,
+                    apiKey,
+                    savedAt: new Date().toISOString()
+                }));
+            }
+
+            loadSavedConfig() {
+                const saved = localStorage.getItem('cc_config');
+                if (saved) {
+                    try {
+                        const config = JSON.parse(saved);
+                        document.getElementById('store-id').value = config.storeId || '';
+                        document.getElementById('api-key').value = config.apiKey || '';
+                        this.logActivity('Loaded saved configuration', 'info');
+                    } catch (error) {
+                        this.logActivity('Failed to load saved configuration', 'error');
+                    }
+                }
+            }
+
+            clearSavedConfig() {
+                localStorage.removeItem('cc_config');
+                document.getElementById('store-id').value = '';
+                document.getElementById('api-key').value = '';
+            }
+
+            startStatusUpdates() {
+                // Update UI every 30 seconds
+                setInterval(() => {
+                    this.updateUI();
+                }, 30000);
+            }
+        }
+
+        // Initialize admin panel
+        document.addEventListener('DOMContentLoaded', () => {
+            window.ccAdmin = new CrystalCommerceAdmin();
+        });
+    </script>
+</body>
+</html>

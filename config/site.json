@@ -31,7 +31,7 @@
     "contact": {
       "email": "info@firelightduelacademy.com",
       "phone": "(555) 123-DUEL",
-      "address": "123 Duel Monsters Lane, Card City, CC 12345"
+      "address": "123 Duel Monsters Lane, Toronto, ON M5V 3A8"
     },
     "payment_methods": [
       "Apple Pay",
@@ -59,17 +59,45 @@
   "apis": {
     "yugioh_data": "https://db.ygoprodeck.com/api/v7/",
     "tcgplayer_pricing": "https://api.tcgplayer.com/",
+    "crystal_commerce": "https://api.crystalcommerce.com/v1/",
     "card_images": "https://images.ygoprodeck.com/images/cards/",
     "set_images": "https://images.ygoprodeck.com/images/sets/"
+  },
+  "crystal_commerce": {
+    "enabled": false,
+    "store_id": null,
+    "api_key": null,
+    "sync_interval_minutes": 30,
+    "auto_sync": true,
+    "pricing_info": {
+      "is_paid_service": true,
+      "monthly_cost_range": "$50-100+",
+      "contact_phone": "(866) 213-4611",
+      "support_calls": "Daily at 11am and 3pm PT",
+      "features": [
+        "Complete e-commerce platform",
+        "POS system included",
+        "Multi-channel sales (eBay, Amazon, TCGPlayer)",
+        "2M+ product catalog",
+        "Inventory management",
+        "Live support"
+      ]
+    }
+  },
+  "currency": {
+    "code": "CAD",
+    "symbol": "$",
+    "name": "Canadian Dollar",
+    "locale": "en-CA"
   },
   "store_policies": {
     "return_policy": "14-day return policy on sealed products only",
     "buylist_policy": "Competitive buylist prices updated daily",
     "store_credit_bonus": "10% bonus when selling for store credit",
     "shipping": {
-      "free_threshold": 50.00,
-      "standard_rate": 5.99,
-      "expedited_rate": 12.99
+      "free_threshold": 75.00,
+      "standard_rate": 8.99,
+      "expedited_rate": 16.99
     }
   }
 }
