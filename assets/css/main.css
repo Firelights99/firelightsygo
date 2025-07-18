@@ -6,7 +6,7 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     line-height: 1.6;
     color: #333;
     background-color: #fff;
@@ -18,19 +18,17 @@ body {
     padding: 0 20px;
 }
 
-/* Header and Navigation */
-.navbar {
+/* Header - Simple like Square site */
+.site-header {
     background: #fff;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    position: fixed;
+    border-bottom: 1px solid #e1e1e1;
+    padding: 20px 0;
+    position: sticky;
     top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    padding: 1rem 0;
+    z-index: 100;
 }
 
-.nav-container {
+.header-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
@@ -40,236 +38,225 @@ body {
 }
 
 .site-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #2c3e50;
-    text-decoration: none;
+    font-size: 24px;
+    font-weight: 400;
+    color: #333;
+    margin: 0;
 }
 
-.nav-links {
+.header-actions {
     display: flex;
     align-items: center;
     gap: 20px;
 }
 
-.shop-btn {
-    background: #3498db;
+.shop-now-btn {
+    background: #000;
     color: white;
-    padding: 10px 20px;
+    padding: 12px 24px;
     text-decoration: none;
-    border-radius: 5px;
+    border-radius: 4px;
+    font-size: 14px;
     font-weight: 500;
-    transition: background 0.3s ease;
+    transition: background 0.2s ease;
 }
 
-.shop-btn:hover {
-    background: #2980b9;
+.shop-now-btn:hover {
+    background: #333;
 }
 
 .cart-icon {
-    font-size: 1.5rem;
+    font-size: 20px;
     cursor: pointer;
     padding: 8px;
-    border-radius: 50%;
-    transition: background 0.3s ease;
+    border-radius: 4px;
+    transition: background 0.2s ease;
 }
 
 .cart-icon:hover {
-    background: #f8f9fa;
+    background: #f5f5f5;
 }
 
 /* Main Content */
-main {
-    margin-top: 80px;
+.main-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* Membership Section - First on page like original */
+.membership-section {
+    text-align: center;
+    margin-bottom: 60px;
+    padding: 40px 0;
+}
+
+.membership-section h2 {
+    font-size: 28px;
+    font-weight: 400;
+    margin-bottom: 16px;
+    color: #333;
+}
+
+.membership-section p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 40px;
+    line-height: 1.5;
+}
+
+.membership-card {
+    background: #fff;
+    border: 1px solid #e1e1e1;
+    border-radius: 8px;
+    padding: 32px;
+    max-width: 300px;
+    margin: 0 auto;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.sale-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ff4444;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.price {
+    font-size: 32px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    border-bottom: 2px solid #333;
+    padding-bottom: 8px;
+    display: inline-block;
+}
+
+.membership-card h3 {
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 16px;
+    color: #333;
+}
+
+.stock-status {
+    color: #999;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.select-btn {
+    background: #e1e1e1;
+    color: #999;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: not-allowed;
+    width: 100%;
+    font-weight: 500;
+}
+
+.select-btn:not(:disabled) {
+    background: #000;
+    color: white;
+    cursor: pointer;
+}
+
+.select-btn:not(:disabled):hover {
+    background: #333;
 }
 
 /* Hero Section */
-.hero {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 80px 0;
+.hero-section {
     text-align: center;
+    margin-bottom: 60px;
+    padding: 40px 0;
 }
 
-.hero-content {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-.hero h2 {
-    font-size: 2.5rem;
+.hero-section h2 {
+    font-size: 32px;
+    font-weight: 400;
     margin-bottom: 20px;
-    font-weight: 300;
+    color: #333;
+    line-height: 1.3;
 }
 
-.hero p {
-    font-size: 1.2rem;
+.hero-section p {
+    font-size: 16px;
+    color: #666;
     margin-bottom: 30px;
-    opacity: 0.9;
-    line-height: 1.8;
-}
-
-.cta-button {
-    display: inline-block;
-    background: #e74c3c;
-    color: white;
-    padding: 15px 30px;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 1.1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.cta-button:hover {
-    background: #c0392b;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-/* Membership Section */
-.membership {
-    padding: 80px 0;
-    background: #f8f9fa;
-    text-align: center;
-}
-
-.membership h3 {
-    font-size: 2rem;
-    margin-bottom: 20px;
-    color: #2c3e50;
-}
-
-.membership p {
-    font-size: 1.1rem;
-    margin-bottom: 40px;
-    color: #7f8c8d;
+    line-height: 1.6;
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
 }
 
-.membership-card {
-    background: white;
-    border-radius: 10px;
-    padding: 30px;
-    max-width: 300px;
-    margin: 0 auto;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    position: relative;
-    transition: transform 0.3s ease;
-}
-
-.membership-card:hover {
-    transform: translateY(-5px);
-}
-
-.sale-badge {
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    background: #e74c3c;
-    color: white;
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-.price {
-    font-size: 2rem;
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 10px;
-}
-
-.membership-card h4 {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-    color: #34495e;
-}
-
-.stock-status {
-    color: #e74c3c;
+.shop-now-link {
+    color: #0066cc;
+    text-decoration: underline;
+    font-size: 16px;
     font-weight: 500;
-    margin-bottom: 20px;
 }
 
-.select-btn {
-    background: #95a5a6;
-    color: white;
-    border: none;
-    padding: 12px 30px;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: not-allowed;
-    width: 100%;
-}
-
-.select-btn:not(:disabled) {
-    background: #3498db;
-    cursor: pointer;
-}
-
-.select-btn:not(:disabled):hover {
-    background: #2980b9;
+.shop-now-link:hover {
+    color: #0052a3;
 }
 
 /* Testimonial Section */
-.testimonial {
-    padding: 80px 0;
-    background: white;
+.testimonial-section {
     text-align: center;
+    margin-bottom: 60px;
+    padding: 40px 0;
 }
 
-.testimonial blockquote {
-    max-width: 800px;
-    margin: 0 auto;
-    font-size: 1.5rem;
+.testimonial-section blockquote {
+    font-size: 20px;
     font-style: italic;
-    color: #2c3e50;
-    line-height: 1.8;
+    color: #333;
+    margin-bottom: 16px;
+    line-height: 1.4;
 }
 
-.testimonial cite {
-    display: block;
-    margin-top: 20px;
-    font-size: 1rem;
-    color: #7f8c8d;
+.testimonial-section cite {
+    font-size: 14px;
+    color: #666;
     font-style: normal;
+    font-weight: 600;
 }
 
-/* Location & Hours Section */
-.location-hours {
-    padding: 80px 0;
-    background: #f8f9fa;
+/* Hours Section */
+.hours-section {
+    margin-bottom: 60px;
+    padding: 40px 0;
 }
 
-.location-hours h3 {
+.hours-section h2 {
+    font-size: 28px;
+    font-weight: 400;
+    margin-bottom: 30px;
+    color: #333;
     text-align: center;
-    font-size: 2rem;
-    margin-bottom: 40px;
-    color: #2c3e50;
 }
 
 .hours-list {
-    max-width: 500px;
+    max-width: 400px;
     margin: 0 auto;
-    background: white;
-    border-radius: 10px;
-    padding: 30px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
 }
 
 .day-hours {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 0;
-    border-bottom: 1px solid #ecf0f1;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
 }
 
 .day-hours:last-child {
@@ -278,77 +265,128 @@ main {
 
 .day {
     font-weight: 500;
-    color: #2c3e50;
+    color: #333;
 }
 
 .hours {
-    color: #7f8c8d;
+    color: #666;
 }
 
-/* Returns Policy Section */
-.returns-policy {
-    padding: 80px 0;
-    background: white;
-}
-
-.returns-policy h3 {
+/* Shop Section */
+.shop-section {
     text-align: center;
-    font-size: 2rem;
+    margin-bottom: 60px;
+    padding: 40px 0;
+}
+
+.shop-section h2 {
+    font-size: 28px;
+    font-weight: 400;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.shop-message {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.5;
     margin-bottom: 40px;
-    color: #2c3e50;
 }
 
-.policy-content {
-    max-width: 800px;
-    margin: 0 auto;
+.coming-soon {
+    background: #f8f8f8;
+    border: 1px solid #e1e1e1;
+    border-radius: 8px;
+    padding: 30px;
+    margin-bottom: 30px;
+    text-align: left;
 }
 
-.policy-content h4 {
+.coming-soon h3 {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    color: #333;
     text-align: center;
-    color: #e74c3c;
-    font-size: 1.5rem;
-    margin-bottom: 30px;
-    font-weight: 600;
 }
 
-.policy-section {
-    margin-bottom: 30px;
+.coming-soon ul {
+    list-style: none;
+    padding: 0;
 }
 
-.policy-section h5 {
-    color: #2c3e50;
-    font-size: 1.2rem;
-    margin-bottom: 15px;
-    font-weight: 600;
+.coming-soon li {
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    color: #666;
 }
 
-.policy-section p {
-    color: #7f8c8d;
-    line-height: 1.8;
-    margin-bottom: 15px;
+.coming-soon li:last-child {
+    border-bottom: none;
 }
 
-.policy-section ol {
-    color: #7f8c8d;
-    line-height: 1.8;
-    padding-left: 20px;
+.coming-soon li:before {
+    content: "•";
+    color: #999;
+    margin-right: 10px;
 }
 
-.policy-section li {
-    margin-bottom: 10px;
+.shop-notice {
+    background: #fff;
+    border: 2px solid #e1e1e1;
+    border-radius: 8px;
+    padding: 30px;
+    text-align: center;
+}
+
+.shop-notice p {
+    margin-bottom: 20px;
+    color: #666;
+    font-size: 16px;
+}
+
+.membership-link {
+    display: inline-block;
+    background: #000;
+    color: white;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s ease;
+}
+
+.membership-link:hover {
+    background: #333;
+}
+
+/* Back to Cart */
+.back-to-cart {
+    text-align: center;
+    margin: 40px 0;
+}
+
+.back-to-cart a {
+    color: #0066cc;
+    text-decoration: underline;
+    font-size: 16px;
+}
+
+.back-to-cart a:hover {
+    color: #0052a3;
 }
 
 /* Shopping Cart Modal */
 .cart-modal {
     display: none;
     position: fixed;
-    z-index: 2000;
+    z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0,0,0,0.5);
-    animation: fadeIn 0.3s ease;
 }
 
 .cart-modal.active {
@@ -359,21 +397,20 @@ main {
     background-color: white;
     margin: 5% auto;
     padding: 30px;
-    border-radius: 10px;
+    border-radius: 8px;
     width: 90%;
     max-width: 500px;
     position: relative;
-    animation: slideIn 0.3s ease;
 }
 
 .close {
     position: absolute;
     right: 20px;
     top: 15px;
-    font-size: 2rem;
+    font-size: 28px;
     cursor: pointer;
     color: #aaa;
-    transition: color 0.3s ease;
+    line-height: 1;
 }
 
 .close:hover {
@@ -382,125 +419,205 @@ main {
 
 .cart-content h3 {
     margin-bottom: 20px;
-    color: #2c3e50;
+    font-size: 24px;
+    font-weight: 400;
+    color: #333;
+}
+
+.cart-empty {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 16px;
 }
 
 .cart-buttons {
     display: flex;
-    gap: 10px;
-    margin: 20px 0;
+    gap: 12px;
+    margin-bottom: 30px;
 }
 
 .checkout-btn, .continue-shopping-btn {
     flex: 1;
     padding: 12px;
     border: none;
-    border-radius: 5px;
-    font-size: 1rem;
+    border-radius: 4px;
+    font-size: 14px;
     cursor: pointer;
-    transition: background 0.3s ease;
+    font-weight: 500;
 }
 
 .checkout-btn {
-    background: #3498db;
+    background: #000;
     color: white;
 }
 
 .checkout-btn:hover {
-    background: #2980b9;
+    background: #333;
 }
 
 .continue-shopping-btn {
-    background: #95a5a6;
-    color: white;
+    background: #f5f5f5;
+    color: #333;
 }
 
 .continue-shopping-btn:hover {
-    background: #7f8c8d;
+    background: #e1e1e1;
 }
 
 .payment-methods {
     text-align: center;
-    margin-top: 20px;
 }
 
 .payment-methods p {
-    margin-bottom: 10px;
-    color: #7f8c8d;
-    font-size: 0.9rem;
+    margin-bottom: 12px;
+    color: #666;
+    font-size: 14px;
 }
 
 .payment-icons {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
 }
 
 .payment-icon {
-    font-size: 1.5rem;
-    padding: 5px;
+    height: 24px;
+    width: auto;
+    opacity: 0.7;
 }
 
-/* Footer */
-footer {
-    background: #2c3e50;
-    color: white;
-    padding: 40px 0;
+/* Footer - Like Square site */
+.site-footer {
+    background: #f8f8f8;
+    border-top: 1px solid #e1e1e1;
+    padding: 60px 0;
+    margin-top: 80px;
+}
+
+.footer-branding {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.footer-branding h3 {
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.footer-branding p {
+    color: #666;
+    font-size: 14px;
+}
+
+.footer-payment-methods {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.footer-payment-methods .payment-icons {
+    justify-content: center;
+    gap: 12px;
+}
+
+.footer-payment-methods .payment-icon {
+    height: 32px;
+}
+
+/* Helpful Information */
+.helpful-info {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.helpful-info h3 {
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 30px;
+    color: #333;
     text-align: center;
 }
 
-footer p {
+.returns-policy h4 {
+    font-size: 20px;
+    font-weight: 400;
     margin-bottom: 20px;
-    font-size: 1.1rem;
+    color: #333;
 }
 
-footer .payment-icons {
-    justify-content: center;
+.returns-policy p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 20px;
 }
 
-/* Animations */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+.returns-policy strong em {
+    color: #ff4444;
+    font-size: 18px;
 }
 
-@keyframes slideIn {
-    from { 
-        opacity: 0;
-        transform: translateY(-50px);
-    }
-    to { 
-        opacity: 1;
-        transform: translateY(0);
-    }
+.policy-section {
+    margin-bottom: 30px;
+}
+
+.policy-section h5 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #333;
+    text-transform: uppercase;
+}
+
+.policy-section ol {
+    padding-left: 20px;
+    color: #666;
+    line-height: 1.6;
+}
+
+.policy-section li {
+    margin-bottom: 8px;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .nav-container {
+    .header-container {
         padding: 0 15px;
     }
     
     .site-title {
-        font-size: 1.2rem;
+        font-size: 18px;
     }
     
-    .hero h2 {
-        font-size: 2rem;
+    .shop-now-btn {
+        padding: 10px 16px;
+        font-size: 13px;
     }
     
-    .hero p {
-        font-size: 1rem;
+    .main-content {
+        padding: 30px 15px;
     }
     
-    .container {
-        padding: 0 15px;
+    .membership-section h2,
+    .hero-section h2,
+    .hours-section h2,
+    .shop-section h2 {
+        font-size: 24px;
+    }
+    
+    .hero-section h2 {
+        font-size: 28px;
+    }
+    
+    .membership-card {
+        padding: 24px;
     }
     
     .cart-content {
         margin: 10% auto;
         width: 95%;
+        padding: 20px;
     }
     
     .cart-buttons {
@@ -508,32 +625,54 @@ footer .payment-icons {
     }
     
     .payment-icons {
-        gap: 5px;
+        gap: 6px;
     }
     
     .payment-icon {
-        font-size: 1.2rem;
+        height: 20px;
+    }
+    
+    .footer-payment-methods .payment-icon {
+        height: 28px;
     }
 }
 
 @media (max-width: 480px) {
-    .hero {
-        padding: 60px 0;
+    .site-title {
+        font-size: 16px;
     }
     
-    .hero h2 {
-        font-size: 1.8rem;
+    .header-actions {
+        gap: 12px;
     }
     
-    .membership, .testimonial, .location-hours, .returns-policy {
-        padding: 60px 0;
+    .shop-now-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    
+    .membership-section,
+    .hero-section,
+    .testimonial-section,
+    .hours-section,
+    .shop-section {
+        margin-bottom: 40px;
+        padding: 30px 0;
     }
     
     .membership-card {
         padding: 20px;
     }
     
-    .hours-list {
-        padding: 20px;
+    .price {
+        font-size: 28px;
+    }
+    
+    .testimonial-section blockquote {
+        font-size: 18px;
+    }
+    
+    .site-footer {
+        padding: 40px 0;
     }
 }

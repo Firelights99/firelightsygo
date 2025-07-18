@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home | www.Firelightsygo-tcg.com</title>
-    <meta name="description" content="Superior service, personalized attention for TCG enthusiasts. Trading card game shop with exclusive memberships and secure checkout.">
+    <title>Shop | www.Firelightsygo-tcg.com</title>
+    <meta name="description" content="Shop for TCG products and merchandise at Firelight Sygo.">
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
 </head>
@@ -12,7 +12,7 @@
     <!-- Header with site title and cart -->
     <header class="site-header">
         <div class="header-container">
-            <h1 class="site-title">www.Firelightsygo-tcg.com</h1>
+            <h1 class="site-title"><a href="index.html" style="text-decoration: none; color: inherit;">www.Firelightsygo-tcg.com</a></h1>
             <div class="header-actions">
                 <a href="shop.html" class="shop-now-btn">Shop Now</a>
                 <div class="cart-icon" onclick="toggleCart()" aria-label="Shopping Cart">🛒</div>
@@ -47,88 +47,33 @@
     </div>
 
     <main class="main-content">
-        <!-- Membership Section (appears first on original site) -->
-        <section class="membership-section">
-            <div class="container">
-                <h2>Become a Member</h2>
-                <p>Members enjoy exclusive benefits and access. Choose the membership level that's right for you.</p>
-                
-                <div class="membership-card">
-                    <div class="sale-badge">Sale</div>
-                    <div class="price">CAD$10</div>
-                    <h3>Locals</h3>
-                    <div class="stock-status">Out of stock</div>
-                    <button class="select-btn" disabled aria-label="Locals membership - Out of stock">Select</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Hero/About Section -->
-        <section class="hero-section">
-            <div class="container">
-                <h2>Superior service, personalized attention</h2>
-                <p>We started with the simple idea of bringing the best from us to you. From our founder to our front-line workers, we put lots of love and careful thought into all we do. We hope you enjoy all we have to offer, and share the experience with others.</p>
-                <a href="shop.html" class="shop-now-link">Shop now</a>
-            </div>
-        </section>
-
-        <!-- Testimonial Section -->
-        <section class="testimonial-section">
-            <div class="container">
-                <blockquote>
-                    <p>"I love being able to find just the right gifts for my friends at a great value."</p>
-                    <cite>Quin, San Francisco</cite>
-                </blockquote>
-            </div>
-        </section>
-
-        <!-- Location & Hours Section -->
-        <section class="hours-section">
-            <div class="container">
-                <h2>Location & Hours</h2>
-                <div class="hours-list">
-                    <div class="day-hours">
-                        <span class="day">Monday</span>
-                        <span class="hours">Closed</span>
-                    </div>
-                    <div class="day-hours">
-                        <span class="day">Tuesday</span>
-                        <span class="hours">Closed</span>
-                    </div>
-                    <div class="day-hours">
-                        <span class="day">Wednesday</span>
-                        <span class="hours">Closed</span>
-                    </div>
-                    <div class="day-hours">
-                        <span class="day">Thursday</span>
-                        <span class="hours">Closed</span>
-                    </div>
-                    <div class="day-hours">
-                        <span class="day">Friday</span>
-                        <span class="hours">Closed</span>
-                    </div>
-                    <div class="day-hours">
-                        <span class="day">Saturday</span>
-                        <span class="hours">Closed</span>
-                    </div>
-                    <div class="day-hours">
-                        <span class="day">Sunday</span>
-                        <span class="hours">12:00 a.m. - 1:00 p.m.</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- Shop Section -->
-        <section class="shop-section" id="shop">
+        <section class="shop-section">
             <div class="container">
-                <h2>Shop</h2>
+                <h1>Shop</h1>
                 <p class="shop-message">Our shop is currently being updated. Please check back soon for our latest TCG products and merchandise.</p>
+                
+                <div class="coming-soon">
+                    <h3>Coming Soon:</h3>
+                    <ul>
+                        <li>Trading Card Game Products</li>
+                        <li>Booster Packs and Singles</li>
+                        <li>Deck Boxes and Sleeves</li>
+                        <li>Playmats and Accessories</li>
+                        <li>Exclusive Merchandise</li>
+                        <li>Limited Edition Items</li>
+                    </ul>
+                </div>
+
+                <div class="shop-notice">
+                    <p>In the meantime, you can still become a member to get exclusive access when our shop launches!</p>
+                    <a href="index.html#membership" class="membership-link">View Membership Options</a>
+                </div>
             </div>
         </section>
     </main>
 
-    <!-- Back to Cart link (as seen on original) -->
+    <!-- Back to Cart link -->
     <div class="back-to-cart">
         <a href="#" onclick="toggleCart()">Back to Cart</a>
     </div>
