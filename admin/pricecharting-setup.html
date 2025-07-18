@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PriceCharting API Setup | Firelight Duel Academy Admin</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components/advanced-layout.css">
+    <style>
+        .admin-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .admin-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+        
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 1rem;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+        
+        .status-message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .config-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .config-section h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .test-results {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .help-text {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+        
+        .nav-back {
+            margin-bottom: 2rem;
+        }
+        
+        .nav-back a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .nav-back a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="nav-back">
+            <a href="../index.html">← Back to Homepage</a> | 
+            <a href="crystal-commerce-admin.html">Crystal Commerce Setup</a> | 
+            <a href="tcgplayer-setup.html">TCGPlayer Setup</a>
+        </div>
+        
+        <div class="admin-header">
+            <h1>🔥 PriceCharting API Setup</h1>
+            <p>Configure PriceCharting.com API integration for Yu-Gi-Oh! card pricing</p>
+        </div>
+        
+        <div id="status-message" class="status-message"></div>
+        
+        <form id="pricecharting-config-form">
+            <div class="config-section">
+                <h3>API Authentication</h3>
+                
+                <div class="form-group">
+                    <label for="api-token" class="form-label">PriceCharting API Token</label>
+                    <input type="password" id="api-token" class="form-input" placeholder="Enter your 40-character API token">
+                    <div class="help-text">
+                        Get your API token from <a href="https://www.pricecharting.com/subscriptions" target="_blank">PriceCharting Subscriptions</a> page.
+                        Requires a paid subscription to access the API.
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="api-base-url" class="form-label">API Base URL</label>
+                    <input type="url" id="api-base-url" class="form-input" value="https://www.pricecharting.com/api" readonly>
+                    <div class="help-text">Default PriceCharting API endpoint (read-only)</div>
+                </div>
+            </div>
+            
+            <div class="config-section">
+                <h3>Rate Limiting & Caching</h3>
+                
+                <div class="form-group">
+                    <label for="rate-limit-delay" class="form-label">Rate Limit Delay (ms)</label>
+                    <input type="number" id="rate-limit-delay" class="form-input" value="1000" min="500" max="5000">
+                    <div class="help-text">Delay between API requests to avoid rate limiting (recommended: 1000ms)</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cache-expiry" class="form-label">Cache Expiry (minutes)</label>
+                    <input type="number" id="cache-expiry" class="form-input" value="30" min="5" max="1440">
+                    <div class="help-text">How long to cache pricing data before refreshing</div>
+                </div>
+            </div>
+            
+            <div class="config-section">
+                <h3>Display Settings</h3>
+                
+                <div class="form-group">
+                    <label for="default-grades" class="form-label">Default Grade Conditions to Display</label>
+                    <select id="default-grades" class="form-input" multiple size="5">
+                        <option value="ungraded" selected>Ungraded</option>
+                        <option value="grade7">Grade 7</option>
+                        <option value="grade8">Grade 8</option>
+                        <option value="grade9" selected>Grade 9</option>
+                        <option value="grade10" selected>Grade 10 (PSA)</option>
+                        <option value="bgs10">BGS 10</option>
+                        <option value="cgc10">CGC 10</option>
+                        <option value="sgc10">SGC 10</option>
+                    </select>
+                    <div class="help-text">Hold Ctrl/Cmd to select multiple grades to display by default</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="show-trends" class="form-label">
+                        <input type="checkbox" id="show-trends" checked> Show Price Trends
+                    </label>
+                    <div class="help-text">Display price trend indicators and recommendations</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="enable-notifications" class="form-label">
+                        <input type="checkbox" id="enable-notifications" checked> Enable Price Notifications
+                    </label>
+                    <div class="help-text">Show notifications for price updates and API status</div>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save Configuration</button>
+                <button type="button" class="btn btn-secondary" onclick="loadConfiguration()">Load Saved Config</button>
+                <button type="button" class="btn btn-success" onclick="testApiConnection()">Test API Connection</button>
+            </div>
+        </form>
+        
+        <div class="config-section">
+            <h3>API Test Results</h3>
+            <button type="button" class="btn btn-secondary" onclick="testCardSearch()">Test Card Search</button>
+            <button type="button" class="btn btn-secondary" onclick="testPricing()">Test Pricing Data</button>
+            <button type="button" class="btn btn-secondary" onclick="clearCache()">Clear Cache</button>
+            
+            <div id="test-results" class="test-results" style="display: none;"></div>
+        </div>
+        
+        <div class="config-section">
+            <h3>Integration Status</h3>
+            <div id="integration-status">
+                <p><strong>API Status:</strong> <span id="api-status">Not configured</span></p>
+                <p><strong>Cache Size:</strong> <span id="cache-size">0 entries</span></p>
+                <p><strong>Last Test:</strong> <span id="last-test">Never</span></p>
+                <p><strong>Configuration:</strong> <span id="config-status">Not saved</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/services/pricecharting-api-service.js"></script>
+    <script>
+        // Admin interface functionality
+        class PriceChartingAdmin {
+            constructor() {
+                this.form = document.getElementById('pricecharting-config-form');
+                this.statusMessage = document.getElementById('status-message');
+                this.testResults = document.getElementById('test-results');
+                
+                this.initializeForm();
+                this.loadConfiguration();
+                this.updateStatus();
+            }
+            
+            initializeForm() {
+                this.form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.saveConfiguration();
+                });
+                
+                // Load configuration on page load
+                this.loadConfiguration();
+            }
+            
+            showMessage(message, type = 'info') {
+                this.statusMessage.className = `status-message status-${type}`;
+                this.statusMessage.textContent = message;
+                this.statusMessage.style.display = 'block';
+                
+                setTimeout(() => {
+                    this.statusMessage.style.display = 'none';
+                }, 5000);
+            }
+            
+            saveConfiguration() {
+                const config = {
+                    apiToken: document.getElementById('api-token').value,
+                    rateLimitDelay: parseInt(document.getElementById('rate-limit-delay').value),
+                    cacheExpiry: parseInt(document.getElementById('cache-expiry').value) * 60 * 1000,
+                    defaultGrades: Array.from(document.getElementById('default-grades').selectedOptions).map(o => o.value),
+                    showTrends: document.getElementById('show-trends').checked,
+                    enableNotifications: document.getElementById('enable-notifications').checked,
+                    savedAt: new Date().toISOString()
+                };
+                
+                try {
+                    localStorage.setItem('pricecharting-config', JSON.stringify(config));
+                    
+                    // Apply configuration to service
+                    if (config.apiToken) {
+                        priceChartingService.setApiToken(config.apiToken);
+                        priceChartingService.rateLimitDelay = config.rateLimitDelay;
+                        priceChartingService.cacheExpiry = config.cacheExpiry;
+                    }
+                    
+                    this.showMessage('Configuration saved successfully!', 'success');
+                    this.updateStatus();
+                } catch (error) {
+                    this.showMessage('Error saving configuration: ' + error.message, 'error');
+                }
+            }
+            
+            loadConfiguration() {
+                try {
+                    const saved = localStorage.getItem('pricecharting-config');
+                    if (saved) {
+                        const config = JSON.parse(saved);
+                        
+                        document.getElementById('api-token').value = config.apiToken || '';
+                        document.getElementById('rate-limit-delay').value = config.rateLimitDelay || 1000;
+                        document.getElementById('cache-expiry').value = (config.cacheExpiry || 1800000) / 60000;
+                        document.getElementById('show-trends').checked = config.showTrends !== false;
+                        document.getElementById('enable-notifications').checked = config.enableNotifications !== false;
+                        
+                        // Set default grades
+                        const defaultGrades = config.defaultGrades || ['ungraded', 'grade9', 'grade10'];
+                        const gradeSelect = document.getElementById('default-grades');
+                        Array.from(gradeSelect.options).forEach(option => {
+                            option.selected = defaultGrades.includes(option.value);
+                        });
+                        
+                        // Apply to service
+                        if (config.apiToken) {
+                            priceChartingService.setApiToken(config.apiToken);
+                            priceChartingService.rateLimitDelay = config.rateLimitDelay;
+                            priceChartingService.cacheExpiry = config.cacheExpiry;
+                        }
+                        
+                        this.showMessage('Configuration loaded successfully!', 'success');
+                    }
+                } catch (error) {
+                    this.showMessage('Error loading configuration: ' + error.message, 'error');
+                }
+                
+                this.updateStatus();
+            }
+            
+            async testApiConnection() {
+                const apiToken = document.getElementById('api-token').value;
+                
+                if (!apiToken) {
+                    this.showMessage('Please enter an API token first', 'error');
+                    return;
+                }
+                
+                this.showTestResults('Testing API connection...');
+                
+                try {
+                    // Set token temporarily for test
+                    priceChartingService.setApiToken(apiToken);
+                    
+                    // Test with a simple search
+                    const results = await priceChartingService.searchYugiohCards('Blue-Eyes White Dragon');
+                    
+                    this.showTestResults(`✅ API Connection Successful!\n\nFound ${results.length} results for "Blue-Eyes White Dragon"\n\n${JSON.stringify(results.slice(0, 2), null, 2)}`);
+                    this.showMessage('API connection test successful!', 'success');
+                    
+                    localStorage.setItem('pricecharting-last-test', new Date().toISOString());
+                    this.updateStatus();
+                } catch (error) {
+                    this.showTestResults(`❌ API Connection Failed!\n\nError: ${error.message}\n\nPlease check your API token and try again.`);
+                    this.showMessage('API connection test failed: ' + error.message, 'error');
+                }
+            }
+            
+            async testCardSearch() {
+                const testCard = 'Ash Blossom & Joyous Spring';
+                this.showTestResults(`Searching for "${testCard}"...`);
+                
+                try {
+                    const results = await priceChartingService.searchYugiohCards(testCard);
+                    this.showTestResults(`✅ Card Search Results:\n\n${JSON.stringify(results, null, 2)}`);
+                } catch (error) {
+                    this.showTestResults(`❌ Card Search Failed:\n\n${error.message}`);
+                }
+            }
+            
+            async testPricing() {
+                this.showTestResults('Testing pricing data...');
+                
+                try {
+                    // First search for a card
+                    const searchResults = await priceChartingService.searchYugiohCards('Blue-Eyes White Dragon');
+                    
+                    if (searchResults.length > 0) {
+                        const pricing = await priceChartingService.getCardPricing(searchResults[0].id);
+                        this.showTestResults(`✅ Pricing Data Retrieved:\n\n${JSON.stringify(pricing, null, 2)}`);
+                    } else {
+                        this.showTestResults('❌ No cards found to test pricing');
+                    }
+                } catch (error) {
+                    this.showTestResults(`❌ Pricing Test Failed:\n\n${error.message}`);
+                }
+            }
+            
+            clearCache() {
+                priceChartingService.clearCache();
+                this.showMessage('Cache cleared successfully!', 'success');
+                this.updateStatus();
+            }
+            
+            showTestResults(content) {
+                this.testResults.textContent = content;
+                this.testResults.style.display = 'block';
+            }
+            
+            updateStatus() {
+                const apiStatus = priceChartingService.apiToken ? 'Configured' : 'Not configured';
+                const cacheStats = priceChartingService.getCacheStats();
+                const lastTest = localStorage.getItem('pricecharting-last-test');
+                const configSaved = localStorage.getItem('pricecharting-config') ? 'Saved' : 'Not saved';
+                
+                document.getElementById('api-status').textContent = apiStatus;
+                document.getElementById('cache-size').textContent = `${cacheStats.size} entries`;
+                document.getElementById('last-test').textContent = lastTest ? new Date(lastTest).toLocaleString() : 'Never';
+                document.getElementById('config-status').textContent = configSaved;
+            }
+        }
+        
+        // Global functions for buttons
+        window.testApiConnection = () => admin.testApiConnection();
+        window.testCardSearch = () => admin.testCardSearch();
+        window.testPricing = () => admin.testPricing();
+        window.clearCache = () => admin.clearCache();
+        window.loadConfiguration = () => admin.loadConfiguration();
+        
+        // Initialize admin interface
+        const admin = new PriceChartingAdmin();
+        
+        console.log('🔥 PriceCharting Admin Interface loaded!');
+    </script>
+</body>
+</html>
