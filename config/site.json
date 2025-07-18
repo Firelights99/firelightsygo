@@ -1,0 +1,40 @@
+{
+  "site": {
+    "name": "Firelight Sygo TCG",
+    "title": "Firelight Sygo Trading Card Game",
+    "description": "Superior service, personalized attention for TCG enthusiasts",
+    "url": "https://firelights99.github.io/firelightsygo/",
+    "author": "Firelight Sygo",
+    "version": "2.0.0"
+  },
+  "business": {
+    "name": "Firelight Sygo",
+    "type": "Trading Card Game Shop",
+    "hours": {
+      "monday": "Closed",
+      "tuesday": "Closed", 
+      "wednesday": "Closed",
+      "thursday": "Closed",
+      "friday": "Closed",
+      "saturday": "Closed",
+      "sunday": "12:00 AM - 1:00 PM"
+    },
+    "payment_methods": [
+      "Apple Pay",
+      "Google Pay", 
+      "Visa",
+      "Mastercard",
+      "American Express",
+      "Discover",
+      "JCB",
+      "Interac",
+      "Afterpay"
+    ]
+  },
+  "features": {
+    "membership": true,
+    "shopping_cart": true,
+    "secure_checkout": true,
+    "mobile_responsive": true
+  }
+}

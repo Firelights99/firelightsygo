@@ -1,0 +1,22 @@
+{
+  "membership_plans": [
+    {
+      "id": "locals",
+      "name": "Locals",
+      "price": {
+        "amount": 10,
+        "currency": "CAD",
+        "display": "CAD$10"
+      },
+      "status": "out_of_stock",
+      "sale": true,
+      "benefits": [
+        "Exclusive member benefits",
+        "Priority access to new releases",
+        "Member-only events",
+        "Special discounts"
+      ],
+      "description": "Perfect for local TCG enthusiasts who want exclusive access and benefits."
+    }
+  ]
+}
