@@ -7,6 +7,7 @@
     <meta name="description" content="Your premier destination for Yu-Gi-Oh! single cards. Buy, sell, and trade with confidence. Competitive buylist prices and store credit system.">
     <link rel="stylesheet" href="assets/css/yugioh-store.css">
     <link rel="stylesheet" href="assets/css/yugioh-image-enhancements.css">
+    <link rel="stylesheet" href="assets/css/tcgplayer-media-integration.css">
     <link rel="icon" href="https://images.ygoprodeck.com/images/cards/89631139.jpg">
 </head>
 <body>
@@ -113,6 +114,61 @@
                 <p class="section-subtitle">Popular competitive cards and frequently purchased singles</p>
                 <div id="featured-cards-grid" class="cards-grid loading">
                     <div class="loading-spinner">Loading featured cards...</div>
+                </div>
+            </section>
+
+            <!-- TCGPlayer Professional Promotions -->
+            <section class="tcgplayer-promotions">
+                <div class="promotional-banner" onclick="window.location.href='singles.html'">
+                    <img src="https://8946057.fs1.hubspotusercontent-na1.net/hubfs/8946057/tcgplayer-website-2024/hubdb/2024%20Pro%20Banner%20Uploads/MTG/Magic_The%20Gathering%20-%20Edge%20of%20Eternities/magic_edge-of-eternities_banners.jpeg" alt="Professional Trading Card Store" class="banner-image">
+                    <div class="promotional-content">
+                        <h2>Professional Grade Singles</h2>
+                        <p>Experience the quality and service that sets us apart from other card stores. Professional grading, authentic cards, competitive pricing.</p>
+                        <a href="singles.html" class="promotional-cta">Browse Our Collection</a>
+                    </div>
+                    <div class="professional-badge">TCGPlayer Certified</div>
+                </div>
+            </section>
+
+            <!-- Latest Yu-Gi-Oh! Sets -->
+            <section class="latest-sets">
+                <h2>Latest Yu-Gi-Oh! Sets</h2>
+                <div class="set-showcase">
+                    <div class="set-card" onclick="browseSet('POTE')">
+                        <div class="set-banner">
+                            <img src="https://images.ygoprodeck.com/images/cards/76375976.jpg" alt="Power of the Elements" loading="lazy">
+                        </div>
+                        <div class="set-info">
+                            <h3 class="set-name">Power of the Elements</h3>
+                            <p class="set-code">POTE</p>
+                            <p class="set-description">Featuring Snake-Eye archetype and competitive meta cards for tournament play.</p>
+                            <button class="browse-set-btn" onclick="browseSet('POTE')">Browse Set</button>
+                        </div>
+                    </div>
+                    
+                    <div class="set-card" onclick="browseSet('CYAC')">
+                        <div class="set-banner">
+                            <img src="https://images.ygoprodeck.com/images/cards/86066372.jpg" alt="Cyberstorm Access" loading="lazy">
+                        </div>
+                        <div class="set-info">
+                            <h3 class="set-name">Cyberstorm Access</h3>
+                            <p class="set-code">CYAC</p>
+                            <p class="set-description">Modern Link monsters and Cyberse support cards for competitive decks.</p>
+                            <button class="browse-set-btn" onclick="browseSet('CYAC')">Browse Set</button>
+                        </div>
+                    </div>
+                    
+                    <div class="set-card" onclick="browseSet('PHHY')">
+                        <div class="set-banner">
+                            <img src="https://images.ygoprodeck.com/images/cards/28776350.jpg" alt="Photon Hypernova" loading="lazy">
+                        </div>
+                        <div class="set-info">
+                            <h3 class="set-name">Photon Hypernova</h3>
+                            <p class="set-code">PHHY</p>
+                            <p class="set-description">Kashtira archetype and powerful meta-relevant cards for tournament play.</p>
+                            <button class="browse-set-btn" onclick="browseSet('PHHY')">Browse Set</button>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -294,6 +350,7 @@
     <!-- Scripts -->
     <script src="assets/js/yugioh-api-service.js"></script>
     <script src="assets/js/yugioh-image-service.js"></script>
+    <script src="assets/js/tcgplayer-media-service.js"></script>
     <script src="assets/js/tcgplayer-api-service.js"></script>
     <script src="assets/js/yugioh-store.js"></script>
 </body>

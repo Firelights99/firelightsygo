@@ -690,6 +690,15 @@ class YugiohStore {
         console.log(`Browsing archetype: ${archetype}`);
     }
 
+    // Set browsing
+    browseSet(setCode) {
+        this.showNotification(`Browsing ${setCode} set cards...`, 'info');
+        // TODO: Navigate to set page or filter current results
+        console.log(`Browsing set: ${setCode}`);
+        // In a full implementation, this would navigate to a set-specific page
+        // window.location.href = `sets.html?set=${setCode}`;
+    }
+
     // User Authentication (placeholder)
     showLogin() {
         this.showNotification('Login system coming soon!', 'info');
@@ -791,6 +800,12 @@ function showLogin() {
 function browseArchetype(archetype) {
     if (window.yugiohStore) {
         window.yugiohStore.browseArchetype(archetype);
+    }
+}
+
+function browseSet(setCode) {
+    if (window.yugiohStore) {
+        window.yugiohStore.browseSet(setCode);
     }
 }
 
