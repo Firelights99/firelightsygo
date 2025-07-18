@@ -152,19 +152,92 @@ class YugiohApiService {
         };
     }
 
-    // Get TCGPlayer-style pricing (simulated for now)
+    // Get real pricing data from YGOPRODeck API (free)
     async getTCGPlayerPricing(cardId, setCode = null) {
-        // In a real implementation, this would call TCGPlayer API
-        // For now, we'll simulate pricing based on card rarity and type
-        
         try {
             const card = await this.getCardById(cardId);
+            
+            // YGOPRODeck includes real pricing data from card_prices
+            if (card && card.card_prices && card.card_prices.length > 0) {
+                const prices = card.card_prices[0]; // Most recent pricing
+                
+                // Convert USD to CAD (approximate rate: 1.35)
+                const exchangeRate = await this.getExchangeRate();
+                
+                const pricing = {
+                    card_id: cardId,
+                    set_code: setCode,
+                    last_updated: new Date().toISOString(),
+                    exchange_rate: exchangeRate,
+                    pricing: {
+                        near_mint: {
+                            low: this.convertToCAD(parseFloat(prices.tcgplayer_price || prices.cardmarket_price || 1.0) * 0.8, exchangeRate),
+                            market: this.convertToCAD(parseFloat(prices.tcgplayer_price || prices.cardmarket_price || 1.0), exchangeRate),
+                            high: this.convertToCAD(parseFloat(prices.tcgplayer_price || prices.cardmarket_price || 1.0) * 1.3, exchangeRate),
+                            direct_low: this.convertToCAD(parseFloat(prices.tcgplayer_price || prices.cardmarket_price || 1.0) * 0.9, exchangeRate)
+                        }
+                    }
+                };
+                
+                // Apply condition multipliers
+                const conditions = ['lightly_played', 'moderately_played', 'heavily_played', 'damaged'];
+                const multipliers = [0.85, 0.70, 0.55, 0.40];
+                
+                conditions.forEach((condition, index) => {
+                    const multiplier = multipliers[index];
+                    pricing.pricing[condition] = {
+                        low: pricing.pricing.near_mint.low * multiplier,
+                        market: pricing.pricing.near_mint.market * multiplier,
+                        high: pricing.pricing.near_mint.high * multiplier,
+                        direct_low: pricing.pricing.near_mint.direct_low * multiplier
+                    };
+                });
+                
+                return pricing;
+            }
+            
+            // Fallback to calculated pricing if no real data available
             const pricing = this.simulateTCGPlayerPricing(card, setCode);
             return pricing;
         } catch (error) {
-            console.error('Error getting TCGPlayer pricing:', error);
+            console.error('Error getting pricing:', error);
             return null;
         }
+    }
+
+    // Get current USD to CAD exchange rate (free API)
+    async getExchangeRate() {
+        const cacheKey = 'exchange_rate_usd_cad';
+        
+        if (this.cache.has(cacheKey)) {
+            const cached = this.cache.get(cacheKey);
+            // Cache exchange rate for 1 hour
+            if (Date.now() - cached.timestamp < 60 * 60 * 1000) {
+                return cached.data;
+            }
+        }
+
+        try {
+            const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+            const data = await response.json();
+            
+            const rate = data.rates.CAD || 1.35; // Default to 1.35 if API fails
+            
+            this.cache.set(cacheKey, {
+                data: rate,
+                timestamp: Date.now()
+            });
+            
+            return rate;
+        } catch (error) {
+            console.warn('Failed to get exchange rate, using default:', error);
+            return 1.35; // Default CAD exchange rate
+        }
+    }
+
+    // Convert USD to CAD
+    convertToCAD(usdAmount, exchangeRate = 1.35) {
+        return usdAmount * exchangeRate;
     }
 
     // Simulate TCGPlayer pricing (replace with real API calls)

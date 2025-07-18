@@ -170,9 +170,11 @@ class YugiohStore {
             const cards = await this.apiService.getRandomCards(12);
             
             featuredGrid.classList.remove('loading');
-            featuredGrid.innerHTML = cards.map(card => {
+            
+            // Process cards with pricing
+            const cardElements = await Promise.all(cards.map(async (card) => {
                 const formattedCard = this.apiService.formatCardForDisplay(card);
-                const price = this.getCardPrice(formattedCard);
+                const price = await this.getCardPrice(formattedCard);
                 
                 return `
                     <div class="card-item" onclick="yugiohStore.showCardDetails(${card.id})">
@@ -180,11 +182,13 @@ class YugiohStore {
                         <div class="card-info">
                             <h3 class="card-name">${formattedCard.name}</h3>
                             <p class="card-type">${formattedCard.type}</p>
-                            <div class="card-price">$${price.toFixed(2)}</div>
+                            <div class="card-price">${this.formatPrice(price)}</div>
                         </div>
                     </div>
                 `;
-            }).join('');
+            }));
+            
+            featuredGrid.innerHTML = cardElements.join('');
         } catch (error) {
             console.error('Error loading featured cards:', error);
             featuredGrid.innerHTML = '<p class="error-message">Unable to load featured cards. Please try again later.</p>';
@@ -272,6 +276,8 @@ class YugiohStore {
     // Card Details
     async showCardDetails(cardId) {
         try {
+            this.showNotification('Loading card details...', 'info');
+            
             const card = await this.apiService.getCardById(cardId);
             const formattedCard = this.apiService.formatCardForDisplay(card);
             const pricing = await this.apiService.getTCGPlayerPricing(cardId);
@@ -347,18 +353,40 @@ class YugiohStore {
         }).format(amount);
     }
 
-    getCardPrice(card, condition = 'near_mint') {
-        // Simulate pricing based on card characteristics and condition
-        const basePrice = this.apiService.calculateBasePrice(card);
-        const conditionMultipliers = {
-            'near_mint': 1.0,
-            'lightly_played': 0.85,
-            'moderately_played': 0.70,
-            'heavily_played': 0.55,
-            'damaged': 0.40
-        };
-        
-        return Math.max(0.25, basePrice * conditionMultipliers[condition]);
+    async getCardPrice(card, condition = 'near_mint') {
+        try {
+            // Try to get real pricing data first
+            const pricing = await this.apiService.getTCGPlayerPricing(card.id);
+            
+            if (pricing && pricing.pricing && pricing.pricing[condition]) {
+                return pricing.pricing[condition].market || pricing.pricing[condition].low || 1.0;
+            }
+            
+            // Fallback to calculated pricing
+            const basePrice = this.apiService.calculateBasePrice(card);
+            const conditionMultipliers = {
+                'near_mint': 1.0,
+                'lightly_played': 0.85,
+                'moderately_played': 0.70,
+                'heavily_played': 0.55,
+                'damaged': 0.40
+            };
+            
+            return Math.max(0.25, basePrice * conditionMultipliers[condition]);
+        } catch (error) {
+            console.error('Error getting card price:', error);
+            // Fallback to basic calculation
+            const basePrice = this.apiService.calculateBasePrice(card);
+            const conditionMultipliers = {
+                'near_mint': 1.0,
+                'lightly_played': 0.85,
+                'moderately_played': 0.70,
+                'heavily_played': 0.55,
+                'damaged': 0.40
+            };
+            
+            return Math.max(0.25, basePrice * conditionMultipliers[condition]);
+        }
     }
 
     formatCondition(condition) {
