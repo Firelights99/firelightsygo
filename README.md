@@ -50,18 +50,13 @@ Harrison-Website/
 
 Simply open `index.html` in any modern web browser to view the website locally.
 
-## GitHub Pages Setup
+## Live Demo
 
-To enable the live demo, you need to enable GitHub Pages in your repository settings:
+The website is now live and accessible at:
+- **Custom Domain**: https://www.firelightsygo.com
+- **GitHub Pages**: https://firelights99.github.io/firelightsygo/
 
-1. Go to https://github.com/Firelights99/firelightsygo
-2. Click the "Settings" tab
-3. Scroll down to "Pages" section in the left sidebar
-4. Under "Source", select "Deploy from a branch"
-5. Choose "main" branch and "/ (root)" folder
-6. Click "Save"
-
-Once enabled, your website will be live at: https://firelights99.github.io/firelightsygo/
+The site is automatically deployed via GitHub Actions whenever changes are pushed to the main branch.
 
 ## Browser Compatibility
 
