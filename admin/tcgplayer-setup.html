@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCGPlayer API Setup - Firelight Duel Academy</title>
+    <link rel="stylesheet" href="../assets/css/yugioh-store.css">
+    <style>
+        .setup-panel {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        
+        .setup-step {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            position: relative;
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: var(--primary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .step-title {
+            margin-top: 0;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .api-form {
+            background: var(--light-color);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+        
+        .form-group small {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: block;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-right: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: var(--dark-color);
+        }
+        
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        
+        .status-connected { background: var(--success-color); }
+        .status-disconnected { background: var(--danger-color); }
+        .status-testing { background: var(--warning-color); }
+        
+        .pricing-demo {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .price-row:last-child {
+            border-bottom: none;
+        }
+        
+        .condition-name {
+            font-weight: 500;
+        }
+        
+        .price-value {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .success-box {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .info-box {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <header class="top-header">
+            <div class="header-container">
+                <div class="site-branding">
+                    <h1 class="site-name">TCGPlayer API Setup</h1>
+                </div>
+                <div class="header-actions">
+                    <a href="../index.html" class="btn btn-secondary">Back to Store</a>
+                </div>
+            </div>
+        </header>
+
+        <main class="setup-panel">
+            <div class="admin-header">
+                <h1>TCGPlayer API Integration Setup</h1>
+                <p>Follow these steps to integrate real-time TCGPlayer pricing with Canadian Dollar conversion</p>
+            </div>
+
+            <!-- Step 1: Account Setup -->
+            <div class="setup-step">
+                <div class="step-number">1</div>
+                <h2 class="step-title">Create TCGPlayer API Account</h2>
+                
+                <div class="info-box">
+                    <h3>📋 What You Need:</h3>
+                    <ul>
+                        <li><strong>Business License:</strong> Valid business registration</li>
+                        <li><strong>Monthly Fee:</strong> ~$50-100 USD for API access</li>
+                        <li><strong>Application Process:</strong> 1-2 weeks approval time</li>
+                        <li><strong>Documentation:</strong> Proof of legitimate card business</li>
+                    </ul>
+                </div>
+
+                <h3>🔗 Sign Up Process:</h3>
+                <ol>
+                    <li>Visit <a href="https://api.tcgplayer.com/" target="_blank">https://api.tcgplayer.com/</a></li>
+                    <li>Click "Get Started" or "Apply for API Access"</li>
+                    <li>Fill out the business application form</li>
+                    <li>Upload required business documentation</li>
+                    <li>Wait for approval (typically 1-2 weeks)</li>
+                    <li>Receive your API credentials via email</li>
+                </ol>
+
+                <div class="warning-box">
+                    <strong>⚠️ Important:</strong> TCGPlayer API is only available to legitimate card businesses. You'll need to provide business registration, tax ID, and proof of card inventory.
+                </div>
+            </div>
+
+            <!-- Step 2: Get API Keys -->
+            <div class="setup-step">
+                <div class="step-number">2</div>
+                <h2 class="step-title">Obtain API Credentials</h2>
+                
+                <p>Once approved, you'll receive:</p>
+                <ul>
+                    <li><strong>Public Key:</strong> Used for authentication (safe to store)</li>
+                    <li><strong>Private Key:</strong> Secret key (keep secure!)</li>
+                    <li><strong>API Documentation:</strong> Technical integration guide</li>
+                </ul>
+
+                <div class="code-block">
+Example credentials format:
+Public Key: 12345678-1234-1234-1234-123456789012
+Private Key: abcdefgh-abcd-abcd-abcd-abcdefghijkl
+                </div>
+
+                <div class="warning-box">
+                    <strong>🔐 Security Note:</strong> Never share your private key or commit it to version control. Store it securely in environment variables.
+                </div>
+            </div>
+
+            <!-- Step 3: Configure API -->
+            <div class="setup-step">
+                <div class="step-number">3</div>
+                <h2 class="step-title">Configure API Integration</h2>
+                
+                <div class="api-form">
+                    <h3>Enter Your TCGPlayer API Credentials</h3>
+                    
+                    <div class="form-group">
+                        <label for="public-key">Public Key</label>
+                        <input type="text" id="public-key" placeholder="12345678-1234-1234-1234-123456789012">
+                        <small>Your TCGPlayer public API key (safe to store)</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="private-key">Private Key</label>
+                        <input type="password" id="private-key" placeholder="abcdefgh-abcd-abcd-abcd-abcdefghijkl">
+                        <small>Your TCGPlayer private API key (keep secure!)</small>
+                    </div>
+                    
+                    <button onclick="testConnection()" class="btn btn-primary">Test Connection</button>
+                    <button onclick="saveCredentials()" class="btn btn-success">Save & Enable</button>
+                </div>
+
+                <div id="connection-status">
+                    <h3>Connection Status</h3>
+                    <p><span class="status-indicator status-disconnected"></span>Not Connected</p>
+                </div>
+            </div>
+
+            <!-- Step 4: Test Pricing -->
+            <div class="setup-step">
+                <div class="step-number">4</div>
+                <h2 class="step-title">Test Real-Time Pricing</h2>
+                
+                <p>Once connected, test the pricing system:</p>
+                
+                <div style="margin: 1rem 0;">
+                    <input type="text" id="test-card-name" placeholder="Enter card name (e.g., Blue-Eyes White Dragon)" style="width: 70%; padding: 0.5rem; margin-right: 1rem;">
+                    <button onclick="testPricing()" class="btn btn-primary">Get Pricing</button>
+                </div>
+
+                <div id="pricing-results" class="pricing-demo" style="display: none;">
+                    <h4>Pricing Results (CAD)</h4>
+                    <div id="pricing-data"></div>
+                </div>
+            </div>
+
+            <!-- Step 5: Production Setup -->
+            <div class="setup-step">
+                <div class="step-number">5</div>
+                <h2 class="step-title">Production Deployment</h2>
+                
+                <div class="success-box">
+                    <h3>✅ Ready for Production!</h3>
+                    <p>Once your API is working, your store will automatically:</p>
+                    <ul>
+                        <li>Fetch real-time pricing from TCGPlayer</li>
+                        <li>Convert USD to CAD using live exchange rates</li>
+                        <li>Cache pricing data for 5 minutes for performance</li>
+                        <li>Apply condition multipliers for different card grades</li>
+                        <li>Calculate buylist prices automatically</li>
+                    </ul>
+                </div>
+
+                <h3>🔧 Additional Configuration:</h3>
+                <div class="form-group">
+                    <label>Price Markup Percentage</label>
+                    <input type="number" id="markup-percentage" value="15" min="0" max="100" style="width: 100px;">
+                    <small>Add markup to TCGPlayer low prices (default: 15%)</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Buylist Percentage</label>
+                    <input type="number" id="buylist-percentage" value="60" min="0" max="100" style="width: 100px;">
+                    <small>Buylist price as % of market price (default: 60%)</small>
+                </div>
+
+                <button onclick="updateSettings()" class="btn btn-primary">Update Settings</button>
+            </div>
+
+            <!-- Troubleshooting -->
+            <div class="setup-step">
+                <div class="step-number">?</div>
+                <h2 class="step-title">Troubleshooting</h2>
+                
+                <h3>Common Issues:</h3>
+                
+                <h4>❌ "Authentication Failed"</h4>
+                <ul>
+                    <li>Verify your public and private keys are correct</li>
+                    <li>Check that your TCGPlayer account is active</li>
+                    <li>Ensure you have API access enabled</li>
+                </ul>
+
+                <h4>❌ "No Pricing Data Found"</h4>
+                <ul>
+                    <li>Card name might not match TCGPlayer database</li>
+                    <li>Try searching with exact card names</li>
+                    <li>Some cards may not have pricing data</li>
+                </ul>
+
+                <h4>❌ "Rate Limit Exceeded"</h4>
+                <ul>
+                    <li>TCGPlayer has API rate limits</li>
+                    <li>Our caching system helps reduce requests</li>
+                    <li>Consider upgrading your API plan</li>
+                </ul>
+
+                <h3>📞 Support:</h3>
+                <ul>
+                    <li><strong>TCGPlayer API Support:</strong> api-support@tcgplayer.com</li>
+                    <li><strong>Documentation:</strong> <a href="https://docs.tcgplayer.com/" target="_blank">https://docs.tcgplayer.com/</a></li>
+                    <li><strong>Status Page:</strong> <a href="https://status.tcgplayer.com/" target="_blank">https://status.tcgplayer.com/</a></li>
+                </ul>
+            </div>
+        </main>
+    </div>
+
+    <script src="../assets/js/tcgplayer-api-service.js"></script>
+    <script>
+        let tcgPlayerService = null;
+
+        async function testConnection() {
+            const publicKey = document.getElementById('public-key').value;
+            const privateKey = document.getElementById('private-key').value;
+            
+            if (!publicKey || !privateKey) {
+                alert('Please enter both public and private keys');
+                return;
+            }
+
+            // Update status to testing
+            updateConnectionStatus('testing', 'Testing connection...');
+            
+            try {
+                tcgPlayerService = new TCGPlayerApiService();
+                const success = await tcgPlayerService.initialize(publicKey, privateKey);
+                
+                if (success) {
+                    updateConnectionStatus('connected', 'Connected successfully!');
+                    showNotification('TCGPlayer API connected successfully!', 'success');
+                } else {
+                    updateConnectionStatus('disconnected', 'Connection failed');
+                    showNotification('Failed to connect to TCGPlayer API', 'error');
+                }
+            } catch (error) {
+                updateConnectionStatus('disconnected', `Error: ${error.message}`);
+                showNotification(`Connection error: ${error.message}`, 'error');
+            }
+        }
+
+        function saveCredentials() {
+            const publicKey = document.getElementById('public-key').value;
+            const privateKey = document.getElementById('private-key').value;
+            
+            if (!publicKey || !privateKey) {
+                alert('Please enter both keys before saving');
+                return;
+            }
+
+            // Save to localStorage (in production, use secure storage)
+            localStorage.setItem('tcgplayer_config', JSON.stringify({
+                publicKey,
+                privateKey,
+                savedAt: new Date().toISOString()
+            }));
+
+            showNotification('Credentials saved successfully!', 'success');
+        }
+
+        async function testPricing() {
+            const cardName = document.getElementById('test-card-name').value;
+            
+            if (!cardName) {
+                alert('Please enter a card name');
+                return;
+            }
+
+            if (!tcgPlayerService) {
+                alert('Please connect to TCGPlayer API first');
+                return;
+            }
+
+            try {
+                showNotification('Fetching pricing data...', 'info');
+                
+                const pricing = await tcgPlayerService.getCardPricing(cardName);
+                
+                if (pricing) {
+                    displayPricingResults(pricing);
+                    showNotification('Pricing data retrieved successfully!', 'success');
+                } else {
+                    showNotification('No pricing data found for this card', 'warning');
+                }
+            } catch (error) {
+                showNotification(`Pricing error: ${error.message}`, 'error');
+            }
+        }
+
+        function displayPricingResults(pricing) {
+            const resultsDiv = document.getElementById('pricing-results');
+            const dataDiv = document.getElementById('pricing-data');
+            
+            let html = `
+                <h5>${pricing.productName}</h5>
+                <p><strong>Set:</strong> ${pricing.setName}</p>
+                <p><strong>Exchange Rate:</strong> 1 USD = ${pricing.exchangeRate} CAD</p>
+                <hr>
+            `;
+
+            Object.entries(pricing.conditions).forEach(([condition, data]) => {
+                const conditionName = condition.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                html += `
+                    <div class="price-row">
+                        <span class="condition-name">${conditionName}</span>
+                        <span class="price-value">${tcgPlayerService.formatPrice(data.marketPrice)}</span>
+                    </div>
+                `;
+            });
+
+            dataDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+        }
+
+        function updateConnectionStatus(status, message) {
+            const statusDiv = document.getElementById('connection-status');
+            const statusClass = `status-${status}`;
+            
+            statusDiv.innerHTML = `
+                <h3>Connection Status</h3>
+                <p><span class="status-indicator ${statusClass}"></span>${message}</p>
+            `;
+        }
+
+        function updateSettings() {
+            const markup = document.getElementById('markup-percentage').value;
+            const buylist = document.getElementById('buylist-percentage').value;
+            
+            // Save settings
+            localStorage.setItem('tcgplayer_settings', JSON.stringify({
+                markupPercentage: parseFloat(markup),
+                buylistPercentage: parseFloat(buylist),
+                updatedAt: new Date().toISOString()
+            }));
+
+            showNotification('Settings updated successfully!', 'success');
+        }
+
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                z-index: 9999;
+                max-width: 300px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            `;
+
+            // Set background color based on type
+            const colors = {
+                success: '#28a745',
+                error: '#dc3545',
+                warning: '#ffc107',
+                info: '#17a2b8'
+            };
+            notification.style.backgroundColor = colors[type] || colors.info;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            // Remove after 4 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 4000);
+        }
+
+        // Load saved credentials on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const saved = localStorage.getItem('tcgplayer_config');
+            if (saved) {
+                try {
+                    const config = JSON.parse(saved);
+                    document.getElementById('public-key').value = config.publicKey || '';
+                    document.getElementById('private-key').value = config.privateKey || '';
+                } catch (error) {
+                    console.error('Failed to load saved config:', error);
+                }
+            }
+
+            // Load saved settings
+            const settings = localStorage.getItem('tcgplayer_settings');
+            if (settings) {
+                try {
+                    const config = JSON.parse(settings);
+                    document.getElementById('markup-percentage').value = config.markupPercentage || 15;
+                    document.getElementById('buylist-percentage').value = config.buylistPercentage || 60;
+                } catch (error) {
+                    console.error('Failed to load saved settings:', error);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
