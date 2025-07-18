@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account | Firelight Duel Academy - Account Management</title>
+    <meta name="description" content="Manage your Firelight Duel Academy account. View orders, track shipments, and manage your profile.">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components/advanced-layout.css">
+    <link rel="stylesheet" href="../assets/css/pages/yugioh-store.css">
+    <link rel="icon" href="https://images.ygoprodeck.com/images/cards/89631139.jpg">
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- Top Header Bar -->
+        <header class="top-header">
+            <div class="header-container">
+                <div class="site-branding">
+                    <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Firelight Duel Academy" class="site-logo">
+                    <h1 class="site-name">Firelight Duel Academy</h1>
+                    <p class="site-tagline">Yu-Gi-Oh! Trading Cards & Competitive Play</p>
+                </div>
+                <div class="header-actions">
+                    <div class="search-container">
+                        <input type="text" id="card-search" placeholder="Search Yu-Gi-Oh! cards..." class="search-input">
+                        <button class="search-btn" onclick="performSearch()">🔍</button>
+                    </div>
+                    <div class="user-actions">
+                        <button class="account-btn" onclick="showLogin()">👤 Account</button>
+                        <button class="cart-btn" onclick="openCart()">
+                            🛒 Cart <span class="cart-count">0</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="main-navigation">
+            <div class="nav-container">
+                <ul class="nav-tabs">
+                    <li><a href="../index.html" class="nav-link">Home</a></li>
+                    <li><a href="singles.html" class="nav-link">Singles</a></li>
+                    <li><a href="decks.html" class="nav-link">Popular Decks</a></li>
+                    <li><a href="events.html" class="nav-link">Events</a></li>
+                    <li><a href="account.html" class="nav-link active">My Account</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="content-area">
+            <!-- Login/Register Section -->
+            <div id="login-section" class="auth-section">
+                <div class="auth-container">
+                    <div class="auth-tabs">
+                        <button class="auth-tab active" onclick="showAuthTab('login')">Login</button>
+                        <button class="auth-tab" onclick="showAuthTab('register')">Register</button>
+                    </div>
+
+                    <!-- Login Form -->
+                    <div id="login-form" class="auth-form active">
+                        <h2>Welcome Back!</h2>
+                        <form onsubmit="handleLogin(event)">
+                            <div class="form-group">
+                                <label for="login-email">Email Address</label>
+                                <input type="email" id="login-email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="login-password">Password</label>
+                                <input type="password" id="login-password" required>
+                            </div>
+                            <div class="form-options">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="remember-me">
+                                    Remember me
+                                </label>
+                                <a href="#" class="forgot-password">Forgot password?</a>
+                            </div>
+                            <button type="submit" class="auth-btn">Login</button>
+                        </form>
+                    </div>
+
+                    <!-- Register Form -->
+                    <div id="register-form" class="auth-form">
+                        <h2>Create Account</h2>
+                        <form onsubmit="handleRegister(event)">
+                            <div class="form-group">
+                                <label for="register-name">Full Name</label>
+                                <input type="text" id="register-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="register-email">Email Address</label>
+                                <input type="email" id="register-email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="register-password">Password</label>
+                                <input type="password" id="register-password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="register-confirm">Confirm Password</label>
+                                <input type="password" id="register-confirm" required>
+                            </div>
+                            <div class="form-options">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="newsletter" checked>
+                                    Subscribe to newsletter
+                                </label>
+                            </div>
+                            <button type="submit" class="auth-btn">Create Account</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Dashboard (Hidden by default) -->
+            <div id="account-dashboard" class="dashboard-section" style="display: none;">
+                <div class="dashboard-header">
+                    <h1>My Account</h1>
+                    <p>Welcome back, <span id="user-name">John Doe</span>!</p>
+                </div>
+
+                <!-- Account Navigation -->
+                <div class="account-nav">
+                    <button class="nav-btn active" onclick="showAccountSection('overview')">Overview</button>
+                    <button class="nav-btn" onclick="showAccountSection('orders')">Orders</button>
+                    <button class="nav-btn" onclick="showAccountSection('profile')">Profile</button>
+                    <button class="nav-btn" onclick="showAccountSection('loyalty')">Loyalty</button>
+                    <button class="nav-btn" onclick="showAccountSection('wishlist')">Wishlist</button>
+                </div>
+
+                <!-- Overview Section -->
+                <div id="overview-section" class="account-section active">
+                    <div class="overview-grid">
+                        <div class="overview-card">
+                            <h3>Recent Orders</h3>
+                            <div class="order-item">
+                                <span class="order-number">#12345</span>
+                                <span class="order-status shipped">Shipped</span>
+                                <span class="order-total">$89.99</span>
+                            </div>
+                            <div class="order-item">
+                                <span class="order-number">#12344</span>
+                                <span class="order-status delivered">Delivered</span>
+                                <span class="order-total">$45.99</span>
+                            </div>
+                            <a href="#" onclick="showAccountSection('orders')" class="view-all">View All Orders</a>
+                        </div>
+
+                        <div class="overview-card">
+                            <h3>Loyalty Status</h3>
+                            <div class="loyalty-info">
+                                <div class="loyalty-tier">Gold Member</div>
+                                <div class="loyalty-points">1,250 Points</div>
+                                <div class="loyalty-discount">15% Discount</div>
+                            </div>
+                            <a href="#" onclick="showAccountSection('loyalty')" class="view-all">View Details</a>
+                        </div>
+
+                        <div class="overview-card">
+                            <h3>Quick Actions</h3>
+                            <div class="quick-actions">
+                                <button class="action-btn" onclick="location.href='singles.html'">Browse Singles</button>
+                                <button class="action-btn" onclick="location.href='events.html'">View Events</button>
+                                <button class="action-btn" onclick="showAccountSection('wishlist')">My Wishlist</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orders Section -->
+                <div id="orders-section" class="account-section">
+                    <h2>Order History</h2>
+                    <div class="orders-list">
+                        <div class="order-card">
+                            <div class="order-header">
+                                <span class="order-number">Order #12345</span>
+                                <span class="order-date">January 15, 2025</span>
+                                <span class="order-status shipped">Shipped</span>
+                            </div>
+                            <div class="order-items">
+                                <div class="order-item">
+                                    <img src="https://images.ygoprodeck.com/images/cards/76375976.jpg" alt="Snake-Eye Ash">
+                                    <div class="item-info">
+                                        <h4>Snake-Eye Ash</h4>
+                                        <p>Quantity: 1</p>
+                                    </div>
+                                    <div class="item-price">$89.99</div>
+                                </div>
+                            </div>
+                            <div class="order-total">Total: $89.99</div>
+                            <div class="order-actions">
+                                <button class="track-btn">Track Package</button>
+                                <button class="reorder-btn">Reorder</button>
+                            </div>
+                        </div>
+
+                        <div class="order-card">
+                            <div class="order-header">
+                                <span class="order-number">Order #12344</span>
+                                <span class="order-date">January 10, 2025</span>
+                                <span class="order-status delivered">Delivered</span>
+                            </div>
+                            <div class="order-items">
+                                <div class="order-item">
+                                    <img src="https://images.ygoprodeck.com/images/cards/28776350.jpg" alt="Kashtira Fenrir">
+                                    <div class="item-info">
+                                        <h4>Kashtira Fenrir</h4>
+                                        <p>Quantity: 1</p>
+                                    </div>
+                                    <div class="item-price">$45.99</div>
+                                </div>
+                            </div>
+                            <div class="order-total">Total: $45.99</div>
+                            <div class="order-actions">
+                                <button class="review-btn">Leave Review</button>
+                                <button class="reorder-btn">Reorder</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Section -->
+                <div id="profile-section" class="account-section">
+                    <h2>Profile Settings</h2>
+                    <form class="profile-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="profile-name">Full Name</label>
+                                <input type="text" id="profile-name" value="John Doe">
+                            </div>
+                            <div class="form-group">
+                                <label for="profile-email">Email</label>
+                                <input type="email" id="profile-email" value="john@example.com">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="profile-phone">Phone</label>
+                                <input type="tel" id="profile-phone" value="(555) 123-4567">
+                            </div>
+                            <div class="form-group">
+                                <label for="profile-birthday">Birthday</label>
+                                <input type="date" id="profile-birthday" value="1990-01-01">
+                            </div>
+                        </div>
+                        <h3>Shipping Address</h3>
+                        <div class="form-group">
+                            <label for="profile-address">Address</label>
+                            <input type="text" id="profile-address" value="123 Main Street">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="profile-city">City</label>
+                                <input type="text" id="profile-city" value="Card City">
+                            </div>
+                            <div class="form-group">
+                                <label for="profile-state">State</label>
+                                <input type="text" id="profile-state" value="CC">
+                            </div>
+                            <div class="form-group">
+                                <label for="profile-zip">ZIP Code</label>
+                                <input type="text" id="profile-zip" value="12345">
+                            </div>
+                        </div>
+                        <button type="submit" class="save-btn">Save Changes</button>
+                    </form>
+                </div>
+
+                <!-- Loyalty Section -->
+                <div id="loyalty-section" class="account-section">
+                    <h2>Loyalty Program</h2>
+                    <div class="loyalty-dashboard">
+                        <div class="loyalty-status">
+                            <h3>Gold Member</h3>
+                            <div class="points-display">
+                                <span class="points-number">1,250</span>
+                                <span class="points-label">Points</span>
+                            </div>
+                            <div class="tier-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 75%"></div>
+                                </div>
+                                <p>750 points to Platinum</p>
+                            </div>
+                        </div>
+                        
+                        <div class="loyalty-benefits">
+                            <h3>Your Benefits</h3>
+                            <ul>
+                                <li>✅ 15% discount on all singles</li>
+                                <li>✅ Free shipping on orders over $50</li>
+                                <li>✅ Early access to new releases</li>
+                                <li>✅ Birthday bonus points</li>
+                                <li>🔒 Platinum exclusive events (750 more points)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wishlist Section -->
+                <div id="wishlist-section" class="account-section">
+                    <h2>My Wishlist</h2>
+                    <div class="wishlist-grid">
+                        <div class="wishlist-item">
+                            <img src="https://images.ygoprodeck.com/images/cards/14558127.jpg" alt="Ash Blossom">
+                            <div class="item-info">
+                                <h4>Ash Blossom & Joyous Spring</h4>
+                                <p class="item-price">$12.99</p>
+                                <div class="item-actions">
+                                    <button class="add-cart-btn">Add to Cart</button>
+                                    <button class="remove-wishlist-btn">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="wishlist-item">
+                            <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Blue-Eyes">
+                            <div class="item-info">
+                                <h4>Blue-Eyes White Dragon</h4>
+                                <p class="item-price">$5.99</p>
+                                <div class="item-actions">
+                                    <button class="add-cart-btn">Add to Cart</button>
+                                    <button class="remove-wishlist-btn">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Firelight Duel Academy</h3>
+                    <p>Your premier destination for Yu-Gi-Oh! singles</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="singles.html">Browse Singles</a></li>
+                        <li><a href="account.html">My Account</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Firelight Duel Academy. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/components/advanced-functionality.js"></script>
+    <script src="../assets/js/pages/yugioh-store.js"></script>
+    <script>
+        function showAuthTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tab + '-form').classList.add('active');
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            // Simulate login
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('account-dashboard').style.display = 'block';
+        }
+
+        function handleRegister(event) {
+            event.preventDefault();
+            // Simulate registration
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('account-dashboard').style.display = 'block';
+        }
+
+        function showAccountSection(section) {
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.account-section').forEach(sec => sec.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(section + '-section').classList.add('active');
+        }
+    </script>
+</body>
+</html>

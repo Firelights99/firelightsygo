@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events | Firelight Duel Academy - Yu-Gi-Oh! Tournaments</title>
+    <meta name="description" content="Join our Yu-Gi-Oh! tournaments and events. Weekly locals, special events, and competitive play at Firelight Duel Academy.">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components/advanced-layout.css">
+    <link rel="stylesheet" href="../assets/css/pages/yugioh-store.css">
+    <link rel="icon" href="https://images.ygoprodeck.com/images/cards/89631139.jpg">
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- Top Header Bar -->
+        <header class="top-header">
+            <div class="header-container">
+                <div class="site-branding">
+                    <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Firelight Duel Academy" class="site-logo">
+                    <h1 class="site-name">Firelight Duel Academy</h1>
+                    <p class="site-tagline">Yu-Gi-Oh! Trading Cards & Competitive Play</p>
+                </div>
+                <div class="header-actions">
+                    <div class="search-container">
+                        <input type="text" id="card-search" placeholder="Search Yu-Gi-Oh! cards..." class="search-input">
+                        <button class="search-btn" onclick="performSearch()">🔍</button>
+                    </div>
+                    <div class="user-actions">
+                        <button class="account-btn" onclick="showLogin()">👤 Account</button>
+                        <button class="cart-btn" onclick="openCart()">
+                            🛒 Cart <span class="cart-count">0</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="main-navigation">
+            <div class="nav-container">
+                <ul class="nav-tabs">
+                    <li><a href="../index.html" class="nav-link">Home</a></li>
+                    <li><a href="singles.html" class="nav-link">Singles</a></li>
+                    <li><a href="decks.html" class="nav-link">Popular Decks</a></li>
+                    <li><a href="events.html" class="nav-link active">Events</a></li>
+                    <li><a href="account.html" class="nav-link">My Account</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="content-area">
+            <div class="page-header">
+                <h1>Yu-Gi-Oh! Events & Tournaments</h1>
+                <p>Join our competitive community and test your skills</p>
+            </div>
+
+            <!-- Upcoming Events -->
+            <section class="upcoming-events">
+                <h2>Upcoming Events</h2>
+                <div class="events-grid">
+                    <div class="event-card featured">
+                        <div class="event-badge">FEATURED</div>
+                        <div class="event-date">
+                            <span class="month">JAN</span>
+                            <span class="day">25</span>
+                        </div>
+                        <div class="event-info">
+                            <h3>Weekly Locals Tournament</h3>
+                            <p class="event-time">📅 Friday, 7:00 PM - 11:00 PM</p>
+                            <p class="event-format">🎯 Format: Advanced (TCG)</p>
+                            <p class="event-entry">💰 Entry: $10</p>
+                            <p class="event-prizes">🏆 Prizes: Store Credit + Packs</p>
+                            <button class="register-btn" onclick="registerEvent('weekly-locals')">Register Now</button>
+                        </div>
+                    </div>
+
+                    <div class="event-card">
+                        <div class="event-date">
+                            <span class="month">JAN</span>
+                            <span class="day">27</span>
+                        </div>
+                        <div class="event-info">
+                            <h3>Casual Sunday Duels</h3>
+                            <p class="event-time">📅 Sunday, 2:00 PM - 6:00 PM</p>
+                            <p class="event-format">🎯 Format: Casual/Fun Decks</p>
+                            <p class="event-entry">💰 Entry: Free</p>
+                            <p class="event-prizes">🏆 Prizes: Participation Packs</p>
+                            <button class="register-btn" onclick="registerEvent('casual-sunday')">Join Event</button>
+                        </div>
+                    </div>
+
+                    <div class="event-card">
+                        <div class="event-date">
+                            <span class="month">FEB</span>
+                            <span class="day">01</span>
+                        </div>
+                        <div class="event-info">
+                            <h3>Monthly Championship</h3>
+                            <p class="event-time">📅 Saturday, 1:00 PM - 8:00 PM</p>
+                            <p class="event-format">🎯 Format: Advanced (TCG)</p>
+                            <p class="event-entry">💰 Entry: $25</p>
+                            <p class="event-prizes">🏆 Prizes: $500 Store Credit</p>
+                            <button class="register-btn" onclick="registerEvent('monthly-championship')">Register Now</button>
+                        </div>
+                    </div>
+
+                    <div class="event-card">
+                        <div class="event-date">
+                            <span class="month">FEB</span>
+                            <span class="day">08</span>
+                        </div>
+                        <div class="event-info">
+                            <h3>Draft Tournament</h3>
+                            <p class="event-time">📅 Saturday, 3:00 PM - 7:00 PM</p>
+                            <p class="event-format">🎯 Format: Booster Draft</p>
+                            <p class="event-entry">💰 Entry: $20 (includes packs)</p>
+                            <p class="event-prizes">🏆 Prizes: Additional Packs</p>
+                            <button class="register-btn" onclick="registerEvent('draft-tournament')">Register Now</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Event Schedule -->
+            <section class="event-schedule">
+                <h2>Weekly Schedule</h2>
+                <div class="schedule-table">
+                    <div class="schedule-row header">
+                        <div class="day">Day</div>
+                        <div class="time">Time</div>
+                        <div class="event">Event</div>
+                        <div class="format">Format</div>
+                    </div>
+                    <div class="schedule-row">
+                        <div class="day">Monday</div>
+                        <div class="time">6:00 PM</div>
+                        <div class="event">Beginner Night</div>
+                        <div class="format">Teaching/Casual</div>
+                    </div>
+                    <div class="schedule-row">
+                        <div class="day">Wednesday</div>
+                        <div class="time">7:00 PM</div>
+                        <div class="event">Mid-Week Locals</div>
+                        <div class="format">Advanced TCG</div>
+                    </div>
+                    <div class="schedule-row">
+                        <div class="day">Friday</div>
+                        <div class="time">7:00 PM</div>
+                        <div class="event">Weekly Locals</div>
+                        <div class="format">Advanced TCG</div>
+                    </div>
+                    <div class="schedule-row">
+                        <div class="day">Saturday</div>
+                        <div class="time">2:00 PM</div>
+                        <div class="event">Special Events</div>
+                        <div class="format">Various</div>
+                    </div>
+                    <div class="schedule-row">
+                        <div class="day">Sunday</div>
+                        <div class="time">2:00 PM</div>
+                        <div class="event">Casual Duels</div>
+                        <div class="format">Fun/Casual</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tournament Rules -->
+            <section class="tournament-rules">
+                <h2>Tournament Information</h2>
+                <div class="rules-grid">
+                    <div class="rule-card">
+                        <h3>🎯 Tournament Format</h3>
+                        <ul>
+                            <li>Swiss rounds followed by top cut</li>
+                            <li>Best of 3 matches</li>
+                            <li>40 minute time limit per match</li>
+                            <li>Current TCG banlist enforced</li>
+                        </ul>
+                    </div>
+                    <div class="rule-card">
+                        <h3>📋 Registration</h3>
+                        <ul>
+                            <li>Register online or at the store</li>
+                            <li>Bring valid deck list</li>
+                            <li>Check-in 30 minutes before start</li>
+                            <li>Late registration may be refused</li>
+                        </ul>
+                    </div>
+                    <div class="rule-card">
+                        <h3>🏆 Prize Structure</h3>
+                        <ul>
+                            <li>Store credit for top finishers</li>
+                            <li>Booster packs for all participants</li>
+                            <li>Special prizes for monthly events</li>
+                            <li>Loyalty points for regular players</li>
+                        </ul>
+                    </div>
+                    <div class="rule-card">
+                        <h3>📱 What to Bring</h3>
+                        <ul>
+                            <li>Tournament legal deck (40+ cards)</li>
+                            <li>Extra deck (0-15 cards)</li>
+                            <li>Side deck (0-15 cards)</li>
+                            <li>Pen and paper for life points</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact Info -->
+            <section class="event-contact">
+                <h2>Questions About Events?</h2>
+                <div class="contact-info">
+                    <p>📞 Call us at (555) 123-DUEL</p>
+                    <p>📧 Email: events@firelightduelacademy.com</p>
+                    <p>📍 Visit us at 123 Duel Monsters Lane, Card City</p>
+                    <p>💬 Join our Discord community for updates</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Firelight Duel Academy</h3>
+                    <p>Your premier destination for Yu-Gi-Oh! singles</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="singles.html">Browse Singles</a></li>
+                        <li><a href="events.html">Events</a></li>
+                        <li><a href="account.html">My Account</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Firelight Duel Academy. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/components/advanced-functionality.js"></script>
+    <script src="../assets/js/pages/yugioh-store.js"></script>
+    <script>
+        function registerEvent(eventName) {
+            alert('Registration for ' + eventName + ' would open here. Please call the store or visit in person to register.');
+        }
+    </script>
+</body>
+</html>

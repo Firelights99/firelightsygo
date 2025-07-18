@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Singles | Firelight Duel Academy - Yu-Gi-Oh! Single Cards</title>
+    <meta name="description" content="Browse our extensive collection of Yu-Gi-Oh! single cards. Find meta cards, staples, and rare collectibles with competitive prices.">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components/advanced-layout.css">
+    <link rel="stylesheet" href="../assets/css/pages/yugioh-store.css">
+    <link rel="icon" href="https://images.ygoprodeck.com/images/cards/89631139.jpg">
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- Top Header Bar -->
+        <header class="top-header">
+            <div class="header-container">
+                <div class="site-branding">
+                    <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Firelight Duel Academy" class="site-logo">
+                    <h1 class="site-name">Firelight Duel Academy</h1>
+                    <p class="site-tagline">Yu-Gi-Oh! Trading Cards & Competitive Play</p>
+                </div>
+                <div class="header-actions">
+                    <div class="search-container">
+                        <input type="text" id="card-search" placeholder="Search Yu-Gi-Oh! cards..." class="search-input">
+                        <button class="search-btn" onclick="performSearch()">🔍</button>
+                    </div>
+                    <div class="user-actions">
+                        <button class="account-btn" onclick="showLogin()">👤 Account</button>
+                        <button class="cart-btn" onclick="openCart()">
+                            🛒 Cart <span class="cart-count">0</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="main-navigation">
+            <div class="nav-container">
+                <ul class="nav-tabs">
+                    <li><a href="../index.html" class="nav-link">Home</a></li>
+                    <li><a href="singles.html" class="nav-link active">Singles</a></li>
+                    <li><a href="decks.html" class="nav-link">Popular Decks</a></li>
+                    <li><a href="events.html" class="nav-link">Events</a></li>
+                    <li><a href="account.html" class="nav-link">My Account</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="content-area">
+            <div class="page-header">
+                <h1>Yu-Gi-Oh! Single Cards</h1>
+                <p>Browse our extensive collection of single cards from all sets and rarities</p>
+            </div>
+
+            <!-- Filters Section -->
+            <section class="filters-section">
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <label for="card-name">Card Name:</label>
+                        <input type="text" id="card-name" placeholder="Search by card name...">
+                    </div>
+                    <div class="filter-group">
+                        <label for="card-type">Type:</label>
+                        <select id="card-type">
+                            <option value="">All Types</option>
+                            <option value="monster">Monster</option>
+                            <option value="spell">Spell</option>
+                            <option value="trap">Trap</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="rarity">Rarity:</label>
+                        <select id="rarity">
+                            <option value="">All Rarities</option>
+                            <option value="common">Common</option>
+                            <option value="rare">Rare</option>
+                            <option value="super">Super Rare</option>
+                            <option value="ultra">Ultra Rare</option>
+                            <option value="secret">Secret Rare</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="price-range">Price Range:</label>
+                        <select id="price-range">
+                            <option value="">All Prices</option>
+                            <option value="0-5">$0 - $5</option>
+                            <option value="5-15">$5 - $15</option>
+                            <option value="15-50">$15 - $50</option>
+                            <option value="50+">$50+</option>
+                        </select>
+                    </div>
+                    <button class="filter-btn" onclick="applyFilters()">Apply Filters</button>
+                </div>
+            </section>
+
+            <!-- Featured Categories -->
+            <section class="featured-categories">
+                <h2>Popular Categories</h2>
+                <div class="category-grid">
+                    <div class="category-item">
+                        <img src="https://images.ygoprodeck.com/images/cards/76375976.jpg" alt="Snake-Eye">
+                        <h3>Snake-Eye</h3>
+                        <p>Latest meta archetype</p>
+                    </div>
+                    <div class="category-item">
+                        <img src="https://images.ygoprodeck.com/images/cards/28776350.jpg" alt="Kashtira">
+                        <h3>Kashtira</h3>
+                        <p>Powerful banish strategy</p>
+                    </div>
+                    <div class="category-item">
+                        <img src="https://images.ygoprodeck.com/images/cards/14558127.jpg" alt="Hand Traps">
+                        <h3>Hand Traps</h3>
+                        <p>Essential staples</p>
+                    </div>
+                    <div class="category-item">
+                        <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Classic Cards">
+                        <h3>Classic Cards</h3>
+                        <p>Nostalgic favorites</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cards Grid -->
+            <section class="cards-section">
+                <div class="section-header">
+                    <h2>All Single Cards</h2>
+                    <div class="sort-options">
+                        <label for="sort-by">Sort by:</label>
+                        <select id="sort-by">
+                            <option value="name">Name A-Z</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="newest">Newest First</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="cards-grid" class="cards-grid">
+                    <!-- Sample cards -->
+                    <div class="card-item">
+                        <div class="card-image-container">
+                            <img src="https://images.ygoprodeck.com/images/cards/76375976.jpg" alt="Snake-Eye Ash" class="card-image">
+                            <div class="card-meta-badge">HOT</div>
+                        </div>
+                        <div class="card-info">
+                            <h3 class="card-name">Snake-Eye Ash</h3>
+                            <p class="card-type">Effect Monster</p>
+                            <p class="card-price">$89.99</p>
+                            <button class="add-to-cart-btn" onclick="addToCart('Snake-Eye Ash', 89.99)">Add to Cart</button>
+                        </div>
+                    </div>
+
+                    <div class="card-item">
+                        <div class="card-image-container">
+                            <img src="https://images.ygoprodeck.com/images/cards/28776350.jpg" alt="Kashtira Fenrir" class="card-image">
+                        </div>
+                        <div class="card-info">
+                            <h3 class="card-name">Kashtira Fenrir</h3>
+                            <p class="card-type">Effect Monster</p>
+                            <p class="card-price">$45.99</p>
+                            <button class="add-to-cart-btn" onclick="addToCart('Kashtira Fenrir', 45.99)">Add to Cart</button>
+                        </div>
+                    </div>
+
+                    <div class="card-item">
+                        <div class="card-image-container">
+                            <img src="https://images.ygoprodeck.com/images/cards/14558127.jpg" alt="Ash Blossom" class="card-image">
+                        </div>
+                        <div class="card-info">
+                            <h3 class="card-name">Ash Blossom & Joyous Spring</h3>
+                            <p class="card-type">Effect Monster</p>
+                            <p class="card-price">$12.99</p>
+                            <button class="add-to-cart-btn" onclick="addToCart('Ash Blossom & Joyous Spring', 12.99)">Add to Cart</button>
+                        </div>
+                    </div>
+
+                    <div class="card-item">
+                        <div class="card-image-container">
+                            <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Blue-Eyes White Dragon" class="card-image">
+                        </div>
+                        <div class="card-info">
+                            <h3 class="card-name">Blue-Eyes White Dragon</h3>
+                            <p class="card-type">Normal Monster</p>
+                            <p class="card-price">$5.99</p>
+                            <button class="add-to-cart-btn" onclick="addToCart('Blue-Eyes White Dragon', 5.99)">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pagination">
+                    <button class="page-btn" disabled>Previous</button>
+                    <span class="page-info">Page 1 of 50</span>
+                    <button class="page-btn">Next</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Firelight Duel Academy</h3>
+                    <p>Your premier destination for Yu-Gi-Oh! singles</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="singles.html">Browse Singles</a></li>
+                        <li><a href="account.html">My Account</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Firelight Duel Academy. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/components/advanced-functionality.js"></script>
+    <script src="../assets/js/pages/yugioh-store.js"></script>
+</body>
+</html>
