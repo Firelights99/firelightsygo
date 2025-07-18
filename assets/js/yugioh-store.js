@@ -2,10 +2,34 @@
 class YugiohStore {
     constructor() {
         this.apiService = new YugiohApiService();
-        this.tcgPlayerService = new TCGPlayerApiService();
+        this.tcgPlayerService = null; // Initialize as null, will be set up if credentials exist
         this.cart = JSON.parse(localStorage.getItem('yugioh_cart')) || [];
         this.user = JSON.parse(localStorage.getItem('yugioh_user')) || null;
+        this.initializeTCGPlayerService();
         this.init();
+    }
+
+    // Initialize TCGPlayer service if credentials are available
+    async initializeTCGPlayerService() {
+        try {
+            const savedConfig = localStorage.getItem('tcgplayer_config');
+            if (savedConfig) {
+                const config = JSON.parse(savedConfig);
+                if (config.publicKey && config.privateKey) {
+                    this.tcgPlayerService = new TCGPlayerApiService();
+                    const success = await this.tcgPlayerService.initialize(config.publicKey, config.privateKey);
+                    if (success) {
+                        console.log('TCGPlayer API initialized successfully');
+                    } else {
+                        console.warn('TCGPlayer API initialization failed');
+                        this.tcgPlayerService = null;
+                    }
+                }
+            }
+        } catch (error) {
+            console.warn('TCGPlayer API not available:', error.message);
+            this.tcgPlayerService = null;
+        }
     }
 
     async init() {
