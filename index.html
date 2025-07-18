@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | www.Firelightsygo-tcg.com</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <h1 class="site-title">www.Firelightsygo-tcg.com</h1>
+                <div class="nav-links">
+                    <a href="#shop" class="shop-btn">Shop Now</a>
+                    <div class="cart-icon" onclick="toggleCart()">🛒</div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Shopping Cart Modal -->
+    <div id="cart-modal" class="cart-modal">
+        <div class="cart-content">
+            <span class="close" onclick="toggleCart()">&times;</span>
+            <h3>Shopping Cart</h3>
+            <p>You don't have any items in your cart.</p>
+            <div class="cart-buttons">
+                <button class="checkout-btn">Checkout</button>
+                <button class="continue-shopping-btn" onclick="toggleCart()">Continue Shopping</button>
+            </div>
+            <div class="payment-methods">
+                <p>Accepted here</p>
+                <div class="payment-icons">
+                    <span class="payment-icon">💳</span>
+                    <span class="payment-icon">🍎</span>
+                    <span class="payment-icon">📱</span>
+                    <span class="payment-icon">💰</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h2>Superior service, personalized attention</h2>
+                <p>We started with the simple idea of bringing the best from us to you. From our founder to our front-line workers, we put lots of love and careful thought into all we do. We hope you enjoy all we have to offer, and share the experience with others.</p>
+                <a href="#shop" class="cta-button">Shop now</a>
+            </div>
+        </section>
+
+        <!-- Membership Section -->
+        <section class="membership">
+            <div class="container">
+                <h3>Become a Member</h3>
+                <p>Members enjoy exclusive benefits and access. Choose the membership level that's right for you.</p>
+                
+                <div class="membership-card">
+                    <div class="sale-badge">Sale</div>
+                    <div class="price">CAD$10</div>
+                    <h4>Locals</h4>
+                    <div class="stock-status">Out of stock</div>
+                    <button class="select-btn" disabled>Select</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonial Section -->
+        <section class="testimonial">
+            <div class="container">
+                <blockquote>
+                    <p>"I love being able to find just the right gifts for my friends at a great value."</p>
+                    <cite>Quin, San Francisco</cite>
+                </blockquote>
+            </div>
+        </section>
+
+        <!-- Location & Hours Section -->
+        <section class="location-hours">
+            <div class="container">
+                <h3>Location & Hours</h3>
+                <div class="hours-list">
+                    <div class="day-hours">
+                        <span class="day">Monday</span>
+                        <span class="hours">Closed</span>
+                    </div>
+                    <div class="day-hours">
+                        <span class="day">Tuesday</span>
+                        <span class="hours">Closed</span>
+                    </div>
+                    <div class="day-hours">
+                        <span class="day">Wednesday</span>
+                        <span class="hours">Closed</span>
+                    </div>
+                    <div class="day-hours">
+                        <span class="day">Thursday</span>
+                        <span class="hours">Closed</span>
+                    </div>
+                    <div class="day-hours">
+                        <span class="day">Friday</span>
+                        <span class="hours">Closed</span>
+                    </div>
+                    <div class="day-hours">
+                        <span class="day">Saturday</span>
+                        <span class="hours">Closed</span>
+                    </div>
+                    <div class="day-hours">
+                        <span class="day">Sunday</span>
+                        <span class="hours">12:00 a.m. - 1:00 p.m.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Returns Policy Section -->
+        <section class="returns-policy">
+            <div class="container">
+                <h3>Returns Policy</h3>
+                <div class="policy-content">
+                    <h4>!! ALL ORDERS ARE FINAL !!</h4>
+                    
+                    <div class="policy-section">
+                        <h5>DEFECTIVE/NON-AUTHENTIC/ETC</h5>
+                        <p>It is scarce for any of our products to be defective/NON-AUTHENTIC/Damaged. However, we understand that mistakes happen, so if you have any issue with your package or product, you just need to:</p>
+                        <ol>
+                            <li>Email us - you can find our contact information in the "contact us" section of our website.</li>
+                            <li>Attach a photo or video showing the defect/damage;</li>
+                            <li>Provide the email registered at your purchase, your first and last names and the address that you wish to ship it back to us, in case your request is accepted;</li>
+                        </ol>
+                    </div>
+
+                    <div class="policy-section">
+                        <h5>ITEM NEVER ARRIVED</h5>
+                        <p>We send you a tracking number at the dispatch stage to the email address you registered when ordering. Our delivery methods can take up to 14 working days; however, in peak times such as Christmas/ holiday seasons and during lockdowns, this can extend by some more days.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Secure checkout by Square</p>
+            <div class="payment-methods">
+                <div class="payment-icons">
+                    <span class="payment-icon">💳</span>
+                    <span class="payment-icon">🍎</span>
+                    <span class="payment-icon">📱</span>
+                    <span class="payment-icon">💰</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
