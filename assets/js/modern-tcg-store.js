@@ -92,7 +92,7 @@ class ModernTCGStore {
                 cards = await this.getMetaCards();
             }
 
-            this.currentCards = cards.map(card => this.formatCardForDisplay(card));
+            this.currentCards = await Promise.all(cards.map(card => this.formatCardForDisplay(card)));
             this.filteredCards = [...this.currentCards];
             
             this.displayCards(cardsGrid);
@@ -243,8 +243,10 @@ class ModernTCGStore {
         }
     }
 
-    formatCardForDisplay(card) {
+    async formatCardForDisplay(card) {
         if (!card) return null;
+
+        const price = await this.getCardPrice(card);
 
         return {
             id: card.id,
@@ -259,7 +261,7 @@ class ModernTCGStore {
             archetype: card.archetype,
             image: this.getCardImageURL(card),
             imageSmall: this.getCardImageURL(card, 'small'),
-            price: this.getMockPrice(card.name),
+            price: price,
             priceChange: this.getMockPriceChange(),
             rarity: this.getCardRarity(card),
             sets: card.card_sets || []
@@ -297,21 +299,55 @@ class ModernTCGStore {
         return card.type;
     }
 
-    getMockPrice(cardName) {
+    async getCardPrice(card) {
+        try {
+            // Try to get price from YGOPRODeck API
+            const response = await fetch(`${this.apiBaseURL}/cardinfo.php?id=${card.id}`);
+            if (response.ok) {
+                const result = await response.json();
+                const cardData = result.data ? result.data[0] : null;
+                
+                if (cardData && cardData.card_prices && cardData.card_prices.length > 0) {
+                    const prices = cardData.card_prices[0];
+                    // Use TCGPlayer market price as base (USD)
+                    let usdPrice = parseFloat(prices.tcgplayer_price) || 
+                                  parseFloat(prices.ebay_price) || 
+                                  parseFloat(prices.amazon_price) || 
+                                  parseFloat(prices.coolstuffinc_price);
+                    
+                    if (usdPrice && usdPrice > 0) {
+                        // Convert USD to CAD (approximate rate: 1 USD = 1.35 CAD)
+                        const cadPrice = usdPrice * 1.35;
+                        return cadPrice.toFixed(2);
+                    }
+                }
+            }
+        } catch (error) {
+            console.warn('Error fetching price from API:', error);
+        }
+        
+        // Fallback to mock pricing in CAD
+        return this.getMockPriceCAD(card.name);
+    }
+
+    getMockPriceCAD(cardName) {
         const hash = this.hashCode(cardName);
-        const basePrice = Math.abs(hash % 100) + 1;
+        const basePrice = Math.abs(hash % 80) + 1; // Reduced base for more realistic CAD prices
         
         if (cardName.includes('Ash') || cardName.includes('Snake-Eye')) {
-            return (basePrice * 2 + 50).toFixed(2);
+            return (basePrice * 2.5 + 65).toFixed(2); // Higher for meta cards in CAD
         }
         if (cardName.includes('Blue-Eyes') || cardName.includes('Dark Magician')) {
-            return (basePrice * 0.5 + 5).toFixed(2);
+            return (basePrice * 0.7 + 8).toFixed(2); // Classic cards
         }
         if (cardName.includes('Kashtira') || cardName.includes('Infinite')) {
-            return (basePrice * 1.5 + 20).toFixed(2);
+            return (basePrice * 2 + 30).toFixed(2); // Meta staples
+        }
+        if (cardName.includes('Nibiru') || cardName.includes('Effect Veiler')) {
+            return (basePrice * 1.8 + 25).toFixed(2); // Hand traps
         }
         
-        return basePrice.toFixed(2);
+        return (basePrice * 1.35).toFixed(2); // Base conversion to CAD
     }
 
     getMockPriceChange() {
@@ -439,7 +475,7 @@ class ModernTCGStore {
 
         try {
             const searchResults = await this.searchCards(query);
-            this.currentCards = searchResults.map(card => this.formatCardForDisplay(card));
+            this.currentCards = await Promise.all(searchResults.map(card => this.formatCardForDisplay(card)));
             this.filteredCards = [...this.currentCards];
             this.currentPage = 1;
             
