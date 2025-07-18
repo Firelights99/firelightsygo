@@ -17,14 +17,16 @@ Harrison-Website/
 │   │   ├── styles.css         # Legacy stylesheet (backup)
 │   │   ├── square-style.css   # Square payment integration styles
 │   │   ├── exact-square.css   # Square UI components
-│   │   └── yugioh-store.css   # Yu-Gi-Oh! store specific styles
+│   │   ├── yugioh-store.css   # Yu-Gi-Oh! store specific styles
+│   │   └── yugioh-image-enhancements.css # Yu-Gi-Oh! image styling
 │   ├── js/
 │   │   ├── main.js            # Enhanced JavaScript with ES6 classes
 │   │   ├── script.js          # Legacy script (backup)
 │   │   ├── square-functionality.js    # Square payment processing
 │   │   ├── yugioh-store.js    # Yu-Gi-Oh! store functionality
-│   │   ├── yugioh-api-service.js      # Yu-Gi-Oh! API integration
-│   │   ├── tcgplayer-api-service.js   # TCGPlayer API integration
+│   │   ├── yugioh-api-service.js      # YGOPRODeck API integration (primary)
+│   │   ├── yugioh-image-service.js    # Comprehensive Yu-Gi-Oh! image service
+│   │   ├── tcgplayer-api-service.js   # TCGPlayer API integration (disabled)
 │   │   └── crystal-commerce-integration.js # Crystal Commerce API
 │   ├── images/                # Image assets
 │   └── icons/                 # Icon assets
@@ -53,6 +55,7 @@ Harrison-Website/
 
 ### E-commerce Functionality
 - **Yu-Gi-Oh! Store**: Complete trading card store with product catalog
+- **Meta-Relevant Featured Cards**: Curated selection of competitive and frequently purchased cards
 - **Product Pages**: Professional individual card pages with detailed information
 - **Shopping Cart**: Comprehensive cart with discount codes, shipping calculation, and totals
 - **Payment Processing**: Square payment integration for secure transactions
@@ -62,10 +65,11 @@ Harrison-Website/
 - **Price Stability**: 2-day price caching for consistent shopping experience
 
 ### API Integrations
-- **Yu-Gi-Oh! Database**: Complete card database via YGOPRODeck API
-- **TCGPlayer Integration**: Real-time pricing and market data
+- **Yu-Gi-Oh! Database**: Complete card database via YGOPRODeck API (primary)
+- **Yu-Gi-Oh! Image Service**: Comprehensive image library covering all eras of modern Yu-Gi-Oh!
+- **TCGPlayer Integration**: Real-time pricing and market data (disabled by default)
 - **Crystal Commerce**: Professional e-commerce platform integration
-- **Card Images**: High-quality card and set images
+- **Card Images**: High-quality card and set images with fallback system
 - **Price Tracking**: Automated price updates and monitoring
 
 ### Technical Features
@@ -230,12 +234,50 @@ This project is created for educational and demonstration purposes. All content 
 
 For questions about this recreation project, please open an issue on GitHub.
 
+## 🎴 Yu-Gi-Oh! Image Service
+
+### Comprehensive Image Library
+The website features a complete Yu-Gi-Oh! image service covering all eras of modern Yu-Gi-Oh!:
+
+#### **Era Coverage**
+- **Classic Era (DM/GX)**: Blue-Eyes White Dragon, Dark Magician, Red-Eyes Black Dragon
+- **Synchro Era (5D's)**: Stardust Dragon, Blackwing, Six Samurai
+- **Xyz Era (ZEXAL)**: Number 39: Utopia, Gagaga Magician
+- **Pendulum Era (ARC-V)**: Odd-Eyes Pendulum Dragon, Timegazer Magician
+- **Link Era (VRAINS)**: Decode Talker, Salamangreat, Sky Striker
+- **Modern Meta (2024-2025)**: Snake-Eye, Kashtira, Purrely, Tearlaments
+
+#### **Image Categories (130+ Images)**
+- **Archetype Images**: 18+ major archetypes with representative cards
+- **Set Images**: Classic and modern booster set artwork
+- **Generic Images**: 80+ themed images for website sections
+- **Attribute Images**: All 7 Yu-Gi-Oh! attributes (DARK, LIGHT, FIRE, etc.)
+- **Type Images**: Monster types, Spell, and Trap cards
+- **Format Images**: TCG, OCG, Goat Format, Edison Format, Master Duel
+- **Rarity Images**: Secret Rare, Ultimate Rare, Ghost Rare, Starlight Rare
+
+#### **Modern Archetypes Included**
+- **Meta Tier 1**: Snake-Eye, Kashtira, Purrely, Tearlaments
+- **Competitive**: Sky Striker, Eldlich, Tri-Brigade, Virtual World
+- **Hand Traps**: Ash Blossom, Maxx "C", Nibiru, Effect Veiler
+- **Extra Deck Staples**: Accesscode Talker, Apollousa, Borreload Dragon
+- **Fusion Support**: Branded, Despia, Albaz
+- **Ritual Support**: Voiceless Voice, Drytron
+
+#### **Technical Features**
+- **Fallback System**: Multiple image sources with error handling
+- **Lazy Loading**: Optimized performance with progressive loading
+- **Caching**: Intelligent image preloading and browser caching
+- **Responsive**: Adaptive image sizing for all devices
+- **Accessibility**: Proper alt text and ARIA labels
+
 ## 🔧 API Configuration
 
-### Yu-Gi-Oh! Database API
+### Yu-Gi-Oh! Database API (Primary)
 - **Endpoint**: https://db.ygoprodeck.com/api/v7/
 - **Features**: Complete card database, set information, card images
 - **Rate Limits**: No authentication required, reasonable usage expected
+- **Status**: ✅ Active (Primary data source)
 
 ### TCGPlayer API
 - **Endpoint**: https://api.tcgplayer.com/

@@ -5,6 +5,131 @@ All notable changes to the Firelight Duel Academy project will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.1] - 2025-01-18
+
+### Enhanced
+- **Meta-Relevant Featured Cards Section**
+  - Replaced random card selection with curated meta-relevant cards
+  - Featured 12 high-priority competitive cards including Snake-Eye Ash, Kashtira Fenrir, Purrely
+  - Added essential hand traps: Ash Blossom & Joyous Spring, Nibiru, Effect Veiler
+  - Included Extra Deck staples: Accesscode Talker, Apollousa, Bow of the Goddess
+  - Featured popular archetypes: Sky Striker Ace - Raye, Eldlich the Golden Lord
+  - Added modern support cards: Branded Fusion, Tearlaments Scheiren
+
+- **Enhanced Card Display System**
+  - **Full Card Visibility**: Changed image display to show complete card artwork
+  - **Professional Card Containers**: 280px height containers with gradient backgrounds
+  - **Meta Badge System**: Animated "Meta" badges highlighting competitive relevance
+  - **Glassmorphism Effects**: Modern backdrop blur effects on featured cards
+  - **Enhanced Hover Animations**: Scale effects and primary color borders on hover
+
+- **Improved User Experience**
+  - Updated section title to "Meta-Relevant Cards" with descriptive subtitle
+  - Added section subtitle explaining "Popular competitive cards and frequently purchased singles"
+  - Enhanced visual hierarchy distinguishing meta cards from regular content
+  - Optimized responsive grid layout for all device sizes
+  - Professional loading states and error handling
+
+### Technical Improvements
+- **API Integration**: Cards fetched from YGOPRODeck API by specific ID for accuracy
+- **Robust Fallback System**: Curated meta card data as backup for API failures
+- **Image Optimization**: Multiple image sources with proper error handling chains
+- **Product Page Integration**: All featured cards correctly link to individual product pages
+- **Performance**: Efficient loading with lazy image loading and caching
+
+### Visual Enhancements
+- **Card Image Display**: Changed from `object-fit: cover` to `contain` for full card visibility
+- **Professional Styling**: Added gradient backgrounds and enhanced card containers
+- **Responsive Design**: Optimized grid layout with 220px minimum card width
+- **Typography**: Proper text truncation and responsive font sizing
+- **Animation System**: Smooth hover effects with scale and border transitions
+
+## [3.3.0] - 2025-01-18
+
+### Added
+- **Comprehensive Yu-Gi-Oh! Image Service**
+  - Created `assets/js/yugioh-image-service.js` with 130+ themed images
+  - Complete coverage of all Yu-Gi-Oh! eras from classic DM to modern 2024-2025 meta
+  - Archetype images for 18+ major archetypes including Snake-Eye, Kashtira, Purrely, Tearlaments
+  - Set images for classic and modern booster sets
+  - Generic themed images for all website sections (80+ images)
+  - Attribute images for all 7 Yu-Gi-Oh! attributes (DARK, LIGHT, FIRE, etc.)
+  - Type images for monster types, Spell, and Trap cards
+  - Format images for TCG, OCG, Goat Format, Edison Format, Master Duel
+  - Rarity images for Secret Rare, Ultimate Rare, Ghost Rare, Starlight Rare
+
+- **Modern Meta Integration**
+  - Added "Modern Yu-Gi-Oh! Meta" section to homepage with 4 categories
+  - Hand Traps section featuring Ash Blossom, Maxx "C", Nibiru, Effect Veiler
+  - Extra Deck Staples with Accesscode Talker, Apollousa, Borreload Dragon
+  - Fusion Support including Branded, Despia, and Albaz cards
+  - Ritual Support featuring Voiceless Voice, Drytron archetypes
+
+- **Enhanced Visual Design**
+  - Created `assets/css/yugioh-image-enhancements.css` for professional card styling
+  - Modern card layouts with hover effects and animations
+  - Responsive grid systems for archetype and meta card displays
+  - Professional loading states and image galleries
+  - Enhanced logo and branding with authentic Yu-Gi-Oh! imagery
+
+- **Expanded Archetype Coverage**
+  - Increased homepage archetypes from 4 to 8 popular archetypes
+  - Added Snake-Eye, Kashtira, Purrely, and Tearlaments to featured archetypes
+  - Complete era coverage: Classic (DM/GX), Synchro (5D's), Xyz (ZEXAL), Pendulum (ARC-V), Link (VRAINS)
+  - Modern competitive archetypes: Sky Striker, Eldlich, Tri-Brigade, Virtual World
+
+### Enhanced
+- **API Integration Improvements**
+  - **Disabled TCGPlayer API** as requested - system now uses YGOPRODeck API exclusively
+  - Updated `yugioh-store.js` to remove TCGPlayer dependency
+  - Enhanced YGOPRODeck API integration as primary data source
+  - Improved fallback systems for card images and data
+
+- **Image Management System**
+  - Robust fallback system with multiple image sources and error handling
+  - Lazy loading for optimized performance with progressive image loading
+  - Intelligent image preloading and browser caching
+  - Responsive image sizing adaptive to all devices
+  - Proper accessibility with alt text and ARIA labels
+
+- **User Experience**
+  - Updated all logos and favicons to use authentic Blue-Eyes White Dragon imagery
+  - Enhanced card preview components with professional styling
+  - Improved mobile responsiveness for all new sections
+  - Modern glassmorphism effects in meta category cards
+
+### Technical Improvements
+- **Performance Optimization**
+  - Image service with efficient caching and preloading
+  - Modular CSS architecture for better maintainability
+  - Optimized image delivery with multiple fallback options
+  - Reduced external dependencies by using free APIs exclusively
+
+- **Code Architecture**
+  - Comprehensive image service class with organized category management
+  - Enhanced error handling for image loading failures
+  - Professional code documentation and commenting
+  - Scalable architecture for future image additions
+
+### Changed
+- **Primary API Source**
+  - Switched from TCGPlayer to YGOPRODeck as primary API (free alternative)
+  - Updated all card data sourcing to use YGOPRODeck exclusively
+  - Maintained pricing functionality through YGOPRODeck's integrated pricing data
+  - Enhanced exchange rate handling for USD to CAD conversion
+
+- **Visual Identity**
+  - Updated site branding to use authentic Yu-Gi-Oh! card imagery
+  - Replaced generic placeholder images with proper card artwork
+  - Enhanced professional appearance with themed backgrounds and elements
+
+### Documentation
+- **README.md Updates**
+  - Added comprehensive Yu-Gi-Oh! Image Service section
+  - Updated project structure to reflect new files
+  - Enhanced API configuration documentation
+  - Added detailed coverage of modern archetypes and eras
+
 ## [3.2.0] - 2025-01-18
 
 ### Added

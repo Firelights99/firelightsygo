@@ -2,34 +2,16 @@
 class YugiohStore {
     constructor() {
         this.apiService = new YugiohApiService();
-        this.tcgPlayerService = null; // Initialize as null, will be set up if credentials exist
+        this.tcgPlayerService = null; // Disabled per user request - using YGOPRODeck only
         this.cart = JSON.parse(localStorage.getItem('yugioh_cart')) || [];
         this.user = JSON.parse(localStorage.getItem('yugioh_user')) || null;
-        this.initializeTCGPlayerService();
         this.init();
     }
 
-    // Initialize TCGPlayer service if credentials are available
+    // TCGPlayer service initialization disabled - using YGOPRODeck API only
     async initializeTCGPlayerService() {
-        try {
-            const savedConfig = localStorage.getItem('tcgplayer_config');
-            if (savedConfig) {
-                const config = JSON.parse(savedConfig);
-                if (config.publicKey && config.privateKey) {
-                    this.tcgPlayerService = new TCGPlayerApiService();
-                    const success = await this.tcgPlayerService.initialize(config.publicKey, config.privateKey);
-                    if (success) {
-                        console.log('TCGPlayer API initialized successfully');
-                    } else {
-                        console.warn('TCGPlayer API initialization failed');
-                        this.tcgPlayerService = null;
-                    }
-                }
-            }
-        } catch (error) {
-            console.warn('TCGPlayer API not available:', error.message);
-            this.tcgPlayerService = null;
-        }
+        console.log('TCGPlayer API disabled - using YGOPRODeck API for all card data and pricing');
+        this.tcgPlayerService = null;
     }
 
     async init() {
@@ -238,23 +220,37 @@ class YugiohStore {
         localStorage.setItem('yugioh_cart', JSON.stringify(this.cart));
     }
 
-    // Featured Cards
+    // Featured Cards - Meta-relevant and frequently purchased
     async loadFeaturedCards() {
         const featuredGrid = document.getElementById('featured-cards-grid');
         if (!featuredGrid) return;
 
         try {
-            console.log('Loading featured cards...');
+            console.log('Loading featured meta-relevant cards...');
             
-            // Try to load from API first
+            // Get meta-relevant cards first, then try API for additional cards
             let cards = [];
+            const metaCards = this.getFallbackCards(); // Our curated meta cards
+            
             try {
-                cards = await this.apiService.getRandomCards(12);
-                console.log('API cards loaded:', cards.length);
+                // Try to get specific meta cards from API by ID
+                const apiCards = [];
+                for (const metaCard of metaCards.slice(0, 12)) {
+                    try {
+                        const apiCard = await this.apiService.getCardById(metaCard.id);
+                        if (apiCard) {
+                            apiCards.push(apiCard);
+                        }
+                    } catch (cardError) {
+                        console.warn(`Failed to load card ${metaCard.id} from API, using fallback`);
+                        apiCards.push(metaCard);
+                    }
+                }
+                cards = apiCards;
+                console.log('Meta cards loaded:', cards.length);
             } catch (apiError) {
-                console.warn('API failed, using fallback cards:', apiError);
-                // Fallback to sample cards if API fails
-                cards = this.getFallbackCards();
+                console.warn('API failed, using all fallback meta cards:', apiError);
+                cards = metaCards.slice(0, 12);
             }
             
             featuredGrid.classList.remove('loading');
@@ -264,25 +260,33 @@ class YugiohStore {
                 return;
             }
             
-            // Process cards with pricing
+            // Process cards with pricing and ensure full card images are visible
             const cardElements = cards.map((card) => {
                 const formattedCard = this.apiService ? this.apiService.formatCardForDisplay(card) : this.formatFallbackCard(card);
                 const price = this.getSimpleCardPrice(formattedCard);
                 
+                // Use full card image (not cropped) for better visibility
+                const cardImageUrl = formattedCard.image || `https://images.ygoprodeck.com/images/cards/${card.id}.jpg`;
+                const fallbackImageUrl = `https://images.ygoprodeck.com/images/cards_small/${card.id}.jpg`;
+                
                 return `
-                    <div class="card-item" onclick="yugiohStore.showCardDetails(${card.id})">
-                        <img src="${formattedCard.image || formattedCard.imageSmall}" alt="${formattedCard.name}" class="card-image" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=200&h=200&fit=crop'">
+                    <div class="card-item featured-meta-card" onclick="yugiohStore.showCardDetails(${card.id})" data-card-id="${card.id}">
+                        <div class="card-image-container">
+                            <img src="${cardImageUrl}" alt="${formattedCard.name}" class="card-image" loading="lazy" 
+                                 onerror="this.onerror=null; this.src='${fallbackImageUrl}';">
+                        </div>
                         <div class="card-info">
                             <h3 class="card-name">${formattedCard.name}</h3>
                             <p class="card-type">${formattedCard.type}</p>
                             <div class="card-price">$${price.toFixed(2)}</div>
+                            <div class="card-meta-badge">Meta</div>
                         </div>
                     </div>
                 `;
             });
             
             featuredGrid.innerHTML = cardElements.join('');
-            console.log('Featured cards loaded successfully');
+            console.log('Featured meta cards loaded successfully');
         } catch (error) {
             console.error('Error loading featured cards:', error);
             featuredGrid.classList.remove('loading');
@@ -290,68 +294,144 @@ class YugiohStore {
         }
     }
 
-    // Fallback cards if API fails
+    // Meta-relevant and frequently purchased cards
     getFallbackCards() {
         return [
+            // Modern Meta Tier 1
             {
-                id: 89631139,
-                name: "Blue-Eyes White Dragon",
-                type: "Normal Monster",
-                desc: "This legendary dragon is a powerful engine of destruction.",
+                id: 76375976,
+                name: "Snake-Eye Ash",
+                type: "Effect Monster",
+                desc: "You can Normal Summon this card without Tributing. If this card is Normal Summoned: You can add 1 \"Snake-Eye\" card from your Deck to your hand, except \"Snake-Eye Ash\".",
+                atk: 1200,
+                def: 600,
+                level: 4,
+                race: "Pyro",
+                attribute: "FIRE"
+            },
+            {
+                id: 28776350,
+                name: "Kashtira Fenrir",
+                type: "Effect Monster",
+                desc: "You can Special Summon this card (from your hand) by banishing 3 face-up cards you control. You can only Special Summon \"Kashtira Fenrir\" once per turn this way.",
+                atk: 2400,
+                def: 2100,
+                level: 7,
+                race: "Beast",
+                attribute: "FIRE"
+            },
+            {
+                id: 95286165,
+                name: "Purrely",
+                type: "Effect Monster",
+                desc: "You can reveal this card in your hand; Special Summon 1 Level 1 monster from your Deck, except \"Purrely\".",
+                atk: 300,
+                def: 100,
+                level: 1,
+                race: "Beast",
+                attribute: "DARK"
+            },
+            // Hand Traps (Most Popular)
+            {
+                id: 14558127,
+                name: "Ash Blossom & Joyous Spring",
+                type: "Effect Monster",
+                desc: "When a card or effect is activated that includes any of these effects (Quick Effect): You can discard this card; negate that effect.",
+                atk: 0,
+                def: 1800,
+                level: 3,
+                race: "Zombie",
+                attribute: "FIRE"
+            },
+            {
+                id: 27204311,
+                name: "Nibiru, the Primal Being",
+                type: "Effect Monster",
+                desc: "During the Main Phase, if your opponent Normal or Special Summoned 5 or more monsters this turn (Quick Effect): You can Tribute as many face-up monsters on the field as possible, and if you do, Special Summon this card from your hand, then Special Summon 1 \"Primal Being Token\".",
                 atk: 3000,
-                def: 2500,
-                level: 8,
-                race: "Dragon",
+                def: 600,
+                level: 11,
+                race: "Rock",
                 attribute: "LIGHT"
             },
             {
-                id: 46986414,
-                name: "Dark Magician",
-                type: "Normal Monster", 
-                desc: "The ultimate wizard in terms of attack and defense.",
-                atk: 2500,
-                def: 2100,
-                level: 7,
-                race: "Spellcaster",
-                attribute: "DARK"
-            },
-            {
-                id: 38033121,
-                name: "Red-Eyes Black Dragon",
-                type: "Normal Monster",
-                desc: "A ferocious dragon with a deadly attack.",
-                atk: 2400,
-                def: 2000,
-                level: 7,
-                race: "Dragon",
-                attribute: "DARK"
-            },
-            {
-                id: 55144522,
-                name: "Pot of Greed",
-                type: "Spell Card",
-                desc: "Draw 2 cards from your Deck.",
-                race: "Spell",
-                attribute: "SPELL"
-            },
-            {
-                id: 83764718,
-                name: "Monster Reborn",
-                type: "Spell Card",
-                desc: "Special Summon 1 monster from either GY.",
-                race: "Spell",
-                attribute: "SPELL"
-            },
-            {
-                id: 17078030,
-                name: "Wall of Illusion",
+                id: 97268402,
+                name: "Effect Veiler",
                 type: "Effect Monster",
-                desc: "When this card is attacked, return the attacking monster to its owner's hand.",
-                atk: 1000,
-                def: 1850,
-                level: 4,
-                race: "Fiend",
+                desc: "During your opponent's Main Phase (Quick Effect): You can send this card from your hand to the GY; negate the effects of 1 Effect Monster your opponent controls, until the end of this turn.",
+                atk: 0,
+                def: 0,
+                level: 1,
+                race: "Spellcaster",
+                attribute: "LIGHT"
+            },
+            // Extra Deck Staples
+            {
+                id: 86066372,
+                name: "Accesscode Talker",
+                type: "Link Monster",
+                desc: "2+ monsters with different names. If this card is Link Summoned: You can destroy cards your opponent controls, up to the number of monsters co-linked to this card.",
+                atk: 2300,
+                def: 0,
+                level: 0,
+                race: "Cyberse",
                 attribute: "DARK"
+            },
+            {
+                id: 56405614,
+                name: "Apollousa, Bow of the Goddess",
+                type: "Link Monster",
+                desc: "2+ monsters with different names. You can only Link Summon \"Apollousa, Bow of the Goddess\" once per turn.",
+                atk: 800,
+                def: 0,
+                level: 0,
+                race: "Fairy",
+                attribute: "LIGHT"
+            },
+            // Modern Fusion Support
+            {
+                id: 44362883,
+                name: "Branded Fusion",
+                type: "Spell Card",
+                desc: "Fusion Summon 1 Fusion Monster from your Extra Deck, using monsters from your hand or Deck as material.",
+                race: "Spell",
+                attribute: "SPELL"
+            },
+            // Sky Striker (Popular Archetype)
+            {
+                id: 26077387,
+                name: "Sky Striker Ace - Raye",
+                type: "Effect Monster",
+                desc: "If you control no monsters in your Main Monster Zone: You can Special Summon this card from your hand.",
+                atk: 1500,
+                def: 1500,
+                level: 4,
+                race: "Warrior",
+                attribute: "DARK"
+            },
+            // Eldlich (Control Deck)
+            {
+                id: 95440946,
+                name: "Eldlich the Golden Lord",
+                type: "Effect Monster",
+                desc: "You can Special Summon this card (from your hand or GY) by sending 1 Spell/Trap you control to the GY.",
+                atk: 2500,
+                def: 2800,
+                level: 10,
+                race: "Zombie",
+                attribute: "LIGHT"
+            },
+            // Tearlaments
+            {
+                id: 572850,
+                name: "Tearlaments Scheiren",
+                type: "Effect Monster",
+                desc: "You can Fusion Summon 1 \"Tearlaments\" Fusion Monster from your Extra Deck, using monsters from your hand or field as material.",
+                atk: 1500,
+                def: 1000,
+                level: 4,
+                race: "Aqua",
+                attribute: "WATER"
             }
         ];
     }

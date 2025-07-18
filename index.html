@@ -6,7 +6,8 @@
     <title>Home | Firelight Duel Academy - Premier Yu-Gi-Oh! Singles Store</title>
     <meta name="description" content="Your premier destination for Yu-Gi-Oh! single cards. Buy, sell, and trade with confidence. Competitive buylist prices and store credit system.">
     <link rel="stylesheet" href="assets/css/yugioh-store.css">
-    <link rel="icon" href="https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=32&h=32&fit=crop&crop=center">
+    <link rel="stylesheet" href="assets/css/yugioh-image-enhancements.css">
+    <link rel="icon" href="https://images.ygoprodeck.com/images/cards/89631139.jpg">
 </head>
 <body>
     <div class="page-wrapper">
@@ -14,7 +15,7 @@
         <header class="top-header">
             <div class="header-container">
                 <div class="site-branding">
-                    <img src="https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=40&h=40&fit=crop&crop=center" alt="Firelight Duel Academy" class="site-logo">
+                    <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Firelight Duel Academy" class="site-logo">
                     <h1 class="site-name">Firelight Duel Academy</h1>
                 </div>
                 <div class="header-actions">
@@ -102,13 +103,14 @@
                     </div>
                 </div>
                 <div class="hero-image">
-                    <img src="https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=500&h=300&fit=crop&crop=center" alt="Yu-Gi-Oh! Cards" class="hero-img">
+                    <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Yu-Gi-Oh! Cards" class="hero-img">
                 </div>
             </section>
 
             <!-- Featured Cards Section -->
             <section class="featured-cards">
-                <h2>Featured Cards</h2>
+                <h2>Meta-Relevant Cards</h2>
+                <p class="section-subtitle">Popular competitive cards and frequently purchased singles</p>
                 <div id="featured-cards-grid" class="cards-grid loading">
                     <div class="loading-spinner">Loading featured cards...</div>
                 </div>
@@ -119,20 +121,67 @@
                 <h2>Popular Archetypes</h2>
                 <div class="archetypes-grid">
                     <div class="archetype-card" onclick="browseArchetype('Blue-Eyes')">
-                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=150&h=100&fit=crop" alt="Blue-Eyes">
+                        <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Blue-Eyes">
                         <h3>Blue-Eyes</h3>
                     </div>
                     <div class="archetype-card" onclick="browseArchetype('Dark Magician')">
-                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=150&h=100&fit=crop" alt="Dark Magician">
+                        <img src="https://images.ygoprodeck.com/images/cards/46986414.jpg" alt="Dark Magician">
                         <h3>Dark Magician</h3>
                     </div>
                     <div class="archetype-card" onclick="browseArchetype('Sky Striker')">
-                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=150&h=100&fit=crop" alt="Sky Striker">
+                        <img src="https://images.ygoprodeck.com/images/cards/26077387.jpg" alt="Sky Striker">
                         <h3>Sky Striker</h3>
                     </div>
                     <div class="archetype-card" onclick="browseArchetype('Eldlich')">
-                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=150&h=100&fit=crop" alt="Eldlich">
+                        <img src="https://images.ygoprodeck.com/images/cards/95440946.jpg" alt="Eldlich">
                         <h3>Eldlich</h3>
+                    </div>
+                    <div class="archetype-card" onclick="browseArchetype('Snake-Eye')">
+                        <img src="https://images.ygoprodeck.com/images/cards/76375976.jpg" alt="Snake-Eye">
+                        <h3>Snake-Eye</h3>
+                    </div>
+                    <div class="archetype-card" onclick="browseArchetype('Kashtira')">
+                        <img src="https://images.ygoprodeck.com/images/cards/28776350.jpg" alt="Kashtira">
+                        <h3>Kashtira</h3>
+                    </div>
+                    <div class="archetype-card" onclick="browseArchetype('Purrely')">
+                        <img src="https://images.ygoprodeck.com/images/cards/95286165.jpg" alt="Purrely">
+                        <h3>Purrely</h3>
+                    </div>
+                    <div class="archetype-card" onclick="browseArchetype('Tearlaments')">
+                        <img src="https://images.ygoprodeck.com/images/cards/572850.jpg" alt="Tearlaments">
+                        <h3>Tearlaments</h3>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Modern Meta Section -->
+            <section class="modern-meta">
+                <h2>Modern Yu-Gi-Oh! Meta</h2>
+                <div class="meta-categories">
+                    <div class="meta-category">
+                        <img src="https://images.ygoprodeck.com/images/cards/14558127.jpg" alt="Hand Traps">
+                        <h3>Hand Traps</h3>
+                        <p>Essential disruption cards like Ash Blossom, Maxx "C", and Nibiru</p>
+                        <button onclick="browseArchetype('Hand Traps')" class="browse-btn">Browse Hand Traps</button>
+                    </div>
+                    <div class="meta-category">
+                        <img src="https://images.ygoprodeck.com/images/cards/86066372.jpg" alt="Extra Deck Staples">
+                        <h3>Extra Deck Staples</h3>
+                        <p>Must-have Link, Synchro, and Xyz monsters for competitive play</p>
+                        <button onclick="browseArchetype('Extra Deck')" class="browse-btn">Browse Staples</button>
+                    </div>
+                    <div class="meta-category">
+                        <img src="https://images.ygoprodeck.com/images/cards/44362883.jpg" alt="Fusion Support">
+                        <h3>Fusion Support</h3>
+                        <p>Modern fusion cards including Branded, Despia, and more</p>
+                        <button onclick="browseArchetype('Fusion')" class="browse-btn">Browse Fusion</button>
+                    </div>
+                    <div class="meta-category">
+                        <img src="https://images.ygoprodeck.com/images/cards/32731036.jpg" alt="Ritual Support">
+                        <h3>Ritual Support</h3>
+                        <p>Voiceless Voice, Drytron, and other ritual archetypes</p>
+                        <button onclick="browseArchetype('Ritual')" class="browse-btn">Browse Ritual</button>
                     </div>
                 </div>
             </section>
@@ -244,6 +293,7 @@
 
     <!-- Scripts -->
     <script src="assets/js/yugioh-api-service.js"></script>
+    <script src="assets/js/yugioh-image-service.js"></script>
     <script src="assets/js/tcgplayer-api-service.js"></script>
     <script src="assets/js/yugioh-store.js"></script>
 </body>
