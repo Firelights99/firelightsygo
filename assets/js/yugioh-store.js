@@ -2,6 +2,7 @@
 class YugiohStore {
     constructor() {
         this.apiService = new YugiohApiService();
+        this.tcgPlayerService = new TCGPlayerApiService();
         this.cart = JSON.parse(localStorage.getItem('yugioh_cart')) || [];
         this.user = JSON.parse(localStorage.getItem('yugioh_user')) || null;
         this.init();
