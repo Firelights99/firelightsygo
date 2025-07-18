@@ -399,52 +399,6 @@ body {
     object-fit: cover;
 }
 
-/* Buylist Banner */
-.buylist-banner {
-    background: #ff6b6b;
-    color: white;
-    padding: 1rem 0;
-    margin-bottom: 3rem;
-    overflow: hidden;
-    position: relative;
-    border-radius: 8px;
-}
-
-.buylist-scroll {
-    display: flex;
-    animation: scroll 20s linear infinite;
-    white-space: nowrap;
-}
-
-.buylist-text {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-right: 3rem;
-}
-
-.buylist-link {
-    position: absolute;
-    top: 50%;
-    right: 2rem;
-    transform: translateY(-50%);
-    background: rgba(255,255,255,0.2);
-    color: white;
-    padding: 0.75rem 1.5rem;
-    text-decoration: none;
-    border-radius: 25px;
-    font-weight: bold;
-    transition: all 0.3s ease;
-}
-
-.buylist-link:hover {
-    background: rgba(255,255,255,0.3);
-    transform: translateY(-50%) scale(1.05);
-}
-
-@keyframes scroll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-}
 
 /* Categories Grid */
 .yugioh-categories {

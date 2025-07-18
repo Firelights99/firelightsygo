@@ -42,9 +42,6 @@
             <div class="nav-container">
                 <ul class="nav-tabs">
                     <li><a href="index.html" class="nav-link active">Home</a></li>
-                    <li><a href="pages/singles.html" class="nav-link">Singles</a></li>
-                    <li><a href="pages/sealed.html" class="nav-link">Sealed Products</a></li>
-                    <li><a href="pages/buylist.html" class="nav-link">Buylist</a></li>
                     <li><a href="pages/decks.html" class="nav-link">Popular Decks</a></li>
                     <li><a href="pages/events.html" class="nav-link">Events</a></li>
                     <li><a href="pages/account.html" class="nav-link">My Account</a></li>
@@ -159,14 +156,116 @@
         <!-- Main Content Area -->
         <main class="content-area">
             
-            <!-- Featured Meta Cards Section -->
-            <section class="featured-cards-section">
+            <!-- Meta Cards with Prices Section -->
+            <section class="meta-cards-section">
                 <div class="section-header">
-                    <h2>Featured Meta Cards</h2>
-                    <p>Popular and meta-relevant cards that are in high demand</p>
+                    <h2>Meta Cards & Prices</h2>
+                    <p>Current competitive staples and their market prices</p>
                 </div>
-                <div id="featured-cards-grid" class="featured-cards-grid loading">
-                    <div class="loading-spinner">Loading meta cards...</div>
+                <div class="meta-cards-grid">
+                    <div class="meta-card">
+                        <img src="https://images.ygoprodeck.com/images/cards/76375976.jpg" alt="Snake-Eye Ash">
+                        <div class="card-info">
+                            <h3>Snake-Eye Ash</h3>
+                            <p class="card-type">Effect Monster</p>
+                            <div class="price-info">
+                                <span class="current-price">$89.99</span>
+                                <span class="price-trend up">↗ +$5.00</span>
+                            </div>
+                            <button class="add-to-cart-btn" onclick="addToCart('Snake-Eye Ash', 89.99)">Add to Cart</button>
+                        </div>
+                    </div>
+                    
+                    <div class="meta-card">
+                        <img src="https://images.ygoprodeck.com/images/cards/28776350.jpg" alt="Kashtira Fenrir">
+                        <div class="card-info">
+                            <h3>Kashtira Fenrir</h3>
+                            <p class="card-type">Effect Monster</p>
+                            <div class="price-info">
+                                <span class="current-price">$45.99</span>
+                                <span class="price-trend down">↘ -$3.00</span>
+                            </div>
+                            <button class="add-to-cart-btn" onclick="addToCart('Kashtira Fenrir', 45.99)">Add to Cart</button>
+                        </div>
+                    </div>
+                    
+                    <div class="meta-card">
+                        <img src="https://images.ygoprodeck.com/images/cards/14558127.jpg" alt="Ash Blossom & Joyous Spring">
+                        <div class="card-info">
+                            <h3>Ash Blossom & Joyous Spring</h3>
+                            <p class="card-type">Effect Monster</p>
+                            <div class="price-info">
+                                <span class="current-price">$12.99</span>
+                                <span class="price-trend stable">→ $0.00</span>
+                            </div>
+                            <button class="add-to-cart-btn" onclick="addToCart('Ash Blossom & Joyous Spring', 12.99)">Add to Cart</button>
+                        </div>
+                    </div>
+                    
+                    <div class="meta-card">
+                        <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Blue-Eyes White Dragon">
+                        <div class="card-info">
+                            <h3>Nibiru, the Primal Being</h3>
+                            <p class="card-type">Effect Monster</p>
+                            <div class="price-info">
+                                <span class="current-price">$8.99</span>
+                                <span class="price-trend up">↗ +$1.50</span>
+                            </div>
+                            <button class="add-to-cart-btn" onclick="addToCart('Nibiru, the Primal Being', 8.99)">Add to Cart</button>
+                        </div>
+                    </div>
+                    
+                    <div class="meta-card">
+                        <img src="https://images.ygoprodeck.com/images/cards/46986414.jpg" alt="Dark Magician">
+                        <div class="card-info">
+                            <h3>Infinite Impermanence</h3>
+                            <p class="card-type">Trap Card</p>
+                            <div class="price-info">
+                                <span class="current-price">$24.99</span>
+                                <span class="price-trend up">↗ +$2.00</span>
+                            </div>
+                            <button class="add-to-cart-btn" onclick="addToCart('Infinite Impermanence', 24.99)">Add to Cart</button>
+                        </div>
+                    </div>
+                    
+                    <div class="meta-card">
+                        <img src="https://images.ygoprodeck.com/images/cards/26077387.jpg" alt="Red-Eyes Black Dragon">
+                        <div class="card-info">
+                            <h3>Maxx "C"</h3>
+                            <p class="card-type">Effect Monster</p>
+                            <div class="price-info">
+                                <span class="current-price">$18.99</span>
+                                <span class="price-trend down">↘ -$1.00</span>
+                            </div>
+                            <button class="add-to-cart-btn" onclick="addToCart('Maxx C', 18.99)">Add to Cart</button>
+                        </div>
+                    </div>
+                    
+                    <div class="meta-card">
+                        <img src="https://images.ygoprodeck.com/images/cards/95440946.jpg" alt="Exodia">
+                        <div class="card-info">
+                            <h3>Triple Tactics Talent</h3>
+                            <p class="card-type">Spell Card</p>
+                            <div class="price-info">
+                                <span class="current-price">$32.99</span>
+                                <span class="price-trend stable">→ $0.00</span>
+                            </div>
+                            <button class="add-to-cart-btn" onclick="addToCart('Triple Tactics Talent', 32.99)">Add to Cart</button>
+                        </div>
+                    </div>
+                    
+                    <div class="meta-card">
+                        <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Blue-Eyes White Dragon">
+                        <div class="card-info">
+                            <h3>Pot of Prosperity</h3>
+                            <p class="card-type">Spell Card</p>
+                            <div class="price-info">
+                                <span class="current-price">$15.99</span>
+                                <span class="price-trend up">↗ +$0.50</span>
+                            </div>
+                            <button class="add-to-cart-btn" onclick="addToCart('Pot of Prosperity', 15.99)">Add to Cart</button>
+                        </div>
+                    </div>
                 </div>
             </section>
 
