@@ -50,6 +50,10 @@ Harrison-Website/
 
 Simply open `index.html` in any modern web browser to view the website locally.
 
+## Live Demo
+
+This website is hosted on GitHub Pages at: https://firelights99.github.io/firelightsygo/
+
 ## Browser Compatibility
 
 - Chrome 60+
