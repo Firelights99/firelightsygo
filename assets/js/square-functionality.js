@@ -1,0 +1,277 @@
+// Square Site Recreation - Exact Functionality Match
+class SquareSiteRecreation {
+    constructor() {
+        this.cartOpen = false;
+        this.init();
+    }
+
+    init() {
+        this.setupEventListeners();
+        this.setupKeyboardNavigation();
+    }
+
+    setupEventListeners() {
+        // Cart modal functionality
+        const cartModal = document.getElementById('cart-modal');
+        
+        // Close cart when clicking outside
+        if (cartModal) {
+            cartModal.addEventListener('click', (e) => {
+                if (e.target === cartModal) {
+                    this.toggleCart();
+                }
+            });
+        }
+
+        // Checkout button functionality
+        const checkoutBtn = document.querySelector('.checkout-btn');
+        if (checkoutBtn) {
+            checkoutBtn.addEventListener('click', () => {
+                this.handleCheckout();
+            });
+        }
+
+        // Select button functionality (if enabled)
+        const selectBtns = document.querySelectorAll('.select-btn:not(:disabled)');
+        selectBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this.handleMembershipSelection(e);
+            });
+        });
+    }
+
+    setupKeyboardNavigation() {
+        document.addEventListener('keydown', (e) => {
+            // Close cart with Escape key
+            if (e.key === 'Escape' && this.cartOpen) {
+                this.toggleCart();
+            }
+        });
+    }
+
+    toggleCart() {
+        const cartModal = document.getElementById('cart-modal');
+        if (!cartModal) return;
+
+        this.cartOpen = !this.cartOpen;
+        
+        if (this.cartOpen) {
+            cartModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Focus management for accessibility
+            const closeBtn = cartModal.querySelector('.cart-close');
+            if (closeBtn) {
+                closeBtn.focus();
+            }
+        } else {
+            cartModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+
+    handleCheckout() {
+        // Simulate Square checkout process
+        this.showNotification('Redirecting to secure checkout...', 'info');
+        
+        // In a real implementation, this would redirect to Square's checkout
+        setTimeout(() => {
+            this.showNotification('Checkout functionality coming soon!', 'info');
+        }, 1500);
+    }
+
+    handleMembershipSelection(e) {
+        const card = e.target.closest('.membership-card');
+        const membershipName = card.querySelector('h3').textContent;
+        const price = card.querySelector('.price').textContent;
+        
+        this.showNotification(`${membershipName} membership selected for ${price}!`, 'success');
+        
+        // Simulate adding to cart
+        setTimeout(() => {
+            this.updateCartWithMembership(membershipName, price);
+        }, 500);
+    }
+
+    updateCartWithMembership(name, price) {
+        const cartEmpty = document.querySelector('.cart-empty');
+        const cartContent = document.querySelector('.cart-content');
+        
+        if (cartEmpty && cartContent) {
+            // Replace empty message with item
+            cartEmpty.innerHTML = `
+                <div class="cart-item">
+                    <div class="item-details">
+                        <span class="item-name">${name} Membership</span>
+                        <span class="item-price">${price}</span>
+                    </div>
+                </div>
+            `;
+            
+            // Update checkout button to be active
+            const checkoutBtn = document.querySelector('.checkout-btn');
+            if (checkoutBtn) {
+                checkoutBtn.style.opacity = '1';
+                checkoutBtn.disabled = false;
+            }
+        }
+    }
+
+    showNotification(message, type = 'info') {
+        // Create notification element (Square-style)
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <span class="notification-message">${message}</span>
+                <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+            </div>
+        `;
+        
+        // Style the notification to match Square's design
+        Object.assign(notification.style, {
+            position: 'fixed',
+            top: '20px',
+            right: '20px',
+            background: type === 'error' ? '#ff4444' : type === 'success' ? '#00aa44' : '#0066cc',
+            color: 'white',
+            padding: '12px 16px',
+            borderRadius: '4px',
+            zIndex: '2000',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+            transform: 'translateX(400px)',
+            transition: 'transform 0.3s ease',
+            fontSize: '14px',
+            fontWeight: '500',
+            maxWidth: '300px'
+        });
+        
+        notification.querySelector('.notification-content').style.cssText = `
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        `;
+        
+        notification.querySelector('.notification-close').style.cssText = `
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 100);
+        
+        // Auto remove after 4 seconds
+        setTimeout(() => {
+            notification.style.transform = 'translateX(400px)';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 4000);
+    }
+
+    // Utility functions for Square-like behavior
+    smoothScrollTo(element) {
+        if (element) {
+            element.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    }
+
+    validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+
+    formatPrice(amount, currency = 'CAD') {
+        return new Intl.NumberFormat('en-CA', {
+            style: 'currency',
+            currency: currency
+        }).format(amount);
+    }
+
+    // Analytics placeholder (Square would have this)
+    trackEvent(eventName, eventData = {}) {
+        console.log(`Square Analytics: ${eventName}`, eventData);
+        // In real Square implementation, this would send to their analytics
+    }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    window.squareSite = new SquareSiteRecreation();
+});
+
+// Global functions for HTML onclick handlers (Square compatibility)
+function toggleCart() {
+    if (window.squareSite) {
+        window.squareSite.toggleCart();
+    }
+}
+
+function showNotification(message, type = 'info') {
+    if (window.squareSite) {
+        window.squareSite.showNotification(message, type);
+    }
+}
+
+// Square-like smooth scrolling for anchor links
+document.addEventListener('click', (e) => {
+    if (e.target.matches('a[href^="#"]')) {
+        e.preventDefault();
+        const targetId = e.target.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement && window.squareSite) {
+            window.squareSite.smoothScrollTo(targetElement);
+        }
+    }
+});
+
+// Square-like loading behavior
+window.addEventListener('load', () => {
+    // Simulate Square's page load analytics
+    if (window.squareSite) {
+        window.squareSite.trackEvent('page_view', {
+            page: document.title,
+            url: window.location.href
+        });
+    }
+});
+
+// Square-like error handling
+window.addEventListener('error', (e) => {
+    console.error('Square Site Error:', e.error);
+    // In real Square implementation, this would report to their error tracking
+});
+
+// Square-like resize handling for responsive behavior
+let resizeTimeout;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        // Handle responsive adjustments like Square does
+        const cartModal = document.getElementById('cart-modal');
+        if (cartModal && cartModal.classList.contains('active')) {
+            // Adjust cart modal for new screen size
+            const cartContent = cartModal.querySelector('.cart-content');
+            if (cartContent && window.innerWidth < 480) {
+                cartContent.style.width = '95%';
+            } else {
+                cartContent.style.width = '90%';
+            }
+        }
+    }, 250);
+});

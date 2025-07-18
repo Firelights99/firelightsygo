@@ -4,164 +4,126 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home | www.Firelightsygo-tcg.com</title>
-    <meta name="description" content="Superior service, personalized attention for TCG enthusiasts. Trading card game shop with exclusive memberships and secure checkout.">
-    <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+    <meta name="description" content="Superior service, personalized attention for TCG enthusiasts">
+    <link rel="stylesheet" href="assets/css/square-style.css">
 </head>
 <body>
-    <!-- Header with site title and cart -->
-    <header class="site-header">
-        <div class="header-container">
-            <h1 class="site-title">www.Firelightsygo-tcg.com</h1>
-            <div class="header-actions">
-                <a href="shop.html" class="shop-now-btn">Shop Now</a>
-                <div class="cart-icon" onclick="toggleCart()" aria-label="Shopping Cart">🛒</div>
+    <!-- Exact recreation of Square site structure -->
+    <div class="site-container">
+        <!-- Header -->
+        <header class="site-header">
+            <div class="header-content">
+                <h1 class="site-title">www.Firelightsygo-tcg.com</h1>
+                <div class="header-nav">
+                    <a href="shop.html" class="shop-btn">Shop Now</a>
+                    <button class="cart-btn" onclick="toggleCart()">🛒</button>
+                </div>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- Shopping Cart Modal -->
-    <div id="cart-modal" class="cart-modal" role="dialog" aria-labelledby="cart-title" aria-hidden="true">
-        <div class="cart-content">
-            <span class="close" onclick="toggleCart()" aria-label="Close cart">&times;</span>
-            <h3 id="cart-title">Shopping Cart</h3>
-            <p class="cart-empty">You don't have any items in your cart.</p>
-            <div class="cart-buttons">
-                <button class="checkout-btn">Checkout</button>
-                <button class="continue-shopping-btn" onclick="toggleCart()">Continue Shopping</button>
-            </div>
-            <div class="payment-methods">
-                <p>Accepted here</p>
-                <div class="payment-icons">
-                    <img src="assets/icons/applepay.svg" alt="Apple Pay" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/googlepay.svg" alt="Google Pay" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/visa.svg" alt="Visa" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/mastercard.svg" alt="Mastercard" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/americanexpress.svg" alt="American Express" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/discover.svg" alt="Discover" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/jcb.svg" alt="JCB" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/interac.svg" alt="Interac" class="payment-icon" onerror="this.style.display='none'">
+        <!-- Cart Modal (hidden by default) -->
+        <div id="cart-modal" class="cart-modal">
+            <div class="cart-content">
+                <button class="cart-close" onclick="toggleCart()">×</button>
+                <h3>Shopping Cart</h3>
+                <p class="cart-empty">You don't have any items in your cart.</p>
+                <div class="cart-actions">
+                    <button class="checkout-btn">Checkout</button>
+                    <button class="continue-btn" onclick="toggleCart()">Continue Shopping</button>
+                </div>
+                <div class="payment-info">
+                    <p>Accepted here</p>
+                    <div class="payment-icons">
+                        <span class="payment-icon">🍎</span>
+                        <span class="payment-icon">📱</span>
+                        <span class="payment-icon">💳</span>
+                        <span class="payment-icon">💳</span>
+                        <span class="payment-icon">💳</span>
+                        <span class="payment-icon">💳</span>
+                        <span class="payment-icon">💳</span>
+                        <span class="payment-icon">💰</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <main class="main-content">
-        <!-- Membership Section (appears first on original site) -->
-        <section class="membership-section">
-            <div class="container">
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Membership Section -->
+            <section class="membership-section">
                 <h2>Become a Member</h2>
                 <p>Members enjoy exclusive benefits and access. Choose the membership level that's right for you.</p>
-                
                 <div class="membership-card">
-                    <div class="sale-badge">Sale</div>
+                    <div class="sale-tag">Sale</div>
                     <div class="price">CAD$10</div>
+                    <div class="price-line"></div>
                     <h3>Locals</h3>
-                    <div class="stock-status">Out of stock</div>
-                    <button class="select-btn" disabled aria-label="Locals membership - Out of stock">Select</button>
+                    <div class="stock-info">Out of stock</div>
+                    <button class="select-btn" disabled>Select</button>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Hero/About Section -->
-        <section class="hero-section">
-            <div class="container">
+            <!-- Hero Section -->
+            <section class="hero-section">
                 <h2>Superior service, personalized attention</h2>
                 <p>We started with the simple idea of bringing the best from us to you. From our founder to our front-line workers, we put lots of love and careful thought into all we do. We hope you enjoy all we have to offer, and share the experience with others.</p>
-                <a href="shop.html" class="shop-now-link">Shop now</a>
-            </div>
-        </section>
+                <a href="shop.html" class="shop-link">Shop now</a>
+            </section>
 
-        <!-- Testimonial Section -->
-        <section class="testimonial-section">
-            <div class="container">
-                <blockquote>
-                    <p>"I love being able to find just the right gifts for my friends at a great value."</p>
-                    <cite>Quin, San Francisco</cite>
-                </blockquote>
-            </div>
-        </section>
+            <!-- Testimonial Section -->
+            <section class="testimonial-section">
+                <blockquote>"I love being able to find just the right gifts for my friends at a great value."</blockquote>
+                <cite>Quin, San Francisco</cite>
+            </section>
 
-        <!-- Location & Hours Section -->
-        <section class="hours-section">
-            <div class="container">
+            <!-- Hours Section -->
+            <section class="hours-section">
                 <h2>Location & Hours</h2>
-                <div class="hours-list">
-                    <div class="day-hours">
-                        <span class="day">Monday</span>
-                        <span class="hours">Closed</span>
-                    </div>
-                    <div class="day-hours">
-                        <span class="day">Tuesday</span>
-                        <span class="hours">Closed</span>
-                    </div>
-                    <div class="day-hours">
-                        <span class="day">Wednesday</span>
-                        <span class="hours">Closed</span>
-                    </div>
-                    <div class="day-hours">
-                        <span class="day">Thursday</span>
-                        <span class="hours">Closed</span>
-                    </div>
-                    <div class="day-hours">
-                        <span class="day">Friday</span>
-                        <span class="hours">Closed</span>
-                    </div>
-                    <div class="day-hours">
-                        <span class="day">Saturday</span>
-                        <span class="hours">Closed</span>
-                    </div>
-                    <div class="day-hours">
-                        <span class="day">Sunday</span>
-                        <span class="hours">12:00 a.m. - 1:00 p.m.</span>
-                    </div>
+                <div class="hours-grid">
+                    <div class="day-row"><span>Monday</span><span>Closed</span></div>
+                    <div class="day-row"><span>Tuesday</span><span>Closed</span></div>
+                    <div class="day-row"><span>Wednesday</span><span>Closed</span></div>
+                    <div class="day-row"><span>Thursday</span><span>Closed</span></div>
+                    <div class="day-row"><span>Friday</span><span>Closed</span></div>
+                    <div class="day-row"><span>Saturday</span><span>Closed</span></div>
+                    <div class="day-row"><span>Sunday</span><span>12:00 a.m. - 1:00 p.m.</span></div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </main>
 
-        <!-- Shop Section -->
-        <section class="shop-section" id="shop">
-            <div class="container">
-                <h2>Shop</h2>
-                <p class="shop-message">Our shop is currently being updated. Please check back soon for our latest TCG products and merchandise.</p>
-            </div>
-        </section>
-    </main>
+        <!-- Back to Cart -->
+        <div class="back-to-cart">
+            <a href="#" onclick="toggleCart()">Back to Cart</a>
+        </div>
 
-    <!-- Back to Cart link (as seen on original) -->
-    <div class="back-to-cart">
-        <a href="#" onclick="toggleCart()">Back to Cart</a>
-    </div>
-
-    <!-- Footer -->
-    <footer class="site-footer">
-        <div class="container">
-            <div class="footer-branding">
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-brand">
                 <h3>www.Firelightsygo-tcg.com</h3>
                 <p>Secure checkout by Square</p>
             </div>
-            <div class="footer-payment-methods">
+            
+            <div class="footer-payments">
                 <div class="payment-icons">
-                    <img src="assets/icons/applepay.svg" alt="Apple Pay" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/googlepay.svg" alt="Google Pay" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/visa.svg" alt="Visa" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/mastercard.svg" alt="Mastercard" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/americanexpress.svg" alt="American Express" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/discover.svg" alt="Discover" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/jcb.svg" alt="JCB" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/afterpay.svg" alt="Afterpay" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/interac.svg" alt="Interac" class="payment-icon" onerror="this.style.display='none'">
+                    <span class="payment-icon">🍎</span>
+                    <span class="payment-icon">📱</span>
+                    <span class="payment-icon">💳</span>
+                    <span class="payment-icon">💳</span>
+                    <span class="payment-icon">💳</span>
+                    <span class="payment-icon">💳</span>
+                    <span class="payment-icon">💳</span>
+                    <span class="payment-icon">💰</span>
+                    <span class="payment-icon">💰</span>
                 </div>
             </div>
-            
-            <!-- Helpful Information Section -->
+
             <div class="helpful-info">
                 <h3>Helpful Information</h3>
-                <div class="returns-policy">
+                <div class="returns-section">
                     <h4>Returns Policy</h4>
-                    <p><strong><em>!! ALL ORDERS ARE FINAL !!</em></strong></p>
+                    <p class="final-orders"><strong><em>!! ALL ORDERS ARE FINAL !!</em></strong></p>
                     
-                    <div class="policy-section">
+                    <div class="policy-item">
                         <h5>DEFECTIVE/NON-AUTHENTIC/ETC</h5>
                         <p>It is scarce for any of our products to be defective/NON-AUTHENTIC/Damaged. However, we understand that mistakes happen, so if you have any issue with your package or product, you just need to:</p>
                         <ol>
@@ -171,15 +133,15 @@
                         </ol>
                     </div>
 
-                    <div class="policy-section">
+                    <div class="policy-item">
                         <h5>ITEM NEVER ARRIVED</h5>
                         <p>We send you a tracking number at the dispatch stage to the email address you registered when ordering. Our delivery methods can take up to 14 working days; however, in peak times such as Christmas/ holiday seasons and during lockdowns, this can extend by some more days.</p>
                     </div>
                 </div>
             </div>
-        </div>
-    </footer>
+        </footer>
+    </div>
 
-    <script src="assets/js/main.js"></script>
+    <script src="assets/js/square-functionality.js"></script>
 </body>
 </html>

@@ -4,109 +4,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shop | www.Firelightsygo-tcg.com</title>
-    <meta name="description" content="Shop for TCG products and merchandise at Firelight Sygo.">
-    <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+    <meta name="description" content="Shop for TCG products and merchandise at Firelight Sygo">
+    <link rel="stylesheet" href="assets/css/square-style.css">
 </head>
 <body>
-    <!-- Header with site title and cart -->
-    <header class="site-header">
-        <div class="header-container">
-            <h1 class="site-title"><a href="index.html" style="text-decoration: none; color: inherit;">www.Firelightsygo-tcg.com</a></h1>
-            <div class="header-actions">
-                <a href="shop.html" class="shop-now-btn">Shop Now</a>
-                <div class="cart-icon" onclick="toggleCart()" aria-label="Shopping Cart">🛒</div>
+    <!-- Exact recreation of Square shop page structure -->
+    <div class="site-container">
+        <!-- Header -->
+        <header class="site-header">
+            <div class="header-content">
+                <h1 class="site-title"><a href="index.html" style="text-decoration: none; color: inherit;">www.Firelightsygo-tcg.com</a></h1>
+                <div class="header-nav">
+                    <a href="shop.html" class="shop-btn">Shop Now</a>
+                    <button class="cart-btn" onclick="toggleCart()">🛒</button>
+                </div>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- Shopping Cart Modal -->
-    <div id="cart-modal" class="cart-modal" role="dialog" aria-labelledby="cart-title" aria-hidden="true">
-        <div class="cart-content">
-            <span class="close" onclick="toggleCart()" aria-label="Close cart">&times;</span>
-            <h3 id="cart-title">Shopping Cart</h3>
-            <p class="cart-empty">You don't have any items in your cart.</p>
-            <div class="cart-buttons">
-                <button class="checkout-btn">Checkout</button>
-                <button class="continue-shopping-btn" onclick="toggleCart()">Continue Shopping</button>
-            </div>
-            <div class="payment-methods">
-                <p>Accepted here</p>
-                <div class="payment-icons">
-                    <img src="assets/icons/applepay.svg" alt="Apple Pay" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/googlepay.svg" alt="Google Pay" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/visa.svg" alt="Visa" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/mastercard.svg" alt="Mastercard" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/americanexpress.svg" alt="American Express" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/discover.svg" alt="Discover" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/jcb.svg" alt="JCB" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/interac.svg" alt="Interac" class="payment-icon" onerror="this.style.display='none'">
+        <!-- Cart Modal (hidden by default) -->
+        <div id="cart-modal" class="cart-modal">
+            <div class="cart-content">
+                <button class="cart-close" onclick="toggleCart()">×</button>
+                <h3>Shopping Cart</h3>
+                <p class="cart-empty">You don't have any items in your cart.</p>
+                <div class="cart-actions">
+                    <button class="checkout-btn">Checkout</button>
+                    <button class="continue-btn" onclick="toggleCart()">Continue Shopping</button>
+                </div>
+                <div class="payment-info">
+                    <p>Accepted here</p>
+                    <div class="payment-icons">
+                        <span class="payment-icon">🍎</span>
+                        <span class="payment-icon">📱</span>
+                        <span class="payment-icon">💳</span>
+                        <span class="payment-icon">💳</span>
+                        <span class="payment-icon">💳</span>
+                        <span class="payment-icon">💳</span>
+                        <span class="payment-icon">💳</span>
+                        <span class="payment-icon">💰</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <main class="main-content">
-        <!-- Shop Section -->
-        <section class="shop-section">
-            <div class="container">
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Shop Section -->
+            <section class="shop-page-section">
                 <h1>Shop</h1>
-                <p class="shop-message">Our shop is currently being updated. Please check back soon for our latest TCG products and merchandise.</p>
+                <p class="shop-description">Our shop is currently being updated. Please check back soon for our latest TCG products and merchandise.</p>
                 
-                <div class="coming-soon">
-                    <h3>Coming Soon:</h3>
-                    <ul>
-                        <li>Trading Card Game Products</li>
-                        <li>Booster Packs and Singles</li>
-                        <li>Deck Boxes and Sleeves</li>
-                        <li>Playmats and Accessories</li>
-                        <li>Exclusive Merchandise</li>
-                        <li>Limited Edition Items</li>
-                    </ul>
+                <div class="shop-placeholder">
+                    <div class="coming-soon-box">
+                        <h3>Coming Soon</h3>
+                        <ul class="product-list">
+                            <li>Trading Card Game Products</li>
+                            <li>Booster Packs and Singles</li>
+                            <li>Deck Boxes and Sleeves</li>
+                            <li>Playmats and Accessories</li>
+                            <li>Exclusive Merchandise</li>
+                            <li>Limited Edition Items</li>
+                        </ul>
+                    </div>
+
+                    <div class="membership-notice">
+                        <p>In the meantime, you can still become a member to get exclusive access when our shop launches!</p>
+                        <a href="index.html#membership" class="membership-cta">View Membership Options</a>
+                    </div>
                 </div>
+            </section>
+        </main>
 
-                <div class="shop-notice">
-                    <p>In the meantime, you can still become a member to get exclusive access when our shop launches!</p>
-                    <a href="index.html#membership" class="membership-link">View Membership Options</a>
-                </div>
-            </div>
-        </section>
-    </main>
+        <!-- Back to Cart -->
+        <div class="back-to-cart">
+            <a href="#" onclick="toggleCart()">Back to Cart</a>
+        </div>
 
-    <!-- Back to Cart link -->
-    <div class="back-to-cart">
-        <a href="#" onclick="toggleCart()">Back to Cart</a>
-    </div>
-
-    <!-- Footer -->
-    <footer class="site-footer">
-        <div class="container">
-            <div class="footer-branding">
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-brand">
                 <h3>www.Firelightsygo-tcg.com</h3>
                 <p>Secure checkout by Square</p>
             </div>
-            <div class="footer-payment-methods">
+            
+            <div class="footer-payments">
                 <div class="payment-icons">
-                    <img src="assets/icons/applepay.svg" alt="Apple Pay" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/googlepay.svg" alt="Google Pay" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/visa.svg" alt="Visa" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/mastercard.svg" alt="Mastercard" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/americanexpress.svg" alt="American Express" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/discover.svg" alt="Discover" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/jcb.svg" alt="JCB" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/afterpay.svg" alt="Afterpay" class="payment-icon" onerror="this.style.display='none'">
-                    <img src="assets/icons/interac.svg" alt="Interac" class="payment-icon" onerror="this.style.display='none'">
+                    <span class="payment-icon">🍎</span>
+                    <span class="payment-icon">📱</span>
+                    <span class="payment-icon">💳</span>
+                    <span class="payment-icon">💳</span>
+                    <span class="payment-icon">💳</span>
+                    <span class="payment-icon">💳</span>
+                    <span class="payment-icon">💳</span>
+                    <span class="payment-icon">💰</span>
+                    <span class="payment-icon">💰</span>
                 </div>
             </div>
-            
-            <!-- Helpful Information Section -->
+
             <div class="helpful-info">
                 <h3>Helpful Information</h3>
-                <div class="returns-policy">
+                <div class="returns-section">
                     <h4>Returns Policy</h4>
-                    <p><strong><em>!! ALL ORDERS ARE FINAL !!</em></strong></p>
+                    <p class="final-orders"><strong><em>!! ALL ORDERS ARE FINAL !!</em></strong></p>
                     
-                    <div class="policy-section">
+                    <div class="policy-item">
                         <h5>DEFECTIVE/NON-AUTHENTIC/ETC</h5>
                         <p>It is scarce for any of our products to be defective/NON-AUTHENTIC/Damaged. However, we understand that mistakes happen, so if you have any issue with your package or product, you just need to:</p>
                         <ol>
@@ -116,15 +117,15 @@
                         </ol>
                     </div>
 
-                    <div class="policy-section">
+                    <div class="policy-item">
                         <h5>ITEM NEVER ARRIVED</h5>
                         <p>We send you a tracking number at the dispatch stage to the email address you registered when ordering. Our delivery methods can take up to 14 working days; however, in peak times such as Christmas/ holiday seasons and during lockdowns, this can extend by some more days.</p>
                     </div>
                 </div>
             </div>
-        </div>
-    </footer>
+        </footer>
+    </div>
 
-    <script src="assets/js/main.js"></script>
+    <script src="assets/js/square-functionality.js"></script>
 </body>
 </html>

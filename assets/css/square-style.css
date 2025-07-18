@@ -1,0 +1,684 @@
+/* Square Site Recreation - Exact Visual Match */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.5;
+    color: #333;
+    background: #fff;
+}
+
+.site-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header - Exact Square Style */
+.site-header {
+    background: #fff;
+    border-bottom: 1px solid #e8e8e8;
+    padding: 16px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.site-title {
+    font-size: 20px;
+    font-weight: 400;
+    color: #333;
+    margin: 0;
+}
+
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.shop-btn {
+    background: #000;
+    color: #fff;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.shop-btn:hover {
+    background: #333;
+}
+
+.cart-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.cart-btn:hover {
+    background: #f5f5f5;
+}
+
+/* Cart Modal - Square Style */
+.cart-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.cart-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cart-content {
+    background: #fff;
+    border-radius: 8px;
+    padding: 24px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+}
+
+.cart-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    line-height: 1;
+}
+
+.cart-close:hover {
+    color: #333;
+}
+
+.cart-content h3 {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    color: #333;
+}
+
+.cart-empty {
+    color: #666;
+    margin-bottom: 24px;
+    font-size: 14px;
+}
+
+.cart-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.checkout-btn, .continue-btn {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.checkout-btn {
+    background: #000;
+    color: #fff;
+}
+
+.checkout-btn:hover {
+    background: #333;
+}
+
+.continue-btn {
+    background: #f5f5f5;
+    color: #333;
+}
+
+.continue-btn:hover {
+    background: #e8e8e8;
+}
+
+.payment-info {
+    text-align: center;
+}
+
+.payment-info p {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.payment-icons {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.payment-icon {
+    font-size: 16px;
+    opacity: 0.7;
+}
+
+/* Main Content - Square Layout */
+.main-content {
+    flex: 1;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 24px;
+}
+
+/* Membership Section - Exact Square Style */
+.membership-section {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.membership-section h2 {
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.membership-section p {
+    color: #666;
+    margin-bottom: 32px;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.membership-card {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    padding: 24px;
+    max-width: 280px;
+    margin: 0 auto;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sale-tag {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ff4444;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.price {
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.price-line {
+    width: 60px;
+    height: 2px;
+    background: #333;
+    margin: 0 auto 16px;
+}
+
+.membership-card h3 {
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.stock-info {
+    color: #999;
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+.select-btn {
+    width: 100%;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: not-allowed;
+    background: #f5f5f5;
+    color: #999;
+}
+
+.select-btn:not(:disabled) {
+    background: #000;
+    color: #fff;
+    cursor: pointer;
+}
+
+.select-btn:not(:disabled):hover {
+    background: #333;
+}
+
+/* Hero Section - Square Style */
+.hero-section {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.hero-section h2 {
+    font-size: 28px;
+    font-weight: 400;
+    margin-bottom: 16px;
+    color: #333;
+    line-height: 1.3;
+}
+
+.hero-section p {
+    color: #666;
+    margin-bottom: 24px;
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.shop-link {
+    color: #0066cc;
+    text-decoration: underline;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.shop-link:hover {
+    color: #0052a3;
+}
+
+/* Testimonial Section - Square Style */
+.testimonial-section {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.testimonial-section blockquote {
+    font-size: 20px;
+    font-style: italic;
+    color: #333;
+    margin-bottom: 12px;
+    line-height: 1.4;
+    font-weight: 400;
+}
+
+.testimonial-section cite {
+    font-size: 14px;
+    color: #666;
+    font-style: normal;
+    font-weight: 600;
+}
+
+/* Hours Section - Square Style */
+.hours-section {
+    margin-bottom: 60px;
+}
+
+.hours-section h2 {
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 24px;
+    color: #333;
+    text-align: center;
+}
+
+.hours-grid {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.day-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.day-row:last-child {
+    border-bottom: none;
+}
+
+.day-row span:first-child {
+    font-weight: 500;
+    color: #333;
+}
+
+.day-row span:last-child {
+    color: #666;
+}
+
+/* Back to Cart - Square Style */
+.back-to-cart {
+    text-align: center;
+    margin: 32px 0;
+}
+
+.back-to-cart a {
+    color: #0066cc;
+    text-decoration: underline;
+    font-size: 14px;
+}
+
+.back-to-cart a:hover {
+    color: #0052a3;
+}
+
+/* Footer - Square Style */
+.site-footer {
+    background: #f8f8f8;
+    border-top: 1px solid #e8e8e8;
+    padding: 48px 24px;
+    margin-top: 40px;
+}
+
+.footer-brand {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.footer-brand h3 {
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.footer-brand p {
+    color: #666;
+    font-size: 14px;
+}
+
+.footer-payments {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.footer-payments .payment-icons {
+    justify-content: center;
+    gap: 8px;
+}
+
+.footer-payments .payment-icon {
+    font-size: 20px;
+}
+
+/* Helpful Information - Square Style */
+.helpful-info {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.helpful-info h3 {
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 24px;
+    color: #333;
+    text-align: center;
+}
+
+.returns-section h4 {
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 16px;
+    color: #333;
+}
+
+.final-orders {
+    color: #ff4444;
+    font-size: 16px;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.policy-item {
+    margin-bottom: 24px;
+}
+
+.policy-item h5 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+    text-transform: uppercase;
+}
+
+.policy-item p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.policy-item ol {
+    padding-left: 20px;
+    color: #666;
+    line-height: 1.6;
+}
+
+.policy-item li {
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+/* Shop Page Specific Styles */
+.shop-page-section {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.shop-page-section h1 {
+    font-size: 32px;
+    font-weight: 400;
+    margin-bottom: 16px;
+    color: #333;
+}
+
+.shop-description {
+    color: #666;
+    margin-bottom: 40px;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.shop-placeholder {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.coming-soon-box {
+    background: #f8f8f8;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    padding: 32px;
+    margin-bottom: 32px;
+    text-align: left;
+}
+
+.coming-soon-box h3 {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+}
+
+.product-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.product-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    color: #666;
+    font-size: 14px;
+}
+
+.product-list li:last-child {
+    border-bottom: none;
+}
+
+.product-list li:before {
+    content: "•";
+    color: #999;
+    margin-right: 12px;
+    font-weight: bold;
+}
+
+.membership-notice {
+    background: #fff;
+    border: 2px solid #e8e8e8;
+    border-radius: 8px;
+    padding: 32px;
+    text-align: center;
+}
+
+.membership-notice p {
+    margin-bottom: 20px;
+    color: #666;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.membership-cta {
+    display: inline-block;
+    background: #000;
+    color: #fff;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.membership-cta:hover {
+    background: #333;
+}
+
+/* Responsive Design - Square Style */
+@media (max-width: 768px) {
+    .header-content {
+        padding: 0 16px;
+    }
+    
+    .site-title {
+        font-size: 16px;
+    }
+    
+    .shop-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+    
+    .main-content {
+        padding: 32px 16px;
+    }
+    
+    .membership-section h2,
+    .hero-section h2,
+    .hours-section h2 {
+        font-size: 20px;
+    }
+    
+    .hero-section h2 {
+        font-size: 24px;
+    }
+    
+    .membership-card {
+        padding: 20px;
+    }
+    
+    .cart-content {
+        width: 95%;
+        padding: 20px;
+    }
+    
+    .cart-actions {
+        flex-direction: column;
+    }
+    
+    .site-footer {
+        padding: 32px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .site-title {
+        font-size: 14px;
+    }
+    
+    .header-nav {
+        gap: 12px;
+    }
+    
+    .shop-btn {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+    
+    .membership-section,
+    .hero-section,
+    .testimonial-section,
+    .hours-section {
+        margin-bottom: 40px;
+    }
+    
+    .membership-card {
+        padding: 16px;
+    }
+    
+    .price {
+        font-size: 24px;
+    }
+    
+    .testimonial-section blockquote {
+        font-size: 18px;
+    }
+}
