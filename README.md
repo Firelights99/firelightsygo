@@ -53,9 +53,13 @@ Simply open `index.html` in any modern web browser to view the website locally.
 ## Live Demo
 
 The website is now live and accessible at:
+- **Custom Domain**: https://www.firelightsygo-tcg.com (once DNS is configured)
 - **GitHub Pages**: https://firelights99.github.io/firelightsygo/
 
-**Note**: A custom domain `www.firelightsygo.com` is configured in the CNAME file, but it requires DNS configuration to work properly. The GitHub Pages URL above is the working live demo.
+**Custom Domain Setup**: The domain `www.firelightsygo-tcg.com` is configured in the CNAME file. To make it work, you need to:
+1. Configure DNS records with your domain provider to point to GitHub Pages
+2. Add a CNAME record: `www.firelightsygo-tcg.com` → `firelights99.github.io`
+3. GitHub will automatically provision SSL certificate once DNS propagates
 
 The site is automatically deployed via GitHub Actions whenever changes are pushed to the main branch.
 
