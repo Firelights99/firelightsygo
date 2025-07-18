@@ -1,0 +1,642 @@
+/* Exact Square Site Recreation */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.5;
+    color: #333;
+    background: #fff;
+}
+
+.page-wrapper {
+    min-height: 100vh;
+}
+
+/* Top Header */
+.top-header {
+    background: #fff;
+    border-bottom: 1px solid #e1e1e1;
+    padding: 16px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.site-name {
+    font-size: 20px;
+    font-weight: 400;
+    color: #333;
+    margin: 0;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.shop-now-button {
+    background: #000;
+    color: #fff;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.shop-now-button:hover {
+    background: #333;
+}
+
+.cart-button {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.cart-button:hover {
+    background: #f5f5f5;
+}
+
+/* Navigation Tabs */
+.main-navigation {
+    background: #fff;
+    border-bottom: 1px solid #e1e1e1;
+    position: sticky;
+    top: 57px;
+    z-index: 999;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.nav-tabs {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-tabs li {
+    margin: 0;
+}
+
+.nav-link {
+    display: block;
+    padding: 12px 20px;
+    text-decoration: none;
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+}
+
+.nav-link:hover {
+    color: #333;
+    background: #f8f8f8;
+}
+
+.nav-link.active {
+    color: #000;
+    border-bottom-color: #000;
+}
+
+/* Cart Overlay */
+.cart-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cart-panel {
+    background: #fff;
+    border-radius: 8px;
+    padding: 24px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+}
+
+.cart-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    line-height: 1;
+}
+
+.cart-close:hover {
+    color: #333;
+}
+
+.cart-panel h3 {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    color: #333;
+}
+
+.empty-cart {
+    color: #666;
+    margin-bottom: 24px;
+    font-size: 14px;
+}
+
+.cart-buttons {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.checkout-button, .continue-button {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.checkout-button {
+    background: #000;
+    color: #fff;
+}
+
+.checkout-button:hover {
+    background: #333;
+}
+
+.continue-button {
+    background: #f5f5f5;
+    color: #333;
+}
+
+.continue-button:hover {
+    background: #e8e8e8;
+}
+
+.accepted-payments {
+    text-align: center;
+}
+
+.accepted-payments p {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.payment-logos {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.payment-logos span {
+    font-size: 16px;
+    opacity: 0.7;
+}
+
+/* Main Content */
+.content-area {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* Membership Section */
+.membership-block {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.membership-block h2 {
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.membership-block p {
+    color: #666;
+    margin-bottom: 32px;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.member-card {
+    background: #fff;
+    border: 1px solid #e1e1e1;
+    border-radius: 8px;
+    padding: 24px;
+    max-width: 280px;
+    margin: 0 auto;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sale-label {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ff4444;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.price-display {
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.price-divider {
+    width: 60px;
+    height: 2px;
+    background: #333;
+    border: none;
+    margin: 0 auto 16px;
+}
+
+.member-card h3 {
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.availability {
+    color: #999;
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+.select-button {
+    width: 100%;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: not-allowed;
+    background: #f5f5f5;
+    color: #999;
+}
+
+.select-button:not(:disabled) {
+    background: #000;
+    color: #fff;
+    cursor: pointer;
+}
+
+.select-button:not(:disabled):hover {
+    background: #333;
+}
+
+/* Hero Message */
+.hero-message {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.hero-message h2 {
+    font-size: 28px;
+    font-weight: 400;
+    margin-bottom: 16px;
+    color: #333;
+    line-height: 1.3;
+}
+
+.hero-message p {
+    color: #666;
+    margin-bottom: 24px;
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.shop-link {
+    color: #0066cc;
+    text-decoration: underline;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.shop-link:hover {
+    color: #0052a3;
+}
+
+/* Customer Quote */
+.customer-quote {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.customer-quote blockquote {
+    font-size: 20px;
+    font-style: italic;
+    color: #333;
+    margin-bottom: 12px;
+    line-height: 1.4;
+    font-weight: 400;
+}
+
+.customer-quote cite {
+    font-size: 14px;
+    color: #666;
+    font-style: normal;
+    font-weight: 600;
+}
+
+/* Business Hours */
+.business-hours {
+    margin-bottom: 60px;
+}
+
+.business-hours h2 {
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 24px;
+    color: #333;
+    text-align: center;
+}
+
+.hours-table {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.hour-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.hour-row:last-child {
+    border-bottom: none;
+}
+
+.day-name {
+    font-weight: 500;
+    color: #333;
+}
+
+.day-time {
+    color: #666;
+}
+
+/* Back to Cart */
+.back-cart-link {
+    text-align: center;
+    margin: 32px 0;
+}
+
+.back-cart-link a {
+    color: #0066cc;
+    text-decoration: underline;
+    font-size: 14px;
+}
+
+.back-cart-link a:hover {
+    color: #0052a3;
+}
+
+/* Footer */
+.bottom-footer {
+    background: #f8f8f8;
+    border-top: 1px solid #e1e1e1;
+    padding: 48px 20px;
+    margin-top: 40px;
+}
+
+.footer-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.footer-brand {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.footer-brand h3 {
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.footer-brand p {
+    color: #666;
+    font-size: 14px;
+}
+
+.footer-payments {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.footer-payments .payment-logos {
+    justify-content: center;
+    gap: 8px;
+}
+
+.footer-payments .payment-logos span {
+    font-size: 20px;
+}
+
+.footer-info {
+    text-align: left;
+}
+
+.footer-info h3 {
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 24px;
+    color: #333;
+    text-align: center;
+}
+
+.policy-section h4 {
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 16px;
+    color: #333;
+}
+
+.policy-highlight {
+    color: #ff4444;
+    font-size: 16px;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.policy-block {
+    margin-bottom: 24px;
+}
+
+.policy-block h5 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+    text-transform: uppercase;
+}
+
+.policy-block p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.policy-block ol {
+    padding-left: 20px;
+    color: #666;
+    line-height: 1.6;
+}
+
+.policy-block li {
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header-container, .nav-container {
+        padding: 0 16px;
+    }
+    
+    .site-name {
+        font-size: 16px;
+    }
+    
+    .shop-now-button {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+    
+    .nav-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .nav-link {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+    
+    .content-area {
+        padding: 32px 16px;
+    }
+    
+    .membership-block h2,
+    .hero-message h2,
+    .business-hours h2 {
+        font-size: 20px;
+    }
+    
+    .hero-message h2 {
+        font-size: 24px;
+    }
+    
+    .member-card {
+        padding: 20px;
+    }
+    
+    .cart-panel {
+        width: 95%;
+        padding: 20px;
+    }
+    
+    .cart-buttons {
+        flex-direction: column;
+    }
+    
+    .bottom-footer {
+        padding: 32px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .site-name {
+        font-size: 14px;
+    }
+    
+    .header-right {
+        gap: 12px;
+    }
+    
+    .shop-now-button {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+    
+    .nav-link {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    
+    .membership-block,
+    .hero-message,
+    .customer-quote,
+    .business-hours {
+        margin-bottom: 40px;
+    }
+    
+    .member-card {
+        padding: 16px;
+    }
+    
+    .price-display {
+        font-size: 24px;
+    }
+    
+    .customer-quote blockquote {
+        font-size: 18px;
+    }
+}
