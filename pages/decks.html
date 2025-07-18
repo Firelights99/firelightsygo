@@ -5,265 +5,357 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Popular Decks | Firelight Duel Academy - Yu-Gi-Oh! Deck Lists</title>
     <meta name="description" content="Explore popular Yu-Gi-Oh! deck lists and strategies. Find meta decks, budget builds, and competitive tournament lists.">
-    <link rel="stylesheet" href="../assets/css/main.css">
-    <link rel="stylesheet" href="../assets/css/components/advanced-layout.css">
-    <link rel="stylesheet" href="../assets/css/pages/yugioh-store.css">
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/modern-tcg-store.css">
     <link rel="icon" href="https://images.ygoprodeck.com/images/cards/89631139.jpg">
 </head>
 <body>
-    <div class="page-wrapper">
-        <!-- Top Header Bar -->
-        <header class="top-header">
-            <div class="header-container">
-                <div class="site-branding">
-                    <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Firelight Duel Academy" class="site-logo">
-                    <h1 class="site-name">Firelight Duel Academy</h1>
-                    <p class="site-tagline">Yu-Gi-Oh! Trading Cards & Competitive Play</p>
-                </div>
-                <div class="header-actions">
-                    <div class="search-container">
-                        <input type="text" id="card-search" placeholder="Search Yu-Gi-Oh! cards..." class="search-input">
-                        <button class="search-btn" onclick="performSearch()">🔍</button>
-                    </div>
-                    <div class="user-actions">
-                        <button class="account-btn" onclick="showLogin()">👤 Account</button>
-                        <button class="cart-btn" onclick="openCart()">
-                            🛒 Cart <span class="cart-count">0</span>
-                        </button>
-                    </div>
+    <!-- Modern Header -->
+    <header class="modern-header">
+        <div class="header-container">
+            <!-- Brand Section -->
+            <div class="brand-section">
+                <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Firelight Duel Academy" class="brand-logo">
+                <div class="brand-text">
+                    <a href="../index.html" class="brand-name">Firelight Duel Academy</a>
+                    <span class="brand-tagline">Modern Yu-Gi-Oh! TCG Store</span>
                 </div>
             </div>
-        </header>
 
-        <!-- Navigation Tabs -->
-        <nav class="main-navigation">
-            <div class="nav-container">
-                <ul class="nav-tabs">
+            <!-- Navigation Section -->
+            <nav class="nav-section">
+                <ul class="nav-links">
                     <li><a href="../index.html" class="nav-link">Home</a></li>
                     <li><a href="singles.html" class="nav-link">Singles</a></li>
-                    <li><a href="decks.html" class="nav-link active">Popular Decks</a></li>
+                    <li><a href="decks.html" class="nav-link active">Decks</a></li>
                     <li><a href="events.html" class="nav-link">Events</a></li>
-                    <li><a href="account.html" class="nav-link">My Account</a></li>
+                    <li><a href="account.html" class="nav-link">Account</a></li>
                 </ul>
-            </div>
-        </nav>
+            </nav>
 
-        <!-- Main Content Area -->
-        <main class="content-area">
-            <div class="page-header">
-                <h1>Popular Yu-Gi-Oh! Decks</h1>
-                <p>Discover the latest meta decks and competitive strategies</p>
-            </div>
-
-            <!-- Deck Categories -->
-            <section class="deck-categories">
-                <div class="category-tabs">
-                    <button class="tab-btn active" onclick="showCategory('meta')">Meta Decks</button>
-                    <button class="tab-btn" onclick="showCategory('budget')">Budget Builds</button>
-                    <button class="tab-btn" onclick="showCategory('rogue')">Rogue Decks</button>
-                    <button class="tab-btn" onclick="showCategory('classic')">Classic Decks</button>
-                </div>
-            </section>
-
-            <!-- Meta Decks Section -->
-            <section id="meta-decks" class="deck-section active">
-                <h2>Current Meta Decks</h2>
-                <div class="decks-grid">
-                    <div class="deck-card">
-                        <div class="deck-image">
-                            <img src="https://images.ygoprodeck.com/images/cards/76375976.jpg" alt="Snake-Eye Fire King">
-                        </div>
-                        <div class="deck-info">
-                            <h3>Snake-Eye Fire King</h3>
-                            <p class="deck-type">Tier 1 Meta</p>
-                            <p class="deck-description">Dominant combo deck featuring Snake-Eye engine with Fire King support.</p>
-                            <div class="deck-stats">
-                                <span class="win-rate">Win Rate: 68%</span>
-                                <span class="deck-price">~$450</span>
-                            </div>
-                            <div class="deck-actions">
-                                <button class="view-deck-btn" onclick="viewDeck('snake-eye')">View Deck</button>
-                                <button class="buy-deck-btn" onclick="buyDeck('snake-eye')">Buy Singles</button>
-                            </div>
+            <!-- Search Section with Dropdown -->
+            <div class="search-section">
+                <div class="search-container">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="Search Yu-Gi-Oh! cards..." id="search-dropdown-input">
+                    <div class="search-dropdown" id="search-dropdown" style="display: none;">
+                        <div class="search-results" id="search-results">
+                            <!-- Search results will be populated here -->
                         </div>
                     </div>
-
-                    <div class="deck-card">
-                        <div class="deck-image">
-                            <img src="https://images.ygoprodeck.com/images/cards/28776350.jpg" alt="Kashtira">
-                        </div>
-                        <div class="deck-info">
-                            <h3>Kashtira</h3>
-                            <p class="deck-type">Tier 1 Meta</p>
-                            <p class="deck-description">Powerful banish-based strategy with consistent disruption.</p>
-                            <div class="deck-stats">
-                                <span class="win-rate">Win Rate: 65%</span>
-                                <span class="deck-price">~$380</span>
-                            </div>
-                            <div class="deck-actions">
-                                <button class="view-deck-btn" onclick="viewDeck('kashtira')">View Deck</button>
-                                <button class="buy-deck-btn" onclick="buyDeck('kashtira')">Buy Singles</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="deck-card">
-                        <div class="deck-image">
-                            <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Purrely">
-                        </div>
-                        <div class="deck-info">
-                            <h3>Purrely</h3>
-                            <p class="deck-type">Tier 2 Meta</p>
-                            <p class="deck-description">Control deck with powerful Xyz monsters and trap support.</p>
-                            <div class="deck-stats">
-                                <span class="win-rate">Win Rate: 58%</span>
-                                <span class="deck-price">~$320</span>
-                            </div>
-                            <div class="deck-actions">
-                                <button class="view-deck-btn" onclick="viewDeck('purrely')">View Deck</button>
-                                <button class="buy-deck-btn" onclick="buyDeck('purrely')">Buy Singles</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="deck-card">
-                        <div class="deck-image">
-                            <img src="https://images.ygoprodeck.com/images/cards/46986414.jpg" alt="Branded Despia">
-                        </div>
-                        <div class="deck-info">
-                            <h3>Branded Despia</h3>
-                            <p class="deck-type">Tier 2 Meta</p>
-                            <p class="deck-description">Fusion-based strategy with strong grind game potential.</p>
-                            <div class="deck-stats">
-                                <span class="win-rate">Win Rate: 55%</span>
-                                <span class="deck-price">~$280</span>
-                            </div>
-                            <div class="deck-actions">
-                                <button class="view-deck-btn" onclick="viewDeck('branded')">View Deck</button>
-                                <button class="buy-deck-btn" onclick="buyDeck('branded')">Buy Singles</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Budget Decks Section -->
-            <section id="budget-decks" class="deck-section">
-                <h2>Budget-Friendly Decks</h2>
-                <div class="decks-grid">
-                    <div class="deck-card">
-                        <div class="deck-image">
-                            <img src="https://images.ygoprodeck.com/images/cards/26077387.jpg" alt="Salamangreat">
-                        </div>
-                        <div class="deck-info">
-                            <h3>Salamangreat</h3>
-                            <p class="deck-type">Budget Competitive</p>
-                            <p class="deck-description">Consistent Link-based strategy that's easy to learn and upgrade.</p>
-                            <div class="deck-stats">
-                                <span class="win-rate">Win Rate: 52%</span>
-                                <span class="deck-price">~$85</span>
-                            </div>
-                            <div class="deck-actions">
-                                <button class="view-deck-btn" onclick="viewDeck('salamangreat')">View Deck</button>
-                                <button class="buy-deck-btn" onclick="buyDeck('salamangreat')">Buy Singles</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="deck-card">
-                        <div class="deck-image">
-                            <img src="https://images.ygoprodeck.com/images/cards/95440946.jpg" alt="Crusadia">
-                        </div>
-                        <div class="deck-info">
-                            <h3>Crusadia</h3>
-                            <p class="deck-type">Budget OTK</p>
-                            <p class="deck-description">Simple OTK strategy perfect for new players.</p>
-                            <div class="deck-stats">
-                                <span class="win-rate">Win Rate: 48%</span>
-                                <span class="deck-price">~$45</span>
-                            </div>
-                            <div class="deck-actions">
-                                <button class="view-deck-btn" onclick="viewDeck('crusadia')">View Deck</button>
-                                <button class="buy-deck-btn" onclick="buyDeck('crusadia')">Buy Singles</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Deck Building Guide -->
-            <section class="deck-guide">
-                <h2>Deck Building Tips</h2>
-                <div class="guide-grid">
-                    <div class="guide-item">
-                        <h3>🎯 Focus Your Strategy</h3>
-                        <p>Choose a clear win condition and build around it. Don't try to do everything at once.</p>
-                    </div>
-                    <div class="guide-item">
-                        <h3>⚖️ Balance Your Ratios</h3>
-                        <p>Run 3 copies of essential cards, 2 of situational ones, and 1 of niche tech choices.</p>
-                    </div>
-                    <div class="guide-item">
-                        <h3>🛡️ Include Hand Traps</h3>
-                        <p>Modern Yu-Gi-Oh! requires interaction. Include cards like Ash Blossom and Nibiru.</p>
-                    </div>
-                    <div class="guide-item">
-                        <h3>📊 Test and Refine</h3>
-                        <p>Playtest your deck and adjust based on what you face in your local meta.</p>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <!-- Footer -->
-        <footer class="site-footer">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Firelight Duel Academy</h3>
-                    <p>Your premier destination for Yu-Gi-Oh! singles</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="singles.html">Browse Singles</a></li>
-                        <li><a href="decks.html">Popular Decks</a></li>
-                        <li><a href="account.html">My Account</a></li>
-                    </ul>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Firelight Duel Academy. All rights reserved.</p>
+
+            <!-- Action Section -->
+            <div class="action-section">
+                <button class="action-btn" onclick="tcgStore.openCart()">
+                    🛒 Cart
+                    <span class="cart-badge" style="display: none;">0</span>
+                </button>
+                <a href="account.html" class="action-btn">
+                    👤 Account
+                </a>
             </div>
-        </footer>
-    </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main style="max-width: 1400px; margin: 0 auto; padding: var(--space-8) var(--space-6);">
+        
+        <!-- Page Header -->
+        <section style="text-align: center; margin-bottom: var(--space-12);">
+            <h1 style="font-size: 3rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
+                Popular Yu-Gi-Oh! Decks
+            </h1>
+            <p style="font-size: 1.125rem; color: var(--gray-600); max-width: 600px; margin: 0 auto;">
+                Discover the latest meta decks and competitive strategies from tournament winners
+            </p>
+        </section>
+
+        <!-- Deck Categories -->
+        <section style="margin-bottom: var(--space-12);">
+            <div style="display: flex; justify-content: center; gap: var(--space-4); margin-bottom: var(--space-8); flex-wrap: wrap;">
+                <button class="filter-btn active" onclick="showCategory('meta')" id="meta-btn">Meta Decks</button>
+                <button class="filter-btn" onclick="showCategory('budget')" id="budget-btn">Budget Builds</button>
+                <button class="filter-btn" onclick="showCategory('rogue')" id="rogue-btn">Rogue Decks</button>
+                <button class="filter-btn" onclick="showCategory('classic')" id="classic-btn">Classic Decks</button>
+            </div>
+        </section>
+
+        <!-- Meta Decks Section -->
+        <section id="meta-decks" class="deck-section">
+            <div class="modern-card-grid">
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid var(--gray-200);" class="interactive-hover">
+                    <div style="aspect-ratio: 16/9; background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); display: flex; align-items: center; justify-content: center; position: relative;">
+                        <img src="https://images.ygoprodeck.com/images/cards/76375976.jpg" alt="Snake-Eye Fire King" style="width: 120px; height: auto; border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
+                        <div style="position: absolute; top: var(--space-3); right: var(--space-3); background: var(--secondary-color); color: var(--gray-900); padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700;">TIER 1</div>
+                    </div>
+                    <div style="padding: var(--space-6);">
+                        <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Snake-Eye Fire King</h3>
+                        <p style="color: var(--gray-600); margin-bottom: var(--space-4); line-height: 1.5;">Dominant combo deck featuring Snake-Eye engine with Fire King support for consistent disruption.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                            <span style="background: var(--success-color); color: white; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 600;">68% Win Rate</span>
+                            <span style="font-size: 1.25rem; font-weight: 700; color: var(--primary-color);">~$450</span>
+                        </div>
+                        <div style="display: flex; gap: var(--space-3);">
+                            <button style="flex: 1; padding: var(--space-3); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" onclick="viewDeck('snake-eye')">View Deck</button>
+                            <button style="flex: 1; padding: var(--space-3); background: var(--gray-100); color: var(--gray-700); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" onclick="buyDeck('snake-eye')">Buy Singles</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid var(--gray-200);" class="interactive-hover">
+                    <div style="aspect-ratio: 16/9; background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%); display: flex; align-items: center; justify-content: center; position: relative;">
+                        <img src="https://images.ygoprodeck.com/images/cards/28776350.jpg" alt="Kashtira" style="width: 120px; height: auto; border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
+                        <div style="position: absolute; top: var(--space-3); right: var(--space-3); background: var(--secondary-color); color: var(--gray-900); padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700;">TIER 1</div>
+                    </div>
+                    <div style="padding: var(--space-6);">
+                        <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Kashtira</h3>
+                        <p style="color: var(--gray-600); margin-bottom: var(--space-4); line-height: 1.5;">Powerful banish-based strategy with consistent disruption and strong board presence.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                            <span style="background: var(--success-color); color: white; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 600;">65% Win Rate</span>
+                            <span style="font-size: 1.25rem; font-weight: 700; color: var(--primary-color);">~$380</span>
+                        </div>
+                        <div style="display: flex; gap: var(--space-3);">
+                            <button style="flex: 1; padding: var(--space-3); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" onclick="viewDeck('kashtira')">View Deck</button>
+                            <button style="flex: 1; padding: var(--space-3); background: var(--gray-100); color: var(--gray-700); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" onclick="buyDeck('kashtira')">Buy Singles</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid var(--gray-200);" class="interactive-hover">
+                    <div style="aspect-ratio: 16/9; background: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-dark) 100%); display: flex; align-items: center; justify-content: center; position: relative;">
+                        <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Purrely" style="width: 120px; height: auto; border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
+                        <div style="position: absolute; top: var(--space-3); right: var(--space-3); background: var(--info-color); color: white; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700;">TIER 2</div>
+                    </div>
+                    <div style="padding: var(--space-6);">
+                        <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Purrely</h3>
+                        <p style="color: var(--gray-600); margin-bottom: var(--space-4); line-height: 1.5;">Control deck with powerful Xyz monsters and comprehensive trap support package.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                            <span style="background: var(--warning-color); color: var(--gray-900); padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 600;">58% Win Rate</span>
+                            <span style="font-size: 1.25rem; font-weight: 700; color: var(--primary-color);">~$320</span>
+                        </div>
+                        <div style="display: flex; gap: var(--space-3);">
+                            <button style="flex: 1; padding: var(--space-3); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" onclick="viewDeck('purrely')">View Deck</button>
+                            <button style="flex: 1; padding: var(--space-3); background: var(--gray-100); color: var(--gray-700); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" onclick="buyDeck('purrely')">Buy Singles</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Budget Decks Section -->
+        <section id="budget-decks" class="deck-section" style="display: none;">
+            <div class="modern-card-grid">
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid var(--gray-200);" class="interactive-hover">
+                    <div style="aspect-ratio: 16/9; background: linear-gradient(135deg, var(--success-color) 0%, var(--accent-dark) 100%); display: flex; align-items: center; justify-content: center; position: relative;">
+                        <img src="https://images.ygoprodeck.com/images/cards/26077387.jpg" alt="Salamangreat" style="width: 120px; height: auto; border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
+                        <div style="position: absolute; top: var(--space-3); right: var(--space-3); background: var(--success-color); color: white; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700;">BUDGET</div>
+                    </div>
+                    <div style="padding: var(--space-6);">
+                        <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Salamangreat</h3>
+                        <p style="color: var(--gray-600); margin-bottom: var(--space-4); line-height: 1.5;">Consistent Link-based strategy that's easy to learn and upgrade over time.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                            <span style="background: var(--warning-color); color: var(--gray-900); padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 600;">52% Win Rate</span>
+                            <span style="font-size: 1.25rem; font-weight: 700; color: var(--success-color);">~$85</span>
+                        </div>
+                        <div style="display: flex; gap: var(--space-3);">
+                            <button style="flex: 1; padding: var(--space-3); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" onclick="viewDeck('salamangreat')">View Deck</button>
+                            <button style="flex: 1; padding: var(--space-3); background: var(--gray-100); color: var(--gray-700); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" onclick="buyDeck('salamangreat')">Buy Singles</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid var(--gray-200);" class="interactive-hover">
+                    <div style="aspect-ratio: 16/9; background: linear-gradient(135deg, var(--warning-color) 0%, var(--secondary-dark) 100%); display: flex; align-items: center; justify-content: center; position: relative;">
+                        <img src="https://images.ygoprodeck.com/images/cards/95440946.jpg" alt="Crusadia" style="width: 120px; height: auto; border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
+                        <div style="position: absolute; top: var(--space-3); right: var(--space-3); background: var(--success-color); color: white; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700;">BUDGET</div>
+                    </div>
+                    <div style="padding: var(--space-6);">
+                        <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Crusadia</h3>
+                        <p style="color: var(--gray-600); margin-bottom: var(--space-4); line-height: 1.5;">Simple OTK strategy perfect for new players entering competitive play.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                            <span style="background: var(--error-color); color: white; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 600;">48% Win Rate</span>
+                            <span style="font-size: 1.25rem; font-weight: 700; color: var(--success-color);">~$45</span>
+                        </div>
+                        <div style="display: flex; gap: var(--space-3);">
+                            <button style="flex: 1; padding: var(--space-3); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" onclick="viewDeck('crusadia')">View Deck</button>
+                            <button style="flex: 1; padding: var(--space-3); background: var(--gray-100); color: var(--gray-700); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" onclick="buyDeck('crusadia')">Buy Singles</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Deck Building Guide -->
+        <section style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-12); margin-top: var(--space-16); border: 1px solid var(--gray-200);">
+            <div style="text-align: center; margin-bottom: var(--space-10);">
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
+                    Deck Building Tips
+                </h2>
+                <p style="font-size: 1.125rem; color: var(--gray-600); max-width: 600px; margin: 0 auto;">
+                    Master the art of deck construction with these essential guidelines
+                </p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-8);">
+                <div style="text-align: center; padding: var(--space-6);">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4); font-size: 2rem;">
+                        🎯
+                    </div>
+                    <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Focus Your Strategy</h3>
+                    <p style="color: var(--gray-600); line-height: 1.6;">Choose a clear win condition and build around it. Don't try to do everything at once.</p>
+                </div>
+                
+                <div style="text-align: center; padding: var(--space-6);">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4); font-size: 2rem;">
+                        ⚖️
+                    </div>
+                    <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Balance Your Ratios</h3>
+                    <p style="color: var(--gray-600); line-height: 1.6;">Run 3 copies of essential cards, 2 of situational ones, and 1 of niche tech choices.</p>
+                </div>
+                
+                <div style="text-align: center; padding: var(--space-6);">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-dark) 100%); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4); font-size: 2rem;">
+                        🛡️
+                    </div>
+                    <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Include Hand Traps</h3>
+                    <p style="color: var(--gray-600); line-height: 1.6;">Modern Yu-Gi-Oh! requires interaction. Include cards like Ash Blossom and Nibiru.</p>
+                </div>
+                
+                <div style="text-align: center; padding: var(--space-6);">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--gray-600) 0%, var(--gray-700) 100%); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4); font-size: 2rem;">
+                        📊
+                    </div>
+                    <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Test and Refine</h3>
+                    <p style="color: var(--gray-600); line-height: 1.6;">Playtest your deck and adjust based on what you face in your local meta.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer style="background: var(--gray-900); color: white; padding: var(--space-12) var(--space-6) var(--space-6); margin-top: var(--space-20);">
+        <div style="max-width: 1400px; margin: 0 auto; text-align: center;">
+            <p style="color: rgba(255,255,255,0.6); font-size: 0.875rem;">
+                &copy; 2025 Firelight Duel Academy. All rights reserved.
+            </p>
+        </div>
+    </footer>
 
     <!-- Scripts -->
-    <script src="../assets/js/components/advanced-functionality.js"></script>
-    <script src="../assets/js/pages/yugioh-store.js"></script>
+    <script src="../assets/js/modern-tcg-store.js"></script>
     <script>
         function showCategory(category) {
             // Hide all sections
             document.querySelectorAll('.deck-section').forEach(section => {
-                section.classList.remove('active');
+                section.style.display = 'none';
             });
             
-            // Remove active class from all tabs
-            document.querySelectorAll('.tab-btn').forEach(btn => {
+            // Remove active class from all buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             
-            // Show selected section and activate tab
-            document.getElementById(category + '-decks').classList.add('active');
-            event.target.classList.add('active');
+            // Show selected section and activate button
+            document.getElementById(category + '-decks').style.display = 'block';
+            document.getElementById(category + '-btn').classList.add('active');
         }
 
         function viewDeck(deckName) {
-            alert('Deck list for ' + deckName + ' would be displayed here.');
+            tcgStore.showToast(`Viewing ${deckName} deck list...`, 'info');
         }
 
         function buyDeck(deckName) {
-            alert('Adding ' + deckName + ' singles to cart...');
+            tcgStore.showToast(`Redirecting to ${deckName} singles...`, 'info');
+            setTimeout(() => {
+                window.location.href = `singles.html?archetype=${deckName}`;
+            }, 1000);
+        }
+
+        // Setup search dropdown
+        document.addEventListener('DOMContentLoaded', function() {
+            setupSearchDropdown();
+        });
+
+        function setupSearchDropdown() {
+            const searchInput = document.getElementById('search-dropdown-input');
+            const dropdown = document.getElementById('search-dropdown');
+            const results = document.getElementById('search-results');
+
+            searchInput.addEventListener('input', tcgStore.debounce(async function() {
+                const query = searchInput.value.trim();
+                if (query.length < 2) {
+                    dropdown.style.display = 'none';
+                    return;
+                }
+
+                try {
+                    const cards = await tcgStore.searchCards(query);
+                    if (cards.length > 0) {
+                        results.innerHTML = '';
+                        cards.slice(0, 5).forEach(card => {
+                            const formatted = tcgStore.formatCardForDisplay(card);
+                            const resultItem = document.createElement('div');
+                            resultItem.style.cssText = 'display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); cursor: pointer; border-bottom: 1px solid var(--gray-200);';
+                            resultItem.innerHTML = `
+                                <img src="${formatted.imageSmall}" alt="${formatted.name}" style="width: 40px; height: 56px; object-fit: contain; border-radius: var(--radius-sm);">
+                                <div>
+                                    <div style="font-weight: 600; color: var(--gray-900);">${formatted.name}</div>
+                                    <div style="font-size: 0.875rem; color: var(--gray-600);">${formatted.type} - $${formatted.price}</div>
+                                </div>
+                            `;
+                            resultItem.onclick = () => {
+                                window.location.href = `product.html?id=${formatted.id}`;
+                            };
+                            results.appendChild(resultItem);
+                        });
+                        dropdown.style.display = 'block';
+                    } else {
+                        dropdown.style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Search error:', error);
+                    dropdown.style.display = 'none';
+                }
+            }, 300));
+
+            searchInput.addEventListener('blur', () => {
+                setTimeout(() => dropdown.style.display = 'none', 200);
+            });
         }
     </script>
+
+    <style>
+        .search-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            z-index: var(--z-dropdown);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .search-results div:hover {
+            background: var(--gray-50);
+        }
+
+        .filter-btn.active {
+            background: var(--primary-color) !important;
+            color: white !important;
+        }
+    </style>
 </body>
 </html>

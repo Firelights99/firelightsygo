@@ -5,207 +5,209 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Card Details | Firelight Duel Academy - Yu-Gi-Oh! Trading Card Store</title>
     <meta name="description" content="View detailed information and pricing for Yu-Gi-Oh! trading cards at Firelight Duel Academy.">
-    <link rel="stylesheet" href="../assets/css/main.css">
-    <link rel="stylesheet" href="../assets/css/components/advanced-layout.css">
-    <link rel="stylesheet" href="../assets/css/pages/yugioh-store.css">
-    <link rel="stylesheet" href="../assets/css/pages/product-page.css">
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/modern-tcg-store.css">
     <link rel="icon" href="https://images.ygoprodeck.com/images/cards/89631139.jpg">
 </head>
 <body>
-    <div class="page-wrapper">
-        <!-- Top Header Bar -->
-        <header class="top-header">
-            <div class="header-container">
-                <div class="site-branding">
-                    <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Firelight Duel Academy" class="site-logo">
-                    <h1 class="site-name">Firelight Duel Academy</h1>
-                    <p class="site-tagline">Yu-Gi-Oh! Trading Cards & Competitive Play</p>
-                </div>
-                <div class="header-actions">
-                    <div class="search-container">
-                        <input type="text" id="card-search" placeholder="Search Yu-Gi-Oh! cards..." class="search-input">
-                        <button class="search-btn" onclick="performSearch()">🔍</button>
-                    </div>
-                    <div class="user-actions">
-                        <button class="account-btn" onclick="showLogin()">👤 Account</button>
-                        <button class="cart-btn" onclick="openCart()">
-                            🛒 Cart <span class="cart-count">0</span>
-                        </button>
-                    </div>
+    <!-- Modern Header -->
+    <header class="modern-header">
+        <div class="header-container">
+            <!-- Brand Section -->
+            <div class="brand-section">
+                <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Firelight Duel Academy" class="brand-logo">
+                <div class="brand-text">
+                    <a href="../index.html" class="brand-name">Firelight Duel Academy</a>
+                    <span class="brand-tagline">Modern Yu-Gi-Oh! TCG Store</span>
                 </div>
             </div>
-        </header>
 
-        <!-- Navigation Tabs -->
-        <nav class="main-navigation">
-            <div class="nav-container">
-                <ul class="nav-tabs">
+            <!-- Navigation Section -->
+            <nav class="nav-section">
+                <ul class="nav-links">
                     <li><a href="../index.html" class="nav-link">Home</a></li>
                     <li><a href="singles.html" class="nav-link">Singles</a></li>
-                    <li><a href="decks.html" class="nav-link">Popular Decks</a></li>
+                    <li><a href="decks.html" class="nav-link">Decks</a></li>
                     <li><a href="events.html" class="nav-link">Events</a></li>
-                    <li><a href="account.html" class="nav-link">My Account</a></li>
+                    <li><a href="account.html" class="nav-link">Account</a></li>
                 </ul>
-            </div>
-        </nav>
+            </nav>
 
-        <!-- Breadcrumb -->
-        <div class="breadcrumb-container">
-            <div class="breadcrumb">
-                <a href="../index.html">Home</a>
-                <span>›</span>
-                <a href="singles.html">Singles</a>
-                <span>›</span>
-                <span id="breadcrumb-card-name">Card Details</span>
-            </div>
-        </div>
-
-        <!-- Main Content Area -->
-        <main class="content-area">
-            <!-- Loading State -->
-            <div id="product-loading" class="loading-container">
-                <div class="loading-spinner">Loading card details...</div>
-            </div>
-
-            <!-- Error State -->
-            <div id="product-error" class="error-container" style="display: none;">
-                <div class="error-message">
-                    <h2>Card Not Found</h2>
-                    <p>Sorry, we couldn't find the card you're looking for.</p>
-                    <a href="singles.html" class="btn btn-primary">Browse All Cards</a>
+            <!-- Search Section with Dropdown -->
+            <div class="search-section">
+                <div class="search-container">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="Search Yu-Gi-Oh! cards..." id="search-dropdown-input">
+                    <div class="search-dropdown" id="search-dropdown" style="display: none;">
+                        <div class="search-results" id="search-results">
+                            <!-- Search results will be populated here -->
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Product Content -->
-            <div id="product-content" class="product-container" style="display: none;">
-                <div class="product-layout">
-                    <!-- Product Images -->
-                    <div class="product-images">
-                        <div class="main-image-container">
-                            <img id="main-card-image" src="" alt="" class="main-card-image" onclick="openImageZoom()">
-                            <div class="image-zoom-hint">Click to zoom</div>
+            <!-- Action Section -->
+            <div class="action-section">
+                <button class="action-btn" onclick="tcgStore.openCart()">
+                    🛒 Cart
+                    <span class="cart-badge" style="display: none;">0</span>
+                </button>
+                <a href="account.html" class="action-btn">
+                    👤 Account
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div style="max-width: 1400px; margin: 0 auto; padding: var(--space-4) var(--space-6);">
+        <nav style="display: flex; align-items: center; gap: var(--space-2); font-size: 0.875rem; color: var(--gray-600);">
+            <a href="../index.html" style="color: var(--primary-color); text-decoration: none;">Home</a>
+            <span>›</span>
+            <a href="singles.html" style="color: var(--primary-color); text-decoration: none;">Singles</a>
+            <span>›</span>
+            <span id="breadcrumb-card-name">Card Details</span>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <main style="max-width: 1400px; margin: 0 auto; padding: 0 var(--space-6) var(--space-12);">
+        
+        <!-- Loading State -->
+        <div id="product-loading" class="loading-container">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Loading card details...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="product-error" class="loading-container" style="display: none;">
+            <p class="loading-text" style="color: var(--error-color);">Card not found. Please try again.</p>
+            <a href="singles.html" style="padding: var(--space-3) var(--space-6); background: var(--primary-color); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 600; margin-top: var(--space-4); display: inline-block;">Browse All Cards</a>
+        </div>
+
+        <!-- Product Content -->
+        <div id="product-content" style="display: none;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); margin-bottom: var(--space-16);">
+                
+                <!-- Product Images -->
+                <div>
+                    <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+                        <div style="aspect-ratio: 3/4; background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: var(--space-4); cursor: pointer;" onclick="openImageZoom()">
+                            <img id="main-card-image" src="" alt="" style="width: 100%; height: 100%; object-fit: contain; padding: var(--space-2);">
                         </div>
-                        <div class="thumbnail-images">
-                            <img id="thumb-normal" src="" alt="Normal view" class="thumbnail active" onclick="switchImage('normal')">
-                            <img id="thumb-small" src="" alt="Small view" class="thumbnail" onclick="switchImage('small')">
+                        <div style="display: flex; gap: var(--space-2); justify-content: center;">
+                            <img id="thumb-normal" src="" alt="Normal view" style="width: 60px; height: 80px; object-fit: contain; border-radius: var(--radius-md); border: 2px solid var(--primary-color); cursor: pointer;" onclick="switchImage('normal')">
+                            <img id="thumb-small" src="" alt="Small view" style="width: 60px; height: 80px; object-fit: contain; border-radius: var(--radius-md); border: 2px solid var(--gray-300); cursor: pointer;" onclick="switchImage('small')">
                         </div>
                     </div>
+                </div>
 
-                    <!-- Product Information -->
-                    <div class="product-info">
-                        <div class="product-header">
-                            <h1 id="product-title" class="product-title"></h1>
-                            <div class="product-meta">
-                                <span id="product-type" class="product-type"></span>
-                                <span id="product-rarity" class="product-rarity"></span>
+                <!-- Product Information -->
+                <div>
+                    <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+                        
+                        <!-- Product Header -->
+                        <div style="margin-bottom: var(--space-6);">
+                            <h1 id="product-title" style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-3); line-height: 1.2;"></h1>
+                            <div style="display: flex; gap: var(--space-4); margin-bottom: var(--space-4);">
+                                <span id="product-type" style="background: var(--primary-color); color: white; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 600;"></span>
+                                <span id="product-rarity" style="background: var(--secondary-color); color: var(--gray-900); padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 600;"></span>
                             </div>
                         </div>
 
                         <!-- Card Stats -->
-                        <div id="card-stats" class="card-stats">
+                        <div id="card-stats" style="margin-bottom: var(--space-6);">
                             <!-- Stats will be populated by JavaScript -->
                         </div>
 
                         <!-- Pricing Section -->
-                        <div class="pricing-section">
-                            <div class="price-display">
-                                <span class="current-price" id="current-price">$0.00</span>
-                                <span class="price-trend" id="price-trend"></span>
+                        <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-6);">
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4);">
+                                <span id="current-price" style="font-size: 2rem; font-weight: 700; color: var(--primary-color);">$0.00</span>
+                                <span id="price-trend" style="font-size: 0.875rem; font-weight: 600; padding: var(--space-1) var(--space-3); border-radius: var(--radius-md);"></span>
                             </div>
                         </div>
 
                         <!-- Add to Cart Section -->
-                        <div class="add-to-cart-section">
-                            <div class="quantity-selector">
-                                <label for="quantity">Quantity:</label>
-                                <div class="quantity-controls">
-                                    <button type="button" class="qty-btn" onclick="changeQuantity(-1)">-</button>
-                                    <input type="number" id="quantity" value="1" min="1" max="99">
-                                    <button type="button" class="qty-btn" onclick="changeQuantity(1)">+</button>
+                        <div style="margin-bottom: var(--space-6);">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-bottom: var(--space-4);">
+                                <div>
+                                    <label style="display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);">Quantity:</label>
+                                    <div style="display: flex; align-items: center; border: 1px solid var(--gray-300); border-radius: var(--radius-md); overflow: hidden;">
+                                        <button style="padding: var(--space-3); background: var(--gray-100); border: none; cursor: pointer;" onclick="changeQuantity(-1)">-</button>
+                                        <input type="number" id="quantity" value="1" min="1" max="99" style="flex: 1; padding: var(--space-3); border: none; text-align: center; font-weight: 600;">
+                                        <button style="padding: var(--space-3); background: var(--gray-100); border: none; cursor: pointer;" onclick="changeQuantity(1)">+</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label style="display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);">Condition:</label>
+                                    <select id="condition" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-size: 0.875rem;">
+                                        <option value="near_mint">Near Mint</option>
+                                        <option value="lightly_played">Lightly Played (-10%)</option>
+                                        <option value="moderately_played">Moderately Played (-20%)</option>
+                                        <option value="heavily_played">Heavily Played (-35%)</option>
+                                        <option value="damaged">Damaged (-50%)</option>
+                                    </select>
                                 </div>
                             </div>
-                            <div class="condition-selector">
-                                <label for="condition">Condition:</label>
-                                <select id="condition" class="condition-select">
-                                    <option value="near_mint">Near Mint</option>
-                                    <option value="lightly_played">Lightly Played (-10%)</option>
-                                    <option value="moderately_played">Moderately Played (-20%)</option>
-                                    <option value="heavily_played">Heavily Played (-35%)</option>
-                                    <option value="damaged">Damaged (-50%)</option>
-                                </select>
-                            </div>
-                            <button id="add-to-cart-btn" class="add-to-cart-btn" onclick="addCurrentCardToCart()">
+                            <button id="add-to-cart-btn" style="width: 100%; padding: var(--space-4); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; font-size: 1.125rem; cursor: pointer; transition: var(--transition-fast); text-transform: uppercase; letter-spacing: 0.05em;" onclick="addCurrentCardToCart()">
                                 Add to Cart
                             </button>
                         </div>
 
                         <!-- Card Description -->
-                        <div class="card-description">
-                            <h3>Card Description</h3>
-                            <p id="card-description-text"></p>
+                        <div>
+                            <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Card Description</h3>
+                            <p id="card-description-text" style="color: var(--gray-700); line-height: 1.6;"></p>
                         </div>
 
-                        <!-- Set Information -->
-                        <div id="set-info" class="set-info">
-                            <h3>Set Information</h3>
-                            <div id="set-details">
-                                <!-- Set details will be populated by JavaScript -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Related Cards Section -->
-                <div class="related-cards-section">
-                    <h2>You May Also Like</h2>
-                    <div id="related-cards" class="related-cards-grid">
-                        <!-- Related cards will be populated by JavaScript -->
                     </div>
                 </div>
             </div>
-        </main>
 
-        <!-- Footer -->
-        <footer class="site-footer">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Firelight Duel Academy</h3>
-                    <p>Your premier destination for Yu-Gi-Oh! singles</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="singles.html">Browse Singles</a></li>
-                        <li><a href="account.html">My Account</a></li>
-                        <li><a href="../index.html">Home</a></li>
-                    </ul>
+            <!-- Related Cards Section -->
+            <div>
+                <h2 style="font-size: 2rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-8); text-align: center;">You May Also Like</h2>
+                <div id="related-cards" class="modern-card-grid">
+                    <!-- Related cards will be populated by JavaScript -->
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Firelight Duel Academy. All rights reserved.</p>
-            </div>
-        </footer>
-    </div>
+        </div>
+
+    </main>
 
     <!-- Image Zoom Modal -->
-    <div id="image-zoom-modal" class="modal" style="display: none;">
-        <div class="modal-content image-zoom-content">
-            <button class="modal-close" onclick="closeImageZoom()">×</button>
-            <img id="zoomed-image" src="" alt="" class="zoomed-card-image">
+    <div id="image-zoom-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: var(--z-modal); align-items: center; justify-content: center;">
+        <div style="position: relative; max-width: 90vw; max-height: 90vh;">
+            <button onclick="closeImageZoom()" style="position: absolute; top: -40px; right: 0; background: none; border: none; color: white; font-size: 2rem; cursor: pointer;">×</button>
+            <img id="zoomed-image" src="" alt="" style="max-width: 100%; max-height: 100%; object-fit: contain;">
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer style="background: var(--gray-900); color: white; padding: var(--space-12) var(--space-6) var(--space-6); margin-top: var(--space-20);">
+        <div style="max-width: 1400px; margin: 0 auto; text-align: center;">
+            <p style="color: rgba(255,255,255,0.6); font-size: 0.875rem;">
+                &copy; 2025 Firelight Duel Academy. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
     <!-- Scripts -->
-    <script src="../assets/js/services/ygoprodeck-api.js"></script>
-    <script src="../assets/js/components/advanced-functionality.js"></script>
-    <script src="../assets/js/pages/yugioh-store.js"></script>
+    <script src="../assets/js/modern-tcg-store.js"></script>
     <script>
         let currentCard = null;
-        let currentImageType = 'normal';
 
         // Load product on page load
         document.addEventListener('DOMContentLoaded', async function() {
             await loadProduct();
+            setupSearchDropdown();
         });
 
         async function loadProduct() {
@@ -218,14 +220,12 @@
             }
 
             try {
-                // Try to get card by ID first, then by name
                 let card = null;
                 if (!isNaN(cardId)) {
-                    card = await window.ygoproAPI.getCardById(cardId);
+                    card = await tcgStore.getCardById(cardId);
                 } else {
-                    // Convert URL-friendly name back to card name
                     const cardName = cardId.replace(/-/g, ' ');
-                    card = await window.ygoproAPI.getCardByName(cardName);
+                    card = await tcgStore.getCardByName(cardName);
                 }
 
                 if (!card) {
@@ -233,7 +233,7 @@
                     return;
                 }
 
-                currentCard = window.ygoproAPI.formatCardForDisplay(card);
+                currentCard = tcgStore.formatCardForDisplay(card);
                 displayProduct(currentCard);
                 await loadRelatedCards(currentCard);
                 
@@ -247,25 +247,20 @@
             document.getElementById('product-loading').style.display = 'none';
             document.getElementById('product-content').style.display = 'block';
 
-            // Update page title and breadcrumb
             document.title = `${card.name} | Firelight Duel Academy`;
             document.getElementById('breadcrumb-card-name').textContent = card.name;
 
-            // Product header
             document.getElementById('product-title').textContent = card.name;
             document.getElementById('product-type').textContent = card.type;
             document.getElementById('product-rarity').textContent = card.rarity;
 
-            // Images
             document.getElementById('main-card-image').src = card.image;
             document.getElementById('main-card-image').alt = card.name;
             document.getElementById('thumb-normal').src = card.image;
             document.getElementById('thumb-small').src = card.imageSmall;
 
-            // Card stats
             displayCardStats(card);
 
-            // Pricing
             document.getElementById('current-price').textContent = `$${card.price}`;
             const trendElement = document.getElementById('price-trend');
             const priceChange = card.priceChange;
@@ -275,11 +270,7 @@
             trendElement.textContent = `${symbol} ${changeText}`;
             trendElement.className = `price-trend ${priceChange.direction}`;
 
-            // Description
             document.getElementById('card-description-text').textContent = card.desc || 'No description available.';
-
-            // Set information
-            displaySetInfo(card);
         }
 
         function displayCardStats(card) {
@@ -288,46 +279,27 @@
 
             if (card.type.includes('Monster')) {
                 if (card.atk !== undefined) {
-                    statsHTML += `<div class="stat"><span class="stat-label">ATK:</span> <span class="stat-value">${card.atk}</span></div>`;
+                    statsHTML += `<div style="display: flex; justify-content: space-between; padding: var(--space-2) 0; border-bottom: 1px solid var(--gray-200);"><span style="font-weight: 600; color: var(--gray-700);">ATK:</span><span style="color: var(--gray-900);">${card.atk}</span></div>`;
                 }
                 if (card.def !== undefined) {
-                    statsHTML += `<div class="stat"><span class="stat-label">DEF:</span> <span class="stat-value">${card.def}</span></div>`;
+                    statsHTML += `<div style="display: flex; justify-content: space-between; padding: var(--space-2) 0; border-bottom: 1px solid var(--gray-200);"><span style="font-weight: 600; color: var(--gray-700);">DEF:</span><span style="color: var(--gray-900);">${card.def}</span></div>`;
                 }
                 if (card.level !== undefined) {
-                    statsHTML += `<div class="stat"><span class="stat-label">Level:</span> <span class="stat-value">${card.level}</span></div>`;
+                    statsHTML += `<div style="display: flex; justify-content: space-between; padding: var(--space-2) 0; border-bottom: 1px solid var(--gray-200);"><span style="font-weight: 600; color: var(--gray-700);">Level:</span><span style="color: var(--gray-900);">${card.level}</span></div>`;
                 }
                 if (card.attribute) {
-                    statsHTML += `<div class="stat"><span class="stat-label">Attribute:</span> <span class="stat-value">${card.attribute}</span></div>`;
+                    statsHTML += `<div style="display: flex; justify-content: space-between; padding: var(--space-2) 0; border-bottom: 1px solid var(--gray-200);"><span style="font-weight: 600; color: var(--gray-700);">Attribute:</span><span style="color: var(--gray-900);">${card.attribute}</span></div>`;
                 }
                 if (card.race) {
-                    statsHTML += `<div class="stat"><span class="stat-label">Type:</span> <span class="stat-value">${card.race}</span></div>`;
+                    statsHTML += `<div style="display: flex; justify-content: space-between; padding: var(--space-2) 0;"><span style="font-weight: 600; color: var(--gray-700);">Type:</span><span style="color: var(--gray-900);">${card.race}</span></div>`;
                 }
             }
 
             if (card.archetype) {
-                statsHTML += `<div class="stat"><span class="stat-label">Archetype:</span> <span class="stat-value">${card.archetype}</span></div>`;
+                statsHTML += `<div style="display: flex; justify-content: space-between; padding: var(--space-2) 0;"><span style="font-weight: 600; color: var(--gray-700);">Archetype:</span><span style="color: var(--gray-900);">${card.archetype}</span></div>`;
             }
 
             statsContainer.innerHTML = statsHTML;
-        }
-
-        function displaySetInfo(card) {
-            const setContainer = document.getElementById('set-details');
-            if (card.sets && card.sets.length > 0) {
-                let setHTML = '';
-                card.sets.slice(0, 3).forEach(set => {
-                    setHTML += `
-                        <div class="set-item">
-                            <div class="set-name">${set.set_name}</div>
-                            <div class="set-code">${set.set_code}</div>
-                            <div class="set-rarity">${set.set_rarity}</div>
-                        </div>
-                    `;
-                });
-                setContainer.innerHTML = setHTML;
-            } else {
-                setContainer.innerHTML = '<p>No set information available.</p>';
-            }
         }
 
         async function loadRelatedCards(card) {
@@ -336,42 +308,32 @@
             try {
                 let relatedCards = [];
                 
-                // Try to get cards from same archetype
                 if (card.archetype) {
-                    relatedCards = await window.ygoproAPI.getCardsByArchetype(card.archetype);
+                    relatedCards = await tcgStore.getCardsByArchetype(card.archetype);
                     relatedCards = relatedCards.filter(c => c.id !== card.id).slice(0, 4);
                 }
                 
-                // If not enough related cards, get some meta cards
                 if (relatedCards.length < 4) {
-                    const metaCards = await window.ygoproAPI.getMetaCards();
+                    const metaCards = await tcgStore.getMetaCards();
                     const additionalCards = metaCards.filter(c => c.id !== card.id).slice(0, 4 - relatedCards.length);
                     relatedCards = [...relatedCards, ...additionalCards];
                 }
 
                 if (relatedCards.length === 0) {
-                    relatedContainer.innerHTML = '<p>No related cards found.</p>';
+                    relatedContainer.innerHTML = '<p style="text-align: center; color: var(--gray-600);">No related cards found.</p>';
                     return;
                 }
 
-                let relatedHTML = '';
+                relatedContainer.innerHTML = '';
                 relatedCards.forEach(relatedCard => {
-                    const formatted = window.ygoproAPI.formatCardForDisplay(relatedCard);
-                    relatedHTML += `
-                        <div class="related-card" onclick="window.location.href='${window.ygoproAPI.getProductPageURL(formatted)}'">
-                            <img src="${formatted.imageSmall}" alt="${formatted.name}">
-                            <div class="related-card-info">
-                                <h4>${formatted.name}</h4>
-                                <p class="related-card-price">$${formatted.price}</p>
-                            </div>
-                        </div>
-                    `;
+                    const formatted = tcgStore.formatCardForDisplay(relatedCard);
+                    const cardElement = tcgStore.createModernCardElement(formatted);
+                    relatedContainer.appendChild(cardElement);
                 });
                 
-                relatedContainer.innerHTML = relatedHTML;
             } catch (error) {
                 console.error('Error loading related cards:', error);
-                relatedContainer.innerHTML = '<p>Unable to load related cards.</p>';
+                relatedContainer.innerHTML = '<p style="text-align: center; color: var(--gray-600);">Unable to load related cards.</p>';
             }
         }
 
@@ -391,18 +353,18 @@
             if (!currentCard) return;
             
             const mainImage = document.getElementById('main-card-image');
-            const thumbnails = document.querySelectorAll('.thumbnail');
+            const thumbNormal = document.getElementById('thumb-normal');
+            const thumbSmall = document.getElementById('thumb-small');
             
-            thumbnails.forEach(thumb => thumb.classList.remove('active'));
+            thumbNormal.style.borderColor = '#d1d5db';
+            thumbSmall.style.borderColor = '#d1d5db';
             
             if (type === 'normal') {
                 mainImage.src = currentCard.image;
-                document.getElementById('thumb-normal').classList.add('active');
-                currentImageType = 'normal';
+                thumbNormal.style.borderColor = 'var(--primary-color)';
             } else if (type === 'small') {
                 mainImage.src = currentCard.imageSmall;
-                document.getElementById('thumb-small').classList.add('active');
-                currentImageType = 'small';
+                thumbSmall.style.borderColor = 'var(--primary-color)';
             }
         }
 
@@ -427,7 +389,6 @@
             const quantity = parseInt(document.getElementById('quantity').value) || 1;
             const condition = document.getElementById('condition').value;
             
-            // Calculate price based on condition
             let price = parseFloat(currentCard.price);
             const conditionMultipliers = {
                 'near_mint': 1.0,
@@ -439,19 +400,58 @@
             
             price *= conditionMultipliers[condition] || 1.0;
             
-            // Add to cart (simplified)
-            console.log(`Adding ${quantity}x ${currentCard.name} (${condition}) to cart for $${(price * quantity).toFixed(2)}`);
-            
-            // Update cart count
-            const cartCount = document.querySelector('.cart-count');
-            const currentCount = parseInt(cartCount.textContent) || 0;
-            cartCount.textContent = currentCount + quantity;
-            
-            // Show success message
-            alert(`${quantity}x ${currentCard.name} added to cart!`);
+            for (let i = 0; i < quantity; i++) {
+                tcgStore.addToCart(currentCard.name, price.toFixed(2), currentCard.image);
+            }
         }
 
-        // Close modal when clicking outside
+        function setupSearchDropdown() {
+            const searchInput = document.getElementById('search-dropdown-input');
+            const dropdown = document.getElementById('search-dropdown');
+            const results = document.getElementById('search-results');
+
+            searchInput.addEventListener('input', tcgStore.debounce(async function() {
+                const query = searchInput.value.trim();
+                if (query.length < 2) {
+                    dropdown.style.display = 'none';
+                    return;
+                }
+
+                try {
+                    const cards = await tcgStore.searchCards(query);
+                    if (cards.length > 0) {
+                        results.innerHTML = '';
+                        cards.slice(0, 5).forEach(card => {
+                            const formatted = tcgStore.formatCardForDisplay(card);
+                            const resultItem = document.createElement('div');
+                            resultItem.style.cssText = 'display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); cursor: pointer; border-bottom: 1px solid var(--gray-200);';
+                            resultItem.innerHTML = `
+                                <img src="${formatted.imageSmall}" alt="${formatted.name}" style="width: 40px; height: 56px; object-fit: contain; border-radius: var(--radius-sm);">
+                                <div>
+                                    <div style="font-weight: 600; color: var(--gray-900);">${formatted.name}</div>
+                                    <div style="font-size: 0.875rem; color: var(--gray-600);">${formatted.type} - $${formatted.price}</div>
+                                </div>
+                            `;
+                            resultItem.onclick = () => {
+                                window.location.href = `product.html?id=${formatted.id}`;
+                            };
+                            results.appendChild(resultItem);
+                        });
+                        dropdown.style.display = 'block';
+                    } else {
+                        dropdown.style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Search error:', error);
+                    dropdown.style.display = 'none';
+                }
+            }, 300));
+
+            searchInput.addEventListener('blur', () => {
+                setTimeout(() => dropdown.style.display = 'none', 200);
+            });
+        }
+
         window.onclick = function(event) {
             const modal = document.getElementById('image-zoom-modal');
             if (event.target === modal) {
@@ -459,5 +459,32 @@
             }
         }
     </script>
+
+    <style>
+        .search-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            z-index: var(--z-dropdown);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .search-results div:hover {
+            background: var(--gray-50);
+        }
+
+        @media (max-width: 768px) {
+            main > div:first-child {
+                grid-template-columns: 1fr !important;
+                gap: var(--space-8) !important;
+            }
+        }
+    </style>
 </body>
 </html>
