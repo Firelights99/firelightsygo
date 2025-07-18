@@ -1,6 +1,6 @@
-# Firelight Sygo TCG Website
+# Firelights YGO TCG Website
 
-A professional recreation of the Firelight Sygo Trading Card Game website with modern web development practices and organized file structure.
+A professional recreation of the Firelights YGO Trading Card Game website with modern web development practices and organized file structure.
 
 ## 🚀 Live Demo
 
@@ -178,7 +178,7 @@ The site is automatically deployed via GitHub Actions:
 
 ## 📄 License
 
-This project is created for educational and demonstration purposes. All content related to Firelight Sygo TCG is property of the respective owners.
+This project is created for educational and demonstration purposes. All content related to Firelights YGO TCG is property of the respective owners.
 
 ## 📞 Contact
 
@@ -186,4 +186,4 @@ For questions about this recreation project, please open an issue on GitHub.
 
 ---
 
-**Note**: This is a static recreation of the original Firelight Sygo website for demonstration purposes. No actual e-commerce functionality is implemented in this version.
+**Note**: This is a static recreation of the original Firelights YGO website for demonstration purposes. No actual e-commerce functionality is implemented in this version.

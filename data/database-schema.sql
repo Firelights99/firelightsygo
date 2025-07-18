@@ -1,4 +1,4 @@
--- Firelight Sygo TCG Database Schema
+-- Firelights YGO TCG Database Schema
 -- This file defines the database structure for future backend implementation
 
 -- Users table for customer accounts
@@ -227,7 +227,7 @@ CREATE TABLE analytics_events (
 
 -- Insert default data
 INSERT INTO site_settings (setting_key, setting_value, setting_type, description, is_public) VALUES
-('site_name', 'Firelight Sygo TCG', 'string', 'Site name', true),
+('site_name', 'Firelights YGO TCG', 'string', 'Site name', true),
 ('site_description', 'Superior service, personalized attention for TCG enthusiasts', 'string', 'Site description', true),
 ('currency', 'CAD', 'string', 'Default currency', true),
 ('tax_rate', '0.13', 'number', 'Tax rate (HST for Ontario)', false),

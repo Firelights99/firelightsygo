@@ -1,4 +1,4 @@
-// Main JavaScript for Firelight Sygo TCG Website
+// Main JavaScript for Firelights YGO TCG Website
 class FirelightSygoSite {
     constructor() {
         this.cart = [];
