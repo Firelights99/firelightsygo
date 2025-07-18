@@ -1,0 +1,656 @@
+/* Product Page Styles - Inspired by 401 Games */
+
+/* Breadcrumb Navigation */
+.breadcrumb-container {
+    background: var(--light-bg);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.75rem 0;
+    margin-bottom: 2rem;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.breadcrumb a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.breadcrumb a:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+.breadcrumb-separator {
+    color: var(--text-muted);
+    font-weight: 300;
+}
+
+/* Loading and Error States */
+.loading-container, .error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--border-color);
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error-message h2 {
+    color: var(--danger-color);
+    margin-bottom: 1rem;
+}
+
+.error-message p {
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+
+/* Product Layout */
+.product-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-bottom: 3rem;
+}
+
+/* Product Images */
+.product-images {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+}
+
+.main-image-container {
+    position: relative;
+    margin-bottom: 1rem;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.main-image-container:hover {
+    transform: scale(1.02);
+}
+
+.main-card-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    max-height: 600px;
+    object-fit: contain;
+    background: white;
+}
+
+.image-zoom-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.main-image-container:hover .image-zoom-overlay {
+    opacity: 1;
+}
+
+.zoom-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.thumbnail-images {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.thumbnail {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.thumbnail.active {
+    border-color: var(--primary-color);
+}
+
+.thumbnail:hover {
+    border-color: var(--primary-hover);
+}
+
+/* Product Information */
+.product-info {
+    padding: 1rem 0;
+}
+
+.product-header {
+    margin-bottom: 2rem;
+}
+
+.product-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+
+.product-meta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.product-type, .product-rarity {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.product-type {
+    background: var(--primary-color);
+    color: white;
+}
+
+.product-rarity {
+    background: var(--secondary-color);
+    color: white;
+}
+
+/* Card Stats */
+.card-stats {
+    background: var(--light-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+/* Pricing Section */
+.pricing-section {
+    margin-bottom: 2rem;
+}
+
+.pricing-section h3 {
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+}
+
+.pricing-table {
+    background: white;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.pricing-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr auto;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s ease;
+}
+
+.pricing-row:last-child {
+    border-bottom: none;
+}
+
+.pricing-row:hover {
+    background: var(--light-bg);
+}
+
+.pricing-header {
+    background: var(--primary-color);
+    color: white;
+    font-weight: 600;
+}
+
+.pricing-header:hover {
+    background: var(--primary-color);
+}
+
+.condition-name {
+    font-weight: 500;
+}
+
+.condition-price {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--success-color);
+}
+
+.stock-status {
+    font-size: 0.85rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.in-stock {
+    background: var(--success-light);
+    color: var(--success-color);
+}
+
+.low-stock {
+    background: var(--warning-light);
+    color: var(--warning-color);
+}
+
+.out-of-stock {
+    background: var(--danger-light);
+    color: var(--danger-color);
+}
+
+.quick-add-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    border-radius: var(--border-radius);
+    border: none;
+    background: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.quick-add-btn:hover {
+    background: var(--primary-hover);
+}
+
+.quick-add-btn:disabled {
+    background: var(--text-muted);
+    cursor: not-allowed;
+}
+
+/* Add to Cart Section */
+.add-to-cart-section {
+    background: var(--light-bg);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+}
+
+.quantity-selector, .condition-selector {
+    margin-bottom: 1.5rem;
+}
+
+.quantity-selector label, .condition-selector label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.qty-btn {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border-color);
+    background: white;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.qty-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+#quantity {
+    width: 80px;
+    height: 40px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.condition-select {
+    width: 100%;
+    height: 40px;
+    padding: 0 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    background: white;
+}
+
+.btn-large {
+    width: 100%;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Card Description */
+.card-description {
+    margin-bottom: 2rem;
+}
+
+.card-description h3 {
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+}
+
+#card-description-text {
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+/* Set Information */
+.set-info {
+    background: var(--light-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.set-info h3 {
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+}
+
+.set-detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.set-detail:last-child {
+    border-bottom: none;
+}
+
+.set-label {
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.set-value {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+/* Related Cards */
+.related-cards-section {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.related-cards-section h2 {
+    margin-bottom: 2rem;
+    color: var(--text-dark);
+}
+
+.related-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.related-card {
+    background: white;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.related-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+}
+
+.related-card-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.related-card-info {
+    padding: 1rem;
+}
+
+.related-card-name {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+    font-size: 0.9rem;
+    line-height: 1.3;
+}
+
+.related-card-price {
+    color: var(--success-color);
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* Image Zoom Modal */
+.image-zoom-content {
+    max-width: 90vw;
+    max-height: 90vh;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.zoomed-card-image {
+    max-width: 100%;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: var(--border-radius);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .product-layout {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .product-images {
+        position: static;
+    }
+    
+    .pricing-row {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    
+    .pricing-header {
+        display: none;
+    }
+    
+    .related-cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .product-title {
+        font-size: 1.5rem;
+    }
+    
+    .product-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .add-to-cart-section {
+        padding: 1.5rem;
+    }
+    
+    .quantity-controls {
+        justify-content: center;
+    }
+    
+    .breadcrumb {
+        font-size: 0.8rem;
+    }
+    
+    .breadcrumb-container {
+        padding: 0.5rem 0;
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0 1rem;
+    }
+    
+    .product-title {
+        font-size: 1.3rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .related-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .thumbnail-images {
+        justify-content: center;
+    }
+    
+    .thumbnail {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+/* Color Variables for Different Card Types */
+.monster-card .product-type {
+    background: #ff6b35;
+}
+
+.spell-card .product-type {
+    background: #29a329;
+}
+
+.trap-card .product-type {
+    background: #d946ef;
+}
+
+.fusion-card .product-type {
+    background: #8b5cf6;
+}
+
+.synchro-card .product-type {
+    background: #f8f8f8;
+    color: #1f2937;
+}
+
+.xyz-card .product-type {
+    background: #1f2937;
+}
+
+.link-card .product-type {
+    background: #0ea5e9;
+}
+
+/* Rarity Colors */
+.common-rarity {
+    background: #6b7280;
+}
+
+.rare-rarity {
+    background: #3b82f6;
+}
+
+.super-rare-rarity {
+    background: #f59e0b;
+}
+
+.ultra-rare-rarity {
+    background: #ef4444;
+}
+
+.secret-rare-rarity {
+    background: linear-gradient(45deg, #8b5cf6, #ec4899);
+}

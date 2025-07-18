@@ -8,7 +8,9 @@ class TCGPlayerApiService {
         this.bearerToken = null;
         this.tokenExpiry = null;
         this.cache = new Map();
-        this.cacheExpiry = 5 * 60 * 1000; // 5 minutes for pricing data
+        this.cacheExpiry = 2 * 24 * 60 * 60 * 1000; // 2 days for pricing data
+        this.pricingCacheKey = 'tcgplayer_pricing_cache';
+        this.loadPricingCache();
         this.exchangeRate = 1.35; // USD to CAD - updated automatically
         this.lastExchangeRateUpdate = null;
     }
@@ -123,6 +125,45 @@ class TCGPlayerApiService {
         return this.exchangeRate;
     }
 
+    // Load pricing cache from localStorage
+    loadPricingCache() {
+        try {
+            const cachedData = localStorage.getItem(this.pricingCacheKey);
+            if (cachedData) {
+                const parsedData = JSON.parse(cachedData);
+                
+                // Restore cache entries that haven't expired
+                Object.entries(parsedData).forEach(([key, value]) => {
+                    if (Date.now() - value.timestamp < this.cacheExpiry) {
+                        this.cache.set(key, value);
+                    }
+                });
+                
+                console.log(`Loaded ${this.cache.size} cached pricing entries from localStorage`);
+            }
+        } catch (error) {
+            console.warn('Failed to load pricing cache from localStorage:', error);
+        }
+    }
+
+    // Save pricing cache to localStorage
+    savePricingCache() {
+        try {
+            const cacheData = {};
+            
+            // Only save pricing-related cache entries
+            this.cache.forEach((value, key) => {
+                if (key.startsWith('pricing_') || key.startsWith('product_')) {
+                    cacheData[key] = value;
+                }
+            });
+            
+            localStorage.setItem(this.pricingCacheKey, JSON.stringify(cacheData));
+        } catch (error) {
+            console.warn('Failed to save pricing cache to localStorage:', error);
+        }
+    }
+
     // Convert USD to CAD
     convertToCAD(usdAmount) {
         return usdAmount * this.exchangeRate;
@@ -156,6 +197,9 @@ class TCGPlayerApiService {
                 timestamp: Date.now()
             });
 
+            // Save to localStorage for persistence
+            this.savePricingCache();
+
             return products;
         } catch (error) {
             console.error('Error searching TCGPlayer products:', error);
@@ -182,6 +226,9 @@ class TCGPlayerApiService {
                 data: product,
                 timestamp: Date.now()
             });
+
+            // Save to localStorage for persistence
+            this.savePricingCache();
 
             return product;
         } catch (error) {
@@ -223,6 +270,9 @@ class TCGPlayerApiService {
                     data: cadPricing,
                     timestamp: Date.now()
                 });
+
+                // Save to localStorage for persistence
+                this.savePricingCache();
 
                 return cadPricing;
             }
@@ -288,6 +338,9 @@ class TCGPlayerApiService {
 
                     cachedResults.push(cadPricing);
                 });
+
+                // Save batch updates to localStorage
+                this.savePricingCache();
             } catch (error) {
                 console.error('Error fetching batch pricing:', error);
             }
@@ -422,15 +475,55 @@ class TCGPlayerApiService {
     // Clear pricing cache
     clearCache() {
         this.cache.clear();
+        localStorage.removeItem(this.pricingCacheKey);
+        console.log('Pricing cache cleared');
     }
 
     // Get cache statistics
     getCacheStats() {
+        const pricingEntries = Array.from(this.cache.keys()).filter(key => 
+            key.startsWith('pricing_') || key.startsWith('product_')
+        );
+        
+        const oldestEntry = pricingEntries.reduce((oldest, key) => {
+            const entry = this.cache.get(key);
+            return !oldest || entry.timestamp < oldest ? entry.timestamp : oldest;
+        }, null);
+
+        const newestEntry = pricingEntries.reduce((newest, key) => {
+            const entry = this.cache.get(key);
+            return !newest || entry.timestamp > newest ? entry.timestamp : newest;
+        }, null);
+
         return {
-            size: this.cache.size,
+            totalCacheSize: this.cache.size,
+            pricingCacheSize: pricingEntries.length,
             exchangeRate: this.exchangeRate,
             lastExchangeUpdate: this.lastExchangeRateUpdate,
-            tokenExpiry: this.tokenExpiry
+            tokenExpiry: this.tokenExpiry,
+            cacheExpiry: this.cacheExpiry,
+            cacheDurationDays: this.cacheExpiry / (24 * 60 * 60 * 1000),
+            oldestPriceData: oldestEntry ? new Date(oldestEntry).toISOString() : null,
+            newestPriceData: newestEntry ? new Date(newestEntry).toISOString() : null
+        };
+    }
+
+    // Get user-friendly cache information
+    getCacheInfo() {
+        const stats = this.getCacheStats();
+        const now = Date.now();
+        
+        let nextUpdateTime = null;
+        if (stats.newestPriceData) {
+            nextUpdateTime = new Date(new Date(stats.newestPriceData).getTime() + this.cacheExpiry);
+        }
+
+        return {
+            message: `Prices are cached for ${stats.cacheDurationDays} days to ensure stability`,
+            cachedPrices: stats.pricingCacheSize,
+            nextUpdate: nextUpdateTime ? nextUpdateTime.toLocaleDateString('en-CA') : 'When new cards are viewed',
+            priceStability: 'Prices remain consistent during cache period for better shopping experience',
+            lastRefresh: stats.newestPriceData ? new Date(stats.newestPriceData).toLocaleDateString('en-CA') : 'No cached prices'
         };
     }
 

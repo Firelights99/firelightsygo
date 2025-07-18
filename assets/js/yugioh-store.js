@@ -52,6 +52,7 @@ class YugiohStore {
         if (cartModal) {
             cartModal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
+            this.updateCartDisplay();
         }
     }
 
@@ -61,6 +62,57 @@ class YugiohStore {
             cartModal.style.display = 'none';
             document.body.style.overflow = 'auto';
         }
+    }
+
+    clearCart() {
+        this.cart = [];
+        this.saveCart();
+        this.updateCartDisplay();
+        this.showNotification('Cart cleared', 'info');
+    }
+
+    getCartTotal() {
+        return this.cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    }
+
+    getCartItemCount() {
+        return this.cart.reduce((count, item) => count + item.quantity, 0);
+    }
+
+    applyDiscount(code) {
+        // Placeholder for discount functionality
+        const discountCodes = {
+            'WELCOME10': 0.10,
+            'STUDENT15': 0.15,
+            'BULK20': 0.20
+        };
+
+        const discount = discountCodes[code.toUpperCase()];
+        if (discount) {
+            this.showNotification(`Discount applied: ${(discount * 100)}% off!`, 'success');
+            return discount;
+        } else {
+            this.showNotification('Invalid discount code', 'error');
+            return 0;
+        }
+    }
+
+    proceedToCheckout() {
+        if (this.cart.length === 0) {
+            this.showNotification('Your cart is empty', 'warning');
+            return;
+        }
+
+        // Store cart for checkout process
+        localStorage.setItem('checkout_cart', JSON.stringify(this.cart));
+        
+        // Navigate to checkout (placeholder)
+        this.showNotification('Redirecting to checkout...', 'info');
+        
+        // In a real implementation, this would redirect to a checkout page
+        setTimeout(() => {
+            window.location.href = 'checkout.html';
+        }, 1500);
     }
 
     addToCart(card, condition = 'near_mint', quantity = 1) {
@@ -275,6 +327,11 @@ class YugiohStore {
 
     // Card Details
     async showCardDetails(cardId) {
+        // Navigate to product page instead of showing modal
+        window.location.href = `product.html?id=${cardId}`;
+    }
+
+    async showCardDetailsModal(cardId) {
         try {
             this.showNotification('Loading card details...', 'info');
             
@@ -509,6 +566,20 @@ function showLogin() {
 function browseArchetype(archetype) {
     if (window.yugiohStore) {
         window.yugiohStore.browseArchetype(archetype);
+    }
+}
+
+function applyDiscountCode() {
+    const discountInput = document.getElementById('discount-code');
+    if (discountInput && window.yugiohStore) {
+        const code = discountInput.value.trim();
+        if (code) {
+            const discount = window.yugiohStore.applyDiscount(code);
+            if (discount > 0) {
+                window.yugiohStore.updateCartTotals(discount);
+                discountInput.value = '';
+            }
+        }
     }
 }
 

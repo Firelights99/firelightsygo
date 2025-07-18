@@ -55,12 +55,28 @@
                     <p class="empty-cart">Your cart is empty. Start browsing our Yu-Gi-Oh! singles!</p>
                 </div>
                 <div class="cart-summary" style="display: none;">
-                    <div class="cart-total">
-                        <span>Subtotal: $<span id="cart-subtotal">0.00</span></span>
+                    <div class="cart-totals">
+                        <div class="cart-subtotal">
+                            <span>Subtotal: $<span id="cart-subtotal">0.00</span></span>
+                        </div>
+                        <div class="cart-discount" id="cart-discount" style="display: none;">
+                            <span>Discount: -$<span id="discount-amount">0.00</span></span>
+                        </div>
+                        <div class="cart-shipping">
+                            <span>Shipping: <span id="shipping-cost">FREE</span></span>
+                        </div>
+                        <div class="cart-total">
+                            <strong>Total: $<span id="cart-total">0.00</span></strong>
+                        </div>
+                    </div>
+                    <div class="discount-section">
+                        <input type="text" id="discount-code" placeholder="Discount code" class="discount-input">
+                        <button onclick="applyDiscountCode()" class="apply-discount-btn">Apply</button>
                     </div>
                     <div class="cart-buttons">
-                        <button class="checkout-btn">Secure Checkout</button>
+                        <button class="checkout-btn" onclick="yugiohStore.proceedToCheckout()">Secure Checkout</button>
                         <button class="continue-btn" onclick="closeCart()">Continue Shopping</button>
+                        <button class="clear-cart-btn" onclick="yugiohStore.clearCart()">Clear Cart</button>
                     </div>
                 </div>
                 <div class="payment-info">

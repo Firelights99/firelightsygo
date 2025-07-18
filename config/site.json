@@ -5,7 +5,7 @@
     "description": "Your premier destination for Yu-Gi-Oh! sealed products, singles, and competitive play. Buy, sell, and trade with confidence.",
     "url": "https://firelights99.github.io/firelightsygo/",
     "author": "Firelight Duel Academy",
-    "version": "3.0.0",
+    "version": "3.2.0",
     "logo": "https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=200&h=200&fit=crop&crop=center",
     "favicon": "https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=32&h=32&fit=crop&crop=center"
   },
@@ -62,6 +62,14 @@
     "crystal_commerce": "https://api.crystalcommerce.com/v1/",
     "card_images": "https://images.ygoprodeck.com/images/cards/",
     "set_images": "https://images.ygoprodeck.com/images/sets/"
+  },
+  "pricing": {
+    "cache_duration_days": 2,
+    "update_frequency": "Every 2 days",
+    "last_price_update": null,
+    "auto_update": true,
+    "fallback_pricing": true,
+    "price_stability": "Prices remain stable for 2 days to provide consistent shopping experience"
   },
   "crystal_commerce": {
     "enabled": false,

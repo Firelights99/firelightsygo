@@ -1,6 +1,6 @@
-# Firelights YGO TCG Website
+# Firelight Duel Academy
 
-A professional recreation of the Firelights YGO Trading Card Game website with modern web development practices and organized file structure.
+A comprehensive Yu-Gi-Oh! Trading Card Game e-commerce platform with modern web development practices, API integrations, and professional store management features.
 
 ## 🚀 Live Demo
 
@@ -14,58 +14,101 @@ Harrison-Website/
 ├── assets/                     # Static assets
 │   ├── css/
 │   │   ├── main.css           # Main stylesheet with modern design
-│   │   └── styles.css         # Legacy stylesheet (backup)
+│   │   ├── styles.css         # Legacy stylesheet (backup)
+│   │   ├── square-style.css   # Square payment integration styles
+│   │   ├── exact-square.css   # Square UI components
+│   │   └── yugioh-store.css   # Yu-Gi-Oh! store specific styles
 │   ├── js/
 │   │   ├── main.js            # Enhanced JavaScript with ES6 classes
-│   │   └── script.js          # Legacy script (backup)
+│   │   ├── script.js          # Legacy script (backup)
+│   │   ├── square-functionality.js    # Square payment processing
+│   │   ├── yugioh-store.js    # Yu-Gi-Oh! store functionality
+│   │   ├── yugioh-api-service.js      # Yu-Gi-Oh! API integration
+│   │   ├── tcgplayer-api-service.js   # TCGPlayer API integration
+│   │   └── crystal-commerce-integration.js # Crystal Commerce API
 │   ├── images/                # Image assets
 │   └── icons/                 # Icon assets
+├── admin/                     # Administrative interfaces
+│   ├── crystal-commerce-admin.html    # Crystal Commerce management
+│   └── tcgplayer-setup.html   # TCGPlayer configuration
 ├── src/                       # Source code (for future expansion)
 │   ├── components/            # Reusable components
 │   └── pages/                 # Page-specific code
-├── data/                      # Data files
-│   └── membership.json        # Membership plan data
+├── data/                      # Data files and schemas
+│   ├── membership.json        # Membership plan data
+│   ├── database-schema.sql    # Main database schema
+│   └── yugioh-singles-schema.sql # Yu-Gi-Oh! singles database
 ├── config/                    # Configuration files
-│   └── site.json             # Site configuration
+│   └── site.json             # Comprehensive site configuration
 ├── .github/
 │   └── workflows/
 │       └── deploy.yml         # GitHub Actions deployment
 ├── index.html                 # Main HTML file
+├── shop.html                  # Yu-Gi-Oh! store page
 ├── .nojekyll                  # GitHub Pages configuration
 └── README.md                  # This file
 ```
 
 ## 🎯 Features
 
-### Core Functionality
-- **Responsive Design**: Mobile-first approach with modern CSS Grid and Flexbox
-- **Shopping Cart**: Interactive cart modal with smooth animations
-- **Membership System**: Structured membership plans with JSON data
-- **Smooth Scrolling**: Enhanced navigation with scroll animations
-- **Professional Animations**: Intersection Observer API for scroll-triggered effects
+### E-commerce Functionality
+- **Yu-Gi-Oh! Store**: Complete trading card store with product catalog
+- **Product Pages**: Professional individual card pages with detailed information
+- **Shopping Cart**: Comprehensive cart with discount codes, shipping calculation, and totals
+- **Payment Processing**: Square payment integration for secure transactions
+- **Inventory Management**: Real-time stock tracking and updates
+- **Buylist System**: Card buylist with competitive pricing
+- **Store Credit**: Customer credit system with bonus incentives
+- **Price Stability**: 2-day price caching for consistent shopping experience
+
+### API Integrations
+- **Yu-Gi-Oh! Database**: Complete card database via YGOPRODeck API
+- **TCGPlayer Integration**: Real-time pricing and market data
+- **Crystal Commerce**: Professional e-commerce platform integration
+- **Card Images**: High-quality card and set images
+- **Price Tracking**: Automated price updates and monitoring
 
 ### Technical Features
 - **ES6+ JavaScript**: Modern JavaScript with classes and modules
+- **Responsive Design**: Mobile-first approach with CSS Grid and Flexbox
+- **Database Schema**: Comprehensive SQL schemas for data management
+- **Admin Interface**: Administrative tools for store management
 - **Accessibility**: ARIA labels, semantic HTML, keyboard navigation
 - **Performance**: Optimized CSS and JavaScript with minimal dependencies
-- **SEO Optimized**: Meta tags, structured data, semantic markup
-- **Cross-browser Compatible**: Tested on modern browsers
 
 ### Business Features
-- **Secure Checkout**: Integration ready for Square payment processing
-- **Membership Plans**: Structured data for different membership tiers
-- **Returns Policy**: Comprehensive policy information
-- **Business Hours**: Dynamic hours display
-- **Payment Methods**: Support for multiple payment options
+- **Multi-Currency Support**: Canadian Dollar (CAD) with localization
+- **Membership System**: Structured membership plans with benefits
+- **Tournament Support**: Competitive play organization tools
+- **Wishlist System**: Customer wishlist functionality
+- **Trade System**: Card trading between customers
+- **Mobile Optimization**: Full mobile shopping experience
 
 ## 🛠️ Technology Stack
 
-- **Frontend**: HTML5, CSS3, Vanilla JavaScript (ES6+)
-- **Styling**: Modern CSS with custom properties, Grid, Flexbox
+### Frontend
+- **HTML5**: Semantic markup with accessibility features
+- **CSS3**: Modern CSS with custom properties, Grid, Flexbox
+- **JavaScript**: ES6+ with classes, modules, and async/await
 - **Animations**: CSS transitions, transforms, Intersection Observer API
-- **Deployment**: GitHub Pages with GitHub Actions
-- **Data**: JSON configuration files
-- **Icons**: Unicode emojis (future: SVG icons)
+
+### Backend & APIs
+- **Yu-Gi-Oh! Database**: YGOPRODeck API for card data
+- **TCGPlayer API**: Market pricing and inventory data
+- **Crystal Commerce**: E-commerce platform integration
+- **Square API**: Payment processing and POS integration
+
+### Data Management
+- **JSON Configuration**: Site settings and business data
+- **SQL Database**: Comprehensive schemas for inventory and users
+- **Local Storage**: Client-side data persistence
+- **Session Management**: User authentication and cart persistence
+
+### Deployment & DevOps
+- **GitHub Pages**: Static site hosting
+- **GitHub Actions**: Automated deployment pipeline
+- **Version Control**: Git with semantic versioning
+- **Environment Configuration**: Multi-environment support
 
 ## 🎨 Design System
 
@@ -156,17 +199,20 @@ The site is automatically deployed via GitHub Actions:
 ## 📈 Future Enhancements
 
 ### Planned Features
-- **E-commerce Integration**: Full Square checkout implementation
-- **User Accounts**: Member login and dashboard
-- **Inventory Management**: Real-time stock updates
-- **Search Functionality**: Product search and filtering
-- **Blog System**: News and updates section
+- **Mobile App**: React Native companion app
+- **Advanced Search**: AI-powered card search and recommendations
+- **Tournament Management**: Complete tournament organization system
+- **Live Chat Support**: Real-time customer support
+- **Subscription Boxes**: Monthly card subscription service
+- **Auction System**: Card auction functionality
 
 ### Technical Improvements
 - **Progressive Web App**: Service worker and offline support
-- **Advanced Analytics**: User behavior tracking
-- **A/B Testing**: Conversion optimization
-- **CDN Integration**: Global content delivery
+- **Advanced Analytics**: User behavior tracking and conversion optimization
+- **CDN Integration**: Global content delivery network
+- **Microservices**: API gateway and service mesh architecture
+- **Real-time Updates**: WebSocket integration for live inventory
+- **Machine Learning**: Price prediction and demand forecasting
 
 ## 🤝 Contributing
 
@@ -184,6 +230,50 @@ This project is created for educational and demonstration purposes. All content 
 
 For questions about this recreation project, please open an issue on GitHub.
 
+## 🔧 API Configuration
+
+### Yu-Gi-Oh! Database API
+- **Endpoint**: https://db.ygoprodeck.com/api/v7/
+- **Features**: Complete card database, set information, card images
+- **Rate Limits**: No authentication required, reasonable usage expected
+
+### TCGPlayer API
+- **Endpoint**: https://api.tcgplayer.com/
+- **Features**: Real-time pricing, market data, inventory tracking
+- **Authentication**: API key required (configured in admin panel)
+
+### Crystal Commerce Integration
+- **Endpoint**: https://api.crystalcommerce.com/v1/
+- **Features**: Complete e-commerce platform, POS system, multi-channel sales
+- **Cost**: $50-100+ monthly subscription
+- **Support**: Daily support calls at 11am and 3pm PT
+- **Phone**: (866) 213-4611
+
+## 💳 Payment Processing
+
+### Square Integration
+- **Features**: Secure payment processing, POS integration, inventory sync
+- **Supported Methods**: Credit/debit cards, Apple Pay, Google Pay
+- **Currency**: Canadian Dollar (CAD)
+- **Fees**: Standard Square processing fees apply
+
+### Store Credit System
+- **Bonus**: 10% bonus when selling cards for store credit
+- **Usage**: Can be applied to any purchase
+- **Tracking**: Integrated with customer accounts
+
+## 📦 Shipping & Policies
+
+### Shipping Rates (CAD)
+- **Free Shipping**: Orders $75.00+
+- **Standard**: $8.99 (5-7 business days)
+- **Expedited**: $16.99 (2-3 business days)
+
+### Store Policies
+- **Returns**: 14-day return policy on sealed products only
+- **Buylist**: Competitive prices updated daily
+- **Store Credit**: 10% bonus for store credit sales
+
 ---
 
-**Note**: This is a static recreation of the original Firelights YGO website for demonstration purposes. No actual e-commerce functionality is implemented in this version.
+**Note**: This is a fully functional Yu-Gi-Oh! trading card store with real e-commerce capabilities, API integrations, and professional store management features.
