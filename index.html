@@ -163,110 +163,8 @@
                     <h2>Meta Cards & Prices</h2>
                     <p>Current competitive staples and their market prices</p>
                 </div>
-                <div class="meta-cards-grid">
-                    <div class="meta-card">
-                        <img src="https://images.ygoprodeck.com/images/cards/76375976.jpg" alt="Snake-Eye Ash">
-                        <div class="card-info">
-                            <h3>Snake-Eye Ash</h3>
-                            <p class="card-type">Effect Monster</p>
-                            <div class="price-info">
-                                <span class="current-price">$89.99</span>
-                                <span class="price-trend up">↗ +$5.00</span>
-                            </div>
-                            <button class="add-to-cart-btn" onclick="addToCart('Snake-Eye Ash', 89.99)">Add to Cart</button>
-                        </div>
-                    </div>
-                    
-                    <div class="meta-card">
-                        <img src="https://images.ygoprodeck.com/images/cards/28776350.jpg" alt="Kashtira Fenrir">
-                        <div class="card-info">
-                            <h3>Kashtira Fenrir</h3>
-                            <p class="card-type">Effect Monster</p>
-                            <div class="price-info">
-                                <span class="current-price">$45.99</span>
-                                <span class="price-trend down">↘ -$3.00</span>
-                            </div>
-                            <button class="add-to-cart-btn" onclick="addToCart('Kashtira Fenrir', 45.99)">Add to Cart</button>
-                        </div>
-                    </div>
-                    
-                    <div class="meta-card">
-                        <img src="https://images.ygoprodeck.com/images/cards/14558127.jpg" alt="Ash Blossom & Joyous Spring">
-                        <div class="card-info">
-                            <h3>Ash Blossom & Joyous Spring</h3>
-                            <p class="card-type">Effect Monster</p>
-                            <div class="price-info">
-                                <span class="current-price">$12.99</span>
-                                <span class="price-trend stable">→ $0.00</span>
-                            </div>
-                            <button class="add-to-cart-btn" onclick="addToCart('Ash Blossom & Joyous Spring', 12.99)">Add to Cart</button>
-                        </div>
-                    </div>
-                    
-                    <div class="meta-card">
-                        <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Blue-Eyes White Dragon">
-                        <div class="card-info">
-                            <h3>Nibiru, the Primal Being</h3>
-                            <p class="card-type">Effect Monster</p>
-                            <div class="price-info">
-                                <span class="current-price">$8.99</span>
-                                <span class="price-trend up">↗ +$1.50</span>
-                            </div>
-                            <button class="add-to-cart-btn" onclick="addToCart('Nibiru, the Primal Being', 8.99)">Add to Cart</button>
-                        </div>
-                    </div>
-                    
-                    <div class="meta-card">
-                        <img src="https://images.ygoprodeck.com/images/cards/46986414.jpg" alt="Dark Magician">
-                        <div class="card-info">
-                            <h3>Infinite Impermanence</h3>
-                            <p class="card-type">Trap Card</p>
-                            <div class="price-info">
-                                <span class="current-price">$24.99</span>
-                                <span class="price-trend up">↗ +$2.00</span>
-                            </div>
-                            <button class="add-to-cart-btn" onclick="addToCart('Infinite Impermanence', 24.99)">Add to Cart</button>
-                        </div>
-                    </div>
-                    
-                    <div class="meta-card">
-                        <img src="https://images.ygoprodeck.com/images/cards/26077387.jpg" alt="Red-Eyes Black Dragon">
-                        <div class="card-info">
-                            <h3>Maxx "C"</h3>
-                            <p class="card-type">Effect Monster</p>
-                            <div class="price-info">
-                                <span class="current-price">$18.99</span>
-                                <span class="price-trend down">↘ -$1.00</span>
-                            </div>
-                            <button class="add-to-cart-btn" onclick="addToCart('Maxx C', 18.99)">Add to Cart</button>
-                        </div>
-                    </div>
-                    
-                    <div class="meta-card">
-                        <img src="https://images.ygoprodeck.com/images/cards/95440946.jpg" alt="Exodia">
-                        <div class="card-info">
-                            <h3>Triple Tactics Talent</h3>
-                            <p class="card-type">Spell Card</p>
-                            <div class="price-info">
-                                <span class="current-price">$32.99</span>
-                                <span class="price-trend stable">→ $0.00</span>
-                            </div>
-                            <button class="add-to-cart-btn" onclick="addToCart('Triple Tactics Talent', 32.99)">Add to Cart</button>
-                        </div>
-                    </div>
-                    
-                    <div class="meta-card">
-                        <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Blue-Eyes White Dragon">
-                        <div class="card-info">
-                            <h3>Pot of Prosperity</h3>
-                            <p class="card-type">Spell Card</p>
-                            <div class="price-info">
-                                <span class="current-price">$15.99</span>
-                                <span class="price-trend up">↗ +$0.50</span>
-                            </div>
-                            <button class="add-to-cart-btn" onclick="addToCart('Pot of Prosperity', 15.99)">Add to Cart</button>
-                        </div>
-                    </div>
+                <div id="meta-cards-grid" class="meta-cards-grid loading">
+                    <div class="loading-spinner">Loading meta cards...</div>
                 </div>
             </section>
 
@@ -370,6 +268,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="assets/js/services/ygoprodeck-api.js"></script>
     <script src="assets/js/components/advanced-functionality.js"></script>
     <script src="assets/js/services/pricecharting-api-service.js"></script>
     <script src="assets/js/services/yugioh-api-service.js"></script>
@@ -377,5 +276,76 @@
     <script src="assets/js/services/tcgplayer-media-service.js"></script>
     <script src="assets/js/services/tcgplayer-api-service.js"></script>
     <script src="assets/js/pages/yugioh-store.js"></script>
+    <script>
+        // Load meta cards on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadMetaCards();
+        });
+
+        async function loadMetaCards() {
+            const grid = document.getElementById('meta-cards-grid');
+            
+            try {
+                const metaCards = await window.ygoproAPI.getMetaCards();
+                
+                if (metaCards.length === 0) {
+                    grid.innerHTML = '<p class="no-cards">No meta cards available at the moment.</p>';
+                    return;
+                }
+
+                grid.classList.remove('loading');
+                grid.innerHTML = '';
+
+                metaCards.slice(0, 8).forEach(card => {
+                    const formattedCard = window.ygoproAPI.formatCardForDisplay(card);
+                    const cardElement = createMetaCardElement(formattedCard);
+                    grid.appendChild(cardElement);
+                });
+            } catch (error) {
+                console.error('Error loading meta cards:', error);
+                grid.innerHTML = '<p class="error">Failed to load meta cards. Please try again later.</p>';
+            }
+        }
+
+        function createMetaCardElement(card) {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'meta-card';
+            cardDiv.onclick = () => window.location.href = window.ygoproAPI.getProductPageURL(card);
+            
+            const priceChangeClass = card.priceChange.direction;
+            const priceChangeSymbol = card.priceChange.direction === 'up' ? '↗' : 
+                                    card.priceChange.direction === 'down' ? '↘' : '→';
+            const priceChangeText = card.priceChange.direction === 'stable' ? '$0.00' : 
+                                  (card.priceChange.direction === 'up' ? '+' : '-') + '$' + card.priceChange.amount;
+
+            cardDiv.innerHTML = `
+                <img src="${card.image}" alt="${card.name}" loading="lazy">
+                <div class="card-info">
+                    <h3>${card.name}</h3>
+                    <p class="card-type">${card.type}</p>
+                    <div class="price-info">
+                        <span class="current-price">$${card.price}</span>
+                        <span class="price-trend ${priceChangeClass}">${priceChangeSymbol} ${priceChangeText}</span>
+                    </div>
+                    <button class="add-to-cart-btn" onclick="event.stopPropagation(); addToCart('${card.name}', ${card.price})">Add to Cart</button>
+                </div>
+            `;
+            
+            return cardDiv;
+        }
+
+        function addToCart(cardName, price) {
+            // Add to cart functionality
+            console.log(`Adding ${cardName} to cart for $${price}`);
+            
+            // Update cart count
+            const cartCount = document.querySelector('.cart-count');
+            const currentCount = parseInt(cartCount.textContent) || 0;
+            cartCount.textContent = currentCount + 1;
+            
+            // Show success message
+            alert(`${cardName} added to cart!`);
+        }
+    </script>
 </body>
 </html>

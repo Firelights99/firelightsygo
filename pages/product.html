@@ -3,68 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Card Details - Firelight Duel Academy</title>
+    <title>Card Details | Firelight Duel Academy - Yu-Gi-Oh! Trading Card Store</title>
     <meta name="description" content="View detailed information and pricing for Yu-Gi-Oh! trading cards at Firelight Duel Academy.">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="https://images.ygoprodeck.com/images/cards/89631139.jpg">
-    
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="assets/css/yugioh-store.css">
-    <link rel="stylesheet" href="assets/css/yugioh-image-enhancements.css">
-    <link rel="stylesheet" href="assets/css/product-page.css">
-    
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="Yu-Gi-Oh! Card Details - Firelight Duel Academy">
-    <meta property="og:description" content="View detailed information and pricing for Yu-Gi-Oh! trading cards.">
-    <meta property="og:type" content="product">
-    <meta property="og:url" content="https://firelights99.github.io/firelightsygo/product.html">
-    <meta property="og:image" content="https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=1200&h=630&fit=crop&crop=center">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components/advanced-layout.css">
+    <link rel="stylesheet" href="../assets/css/pages/yugioh-store.css">
+    <link rel="stylesheet" href="../assets/css/pages/product-page.css">
+    <link rel="icon" href="https://images.ygoprodeck.com/images/cards/89631139.jpg">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <a href="index.html" class="brand-link">
-                    <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Firelight Duel Academy" class="brand-logo">
-                    <span class="brand-text">Firelight Duel Academy</span>
-                </a>
+    <div class="page-wrapper">
+        <!-- Top Header Bar -->
+        <header class="top-header">
+            <div class="header-container">
+                <div class="site-branding">
+                    <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Firelight Duel Academy" class="site-logo">
+                    <h1 class="site-name">Firelight Duel Academy</h1>
+                    <p class="site-tagline">Yu-Gi-Oh! Trading Cards & Competitive Play</p>
+                </div>
+                <div class="header-actions">
+                    <div class="search-container">
+                        <input type="text" id="card-search" placeholder="Search Yu-Gi-Oh! cards..." class="search-input">
+                        <button class="search-btn" onclick="performSearch()">🔍</button>
+                    </div>
+                    <div class="user-actions">
+                        <button class="account-btn" onclick="showLogin()">👤 Account</button>
+                        <button class="cart-btn" onclick="openCart()">
+                            🛒 Cart <span class="cart-count">0</span>
+                        </button>
+                    </div>
+                </div>
             </div>
-            
-            <div class="nav-menu">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="shop.html" class="nav-link">Shop</a>
-                <a href="#" class="nav-link" onclick="showLogin()">Account</a>
-                <button class="cart-btn" onclick="openCart()">
-                    <span class="cart-icon">🛒</span>
-                    <span class="cart-count" style="display: none;">0</span>
-                </button>
-            </div>
-        </div>
-    </nav>
+        </header>
 
-    <!-- Breadcrumb Navigation -->
-    <div class="breadcrumb-container">
-        <div class="container">
-            <nav class="breadcrumb">
-                <a href="index.html">Home</a>
-                <span class="breadcrumb-separator">›</span>
-                <a href="shop.html">Shop</a>
-                <span class="breadcrumb-separator">›</span>
+        <!-- Navigation Tabs -->
+        <nav class="main-navigation">
+            <div class="nav-container">
+                <ul class="nav-tabs">
+                    <li><a href="../index.html" class="nav-link">Home</a></li>
+                    <li><a href="singles.html" class="nav-link">Singles</a></li>
+                    <li><a href="decks.html" class="nav-link">Popular Decks</a></li>
+                    <li><a href="events.html" class="nav-link">Events</a></li>
+                    <li><a href="account.html" class="nav-link">My Account</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb-container">
+            <div class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span>›</span>
+                <a href="singles.html">Singles</a>
+                <span>›</span>
                 <span id="breadcrumb-card-name">Card Details</span>
-            </nav>
+            </div>
         </div>
-    </div>
 
-    <!-- Product Page Content -->
-    <main class="product-page">
-        <div class="container">
+        <!-- Main Content Area -->
+        <main class="content-area">
             <!-- Loading State -->
             <div id="product-loading" class="loading-container">
-                <div class="loading-spinner"></div>
-                <p>Loading card details...</p>
+                <div class="loading-spinner">Loading card details...</div>
             </div>
 
             <!-- Error State -->
@@ -72,24 +72,22 @@
                 <div class="error-message">
                     <h2>Card Not Found</h2>
                     <p>Sorry, we couldn't find the card you're looking for.</p>
-                    <a href="shop.html" class="btn btn-primary">Browse All Cards</a>
+                    <a href="singles.html" class="btn btn-primary">Browse All Cards</a>
                 </div>
             </div>
 
             <!-- Product Content -->
-            <div id="product-content" class="product-content" style="display: none;">
+            <div id="product-content" class="product-container" style="display: none;">
                 <div class="product-layout">
                     <!-- Product Images -->
                     <div class="product-images">
                         <div class="main-image-container">
-                            <img id="main-card-image" src="" alt="" class="main-card-image">
-                            <div class="image-zoom-overlay">
-                                <span class="zoom-text">Click to zoom</span>
-                            </div>
+                            <img id="main-card-image" src="" alt="" class="main-card-image" onclick="openImageZoom()">
+                            <div class="image-zoom-hint">Click to zoom</div>
                         </div>
                         <div class="thumbnail-images">
-                            <img id="thumb-normal" src="" alt="Normal view" class="thumbnail active">
-                            <img id="thumb-cropped" src="" alt="Cropped view" class="thumbnail">
+                            <img id="thumb-normal" src="" alt="Normal view" class="thumbnail active" onclick="switchImage('normal')">
+                            <img id="thumb-small" src="" alt="Small view" class="thumbnail" onclick="switchImage('small')">
                         </div>
                     </div>
 
@@ -110,9 +108,9 @@
 
                         <!-- Pricing Section -->
                         <div class="pricing-section">
-                            <h3>Pricing & Availability</h3>
-                            <div id="pricing-table" class="pricing-table">
-                                <!-- Pricing will be populated by JavaScript -->
+                            <div class="price-display">
+                                <span class="current-price" id="current-price">$0.00</span>
+                                <span class="price-trend" id="price-trend"></span>
                             </div>
                         </div>
 
@@ -130,13 +128,13 @@
                                 <label for="condition">Condition:</label>
                                 <select id="condition" class="condition-select">
                                     <option value="near_mint">Near Mint</option>
-                                    <option value="lightly_played">Lightly Played</option>
-                                    <option value="moderately_played">Moderately Played</option>
-                                    <option value="heavily_played">Heavily Played</option>
-                                    <option value="damaged">Damaged</option>
+                                    <option value="lightly_played">Lightly Played (-10%)</option>
+                                    <option value="moderately_played">Moderately Played (-20%)</option>
+                                    <option value="heavily_played">Heavily Played (-35%)</option>
+                                    <option value="damaged">Damaged (-50%)</option>
                                 </select>
                             </div>
-                            <button id="add-to-cart-btn" class="btn btn-primary btn-large" onclick="addCurrentCardToCart()">
+                            <button id="add-to-cart-btn" class="add-to-cart-btn" onclick="addCurrentCardToCart()">
                                 Add to Cart
                             </button>
                         </div>
@@ -159,35 +157,34 @@
 
                 <!-- Related Cards Section -->
                 <div class="related-cards-section">
-                    <h2>Related Cards</h2>
+                    <h2>You May Also Like</h2>
                     <div id="related-cards" class="related-cards-grid">
                         <!-- Related cards will be populated by JavaScript -->
                     </div>
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
 
-    <!-- Cart Modal -->
-    <div id="cart-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Shopping Cart</h2>
-                <button class="cart-close" onclick="closeCart()">×</button>
-            </div>
-            <div class="modal-body">
-                <div id="cart-items"></div>
-                <div class="cart-summary">
-                    <div class="cart-total">
-                        <strong>Subtotal: $<span id="cart-subtotal">0.00</span></strong>
-                    </div>
-                    <div class="cart-actions">
-                        <button class="btn btn-secondary" onclick="closeCart()">Continue Shopping</button>
-                        <button class="btn btn-primary">Checkout</button>
-                    </div>
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Firelight Duel Academy</h3>
+                    <p>Your premier destination for Yu-Gi-Oh! singles</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="singles.html">Browse Singles</a></li>
+                        <li><a href="account.html">My Account</a></li>
+                        <li><a href="../index.html">Home</a></li>
+                    </ul>
                 </div>
             </div>
-        </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Firelight Duel Academy. All rights reserved.</p>
+            </div>
+        </footer>
     </div>
 
     <!-- Image Zoom Modal -->
@@ -199,10 +196,268 @@
     </div>
 
     <!-- Scripts -->
-    <script src="assets/js/yugioh-api-service.js"></script>
-    <script src="assets/js/yugioh-image-service.js"></script>
-    <script src="assets/js/tcgplayer-api-service.js"></script>
-    <script src="assets/js/yugioh-store.js"></script>
-    <script src="assets/js/product-page.js"></script>
+    <script src="../assets/js/services/ygoprodeck-api.js"></script>
+    <script src="../assets/js/components/advanced-functionality.js"></script>
+    <script src="../assets/js/pages/yugioh-store.js"></script>
+    <script>
+        let currentCard = null;
+        let currentImageType = 'normal';
+
+        // Load product on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadProduct();
+        });
+
+        async function loadProduct() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const cardId = urlParams.get('id');
+            
+            if (!cardId) {
+                showError();
+                return;
+            }
+
+            try {
+                // Try to get card by ID first, then by name
+                let card = null;
+                if (!isNaN(cardId)) {
+                    card = await window.ygoproAPI.getCardById(cardId);
+                } else {
+                    // Convert URL-friendly name back to card name
+                    const cardName = cardId.replace(/-/g, ' ');
+                    card = await window.ygoproAPI.getCardByName(cardName);
+                }
+
+                if (!card) {
+                    showError();
+                    return;
+                }
+
+                currentCard = window.ygoproAPI.formatCardForDisplay(card);
+                displayProduct(currentCard);
+                await loadRelatedCards(currentCard);
+                
+            } catch (error) {
+                console.error('Error loading product:', error);
+                showError();
+            }
+        }
+
+        function displayProduct(card) {
+            document.getElementById('product-loading').style.display = 'none';
+            document.getElementById('product-content').style.display = 'block';
+
+            // Update page title and breadcrumb
+            document.title = `${card.name} | Firelight Duel Academy`;
+            document.getElementById('breadcrumb-card-name').textContent = card.name;
+
+            // Product header
+            document.getElementById('product-title').textContent = card.name;
+            document.getElementById('product-type').textContent = card.type;
+            document.getElementById('product-rarity').textContent = card.rarity;
+
+            // Images
+            document.getElementById('main-card-image').src = card.image;
+            document.getElementById('main-card-image').alt = card.name;
+            document.getElementById('thumb-normal').src = card.image;
+            document.getElementById('thumb-small').src = card.imageSmall;
+
+            // Card stats
+            displayCardStats(card);
+
+            // Pricing
+            document.getElementById('current-price').textContent = `$${card.price}`;
+            const trendElement = document.getElementById('price-trend');
+            const priceChange = card.priceChange;
+            const symbol = priceChange.direction === 'up' ? '↗' : priceChange.direction === 'down' ? '↘' : '→';
+            const changeText = priceChange.direction === 'stable' ? '$0.00' : 
+                             (priceChange.direction === 'up' ? '+' : '-') + '$' + priceChange.amount;
+            trendElement.textContent = `${symbol} ${changeText}`;
+            trendElement.className = `price-trend ${priceChange.direction}`;
+
+            // Description
+            document.getElementById('card-description-text').textContent = card.desc || 'No description available.';
+
+            // Set information
+            displaySetInfo(card);
+        }
+
+        function displayCardStats(card) {
+            const statsContainer = document.getElementById('card-stats');
+            let statsHTML = '';
+
+            if (card.type.includes('Monster')) {
+                if (card.atk !== undefined) {
+                    statsHTML += `<div class="stat"><span class="stat-label">ATK:</span> <span class="stat-value">${card.atk}</span></div>`;
+                }
+                if (card.def !== undefined) {
+                    statsHTML += `<div class="stat"><span class="stat-label">DEF:</span> <span class="stat-value">${card.def}</span></div>`;
+                }
+                if (card.level !== undefined) {
+                    statsHTML += `<div class="stat"><span class="stat-label">Level:</span> <span class="stat-value">${card.level}</span></div>`;
+                }
+                if (card.attribute) {
+                    statsHTML += `<div class="stat"><span class="stat-label">Attribute:</span> <span class="stat-value">${card.attribute}</span></div>`;
+                }
+                if (card.race) {
+                    statsHTML += `<div class="stat"><span class="stat-label">Type:</span> <span class="stat-value">${card.race}</span></div>`;
+                }
+            }
+
+            if (card.archetype) {
+                statsHTML += `<div class="stat"><span class="stat-label">Archetype:</span> <span class="stat-value">${card.archetype}</span></div>`;
+            }
+
+            statsContainer.innerHTML = statsHTML;
+        }
+
+        function displaySetInfo(card) {
+            const setContainer = document.getElementById('set-details');
+            if (card.sets && card.sets.length > 0) {
+                let setHTML = '';
+                card.sets.slice(0, 3).forEach(set => {
+                    setHTML += `
+                        <div class="set-item">
+                            <div class="set-name">${set.set_name}</div>
+                            <div class="set-code">${set.set_code}</div>
+                            <div class="set-rarity">${set.set_rarity}</div>
+                        </div>
+                    `;
+                });
+                setContainer.innerHTML = setHTML;
+            } else {
+                setContainer.innerHTML = '<p>No set information available.</p>';
+            }
+        }
+
+        async function loadRelatedCards(card) {
+            const relatedContainer = document.getElementById('related-cards');
+            
+            try {
+                let relatedCards = [];
+                
+                // Try to get cards from same archetype
+                if (card.archetype) {
+                    relatedCards = await window.ygoproAPI.getCardsByArchetype(card.archetype);
+                    relatedCards = relatedCards.filter(c => c.id !== card.id).slice(0, 4);
+                }
+                
+                // If not enough related cards, get some meta cards
+                if (relatedCards.length < 4) {
+                    const metaCards = await window.ygoproAPI.getMetaCards();
+                    const additionalCards = metaCards.filter(c => c.id !== card.id).slice(0, 4 - relatedCards.length);
+                    relatedCards = [...relatedCards, ...additionalCards];
+                }
+
+                if (relatedCards.length === 0) {
+                    relatedContainer.innerHTML = '<p>No related cards found.</p>';
+                    return;
+                }
+
+                let relatedHTML = '';
+                relatedCards.forEach(relatedCard => {
+                    const formatted = window.ygoproAPI.formatCardForDisplay(relatedCard);
+                    relatedHTML += `
+                        <div class="related-card" onclick="window.location.href='${window.ygoproAPI.getProductPageURL(formatted)}'">
+                            <img src="${formatted.imageSmall}" alt="${formatted.name}">
+                            <div class="related-card-info">
+                                <h4>${formatted.name}</h4>
+                                <p class="related-card-price">$${formatted.price}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                relatedContainer.innerHTML = relatedHTML;
+            } catch (error) {
+                console.error('Error loading related cards:', error);
+                relatedContainer.innerHTML = '<p>Unable to load related cards.</p>';
+            }
+        }
+
+        function showError() {
+            document.getElementById('product-loading').style.display = 'none';
+            document.getElementById('product-error').style.display = 'block';
+        }
+
+        function changeQuantity(delta) {
+            const quantityInput = document.getElementById('quantity');
+            const currentValue = parseInt(quantityInput.value) || 1;
+            const newValue = Math.max(1, Math.min(99, currentValue + delta));
+            quantityInput.value = newValue;
+        }
+
+        function switchImage(type) {
+            if (!currentCard) return;
+            
+            const mainImage = document.getElementById('main-card-image');
+            const thumbnails = document.querySelectorAll('.thumbnail');
+            
+            thumbnails.forEach(thumb => thumb.classList.remove('active'));
+            
+            if (type === 'normal') {
+                mainImage.src = currentCard.image;
+                document.getElementById('thumb-normal').classList.add('active');
+                currentImageType = 'normal';
+            } else if (type === 'small') {
+                mainImage.src = currentCard.imageSmall;
+                document.getElementById('thumb-small').classList.add('active');
+                currentImageType = 'small';
+            }
+        }
+
+        function openImageZoom() {
+            if (!currentCard) return;
+            
+            const modal = document.getElementById('image-zoom-modal');
+            const zoomedImage = document.getElementById('zoomed-image');
+            
+            zoomedImage.src = currentCard.image;
+            zoomedImage.alt = currentCard.name;
+            modal.style.display = 'flex';
+        }
+
+        function closeImageZoom() {
+            document.getElementById('image-zoom-modal').style.display = 'none';
+        }
+
+        function addCurrentCardToCart() {
+            if (!currentCard) return;
+            
+            const quantity = parseInt(document.getElementById('quantity').value) || 1;
+            const condition = document.getElementById('condition').value;
+            
+            // Calculate price based on condition
+            let price = parseFloat(currentCard.price);
+            const conditionMultipliers = {
+                'near_mint': 1.0,
+                'lightly_played': 0.9,
+                'moderately_played': 0.8,
+                'heavily_played': 0.65,
+                'damaged': 0.5
+            };
+            
+            price *= conditionMultipliers[condition] || 1.0;
+            
+            // Add to cart (simplified)
+            console.log(`Adding ${quantity}x ${currentCard.name} (${condition}) to cart for $${(price * quantity).toFixed(2)}`);
+            
+            // Update cart count
+            const cartCount = document.querySelector('.cart-count');
+            const currentCount = parseInt(cartCount.textContent) || 0;
+            cartCount.textContent = currentCount + quantity;
+            
+            // Show success message
+            alert(`${quantity}x ${currentCard.name} added to cart!`);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('image-zoom-modal');
+            if (event.target === modal) {
+                closeImageZoom();
+            }
+        }
+    </script>
 </body>
 </html>

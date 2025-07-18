@@ -138,56 +138,8 @@
                     </div>
                 </div>
                 
-                <div id="cards-grid" class="cards-grid">
-                    <!-- Sample cards -->
-                    <div class="card-item">
-                        <div class="card-image-container">
-                            <img src="https://images.ygoprodeck.com/images/cards/76375976.jpg" alt="Snake-Eye Ash" class="card-image">
-                            <div class="card-meta-badge">HOT</div>
-                        </div>
-                        <div class="card-info">
-                            <h3 class="card-name">Snake-Eye Ash</h3>
-                            <p class="card-type">Effect Monster</p>
-                            <p class="card-price">$89.99</p>
-                            <button class="add-to-cart-btn" onclick="addToCart('Snake-Eye Ash', 89.99)">Add to Cart</button>
-                        </div>
-                    </div>
-
-                    <div class="card-item">
-                        <div class="card-image-container">
-                            <img src="https://images.ygoprodeck.com/images/cards/28776350.jpg" alt="Kashtira Fenrir" class="card-image">
-                        </div>
-                        <div class="card-info">
-                            <h3 class="card-name">Kashtira Fenrir</h3>
-                            <p class="card-type">Effect Monster</p>
-                            <p class="card-price">$45.99</p>
-                            <button class="add-to-cart-btn" onclick="addToCart('Kashtira Fenrir', 45.99)">Add to Cart</button>
-                        </div>
-                    </div>
-
-                    <div class="card-item">
-                        <div class="card-image-container">
-                            <img src="https://images.ygoprodeck.com/images/cards/14558127.jpg" alt="Ash Blossom" class="card-image">
-                        </div>
-                        <div class="card-info">
-                            <h3 class="card-name">Ash Blossom & Joyous Spring</h3>
-                            <p class="card-type">Effect Monster</p>
-                            <p class="card-price">$12.99</p>
-                            <button class="add-to-cart-btn" onclick="addToCart('Ash Blossom & Joyous Spring', 12.99)">Add to Cart</button>
-                        </div>
-                    </div>
-
-                    <div class="card-item">
-                        <div class="card-image-container">
-                            <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Blue-Eyes White Dragon" class="card-image">
-                        </div>
-                        <div class="card-info">
-                            <h3 class="card-name">Blue-Eyes White Dragon</h3>
-                            <p class="card-type">Normal Monster</p>
-                            <p class="card-price">$5.99</p>
-                            <button class="add-to-cart-btn" onclick="addToCart('Blue-Eyes White Dragon', 5.99)">Add to Cart</button>
-                        </div>
-                    </div>
+                <div id="cards-grid" class="cards-grid loading">
+                    <div class="loading-spinner">Loading cards...</div>
                 </div>
 
                 <div class="pagination">
@@ -221,7 +173,252 @@
     </div>
 
     <!-- Scripts -->
+    <script src="../assets/js/services/ygoprodeck-api.js"></script>
     <script src="../assets/js/components/advanced-functionality.js"></script>
     <script src="../assets/js/pages/yugioh-store.js"></script>
+    <script>
+        let currentCards = [];
+        let filteredCards = [];
+        let currentPage = 1;
+        const cardsPerPage = 20;
+
+        // Load cards on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadCards();
+            setupEventListeners();
+        });
+
+        async function loadCards() {
+            const grid = document.getElementById('cards-grid');
+            
+            try {
+                // Get URL parameters for filtering
+                const urlParams = new URLSearchParams(window.location.search);
+                const archetype = urlParams.get('archetype');
+                const category = urlParams.get('category');
+                const filter = urlParams.get('filter');
+
+                let cards = [];
+                
+                if (archetype) {
+                    cards = await window.ygoproAPI.getCardsByArchetype(archetype);
+                } else if (category === 'Hand-Traps') {
+                    // Get hand trap cards
+                    const handTrapNames = ['Ash Blossom & Joyous Spring', 'Effect Veiler', 'Ghost Ogre & Snow Rabbit', 'Nibiru, the Primal Being', 'Droll & Lock Bird'];
+                    for (const name of handTrapNames) {
+                        try {
+                            const card = await window.ygoproAPI.getCardByName(name);
+                            if (card) cards.push(card);
+                        } catch (e) {
+                            console.warn(`Could not fetch ${name}`);
+                        }
+                    }
+                } else {
+                    // Get meta cards as default
+                    cards = await window.ygoproAPI.getMetaCards();
+                    
+                    // Add some additional popular cards
+                    const additionalCards = await window.ygoproAPI.getCards({ name: 'Blue-Eyes' });
+                    cards = [...cards, ...additionalCards.slice(0, 5)];
+                }
+
+                if (cards.length === 0) {
+                    grid.innerHTML = '<p class="no-cards">No cards found. Try adjusting your search criteria.</p>';
+                    return;
+                }
+
+                currentCards = cards.map(card => window.ygoproAPI.formatCardForDisplay(card));
+                filteredCards = [...currentCards];
+                
+                displayCards();
+                updatePagination();
+                
+            } catch (error) {
+                console.error('Error loading cards:', error);
+                grid.innerHTML = '<p class="error">Failed to load cards. Please try again later.</p>';
+            }
+        }
+
+        function displayCards() {
+            const grid = document.getElementById('cards-grid');
+            grid.classList.remove('loading');
+            
+            const startIndex = (currentPage - 1) * cardsPerPage;
+            const endIndex = startIndex + cardsPerPage;
+            const cardsToShow = filteredCards.slice(startIndex, endIndex);
+            
+            if (cardsToShow.length === 0) {
+                grid.innerHTML = '<p class="no-cards">No cards match your current filters.</p>';
+                return;
+            }
+
+            grid.innerHTML = '';
+            
+            cardsToShow.forEach(card => {
+                const cardElement = createCardElement(card);
+                grid.appendChild(cardElement);
+            });
+        }
+
+        function createCardElement(card) {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'card-item';
+            cardDiv.onclick = () => window.location.href = window.ygoproAPI.getProductPageURL(card);
+            
+            const isHot = parseFloat(card.price) > 50; // Mark expensive cards as "HOT"
+            
+            cardDiv.innerHTML = `
+                <div class="card-image-container">
+                    <img src="${card.imageSmall}" alt="${card.name}" class="card-image" loading="lazy">
+                    ${isHot ? '<div class="card-meta-badge">HOT</div>' : ''}
+                </div>
+                <div class="card-info">
+                    <h3 class="card-name">${card.name}</h3>
+                    <p class="card-type">${card.type}</p>
+                    <p class="card-price">$${card.price}</p>
+                    <button class="add-to-cart-btn" onclick="event.stopPropagation(); addToCart('${card.name}', ${card.price})">Add to Cart</button>
+                </div>
+            `;
+            
+            return cardDiv;
+        }
+
+        function setupEventListeners() {
+            // Search functionality
+            const cardNameInput = document.getElementById('card-name');
+            cardNameInput.addEventListener('input', debounce(applyFilters, 300));
+            
+            // Filter change listeners
+            document.getElementById('card-type').addEventListener('change', applyFilters);
+            document.getElementById('rarity').addEventListener('change', applyFilters);
+            document.getElementById('price-range').addEventListener('change', applyFilters);
+            document.getElementById('sort-by').addEventListener('change', applySorting);
+        }
+
+        function applyFilters() {
+            const nameFilter = document.getElementById('card-name').value.toLowerCase();
+            const typeFilter = document.getElementById('card-type').value.toLowerCase();
+            const rarityFilter = document.getElementById('rarity').value.toLowerCase();
+            const priceFilter = document.getElementById('price-range').value;
+            
+            filteredCards = currentCards.filter(card => {
+                // Name filter
+                if (nameFilter && !card.name.toLowerCase().includes(nameFilter)) {
+                    return false;
+                }
+                
+                // Type filter
+                if (typeFilter && !card.type.toLowerCase().includes(typeFilter)) {
+                    return false;
+                }
+                
+                // Rarity filter (simplified)
+                if (rarityFilter && !card.rarity.toLowerCase().includes(rarityFilter)) {
+                    return false;
+                }
+                
+                // Price filter
+                if (priceFilter) {
+                    const price = parseFloat(card.price);
+                    const [min, max] = priceFilter.split('-').map(p => p === '+' ? Infinity : parseFloat(p));
+                    if (max !== undefined) {
+                        if (price < min || price > max) return false;
+                    } else {
+                        if (price < min) return false;
+                    }
+                }
+                
+                return true;
+            });
+            
+            currentPage = 1;
+            applySorting();
+        }
+
+        function applySorting() {
+            const sortBy = document.getElementById('sort-by').value;
+            
+            filteredCards.sort((a, b) => {
+                switch (sortBy) {
+                    case 'name':
+                        return a.name.localeCompare(b.name);
+                    case 'price-low':
+                        return parseFloat(a.price) - parseFloat(b.price);
+                    case 'price-high':
+                        return parseFloat(b.price) - parseFloat(a.price);
+                    case 'newest':
+                        return b.id - a.id; // Assuming higher ID = newer
+                    default:
+                        return 0;
+                }
+            });
+            
+            displayCards();
+            updatePagination();
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredCards.length / cardsPerPage);
+            const pageInfo = document.querySelector('.page-info');
+            const prevBtn = document.querySelector('.page-btn:first-child');
+            const nextBtn = document.querySelector('.page-btn:last-child');
+            
+            pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+            
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+            
+            prevBtn.onclick = () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayCards();
+                    updatePagination();
+                }
+            };
+            
+            nextBtn.onclick = () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayCards();
+                    updatePagination();
+                }
+            };
+        }
+
+        function addToCart(cardName, price) {
+            console.log(`Adding ${cardName} to cart for $${price}`);
+            
+            // Update cart count
+            const cartCount = document.querySelector('.cart-count');
+            const currentCount = parseInt(cartCount.textContent) || 0;
+            cartCount.textContent = currentCount + 1;
+            
+            // Show success message
+            alert(`${cardName} added to cart!`);
+        }
+
+        function performSearch() {
+            const searchInput = document.getElementById('card-search');
+            const searchTerm = searchInput.value.trim();
+            
+            if (searchTerm) {
+                document.getElementById('card-name').value = searchTerm;
+                applyFilters();
+            }
+        }
+
+        // Debounce function to limit API calls
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+    </script>
 </body>
 </html>
