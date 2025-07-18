@@ -11,9 +11,7 @@ Harrison-Website/
 │   └── ISSUE_TEMPLATE/        # Issue templates
 ├── .nojekyll                  # GitHub Pages configuration
 ├── README.md                  # Project documentation
-├── index.html                 # Main homepage
-├── product.html               # Product page
-├── shop.html                  # Shop page
+├── index.html                 # Main homepage (kept in root)
 ├── admin/                     # Administrative tools
 │   ├── crystal-commerce-admin.html
 │   └── tcgplayer-setup.html
@@ -50,9 +48,12 @@ Harrison-Website/
 │   ├── database-schema.sql    # Database schema
 │   ├── membership.json        # Membership data
 │   └── yugioh-singles-schema.sql
-└── docs/                      # Documentation
-    ├── CHANGELOG.md           # Change log
-    └── PROJECT_STRUCTURE.md   # This file
+├── docs/                      # Documentation
+│   ├── CHANGELOG.md           # Change log
+│   └── PROJECT_STRUCTURE.md   # This file
+└── pages/                     # HTML pages
+    ├── product.html           # Product page
+    └── shop.html              # Shop page
 ```
 
 ## File Organization Principles
@@ -67,6 +68,10 @@ Harrison-Website/
 - **Services**: `assets/js/services/` - API integrations and service layer
 - **Page scripts**: `assets/js/pages/` - Page-specific functionality
 - **Components**: Root level for shared component functionality
+
+### HTML Organization
+- **Main page**: `index.html` - Homepage kept in root for standard web practices
+- **Sub pages**: `pages/` - All other HTML pages organized in dedicated directory
 
 ### Data Organization
 - **Configuration**: `config/` - Site and application configuration
