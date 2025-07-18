@@ -220,32 +220,152 @@ class YugiohStore {
         if (!featuredGrid) return;
 
         try {
-            const cards = await this.apiService.getRandomCards(12);
+            console.log('Loading featured cards...');
+            
+            // Try to load from API first
+            let cards = [];
+            try {
+                cards = await this.apiService.getRandomCards(12);
+                console.log('API cards loaded:', cards.length);
+            } catch (apiError) {
+                console.warn('API failed, using fallback cards:', apiError);
+                // Fallback to sample cards if API fails
+                cards = this.getFallbackCards();
+            }
             
             featuredGrid.classList.remove('loading');
             
+            if (cards.length === 0) {
+                featuredGrid.innerHTML = '<p class="error-message">No cards available at the moment.</p>';
+                return;
+            }
+            
             // Process cards with pricing
-            const cardElements = await Promise.all(cards.map(async (card) => {
-                const formattedCard = this.apiService.formatCardForDisplay(card);
-                const price = await this.getCardPrice(formattedCard);
+            const cardElements = cards.map((card) => {
+                const formattedCard = this.apiService ? this.apiService.formatCardForDisplay(card) : this.formatFallbackCard(card);
+                const price = this.getSimpleCardPrice(formattedCard);
                 
                 return `
                     <div class="card-item" onclick="yugiohStore.showCardDetails(${card.id})">
-                        <img src="${formattedCard.imageSmall}" alt="${formattedCard.name}" class="card-image" loading="lazy">
+                        <img src="${formattedCard.image || formattedCard.imageSmall}" alt="${formattedCard.name}" class="card-image" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=200&h=200&fit=crop'">
                         <div class="card-info">
                             <h3 class="card-name">${formattedCard.name}</h3>
                             <p class="card-type">${formattedCard.type}</p>
-                            <div class="card-price">${this.formatPrice(price)}</div>
+                            <div class="card-price">$${price.toFixed(2)}</div>
                         </div>
                     </div>
                 `;
-            }));
+            });
             
             featuredGrid.innerHTML = cardElements.join('');
+            console.log('Featured cards loaded successfully');
         } catch (error) {
             console.error('Error loading featured cards:', error);
+            featuredGrid.classList.remove('loading');
             featuredGrid.innerHTML = '<p class="error-message">Unable to load featured cards. Please try again later.</p>';
         }
+    }
+
+    // Fallback cards if API fails
+    getFallbackCards() {
+        return [
+            {
+                id: 89631139,
+                name: "Blue-Eyes White Dragon",
+                type: "Normal Monster",
+                desc: "This legendary dragon is a powerful engine of destruction.",
+                atk: 3000,
+                def: 2500,
+                level: 8,
+                race: "Dragon",
+                attribute: "LIGHT"
+            },
+            {
+                id: 46986414,
+                name: "Dark Magician",
+                type: "Normal Monster", 
+                desc: "The ultimate wizard in terms of attack and defense.",
+                atk: 2500,
+                def: 2100,
+                level: 7,
+                race: "Spellcaster",
+                attribute: "DARK"
+            },
+            {
+                id: 38033121,
+                name: "Red-Eyes Black Dragon",
+                type: "Normal Monster",
+                desc: "A ferocious dragon with a deadly attack.",
+                atk: 2400,
+                def: 2000,
+                level: 7,
+                race: "Dragon",
+                attribute: "DARK"
+            },
+            {
+                id: 55144522,
+                name: "Pot of Greed",
+                type: "Spell Card",
+                desc: "Draw 2 cards from your Deck.",
+                race: "Spell",
+                attribute: "SPELL"
+            },
+            {
+                id: 83764718,
+                name: "Monster Reborn",
+                type: "Spell Card",
+                desc: "Special Summon 1 monster from either GY.",
+                race: "Spell",
+                attribute: "SPELL"
+            },
+            {
+                id: 17078030,
+                name: "Wall of Illusion",
+                type: "Effect Monster",
+                desc: "When this card is attacked, return the attacking monster to its owner's hand.",
+                atk: 1000,
+                def: 1850,
+                level: 4,
+                race: "Fiend",
+                attribute: "DARK"
+            }
+        ];
+    }
+
+    // Format fallback card data
+    formatFallbackCard(card) {
+        return {
+            id: card.id,
+            name: card.name,
+            type: card.type,
+            desc: card.desc,
+            atk: card.atk,
+            def: card.def,
+            level: card.level,
+            race: card.race,
+            attribute: card.attribute,
+            image: `https://images.ygoprodeck.com/images/cards/${card.id}.jpg`,
+            imageSmall: `https://images.ygoprodeck.com/images/cards/${card.id}_small.jpg`
+        };
+    }
+
+    // Simple price calculation
+    getSimpleCardPrice(card) {
+        let basePrice = 1.0;
+        
+        if (card.type && card.type.includes('Monster')) {
+            if (card.atk >= 3000) basePrice += 2.0;
+            else if (card.atk >= 2500) basePrice += 1.5;
+            else if (card.atk >= 2000) basePrice += 1.0;
+        }
+        
+        if (card.type && card.type.includes('Spell')) basePrice += 0.5;
+        if (card.type && card.type.includes('Trap')) basePrice += 0.5;
+        
+        // Add some randomness
+        basePrice += Math.random() * 2;
+        
+        return Math.max(0.25, basePrice);
     }
 
     // Search Functionality
