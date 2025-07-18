@@ -3,19 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home | www.Firelightsygo-tcg.com</title>
-    <link rel="stylesheet" href="assets/css/exact-square.css">
+    <title>Home | Firelight Duel Academy - Premier Yu-Gi-Oh! Singles Store</title>
+    <meta name="description" content="Your premier destination for Yu-Gi-Oh! single cards. Buy, sell, and trade with confidence. Competitive buylist prices and store credit system.">
+    <link rel="stylesheet" href="assets/css/yugioh-store.css">
+    <link rel="icon" href="https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=32&h=32&fit=crop&crop=center">
 </head>
 <body>
-    <!-- Exact Square Site Structure -->
     <div class="page-wrapper">
         <!-- Top Header Bar -->
         <header class="top-header">
             <div class="header-container">
-                <h1 class="site-name">www.Firelightsygo-tcg.com</h1>
-                <div class="header-right">
-                    <a href="shop.html" class="shop-now-button">Shop Now</a>
-                    <button class="cart-button" onclick="openCart()">🛒</button>
+                <div class="site-branding">
+                    <img src="https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=40&h=40&fit=crop&crop=center" alt="Firelight Duel Academy" class="site-logo">
+                    <h1 class="site-name">Firelight Duel Academy</h1>
+                </div>
+                <div class="header-actions">
+                    <div class="search-container">
+                        <input type="text" id="card-search" placeholder="Search Yu-Gi-Oh! cards..." class="search-input">
+                        <button class="search-btn" onclick="performSearch()">🔍</button>
+                    </div>
+                    <div class="user-actions">
+                        <button class="account-btn" onclick="showLogin()">👤 Account</button>
+                        <button class="cart-btn" onclick="openCart()">
+                            🛒 Cart <span class="cart-count">0</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </header>
@@ -25,29 +37,36 @@
             <div class="nav-container">
                 <ul class="nav-tabs">
                     <li><a href="index.html" class="nav-link active">Home</a></li>
-                    <li><a href="book.html" class="nav-link">Book</a></li>
-                    <li><a href="shop-all.html" class="nav-link">Shop All</a></li>
-                    <li><a href="staff.html" class="nav-link">Staff</a></li>
-                    <li><a href="instagram.html" class="nav-link">Instagram</a></li>
+                    <li><a href="singles.html" class="nav-link">Singles</a></li>
+                    <li><a href="buylist.html" class="nav-link">Buylist</a></li>
+                    <li><a href="decks.html" class="nav-link">Popular Decks</a></li>
+                    <li><a href="account.html" class="nav-link">My Account</a></li>
                     <li><a href="contact.html" class="nav-link">Contact</a></li>
                 </ul>
             </div>
         </nav>
 
-        <!-- Shopping Cart Overlay -->
-        <div id="cart-overlay" class="cart-overlay" style="display: none;">
+        <!-- Shopping Cart Modal -->
+        <div id="cart-modal" class="cart-modal" style="display: none;">
             <div class="cart-panel">
                 <button class="cart-close" onclick="closeCart()">×</button>
                 <h3>Shopping Cart</h3>
-                <p class="empty-cart">You don't have any items in your cart.</p>
-                <div class="cart-buttons">
-                    <button class="checkout-button">Checkout</button>
-                    <button class="continue-button" onclick="closeCart()">Continue Shopping</button>
+                <div id="cart-items" class="cart-items">
+                    <p class="empty-cart">Your cart is empty. Start browsing our Yu-Gi-Oh! singles!</p>
                 </div>
-                <div class="accepted-payments">
-                    <p>Accepted here</p>
+                <div class="cart-summary" style="display: none;">
+                    <div class="cart-total">
+                        <span>Subtotal: $<span id="cart-subtotal">0.00</span></span>
+                    </div>
+                    <div class="cart-buttons">
+                        <button class="checkout-btn">Secure Checkout</button>
+                        <button class="continue-btn" onclick="closeCart()">Continue Shopping</button>
+                    </div>
+                </div>
+                <div class="payment-info">
+                    <p>Secure payment powered by Square</p>
                     <div class="payment-logos">
-                        <span>🍎</span><span>📱</span><span>💳</span><span>💳</span><span>💳</span><span>💳</span><span>💳</span><span>💰</span>
+                        <span>💳</span><span>🍎</span><span>📱</span><span>💰</span>
                     </div>
                 </div>
             </div>
@@ -56,134 +75,159 @@
         <!-- Main Content Area -->
         <main class="content-area">
             
-            <!-- Membership Section -->
-            <section class="membership-block">
-                <h2>Become a Member</h2>
-                <p>Members enjoy exclusive benefits and access. Choose the membership level that's right for you.</p>
-                
-                <div class="member-card">
-                    <span class="sale-label">Sale</span>
-                    <div class="price-display">CAD$10</div>
-                    <hr class="price-divider">
-                    <h3>Locals</h3>
-                    <p class="availability">Out of stock</p>
-                    <button class="select-button" disabled>Select</button>
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <div class="hero-content">
+                    <h2>Premier Yu-Gi-Oh! Singles Store</h2>
+                    <p>Discover thousands of Yu-Gi-Oh! single cards with competitive pricing powered by TCGPlayer data. Build your perfect deck with our extensive inventory.</p>
+                    <div class="hero-actions">
+                        <a href="singles.html" class="cta-button primary">Browse Singles</a>
+                        <a href="buylist.html" class="cta-button secondary">Sell Your Cards</a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=500&h=300&fit=crop&crop=center" alt="Yu-Gi-Oh! Cards" class="hero-img">
                 </div>
             </section>
 
-            <!-- Hero Message Section -->
-            <section class="hero-message">
-                <h2>Superior service, personalized attention</h2>
-                <p>We started with the simple idea of bringing the best from us to you. From our founder to our front-line workers, we put lots of love and careful thought into all we do. We hope you enjoy all we have to offer, and share the experience with others.</p>
-                <a href="shop.html" class="shop-link">Shop now</a>
+            <!-- Featured Cards Section -->
+            <section class="featured-cards">
+                <h2>Featured Cards</h2>
+                <div id="featured-cards-grid" class="cards-grid loading">
+                    <div class="loading-spinner">Loading featured cards...</div>
+                </div>
             </section>
 
-            <!-- Customer Quote Section -->
-            <section class="customer-quote">
-                <blockquote>"I love being able to find just the right gifts for my friends at a great value."</blockquote>
-                <cite>Quin, San Francisco</cite>
+            <!-- Popular Archetypes -->
+            <section class="popular-archetypes">
+                <h2>Popular Archetypes</h2>
+                <div class="archetypes-grid">
+                    <div class="archetype-card" onclick="browseArchetype('Blue-Eyes')">
+                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=150&h=100&fit=crop" alt="Blue-Eyes">
+                        <h3>Blue-Eyes</h3>
+                    </div>
+                    <div class="archetype-card" onclick="browseArchetype('Dark Magician')">
+                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=150&h=100&fit=crop" alt="Dark Magician">
+                        <h3>Dark Magician</h3>
+                    </div>
+                    <div class="archetype-card" onclick="browseArchetype('Sky Striker')">
+                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=150&h=100&fit=crop" alt="Sky Striker">
+                        <h3>Sky Striker</h3>
+                    </div>
+                    <div class="archetype-card" onclick="browseArchetype('Eldlich')">
+                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=150&h=100&fit=crop" alt="Eldlich">
+                        <h3>Eldlich</h3>
+                    </div>
+                </div>
             </section>
 
-            <!-- Business Hours Section -->
+            <!-- Store Features -->
+            <section class="store-features">
+                <h2>Why Choose Firelight Duel Academy?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">💰</div>
+                        <h3>Competitive Buylist</h3>
+                        <p>Get top dollar for your cards with our competitive buylist program. 10% bonus when choosing store credit!</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>TCGPlayer Pricing</h3>
+                        <p>All prices based on real-time TCGPlayer market data for fair and competitive pricing.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🚚</div>
+                        <h3>Fast Shipping</h3>
+                        <p>Free shipping on orders over $50. Secure packaging ensures your cards arrive safely.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Secure Transactions</h3>
+                        <p>All transactions secured by Square with buyer protection and encrypted payment processing.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Business Hours -->
             <section class="business-hours">
-                <h2>Location & Hours</h2>
+                <h2>Store Hours</h2>
                 <div class="hours-table">
                     <div class="hour-row">
-                        <span class="day-name">Monday</span>
-                        <span class="day-time">Closed</span>
-                    </div>
-                    <div class="hour-row">
-                        <span class="day-name">Tuesday</span>
-                        <span class="day-time">Closed</span>
-                    </div>
-                    <div class="hour-row">
-                        <span class="day-name">Wednesday</span>
-                        <span class="day-time">Closed</span>
-                    </div>
-                    <div class="hour-row">
-                        <span class="day-name">Thursday</span>
-                        <span class="day-time">Closed</span>
+                        <span class="day-name">Monday - Thursday</span>
+                        <span class="day-time">10:00 AM - 8:00 PM</span>
                     </div>
                     <div class="hour-row">
                         <span class="day-name">Friday</span>
-                        <span class="day-time">Closed</span>
+                        <span class="day-time">10:00 AM - 10:00 PM</span>
                     </div>
                     <div class="hour-row">
                         <span class="day-name">Saturday</span>
-                        <span class="day-time">Closed</span>
+                        <span class="day-time">9:00 AM - 10:00 PM</span>
                     </div>
                     <div class="hour-row">
                         <span class="day-name">Sunday</span>
-                        <span class="day-time">12:00 a.m. - 1:00 p.m.</span>
+                        <span class="day-time">12:00 PM - 6:00 PM</span>
                     </div>
                 </div>
             </section>
 
         </main>
 
-        <!-- Back to Cart Link -->
-        <div class="back-cart-link">
-            <a href="#" onclick="openCart()">Back to Cart</a>
-        </div>
-
-        <!-- Bottom Footer -->
-        <footer class="bottom-footer">
+        <!-- Footer -->
+        <footer class="site-footer">
             <div class="footer-content">
-                <div class="footer-brand">
-                    <h3>www.Firelightsygo-tcg.com</h3>
-                    <p>Secure checkout by Square</p>
+                <div class="footer-section">
+                    <h3>Firelight Duel Academy</h3>
+                    <p>Your premier destination for Yu-Gi-Oh! singles</p>
+                    <div class="contact-info">
+                        <p>📧 info@firelightduelacademy.com</p>
+                        <p>📞 (555) 123-DUEL</p>
+                        <p>📍 123 Duel Monsters Lane, Card City, CC 12345</p>
+                    </div>
                 </div>
                 
-                <div class="footer-payments">
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="singles.html">Browse Singles</a></li>
+                        <li><a href="buylist.html">Sell Cards</a></li>
+                        <li><a href="account.html">My Account</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Policies</h4>
+                    <ul>
+                        <li><a href="shipping.html">Shipping Info</a></li>
+                        <li><a href="returns.html">Return Policy</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                        <li><a href="terms.html">Terms of Service</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Payment Methods</h4>
                     <div class="payment-logos">
-                        <span>🍎</span><span>📱</span><span>💳</span><span>💳</span><span>💳</span><span>💳</span><span>💳</span><span>💰</span><span>💰</span>
+                        <span title="Credit Cards">💳</span>
+                        <span title="Apple Pay">🍎</span>
+                        <span title="Google Pay">📱</span>
+                        <span title="PayPal">💰</span>
+                        <span title="Store Credit">🎫</span>
                     </div>
+                    <p class="secure-notice">🔒 Secure checkout by Square</p>
                 </div>
-
-                <div class="footer-info">
-                    <h3>Helpful Information</h3>
-                    
-                    <div class="policy-section">
-                        <h4>Returns Policy</h4>
-                        <p class="policy-highlight"><strong><em>!! ALL ORDERS ARE FINAL !!</em></strong></p>
-                        
-                        <div class="policy-block">
-                            <h5>DEFECTIVE/NON-AUTHENTIC/ETC</h5>
-                            <p>It is scarce for any of our products to be defective/NON-AUTHENTIC/Damaged. However, we understand that mistakes happen, so if you have any issue with your package or product, you just need to:</p>
-                            <ol>
-                                <li>Email us - you can find our contact information in the "contact us" section of our website.</li>
-                                <li>Attach a photo or video showing the defect/damage;</li>
-                                <li>Provide the email registered at your purchase, your first and last names and the address that you wish to ship it back to us, in case your request is accepted;</li>
-                            </ol>
-                        </div>
-
-                        <div class="policy-block">
-                            <h5>ITEM NEVER ARRIVED</h5>
-                            <p>We send you a tracking number at the dispatch stage to the email address you registered when ordering. Our delivery methods can take up to 14 working days; however, in peak times such as Christmas/ holiday seasons and during lockdowns, this can extend by some more days.</p>
-                        </div>
-                    </div>
-                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Firelight Duel Academy. All rights reserved.</p>
+                <p>Yu-Gi-Oh! is a trademark of Konami Digital Entertainment.</p>
             </div>
         </footer>
     </div>
 
-    <script>
-        function openCart() {
-            document.getElementById('cart-overlay').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closeCart() {
-            document.getElementById('cart-overlay').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-        
-        // Close cart when clicking outside
-        document.getElementById('cart-overlay').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeCart();
-            }
-        });
-    </script>
+    <!-- Scripts -->
+    <script src="assets/js/yugioh-api-service.js"></script>
+    <script src="assets/js/yugioh-store.js"></script>
 </body>
 </html>

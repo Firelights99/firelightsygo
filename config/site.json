@@ -1,23 +1,37 @@
 {
   "site": {
-    "name": "Firelights YGO TCG",
-    "title": "Firelights YGO Trading Card Game",
-    "description": "Superior service, personalized attention for TCG enthusiasts",
+    "name": "Firelight Duel Academy",
+    "title": "Firelight Duel Academy - Premier Yu-Gi-Oh! Trading Card Store",
+    "description": "Your premier destination for Yu-Gi-Oh! sealed products, singles, and competitive play. Buy, sell, and trade with confidence.",
     "url": "https://firelights99.github.io/firelightsygo/",
-    "author": "Firelights YGO",
-    "version": "2.0.0"
+    "author": "Firelight Duel Academy",
+    "version": "3.0.0",
+    "logo": "https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=200&h=200&fit=crop&crop=center",
+    "favicon": "https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=32&h=32&fit=crop&crop=center"
   },
   "business": {
-    "name": "Firelights YGO",
-    "type": "Trading Card Game Shop",
+    "name": "Firelight Duel Academy",
+    "type": "Yu-Gi-Oh! Trading Card Game Store",
+    "specialties": [
+      "Yu-Gi-Oh! Sealed Products",
+      "Single Cards",
+      "Competitive Play Support",
+      "Card Buylist Program",
+      "Store Credit System"
+    ],
     "hours": {
-      "monday": "Closed",
-      "tuesday": "Closed", 
-      "wednesday": "Closed",
-      "thursday": "Closed",
-      "friday": "Closed",
-      "saturday": "Closed",
-      "sunday": "12:00 AM - 1:00 PM"
+      "monday": "10:00 AM - 8:00 PM",
+      "tuesday": "10:00 AM - 8:00 PM", 
+      "wednesday": "10:00 AM - 8:00 PM",
+      "thursday": "10:00 AM - 8:00 PM",
+      "friday": "10:00 AM - 10:00 PM",
+      "saturday": "9:00 AM - 10:00 PM",
+      "sunday": "12:00 PM - 6:00 PM"
+    },
+    "contact": {
+      "email": "info@firelightduelacademy.com",
+      "phone": "(555) 123-DUEL",
+      "address": "123 Duel Monsters Lane, Card City, CC 12345"
     },
     "payment_methods": [
       "Apple Pay",
@@ -26,15 +40,36 @@
       "Mastercard",
       "American Express",
       "Discover",
-      "JCB",
-      "Interac",
-      "Afterpay"
+      "PayPal",
+      "Store Credit"
     ]
   },
   "features": {
-    "membership": true,
-    "shopping_cart": true,
-    "secure_checkout": true,
-    "mobile_responsive": true
+    "user_accounts": true,
+    "buylist_system": true,
+    "store_credit": true,
+    "inventory_management": true,
+    "price_tracking": true,
+    "tournament_support": true,
+    "wishlist": true,
+    "trade_system": true,
+    "mobile_app": false,
+    "api_integration": true
+  },
+  "apis": {
+    "yugioh_data": "https://db.ygoprodeck.com/api/v7/",
+    "tcgplayer_pricing": "https://api.tcgplayer.com/",
+    "card_images": "https://images.ygoprodeck.com/images/cards/",
+    "set_images": "https://images.ygoprodeck.com/images/sets/"
+  },
+  "store_policies": {
+    "return_policy": "14-day return policy on sealed products only",
+    "buylist_policy": "Competitive buylist prices updated daily",
+    "store_credit_bonus": "10% bonus when selling for store credit",
+    "shipping": {
+      "free_threshold": 50.00,
+      "standard_rate": 5.99,
+      "expedited_rate": 12.99
+    }
   }
 }
