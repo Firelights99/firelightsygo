@@ -53,8 +53,9 @@ Simply open `index.html` in any modern web browser to view the website locally.
 ## Live Demo
 
 The website is now live and accessible at:
-- **Custom Domain**: https://www.firelightsygo.com
 - **GitHub Pages**: https://firelights99.github.io/firelightsygo/
+
+**Note**: A custom domain `www.firelightsygo.com` is configured in the CNAME file, but it requires DNS configuration to work properly. The GitHub Pages URL above is the working live demo.
 
 The site is automatically deployed via GitHub Actions whenever changes are pushed to the main branch.
 
