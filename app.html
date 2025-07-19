@@ -242,6 +242,43 @@
             }
         }
 
+        // Set selection functionality for product pages
+        function selectSet(setCode, rarity, price, setName) {
+            // Update all set options to remove selected state
+            document.querySelectorAll('.set-option').forEach(option => {
+                option.style.border = '2px solid var(--gray-300)';
+                option.style.background = 'white';
+                option.style.color = 'var(--gray-900)';
+                option.classList.remove('selected');
+            });
+
+            // Mark the clicked option as selected
+            event.target.closest('.set-option').style.border = '2px solid var(--primary-color)';
+            event.target.closest('.set-option').style.background = 'var(--primary-color)';
+            event.target.closest('.set-option').style.color = 'white';
+            event.target.closest('.set-option').classList.add('selected');
+
+            // Update the main price display
+            const priceElement = document.querySelector('[style*="font-size: 2rem"][style*="font-weight: 700"][style*="color: var(--primary-color)"]');
+            if (priceElement) {
+                priceElement.textContent = `$${price}`;
+            }
+
+            // Update the rarity badge
+            const rarityBadge = document.querySelector('[style*="background: var(--secondary-color)"]');
+            if (rarityBadge) {
+                rarityBadge.textContent = rarity;
+            }
+
+            // Store selected set data for cart functionality
+            window.selectedSetData = {
+                setCode: setCode,
+                rarity: rarity,
+                price: price,
+                setName: setName
+            };
+        }
+
         // Close modal when clicking outside
         window.addEventListener('click', function(event) {
             const modal = document.getElementById('image-zoom-modal');

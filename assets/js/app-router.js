@@ -637,7 +637,10 @@ class AppRouter {
     async formatCardForDisplay(card) {
         if (!card) return null;
 
-        const price = await this.getCardPrice(card);
+        // Get all available sets and their rarities
+        const cardSets = this.processCardSets(card.card_sets || []);
+        const defaultSet = cardSets.length > 0 ? cardSets[0] : null;
+        const price = await this.getCardPrice(card, defaultSet);
 
         return {
             id: card.id,
@@ -654,9 +657,57 @@ class AppRouter {
             imageSmall: this.getCardImageURL(card, 'small'),
             price: price,
             priceChange: this.getMockPriceChange(),
-            rarity: this.getCardRarity(card),
-            sets: card.card_sets || []
+            rarity: defaultSet ? defaultSet.rarity : 'Common',
+            sets: cardSets,
+            selectedSet: defaultSet
         };
+    }
+
+    processCardSets(cardSets) {
+        if (!cardSets || cardSets.length === 0) {
+            return [{
+                set_name: 'Unknown Set',
+                set_code: 'UNKNOWN',
+                rarity: 'Common',
+                rarity_code: 'C',
+                price: '0.50'
+            }];
+        }
+
+        return cardSets.map(set => ({
+            set_name: set.set_name,
+            set_code: set.set_code,
+            rarity: set.set_rarity,
+            rarity_code: set.set_rarity_code,
+            price: set.set_price || this.calculateSetPrice(set.set_rarity)
+        })).sort((a, b) => {
+            // Sort by rarity value (higher rarity first)
+            const rarityOrder = {
+                'Secret Rare': 6,
+                'Ultra Rare': 5,
+                'Super Rare': 4,
+                'Rare': 3,
+                'Short Print': 2,
+                'Common': 1
+            };
+            return (rarityOrder[b.rarity] || 0) - (rarityOrder[a.rarity] || 0);
+        });
+    }
+
+    calculateSetPrice(rarity) {
+        const basePrices = {
+            'Secret Rare': 45.00,
+            'Ultra Rare': 25.00,
+            'Super Rare': 12.00,
+            'Rare': 5.00,
+            'Short Print': 3.00,
+            'Common': 0.50
+        };
+        
+        const basePrice = basePrices[rarity] || 1.00;
+        // Add some randomness to make prices more realistic
+        const variation = (Math.random() - 0.5) * 0.4; // ±20% variation
+        return (basePrice * (1 + variation)).toFixed(2);
     }
 
     getCardImageURL(card, size = 'normal') {
@@ -690,7 +741,7 @@ class AppRouter {
         return card.type;
     }
 
-    async getCardPrice(card) {
+    async getCardPrice(card, selectedSet = null) {
         try {
             // Try to get price from YGOPRODeck API
             const apiBaseURL = 'https://db.ygoprodeck.com/api/v7';
@@ -708,8 +759,11 @@ class AppRouter {
                                   parseFloat(prices.coolstuffinc_price);
                     
                     if (usdPrice && usdPrice > 0) {
-                        // Convert USD to CAD (approximate rate: 1 USD = 1.35 CAD)
-                        const cadPrice = usdPrice * 1.35;
+                        // Convert USD to CAD and adjust for rarity
+                        let cadPrice = usdPrice * 1.35;
+                        if (selectedSet) {
+                            cadPrice = this.adjustPriceForRarity(cadPrice, selectedSet.rarity);
+                        }
                         return cadPrice.toFixed(2);
                     }
                 }
@@ -718,28 +772,56 @@ class AppRouter {
             console.warn('Error fetching price from API:', error);
         }
         
-        // Fallback to mock pricing in CAD
-        return this.getMockPriceCAD(card.name);
+        // Fallback to set-specific pricing or mock pricing
+        if (selectedSet && selectedSet.price) {
+            return selectedSet.price;
+        }
+        
+        return this.getMockPriceCAD(card.name, selectedSet ? selectedSet.rarity : 'Common');
     }
 
-    getMockPriceCAD(cardName) {
+    adjustPriceForRarity(basePrice, rarity) {
+        const rarityMultipliers = {
+            'Secret Rare': 3.5,
+            'Ultra Rare': 2.2,
+            'Super Rare': 1.5,
+            'Rare': 1.0,
+            'Short Print': 0.8,
+            'Common': 0.3
+        };
+        
+        const multiplier = rarityMultipliers[rarity] || 1.0;
+        return basePrice * multiplier;
+    }
+
+    getMockPriceCAD(cardName, rarity = 'Common') {
         const hash = this.hashCode(cardName);
-        const basePrice = Math.abs(hash % 80) + 1; // Reduced base for more realistic CAD prices
+        const basePrice = Math.abs(hash % 30) + 1; // Base price before rarity adjustment
         
+        // Card-specific adjustments
+        let cardMultiplier = 1.0;
         if (cardName.includes('Ash') || cardName.includes('Snake-Eye')) {
-            return (basePrice * 2.5 + 65).toFixed(2); // Higher for meta cards in CAD
-        }
-        if (cardName.includes('Blue-Eyes') || cardName.includes('Dark Magician')) {
-            return (basePrice * 0.7 + 8).toFixed(2); // Classic cards
-        }
-        if (cardName.includes('Kashtira') || cardName.includes('Infinite')) {
-            return (basePrice * 2 + 30).toFixed(2); // Meta staples
-        }
-        if (cardName.includes('Nibiru') || cardName.includes('Effect Veiler')) {
-            return (basePrice * 1.8 + 25).toFixed(2); // Hand traps
+            cardMultiplier = 3.0; // Meta cards
+        } else if (cardName.includes('Blue-Eyes') || cardName.includes('Dark Magician')) {
+            cardMultiplier = 1.5; // Classic cards
+        } else if (cardName.includes('Kashtira') || cardName.includes('Infinite')) {
+            cardMultiplier = 2.5; // Meta staples
+        } else if (cardName.includes('Nibiru') || cardName.includes('Effect Veiler')) {
+            cardMultiplier = 2.0; // Hand traps
         }
         
-        return (basePrice * 1.35).toFixed(2); // Base conversion to CAD
+        // Rarity-based pricing
+        const rarityPrices = {
+            'Secret Rare': basePrice * cardMultiplier * 4.0 + 20,
+            'Ultra Rare': basePrice * cardMultiplier * 2.5 + 10,
+            'Super Rare': basePrice * cardMultiplier * 1.8 + 5,
+            'Rare': basePrice * cardMultiplier * 1.2 + 2,
+            'Short Print': basePrice * cardMultiplier * 0.8 + 1,
+            'Common': basePrice * cardMultiplier * 0.4 + 0.25
+        };
+        
+        const finalPrice = rarityPrices[rarity] || rarityPrices['Common'];
+        return Math.max(0.25, finalPrice).toFixed(2); // Minimum 25 cents
     }
 
     getMockPriceChange() {
@@ -755,8 +837,8 @@ class AppRouter {
     getCardRarity(card) {
         if (!card.card_sets || card.card_sets.length === 0) return 'Common';
         
-        const rarities = ['Common', 'Rare', 'Super Rare', 'Ultra Rare', 'Secret Rare'];
-        return rarities[Math.floor(Math.random() * rarities.length)];
+        // Return the rarity from the first (highest rarity) set
+        return card.card_sets[0].set_rarity || 'Common';
     }
 
     hashCode(str) {
@@ -829,6 +911,14 @@ class AppRouter {
                             <span style="font-size: 0.875rem; font-weight: 600; padding: var(--space-1) var(--space-3); border-radius: var(--radius-md);" class="price-trend ${card.priceChange.direction}">
                                 ${priceChangeSymbol} ${priceChangeText}
                             </span>
+                        </div>
+                    </div>
+
+                    <!-- Set/Rarity Selection -->
+                    <div style="margin-bottom: var(--space-6);">
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4);">Available Sets & Rarities</h3>
+                        <div id="set-selector" style="display: grid; gap: var(--space-3);">
+                            ${this.generateSetSelectorHTML(card.sets, card.selectedSet)}
                         </div>
                     </div>
 
@@ -916,6 +1006,54 @@ class AppRouter {
         }
 
         return statsHTML;
+    }
+
+    generateSetSelectorHTML(sets, selectedSet) {
+        if (!sets || sets.length === 0) {
+            return '<p style="color: var(--gray-600); font-style: italic;">No set information available</p>';
+        }
+
+        return sets.map(set => {
+            const isSelected = selectedSet && selectedSet.set_code === set.set_code;
+            const rarityColor = this.getRarityColor(set.rarity);
+            
+            return `
+                <div class="set-option ${isSelected ? 'selected' : ''}" 
+                     style="border: 2px solid ${isSelected ? 'var(--primary-color)' : 'var(--gray-300)'}; 
+                            border-radius: var(--radius-lg); 
+                            padding: var(--space-4); 
+                            cursor: pointer; 
+                            transition: var(--transition-fast);
+                            background: ${isSelected ? 'var(--primary-color)' : 'white'};
+                            color: ${isSelected ? 'white' : 'var(--gray-900)'}"
+                     onclick="selectSet('${set.set_code}', '${set.rarity}', '${set.price}', '${set.set_name}')">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: var(--space-1);">${set.set_name}</div>
+                            <div style="font-size: 0.875rem; opacity: 0.8;">${set.set_code}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="background: ${rarityColor}; color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: 0.75rem; font-weight: 600; margin-bottom: var(--space-1);">
+                                ${set.rarity}
+                            </div>
+                            <div style="font-size: 1.125rem; font-weight: 700;">$${set.price}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    getRarityColor(rarity) {
+        const rarityColors = {
+            'Secret Rare': '#8B5CF6',
+            'Ultra Rare': '#F59E0B',
+            'Super Rare': '#3B82F6',
+            'Rare': '#10B981',
+            'Short Print': '#6B7280',
+            'Common': '#374151'
+        };
+        return rarityColors[rarity] || '#6B7280';
     }
 
     showLoading() {
