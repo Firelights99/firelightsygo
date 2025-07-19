@@ -918,7 +918,7 @@ class AppRouter {
 // Global navigation function
 function navigateTo(page, params = '') {
     if (window.appRouter) {
-        window.appRouter.loadPage(page);
+        window.appRouter.loadPage(page, true, params);
     }
 }
 
