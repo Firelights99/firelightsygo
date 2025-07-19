@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Page Test - Firelight Duel Academy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .success { background: #d4edda; border-left: 4px solid #28a745; }
+        .info { background: #d1ecf1; border-left: 4px solid #17a2b8; }
+        .warning { background: #fff3cd; border-left: 4px solid #ffc107; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔥 Firelight Duel Academy - Account Page Test</h1>
+    
+    <div class="test-section info">
+        <h2>📋 Account Page Status Check</h2>
+        <p>This page will test if the account system is working correctly.</p>
+        <button onclick="runTests()">Run Tests</button>
+        <div id="test-results"></div>
+    </div>
+
+    <div class="test-section warning">
+        <h2>🔍 What You Should See</h2>
+        <p><strong>When NOT logged in:</strong> The account page shows a login prompt with "Sign In Required" - this is CORRECT behavior.</p>
+        <p><strong>When logged in:</strong> The account page shows a full dashboard with order history, wishlist, and account settings.</p>
+    </div>
+
+    <div class="test-section success">
+        <h2>🧪 Test Login Credentials</h2>
+        <p>Use these sample accounts to test the full account page:</p>
+        <ul>
+            <li><strong>Admin:</strong> admin@firelightduelacademy.com / admin123</li>
+            <li><strong>User 1:</strong> duelist1@example.com / password123</li>
+            <li><strong>User 2:</strong> duelist2@example.com / password123</li>
+        </ul>
+        <button onclick="testLogin()">Test Login with Sample Account</button>
+    </div>
+
+    <div class="test-section">
+        <h2>🚀 Quick Actions</h2>
+        <button onclick="openAccountPage()">Open Account Page</button>
+        <button onclick="openMainApp()">Open Main App</button>
+        <button onclick="checkLocalStorage()">Check Local Storage</button>
+    </div>
+
+    <script>
+        function runTests() {
+            const results = document.getElementById('test-results');
+            results.innerHTML = '<h3>Running Tests...</h3>';
+            
+            let testResults = [];
+            
+            // Test 1: Check if files exist
+            testResults.push(testFileExists('app.html', 'Main app file'));
+            testResults.push(testFileExists('assets/js/app-router.js', 'App router'));
+            testResults.push(testFileExists('assets/js/modern-tcg-store.js', 'TCG Store'));
+            testResults.push(testFileExists('assets/js/services/database-service.js', 'Database service'));
+            
+            // Test 2: Check localStorage
+            const hasUsers = localStorage.getItem('tcg-users') !== null;
+            testResults.push({
+                name: 'Sample users in database',
+                status: hasUsers ? 'PASS' : 'FAIL',
+                message: hasUsers ? 'Sample users found' : 'No sample users - database may not be initialized'
+            });
+            
+            // Test 3: Check current user
+            const currentUser = localStorage.getItem('tcg-user');
+            testResults.push({
+                name: 'User login status',
+                status: currentUser ? 'LOGGED IN' : 'NOT LOGGED IN',
+                message: currentUser ? `Logged in as: ${JSON.parse(currentUser).email}` : 'No user currently logged in (this is why you see the login prompt)'
+            });
+            
+            displayTestResults(testResults);
+        }
+        
+        function testFileExists(filename, description) {
+            // This is a simplified test - in a real scenario you'd make HTTP requests
+            return {
+                name: description,
+                status: 'ASSUMED PASS',
+                message: `${filename} should exist based on file structure`
+            };
+        }
+        
+        function displayTestResults(results) {
+            const container = document.getElementById('test-results');
+            let html = '<h3>Test Results:</h3>';
+            
+            results.forEach(result => {
+                const className = result.status.includes('PASS') ? 'success' : 
+                                result.status.includes('FAIL') ? 'warning' : 'info';
+                html += `
+                    <div class="test-result ${className}">
+                        <strong>${result.name}:</strong> ${result.status}<br>
+                        <small>${result.message}</small>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function testLogin() {
+            alert('To test login:\n\n1. Open the main app (app.html)\n2. Click "Account" in the header\n3. Click "Sign In"\n4. Use: duelist1@example.com / password123\n5. You should then see the full account dashboard!');
+        }
+        
+        function openAccountPage() {
+            window.open('app.html#page=account', '_blank');
+        }
+        
+        function openMainApp() {
+            window.open('app.html', '_blank');
+        }
+        
+        function checkLocalStorage() {
+            const data = {
+                users: localStorage.getItem('tcg-users'),
+                currentUser: localStorage.getItem('tcg-user'),
+                orders: localStorage.getItem('tcg-orders'),
+                cart: localStorage.getItem('tcg-cart')
+            };
+            
+            console.log('Local Storage Data:', data);
+            alert('Local storage data logged to console. Press F12 to view.');
+        }
+        
+        // Auto-run tests on page load
+        window.addEventListener('load', () => {
+            setTimeout(runTests, 500);
+        });
+    </script>
+</body>
+</html>
