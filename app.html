@@ -62,8 +62,7 @@
                         <li><a href="#" class="nav-link" id="nav-decks" onclick="navigateTo('decks')">Decks</a></li>
                         <!-- Events hidden - store not hosting events -->
                         <li style="display: none;"><a href="#" class="nav-link" id="nav-events" onclick="navigateTo('events')">Events</a></li>
-                        <!-- Account navigation available -->
-                        <li><a href="#" class="nav-link" id="nav-account" onclick="navigateTo('account')">Account</a></li>
+                        <!-- Account navigation removed - access via account button only -->
                     </ul>
                 </nav>
 
@@ -303,8 +302,28 @@
 
         // Account functionality
         function handleAccountClick() {
-            // Always navigate to account page - it will handle login state internally
-            navigateTo('account');
+            // Check if user is logged in and validate account
+            if (window.tcgStore && window.tcgStore.currentUser) {
+                // Validate that the user account still exists
+                if (window.tcgStore.validateCurrentUser()) {
+                    // User is valid, navigate to account page
+                    navigateTo('account');
+                } else {
+                    // Account doesn't exist anymore, auto-logout
+                    console.warn('User account no longer exists, logging out...');
+                    window.tcgStore.logout();
+                    window.tcgStore.showToast('Your account session has expired. Please log in again.', 'warning');
+                    window.tcgStore.openLoginModal();
+                }
+            } else {
+                // User not logged in, show login modal
+                if (window.tcgStore && typeof window.tcgStore.openLoginModal === 'function') {
+                    window.tcgStore.openLoginModal();
+                } else {
+                    // Fallback: navigate to account page which will show login prompt
+                    navigateTo('account');
+                }
+            }
         }
 
         // Initialize account UI when page loads
@@ -312,6 +331,11 @@
             // Wait for tcgStore to be initialized
             setTimeout(() => {
                 if (window.tcgStore) {
+                    // Validate current user on page load
+                    if (window.tcgStore.currentUser && !window.tcgStore.validateCurrentUser()) {
+                        console.warn('Invalid user session detected on page load, logging out...');
+                        window.tcgStore.logout();
+                    }
                     window.tcgStore.updateAccountUI();
                 }
             }, 100);

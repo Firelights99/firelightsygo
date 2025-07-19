@@ -1504,11 +1504,43 @@ class ModernTCGStore {
         if (accountBtn) {
             if (this.currentUser) {
                 accountBtn.innerHTML = `<i class="fas fa-user"></i> ${this.currentUser.firstName}`;
-                accountBtn.onclick = () => navigateTo('account');
+                // Don't set onclick here - it's handled by handleAccountClick() in app.html
             } else {
                 accountBtn.innerHTML = '<i class="fas fa-user"></i> Account';
-                accountBtn.onclick = () => this.openLoginModal();
+                // Don't set onclick here - it's handled by handleAccountClick() in app.html
             }
+        }
+    }
+
+    validateCurrentUser() {
+        // Check if current user still exists in the database
+        if (!this.currentUser) {
+            return false;
+        }
+
+        try {
+            const users = JSON.parse(localStorage.getItem('tcg-users') || '{}');
+            const userExists = users[this.currentUser.email];
+            
+            if (!userExists) {
+                console.warn('Current user no longer exists in database');
+                return false;
+            }
+
+            // Check if user account is still active
+            if (!userExists.isActive) {
+                console.warn('Current user account is deactivated');
+                return false;
+            }
+
+            // Update current user data if it exists (in case of changes)
+            this.currentUser = userExists;
+            localStorage.setItem('tcg-user', JSON.stringify(userExists));
+            
+            return true;
+        } catch (error) {
+            console.error('Error validating current user:', error);
+            return false;
         }
     }
 
