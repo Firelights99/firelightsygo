@@ -147,9 +147,10 @@ class AppRouter {
                     <a href="#" onclick="navigateTo('singles')" style="padding: var(--space-4) var(--space-8); background: var(--secondary-color); color: var(--gray-900); text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; transition: var(--transition-fast); text-transform: uppercase; letter-spacing: 0.05em;">
                         Browse Singles
                     </a>
-                    <a href="#" onclick="navigateTo('events')" style="padding: var(--space-4) var(--space-8); background: rgba(255,255,255,0.1); color: white; text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; transition: var(--transition-fast); text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid rgba(255,255,255,0.2);">
+                    <!-- View Events button hidden - store not hosting events -->
+                    <!-- <a href="#" onclick="navigateTo('events')" style="padding: var(--space-4) var(--space-8); background: rgba(255,255,255,0.1); color: white; text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; transition: var(--transition-fast); text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid rgba(255,255,255,0.2);">
                         View Events
-                    </a>
+                    </a> -->
                 </div>
             </div>
         </section>
@@ -247,6 +248,8 @@ class AppRouter {
                     <p style="color: var(--gray-600); line-height: 1.6;">Live market data powered by YGOPRODeck API ensures you always get competitive prices on every card.</p>
                 </div>
                 
+                <!-- Tournament Events feature hidden - store not hosting events -->
+                <!--
                 <div style="text-align: center; padding: var(--space-6);">
                     <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4); font-size: 2rem;">
                         🎯
@@ -254,6 +257,7 @@ class AppRouter {
                     <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Tournament Events</h3>
                     <p style="color: var(--gray-600); line-height: 1.6;">Weekly locals, monthly championships, and special events for duelists of all skill levels.</p>
                 </div>
+                -->
                 
                 <div style="text-align: center; padding: var(--space-6);">
                     <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-dark) 100%); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4); font-size: 2rem;">
@@ -277,9 +281,10 @@ class AppRouter {
                 <a href="#" onclick="navigateTo('singles')" style="padding: var(--space-4) var(--space-8); background: var(--primary-color); color: white; text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; transition: var(--transition-fast); text-transform: uppercase; letter-spacing: 0.05em;">
                     Start Shopping
                 </a>
-                <a href="#" onclick="navigateTo('events')" style="padding: var(--space-4) var(--space-8); background: transparent; color: white; text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; transition: var(--transition-fast); text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid rgba(255,255,255,0.3);">
+                <!-- Join Events button hidden - store not hosting events -->
+                <!-- <a href="#" onclick="navigateTo('events')" style="padding: var(--space-4) var(--space-8); background: transparent; color: white; text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; transition: var(--transition-fast); text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid rgba(255,255,255,0.3);">
                     Join Events
-                </a>
+                </a> -->
             </div>
         </section>
         `;
