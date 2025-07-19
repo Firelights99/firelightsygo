@@ -64,7 +64,7 @@ jobs:
           find . -type f -name "*.html" -o -name "*.css" -o -name "*.js" -o -name "*.json" | head -20
       
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

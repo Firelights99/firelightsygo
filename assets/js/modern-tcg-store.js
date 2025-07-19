@@ -659,21 +659,38 @@ class ModernTCGStore {
         const item = this.cart.find(item => item.id === itemId);
         if (!item) return;
         
-        if (newQuantity <= 0) {
-            this.removeFromCart(itemId);
-        } else {
-            item.quantity = newQuantity;
-            this.saveCart();
-            this.updateCartBadge();
-            
-            // Live update the cart modal if it's open
-            const cartModal = document.getElementById('cart-modal');
-            if (cartModal && cartModal.style.display !== 'none') {
-                // Update specific elements instead of regenerating entire modal for better UX
-                this.updateCartItemDisplay(itemId, item);
-                this.updateCartSummary();
-            }
+        // Ensure quantity is a positive integer
+        newQuantity = Math.max(1, Math.floor(newQuantity));
+        
+        // Set maximum quantity limit (e.g., 99 per item)
+        const maxQuantity = 99;
+        newQuantity = Math.min(newQuantity, maxQuantity);
+        
+        item.quantity = newQuantity;
+        this.saveCart();
+        this.updateCartBadge();
+        
+        // Live update the cart modal if it's open
+        const cartModal = document.getElementById('cart-modal');
+        if (cartModal && cartModal.style.display !== 'none') {
+            // Update specific elements instead of regenerating entire modal for better UX
+            this.updateCartItemDisplay(itemId, item);
+            this.updateCartSummary();
         }
+    }
+
+    decreaseQuantity(itemId) {
+        const item = this.cart.find(item => item.id === itemId);
+        if (!item || item.quantity <= 1) return;
+        
+        this.updateCartQuantity(itemId, item.quantity - 1);
+    }
+
+    increaseQuantity(itemId) {
+        const item = this.cart.find(item => item.id === itemId);
+        if (!item) return;
+        
+        this.updateCartQuantity(itemId, item.quantity + 1);
     }
 
     updateCartModalContent() {
@@ -838,9 +855,16 @@ class ModernTCGStore {
                     <p style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2);">$${item.price.toFixed(2)} each</p>
                     <div class="cart-item-controls">
                         <div class="quantity-controls">
-                            <button class="quantity-btn" onclick="tcgStore.updateCartQuantity(${item.id}, ${item.quantity - 1})">-</button>
-                            <span class="quantity-display">${item.quantity}</span>
-                            <button class="quantity-btn" onclick="tcgStore.updateCartQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                            <button class="quantity-btn" onclick="tcgStore.decreaseQuantity(${item.id})" ${item.quantity <= 1 ? 'disabled' : ''}>-</button>
+                            <input type="number" 
+                                   class="quantity-input" 
+                                   value="${item.quantity}" 
+                                   min="1" 
+                                   max="99" 
+                                   style="width: 60px; text-align: center; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); padding: 4px; font-size: 0.875rem;"
+                                   onchange="tcgStore.updateCartQuantity(${item.id}, parseInt(this.value) || 1)"
+                                   onblur="tcgStore.updateCartQuantity(${item.id}, parseInt(this.value) || 1)">
+                            <button class="quantity-btn" onclick="tcgStore.increaseQuantity(${item.id})">+</button>
                         </div>
                         <button class="remove-btn" onclick="tcgStore.removeFromCart(${item.id})" title="Remove from cart">
                             🗑️
@@ -972,10 +996,22 @@ class ModernTCGStore {
         const cartItemElement = document.querySelector(`[data-item-id="${itemId}"]`);
         if (!cartItemElement) return;
 
-        // Update quantity display
+        // Update quantity input field
+        const quantityInput = cartItemElement.querySelector('.quantity-input');
+        if (quantityInput) {
+            quantityInput.value = item.quantity;
+        }
+
+        // Update quantity display (for backward compatibility)
         const quantityDisplay = cartItemElement.querySelector('.quantity-display');
         if (quantityDisplay) {
             quantityDisplay.textContent = item.quantity;
+        }
+
+        // Update minus button disabled state
+        const minusBtn = cartItemElement.querySelector('.quantity-btn:first-child');
+        if (minusBtn) {
+            minusBtn.disabled = item.quantity <= 1;
         }
 
         // Update item total

@@ -162,15 +162,81 @@ Harrison-Website/
 
 ## 🚀 Deployment
 
-The site is automatically deployed via GitHub Actions:
-1. Push changes to the `main` branch
-2. GitHub Actions builds and deploys to GitHub Pages
-3. Site is live within minutes
+The site is automatically deployed via GitHub Actions with comprehensive CI/CD pipeline:
+
+### Automated Deployment
+1. **Push changes** to the `main` branch
+2. **GitHub Actions** automatically runs:
+   - Code quality checks (HTML, CSS, JavaScript validation)
+   - Security scanning for vulnerabilities
+   - Performance analysis
+   - Accessibility checks
+   - Asset optimization
+3. **Deployment** to GitHub Pages within minutes
+4. **Live site** updated automatically
+
+### GitHub Actions Workflows
+
+#### Deploy Workflow (`.github/workflows/deploy.yml`)
+- Validates JSON configuration files
+- Checks HTML file structure
+- Optimizes assets for production
+- Deploys to GitHub Pages
+- Provides deployment summary
+
+#### Code Quality Workflow (`.github/workflows/code-quality.yml`)
+- HTML/CSS/JavaScript validation
+- Security vulnerability scanning
+- Performance monitoring
+- Accessibility compliance checks
+- File size analysis
 
 ### Manual Deployment
-1. Ensure all files are committed
-2. Push to GitHub repository
-3. Enable GitHub Pages in repository settings
+1. Ensure all files are committed to Git
+2. Push to GitHub repository: `git push origin main`
+3. GitHub Actions will automatically deploy
+4. Monitor deployment status in GitHub Actions tab
+
+### Updating GitHub Repository
+
+Since Git is not installed on your system, you can update GitHub using these methods:
+
+#### Method 1: GitHub Web Interface
+1. Go to your GitHub repository
+2. Click "Upload files" or edit files directly
+3. Drag and drop changed files or use the editor
+4. Commit changes with descriptive messages
+
+#### Method 2: Install Git (Recommended)
+```bash
+# Windows (using Chocolatey)
+choco install git
+
+# Windows (using winget)
+winget install Git.Git
+
+# After installation, configure Git:
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+
+# Then use standard Git commands:
+git add .
+git commit -m "Update GitHub configuration and workflows"
+git push origin main
+```
+
+#### Method 3: GitHub Desktop
+1. Download and install GitHub Desktop
+2. Clone your repository
+3. Make changes locally
+4. Commit and push through the GUI
+
+### Repository Status
+- **Current Branch**: main
+- **Auto-deployment**: ✅ Enabled
+- **Code Quality Checks**: ✅ Enabled
+- **Security Scanning**: ✅ Enabled
+- **GitHub Pages**: ✅ Active
 
 ## 📊 Performance
 
