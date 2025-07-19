@@ -625,8 +625,189 @@ class ModernTCGStore {
     }
 
     openCart() {
-        // Implementation for cart modal
-        this.showToast('Cart functionality coming soon!', 'info');
+        this.createCartModal();
+        this.displayCartModal();
+    }
+
+    createCartModal() {
+        // Remove existing modal if it exists
+        const existingModal = document.getElementById('cart-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        const modal = document.createElement('div');
+        modal.id = 'cart-modal';
+        modal.className = 'cart-modal';
+        modal.innerHTML = this.generateCartModalHTML();
+        document.body.appendChild(modal);
+
+        // Add event listeners
+        this.setupCartModalEventListeners();
+    }
+
+    generateCartModalHTML() {
+        const totalItems = this.cart.reduce((sum, item) => sum + item.quantity, 0);
+        const totalPrice = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+        return `
+            <div class="cart-modal-overlay" onclick="tcgStore.closeCart()">
+                <div class="cart-modal-content" onclick="event.stopPropagation()">
+                    <div class="cart-modal-header">
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin: 0;">
+                            Shopping Cart (${totalItems} items)
+                        </h2>
+                        <button class="cart-close-btn" onclick="tcgStore.closeCart()">×</button>
+                    </div>
+                    
+                    <div class="cart-modal-body">
+                        ${this.cart.length === 0 ? this.generateEmptyCartHTML() : this.generateCartItemsHTML()}
+                    </div>
+                    
+                    ${this.cart.length > 0 ? this.generateCartFooterHTML(totalPrice) : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    generateEmptyCartHTML() {
+        return `
+            <div class="empty-cart">
+                <div style="text-align: center; padding: var(--space-12) var(--space-6);">
+                    <div style="font-size: 4rem; margin-bottom: var(--space-4); opacity: 0.5;">🛒</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Your cart is empty</h3>
+                    <p style="color: var(--gray-600); margin-bottom: var(--space-6);">Add some Yu-Gi-Oh! cards to get started!</p>
+                    <button class="primary-btn" onclick="tcgStore.closeCart(); navigateTo('singles')">
+                        Browse Singles
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    generateCartItemsHTML() {
+        return `
+            <div class="cart-items">
+                ${this.cart.map(item => this.generateCartItemHTML(item)).join('')}
+            </div>
+        `;
+    }
+
+    generateCartItemHTML(item) {
+        const itemTotal = (item.price * item.quantity).toFixed(2);
+        
+        return `
+            <div class="cart-item" data-item-id="${item.id}">
+                <div class="cart-item-image">
+                    <img src="${item.image}" alt="${item.name}" style="width: 60px; height: 84px; object-fit: contain; border-radius: var(--radius-md);">
+                </div>
+                <div class="cart-item-details">
+                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1); line-height: 1.3;">${item.name}</h4>
+                    <p style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2);">$${item.price.toFixed(2)} each</p>
+                    <div class="cart-item-controls">
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="tcgStore.updateCartQuantity(${item.id}, ${item.quantity - 1})">-</button>
+                            <span class="quantity-display">${item.quantity}</span>
+                            <button class="quantity-btn" onclick="tcgStore.updateCartQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                        </div>
+                        <button class="remove-btn" onclick="tcgStore.removeFromCart(${item.id})" title="Remove from cart">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+                <div class="cart-item-total">
+                    <span style="font-size: 1.125rem; font-weight: 700; color: var(--primary-color);">$${itemTotal}</span>
+                </div>
+            </div>
+        `;
+    }
+
+    generateCartFooterHTML(totalPrice) {
+        const shipping = totalPrice >= 75 ? 0 : 9.99;
+        const tax = totalPrice * 0.13; // 13% HST for Ontario
+        const finalTotal = totalPrice + shipping + tax;
+
+        return `
+            <div class="cart-modal-footer">
+                <div class="cart-summary">
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span>$${totalPrice.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping:</span>
+                        <span>${shipping === 0 ? 'FREE' : '$' + shipping.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Tax (HST):</span>
+                        <span>$${tax.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-row total-row">
+                        <span>Total:</span>
+                        <span>$${finalTotal.toFixed(2)}</span>
+                    </div>
+                    ${totalPrice < 75 ? `<p class="shipping-notice">Add $${(75 - totalPrice).toFixed(2)} more for free shipping!</p>` : ''}
+                </div>
+                <div class="cart-actions">
+                    <button class="secondary-btn" onclick="tcgStore.closeCart()">Continue Shopping</button>
+                    <button class="primary-btn" onclick="tcgStore.proceedToCheckout()">Proceed to Checkout</button>
+                </div>
+            </div>
+        `;
+    }
+
+    setupCartModalEventListeners() {
+        // Close modal when clicking outside
+        const overlay = document.querySelector('.cart-modal-overlay');
+        if (overlay) {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    this.closeCart();
+                }
+            });
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('cart-modal')) {
+                this.closeCart();
+            }
+        });
+    }
+
+    displayCartModal() {
+        const modal = document.getElementById('cart-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+            // Prevent body scroll when modal is open
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    closeCart() {
+        const modal = document.getElementById('cart-modal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.remove();
+            // Restore body scroll
+            document.body.style.overflow = '';
+        }
+    }
+
+    proceedToCheckout() {
+        this.showToast('Redirecting to secure checkout...', 'info');
+        // In a real implementation, this would redirect to a payment processor
+        setTimeout(() => {
+            this.showToast('Checkout functionality coming soon!', 'info');
+        }, 1500);
+    }
+
+    clearCart() {
+        this.cart = [];
+        this.saveCart();
+        this.updateCartBadge();
+        this.closeCart();
+        this.showToast('Cart cleared!', 'info');
     }
 
     initializeToastContainer() {
