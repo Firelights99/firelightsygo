@@ -64,6 +64,15 @@ Harrison-Website/
 - **Store Credit**: Customer credit system with bonus incentives
 - **Price Stability**: 2-day price caching for consistent shopping experience
 
+### Account System
+- **User Authentication**: Secure login/registration system with password hashing
+- **Account Dashboard**: Complete user dashboard with order history, wishlist, and settings
+- **Order Management**: Track orders, view purchase history, and reorder items
+- **Wishlist System**: Save cards with price alerts and target price notifications
+- **Profile Management**: Update personal information, addresses, and preferences
+- **Store Credit Tracking**: View balance, transaction history, and earned credits
+- **Security**: Protected account pages with proper authentication flow
+
 ### API Integrations
 - **Yu-Gi-Oh! Database**: Complete card database via YGOPRODeck API (primary)
 - **Yu-Gi-Oh! Image Service**: Comprehensive image library covering all eras of modern Yu-Gi-Oh!
@@ -147,6 +156,41 @@ Harrison-Website/
 1. Clone the repository
 2. Open `index.html` in a modern web browser
 3. For development server: Use Live Server extension in VS Code
+
+### Account System Testing
+The account page shows different content based on authentication status:
+
+#### **When NOT Logged In** (Default Behavior)
+- Shows "Sign In Required" prompt with benefits of creating an account
+- Provides login and registration options
+- This is the **correct security behavior** for protected account pages
+
+#### **When Logged In** (Full Dashboard)
+- Complete account dashboard with user welcome message
+- Order history with tracking and reorder functionality
+- Wishlist management with price alerts
+- Profile editing and password change options
+- Store credit balance and transaction history
+
+#### **Test Credentials**
+Use these sample accounts to test the full account dashboard:
+- **Admin**: `admin@firelightduelacademy.com` / `admin123`
+- **User 1**: `duelist1@example.com` / `password123`
+- **User 2**: `duelist2@example.com` / `password123`
+
+#### **Testing Steps**
+1. Open `app.html` in your browser
+2. Click "Account" in the header
+3. Click "Sign In" on the login prompt
+4. Use sample credentials above
+5. View the complete account dashboard
+
+#### **Diagnostic Tool**
+Open `test-account-page.html` for:
+- Account system status verification
+- Local storage inspection
+- Quick access to test credentials
+- Direct links to account functionality
 
 ### File Organization
 - **Assets**: All static files organized by type
