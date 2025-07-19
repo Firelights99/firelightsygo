@@ -1,14 +1,14 @@
 /* Modern TCG Store Design System */
 
 :root {
-    /* Color Palette - Green & Purple Theme */
-    --primary-color: #7c3aed;
-    --primary-dark: #6d28d9;
-    --primary-light: #8b5cf6;
-    --secondary-color: #10b981;
-    --secondary-dark: #059669;
-    --accent-color: #34d399;
-    --accent-dark: #10b981;
+    /* Color Palette - Red, White & Black Theme */
+    --primary-color: #dc2626;
+    --primary-dark: #b91c1c;
+    --primary-light: #ef4444;
+    --secondary-color: #ffffff;
+    --secondary-dark: #f3f4f6;
+    --accent-color: #fecaca;
+    --accent-dark: #fca5a5;
     
     /* Neutral Colors */
     --gray-50: #f9fafb;
@@ -23,10 +23,10 @@
     --gray-900: #111827;
     
     /* Status Colors */
-    --success-color: #10b981;
+    --success-color: #16a34a;
     --warning-color: #f59e0b;
-    --error-color: #ef4444;
-    --info-color: #3b82f6;
+    --error-color: #dc2626;
+    --info-color: #2563eb;
     
     /* Typography */
     --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
