@@ -11,47 +11,96 @@ The website is live and accessible at:
 
 ```
 Harrison-Website/
-├── assets/                     # Static assets
+├── backend/                   # 🆕 Production Node.js Backend
+│   ├── package.json          # Dependencies and scripts
+│   ├── .env.example          # Environment variables template
+│   ├── server.js             # Main Express server
+│   ├── README.md             # Complete deployment guide
+│   ├── config/
+│   │   └── database.js       # MySQL connection and operations
+│   ├── utils/
+│   │   └── logger.js         # Winston logging system
+│   ├── middleware/
+│   │   ├── auth.js           # JWT authentication middleware
+│   │   └── errorHandler.js   # Global error handling
+│   └── routes/
+│       ├── auth.js           # Authentication endpoints
+│       ├── users.js          # User management endpoints
+│       ├── products.js       # Product catalog endpoints
+│       ├── cart.js           # Shopping cart endpoints
+│       ├── orders.js         # Order management endpoints
+│       ├── payments.js       # Payment processing endpoints
+│       └── admin.js          # Admin panel endpoints
+├── assets/                   # Static assets
 │   ├── css/
-│   │   ├── main.css           # Main stylesheet with modern design
-│   │   ├── styles.css         # Legacy stylesheet (backup)
-│   │   ├── square-style.css   # Square payment integration styles
-│   │   ├── exact-square.css   # Square UI components
-│   │   ├── yugioh-store.css   # Yu-Gi-Oh! store specific styles
+│   │   ├── main.css         # Main stylesheet with modern design
+│   │   ├── styles.css       # Legacy stylesheet (backup)
+│   │   ├── square-style.css # Square payment integration styles
+│   │   ├── exact-square.css # Square UI components
+│   │   ├── yugioh-store.css # Yu-Gi-Oh! store specific styles
 │   │   └── yugioh-image-enhancements.css # Yu-Gi-Oh! image styling
 │   ├── js/
-│   │   ├── main.js            # Enhanced JavaScript with ES6 classes
-│   │   ├── script.js          # Legacy script (backup)
+│   │   ├── main.js          # Enhanced JavaScript with ES6 classes
+│   │   ├── script.js        # Legacy script (backup)
 │   │   ├── square-functionality.js    # Square payment processing
-│   │   ├── yugioh-store.js    # Yu-Gi-Oh! store functionality
+│   │   ├── yugioh-store.js  # Yu-Gi-Oh! store functionality
 │   │   ├── yugioh-api-service.js      # YGOPRODeck API integration (primary)
 │   │   ├── yugioh-image-service.js    # Comprehensive Yu-Gi-Oh! image service
 │   │   ├── tcgplayer-api-service.js   # TCGPlayer API integration (disabled)
-│   │   └── crystal-commerce-integration.js # Crystal Commerce API
-│   ├── images/                # Image assets
-│   └── icons/                 # Icon assets
-├── admin/                     # Administrative interfaces
+│   │   ├── crystal-commerce-integration.js # Crystal Commerce API
+│   │   └── services/
+│   │       ├── database-service.js           # Development localStorage service
+│   │       └── database-service-production.js # 🆕 Production API client
+│   ├── images/              # Image assets
+│   └── icons/               # Icon assets
+├── admin/                   # Administrative interfaces
 │   ├── crystal-commerce-admin.html    # Crystal Commerce management
-│   └── tcgplayer-setup.html   # TCGPlayer configuration
-├── src/                       # Source code (for future expansion)
-│   ├── components/            # Reusable components
-│   └── pages/                 # Page-specific code
-├── data/                      # Data files and schemas
-│   ├── membership.json        # Membership plan data
-│   ├── database-schema.sql    # Main database schema
+│   └── tcgplayer-setup.html # TCGPlayer configuration
+├── pages/                   # 🆕 SPA Page Components
+│   ├── account.html         # Account page (redirects to SPA)
+│   ├── singles.html         # Singles catalog page
+│   ├── events.html          # Events and tournaments
+│   ├── decks.html           # Deck builder and popular decks
+│   ├── product.html         # Individual product pages
+│   ├── shipping-policy.html # Shipping information
+│   ├── return-policy.html   # Return and refund policies
+│   └── faq.html            # Frequently asked questions
+├── src/                     # Source code (for future expansion)
+│   ├── components/          # Reusable components
+│   └── pages/               # Page-specific code
+├── data/                    # Data files and schemas
+│   ├── membership.json      # Membership plan data
+│   ├── database-schema.sql  # 🆕 Complete production database schema
 │   └── yugioh-singles-schema.sql # Yu-Gi-Oh! singles database
-├── config/                    # Configuration files
-│   └── site.json             # Comprehensive site configuration
+├── config/                  # Configuration files
+│   └── site.json           # Comprehensive site configuration
 ├── .github/
 │   └── workflows/
-│       └── deploy.yml         # GitHub Actions deployment
-├── index.html                 # Main HTML file
-├── shop.html                  # Yu-Gi-Oh! store page
-├── .nojekyll                  # GitHub Pages configuration
-└── README.md                  # This file
+│       ├── deploy.yml       # GitHub Actions deployment
+│       └── code-quality.yml # Code quality checks
+├── docs/                    # 🆕 Documentation
+│   └── PROJECT_STRUCTURE.md # Detailed project documentation
+├── index.html               # Main HTML file
+├── app.html                 # 🆕 Single Page Application
+├── .nojekyll               # GitHub Pages configuration
+├── PRODUCTION_SETUP_GUIDE.md # 🆕 Complete production setup guide
+├── switch-to-production.js  # 🆕 Helper script for switching modes
+├── GITHUB_UPDATE_INSTRUCTIONS.md # 🆕 GitHub update guide
+└── README.md               # This file
 ```
 
 ## 🎯 Features
+
+### 🗄️ Production Database System (NEW)
+- **Node.js Backend**: Complete Express.js server with MySQL integration
+- **JWT Authentication**: Secure user authentication with token-based sessions
+- **RESTful API**: Full REST API for products, cart, orders, and user management
+- **MySQL Database**: Production-ready database with 14+ tables and proper relationships
+- **Real Data Persistence**: User accounts, orders, and cart data stored permanently
+- **Multiple Deployment Options**: Railway, Heroku, VPS, or Docker deployment
+- **Production Logging**: Winston logging with file rotation and error tracking
+- **Security Middleware**: Rate limiting, CORS protection, and input validation
+- **Database Migrations**: Complete schema with sample data and relationships
 
 ### E-commerce Functionality
 - **Yu-Gi-Oh! Store**: Complete trading card store with product catalog
