@@ -34,13 +34,18 @@ class ModernTCGStore {
         // Search functionality
         const searchInput = document.querySelector('.search-input');
         if (searchInput) {
-            searchInput.addEventListener('input', this.debounce(this.handleSearch.bind(this), 300));
-            searchInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    this.handleSearch();
-                }
-            });
+            searchInput.addEventListener('input', this.debounce(this.handleSearchDropdown.bind(this), 300));
+            searchInput.addEventListener('focus', this.handleSearchFocus.bind(this));
+            searchInput.addEventListener('keydown', this.handleSearchKeydown.bind(this));
         }
+
+        // Close search dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const searchSection = document.querySelector('.search-section');
+            if (searchSection && !searchSection.contains(e.target)) {
+                this.hideSearchDropdown();
+            }
+        });
 
         // Cart functionality
         const cartBtn = document.querySelector('.action-btn[onclick*="cart"]');
@@ -1210,6 +1215,117 @@ class ModernTCGStore {
             info: 'ℹ️'
         };
         return icons[type] || icons.info;
+    }
+
+    // Search Dropdown Methods
+    async handleSearchDropdown() {
+        const searchInput = document.querySelector('.search-input');
+        if (!searchInput) return;
+
+        const query = searchInput.value.trim();
+        const dropdown = document.getElementById('search-dropdown');
+        
+        if (query.length < 2) {
+            this.hideSearchDropdown();
+            return;
+        }
+
+        this.showSearchDropdown();
+        this.showSearchLoading();
+
+        try {
+            const searchResults = await this.searchCards(query);
+            const limitedResults = searchResults.slice(0, 8); // Show max 8 results
+            const formattedResults = await Promise.all(limitedResults.map(card => this.formatCardForDisplay(card)));
+            
+            this.displaySearchResults(formattedResults, query);
+        } catch (error) {
+            console.error('Search dropdown error:', error);
+            this.showSearchError();
+        }
+    }
+
+    handleSearchFocus() {
+        const searchInput = document.querySelector('.search-input');
+        if (searchInput && searchInput.value.trim().length >= 2) {
+            this.handleSearchDropdown();
+        }
+    }
+
+    handleSearchKeydown(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const query = e.target.value.trim();
+            if (query.length >= 2) {
+                this.hideSearchDropdown();
+                // Navigate to singles page with search query
+                navigateTo('singles', `?search=${encodeURIComponent(query)}`);
+            }
+        } else if (e.key === 'Escape') {
+            this.hideSearchDropdown();
+        }
+    }
+
+    showSearchDropdown() {
+        const dropdown = document.getElementById('search-dropdown');
+        if (dropdown) {
+            dropdown.style.display = 'block';
+        }
+    }
+
+    hideSearchDropdown() {
+        const dropdown = document.getElementById('search-dropdown');
+        if (dropdown) {
+            dropdown.style.display = 'none';
+        }
+    }
+
+    showSearchLoading() {
+        const resultsContainer = document.getElementById('search-results');
+        if (resultsContainer) {
+            resultsContainer.innerHTML = '<div class="search-loading">Searching cards...</div>';
+        }
+    }
+
+    showSearchError() {
+        const resultsContainer = document.getElementById('search-results');
+        if (resultsContainer) {
+            resultsContainer.innerHTML = '<div class="search-no-results">Search failed. Please try again.</div>';
+        }
+    }
+
+    displaySearchResults(results, query) {
+        const resultsContainer = document.getElementById('search-results');
+        if (!resultsContainer) return;
+
+        if (results.length === 0) {
+            resultsContainer.innerHTML = '<div class="search-no-results">No cards found matching your search.</div>';
+            return;
+        }
+
+        const resultsHTML = results.map(card => this.generateSearchResultHTML(card)).join('');
+        const seeAllHTML = `
+            <div class="search-see-all">
+                <a href="#" class="search-see-all-btn" onclick="tcgStore.hideSearchDropdown(); navigateTo('singles', '?search=${encodeURIComponent(query)}')">
+                    See all results for "${query}"
+                </a>
+            </div>
+        `;
+
+        resultsContainer.innerHTML = resultsHTML + seeAllHTML;
+    }
+
+    generateSearchResultHTML(card) {
+        return `
+            <a href="#" class="search-result-item" onclick="tcgStore.hideSearchDropdown(); tcgStore.navigateToProduct(${JSON.stringify(card).replace(/"/g, '&quot;')})">
+                <img src="${card.imageSmall}" alt="${card.name}" class="search-result-image" loading="lazy">
+                <div class="search-result-info">
+                    <div class="search-result-name">${card.name}</div>
+                    <div class="search-result-type">${card.type}</div>
+                    <div class="search-result-price">$${card.price}</div>
+                </div>
+            </a>
+        `;
     }
 
     debounce(func, wait) {

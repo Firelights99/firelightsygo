@@ -292,6 +292,109 @@ body {
     pointer-events: none;
 }
 
+/* Search Dropdown */
+.search-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid var(--gray-300);
+    border-top: none;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: var(--z-dropdown);
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.search-results {
+    padding: var(--space-2);
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    text-decoration: none;
+    color: var(--gray-900);
+}
+
+.search-result-item:hover {
+    background: var(--gray-50);
+}
+
+.search-result-image {
+    width: 40px;
+    height: 56px;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+}
+
+.search-result-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.search-result-name {
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-bottom: var(--space-1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-result-type {
+    font-size: 0.75rem;
+    color: var(--gray-600);
+    margin-bottom: var(--space-1);
+}
+
+.search-result-price {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.search-loading {
+    padding: var(--space-4);
+    text-align: center;
+    color: var(--gray-600);
+    font-size: 0.875rem;
+}
+
+.search-no-results {
+    padding: var(--space-4);
+    text-align: center;
+    color: var(--gray-600);
+    font-size: 0.875rem;
+}
+
+.search-see-all {
+    padding: var(--space-3);
+    text-align: center;
+    border-top: 1px solid var(--gray-200);
+    background: var(--gray-50);
+}
+
+.search-see-all-btn {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: var(--transition-fast);
+}
+
+.search-see-all-btn:hover {
+    color: var(--primary-dark);
+}
+
 /* 401Games-Style Action Buttons */
 .action-section {
     display: flex;
