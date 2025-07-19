@@ -886,6 +886,14 @@ class ModernTCGStore {
         this.createAccountModal('register');
     }
 
+    openEditProfileModal() {
+        if (!this.currentUser) {
+            this.showToast('Please log in to edit your profile.', 'error');
+            return;
+        }
+        this.createEditProfileModal();
+    }
+
     createAccountModal(type = 'login') {
         // Remove existing modal if it exists
         const existingModal = document.getElementById('account-modal');
@@ -991,6 +999,198 @@ class ModernTCGStore {
                 this.closeAccountModal();
             }
         });
+    }
+
+    createEditProfileModal() {
+        // Remove existing modal if it exists
+        const existingModal = document.getElementById('edit-profile-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        const modal = document.createElement('div');
+        modal.id = 'edit-profile-modal';
+        modal.className = 'account-modal';
+        modal.innerHTML = this.generateEditProfileModalHTML();
+        document.body.appendChild(modal);
+
+        // Add event listeners
+        this.setupEditProfileModalEventListeners();
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    generateEditProfileModalHTML() {
+        const user = this.currentUser;
+        
+        return `
+            <div class="account-modal-overlay" onclick="tcgStore.closeEditProfileModal()">
+                <div class="account-modal-content" onclick="event.stopPropagation()">
+                    <div class="account-modal-header">
+                        <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--gray-900); margin: 0;">
+                            Edit Profile
+                        </h2>
+                        <button class="account-close-btn" onclick="tcgStore.closeEditProfileModal()">×</button>
+                    </div>
+                    
+                    <div class="account-modal-body">
+                        <form id="edit-profile-form" onsubmit="tcgStore.handleEditProfileSubmit(event)">
+                            <div class="form-group">
+                                <label for="editFirstName">First Name</label>
+                                <input type="text" id="editFirstName" name="firstName" value="${user.firstName}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editLastName">Last Name</label>
+                                <input type="text" id="editLastName" name="lastName" value="${user.lastName}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editEmail">Email Address</label>
+                                <input type="email" id="editEmail" name="email" value="${user.email}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editPhone">Phone Number</label>
+                                <input type="tel" id="editPhone" name="phone" value="${user.phone || ''}">
+                            </div>
+                            <div class="form-group">
+                                <label for="editArchetype">Favorite Archetype</label>
+                                <input type="text" id="editArchetype" name="favoriteArchetype" value="${user.favoriteArchetype || ''}" placeholder="e.g., Blue-Eyes, Dark Magician">
+                            </div>
+                            
+                            <hr style="margin: var(--space-6) 0; border: none; border-top: 1px solid var(--gray-200);">
+                            
+                            <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4);">Change Password (Optional)</h3>
+                            <div class="form-group">
+                                <label for="editCurrentPassword">Current Password</label>
+                                <input type="password" id="editCurrentPassword" name="currentPassword" placeholder="Leave blank to keep current password">
+                            </div>
+                            <div class="form-group">
+                                <label for="editNewPassword">New Password</label>
+                                <input type="password" id="editNewPassword" name="newPassword" minlength="6" placeholder="Leave blank to keep current password">
+                            </div>
+                            <div class="form-group">
+                                <label for="editConfirmPassword">Confirm New Password</label>
+                                <input type="password" id="editConfirmPassword" name="confirmPassword" minlength="6" placeholder="Leave blank to keep current password">
+                            </div>
+                            
+                            <button type="submit" class="primary-btn" style="width: 100%; margin-bottom: var(--space-4);">
+                                Update Profile
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    setupEditProfileModalEventListeners() {
+        // Close modal when clicking outside
+        const overlay = document.querySelector('.account-modal-overlay');
+        if (overlay) {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    this.closeEditProfileModal();
+                }
+            });
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('edit-profile-modal')) {
+                this.closeEditProfileModal();
+            }
+        });
+    }
+
+    closeEditProfileModal() {
+        const modal = document.getElementById('edit-profile-modal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.remove();
+            document.body.style.overflow = '';
+        }
+    }
+
+    handleEditProfileSubmit(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData.entries());
+        this.updateUserProfile(data);
+    }
+
+    async updateUserProfile(data) {
+        try {
+            // Validate password change if provided
+            if (data.newPassword || data.currentPassword) {
+                if (!data.currentPassword) {
+                    this.showToast('Current password is required to change password.', 'error');
+                    return;
+                }
+                if (data.newPassword !== data.confirmPassword) {
+                    this.showToast('New passwords do not match!', 'error');
+                    return;
+                }
+                if (data.newPassword.length < 6) {
+                    this.showToast('New password must be at least 6 characters long.', 'error');
+                    return;
+                }
+                
+                // Verify current password
+                if (!this.dbService.verifyPassword(data.currentPassword, this.currentUser.passwordHash)) {
+                    this.showToast('Current password is incorrect.', 'error');
+                    return;
+                }
+            }
+
+            // Update user data
+            const updatedUser = {
+                ...this.currentUser,
+                firstName: data.firstName,
+                lastName: data.lastName,
+                email: data.email,
+                phone: data.phone || '',
+                favoriteArchetype: data.favoriteArchetype || null,
+                updatedAt: new Date().toISOString()
+            };
+
+            // Update password if provided
+            if (data.newPassword) {
+                updatedUser.passwordHash = this.dbService.hashPassword(data.newPassword);
+            }
+
+            // Update in database service
+            const users = JSON.parse(localStorage.getItem('tcg-users') || '{}');
+            
+            // If email changed, remove old entry and add new one
+            if (data.email !== this.currentUser.email) {
+                delete users[this.currentUser.email];
+            }
+            
+            users[data.email] = updatedUser;
+            localStorage.setItem('tcg-users', JSON.stringify(users));
+
+            // Update current user
+            this.currentUser = updatedUser;
+            localStorage.setItem('tcg-user', JSON.stringify(updatedUser));
+
+            // Track profile update event
+            this.dbService.trackEvent('profile_updated', {
+                userId: updatedUser.id,
+                email: updatedUser.email
+            });
+
+            this.closeEditProfileModal();
+            this.updateAccountUI();
+            this.showToast('Profile updated successfully!', 'success');
+
+            // Refresh account page if currently viewing it
+            if (window.location.hash.includes('account')) {
+                navigateTo('account');
+            }
+
+        } catch (error) {
+            console.error('Profile update error:', error);
+            this.showToast('Failed to update profile. Please try again.', 'error');
+        }
     }
 
     closeAccountModal() {

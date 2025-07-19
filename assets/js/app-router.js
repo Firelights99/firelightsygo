@@ -626,7 +626,7 @@ class AppRouter {
                         <div style="font-size: 0.875rem; color: var(--gray-500); margin-bottom: var(--space-1);">Email:</div>
                         <div style="font-weight: 600; color: var(--gray-900);">${user.email}</div>
                     </div>
-                    <button style="width: 100%; padding: var(--space-3) var(--space-6); background: var(--secondary-color); color: var(--gray-900); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);" onclick="this.showAccountSettings()">Edit Profile</button>
+                    <button style="width: 100%; padding: var(--space-3) var(--space-6); background: var(--secondary-color); color: var(--gray-900); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);" onclick="window.tcgStore.openEditProfileModal()">Edit Profile</button>
                 </div>
             </div>
         </section>
