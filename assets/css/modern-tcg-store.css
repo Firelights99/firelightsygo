@@ -1,14 +1,14 @@
 /* Modern TCG Store Design System */
 
 :root {
-    /* Color Palette */
-    --primary-color: #2563eb;
-    --primary-dark: #1d4ed8;
-    --primary-light: #3b82f6;
-    --secondary-color: #f59e0b;
-    --secondary-dark: #d97706;
-    --accent-color: #10b981;
-    --accent-dark: #059669;
+    /* Color Palette - Green & Purple Theme */
+    --primary-color: #7c3aed;
+    --primary-dark: #6d28d9;
+    --primary-light: #8b5cf6;
+    --secondary-color: #10b981;
+    --secondary-dark: #059669;
+    --accent-color: #34d399;
+    --accent-dark: #10b981;
     
     /* Neutral Colors */
     --gray-50: #f9fafb;
@@ -118,9 +118,9 @@ body {
 }
 
 .header-top-container {
-    max-width: 1400px;
+    width: 100%;
     margin: 0 auto;
-    padding: 0 var(--space-6);
+    padding: 0 var(--space-8);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -128,7 +128,7 @@ body {
 
 .header-top-left {
     display: flex;
-    gap: var(--space-6);
+    gap: var(--space-8);
 }
 
 .header-top-link {
@@ -142,16 +142,17 @@ body {
 }
 
 .header-main {
-    padding: var(--space-4) 0;
+    padding: var(--space-6) 0;
 }
 
 .header-container {
-    max-width: 1400px;
+    width: 100%;
     margin: 0 auto;
-    padding: 0 var(--space-6);
+    padding: 0 var(--space-8);
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: var(--space-8);
 }
 
 .brand-section {
