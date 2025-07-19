@@ -421,10 +421,17 @@ class ModernTCGStore {
         const priceChangeText = card.priceChange.direction === 'stable' ? '$0.00' : 
                               (card.priceChange.direction === 'up' ? '+' : '-') + '$' + card.priceChange.amount;
 
+        const isInWishlist = this.isInWishlist(card.name);
+        const wishlistIcon = isInWishlist ? '❤️' : '🤍';
+        const wishlistTitle = isInWishlist ? 'Remove from wishlist' : 'Add to wishlist';
+
         cardDiv.innerHTML = `
             <div class="card-image-container">
                 <img src="${card.image}" alt="${card.name}" class="card-image" loading="lazy">
                 ${isHot ? '<div class="card-badge">HOT</div>' : ''}
+                <button class="wishlist-btn" onclick="event.stopPropagation(); tcgStore.toggleWishlist('${card.name}', ${card.price}, '${card.image}', '${card.id}')" title="${wishlistTitle}">
+                    ${wishlistIcon}
+                </button>
             </div>
             <div class="card-info">
                 <h3 class="card-name">${card.name}</h3>
@@ -435,9 +442,14 @@ class ModernTCGStore {
                         ${priceChangeSymbol} ${priceChangeText}
                     </span>
                 </div>
-                <button class="add-to-cart-btn" onclick="event.stopPropagation(); tcgStore.addToCart('${card.name}', ${card.price}, '${card.image}')">
-                    Add to Cart
-                </button>
+                <div class="card-actions">
+                    <button class="add-to-cart-btn" onclick="event.stopPropagation(); tcgStore.addToCart('${card.name}', ${card.price}, '${card.image}')">
+                        Add to Cart
+                    </button>
+                    <button class="wishlist-toggle-btn" onclick="event.stopPropagation(); tcgStore.toggleWishlist('${card.name}', ${card.price}, '${card.image}', '${card.id}')" title="${wishlistTitle}">
+                        ${wishlistIcon}
+                    </button>
+                </div>
             </div>
         `;
         
@@ -1341,44 +1353,461 @@ class ModernTCGStore {
         return order;
     }
 
-    addToWishlist(cardName, price, image) {
+    // Enhanced Wishlist Functionality
+    addToWishlist(cardName, price, image, cardId = null, setCode = '', rarity = '', setName = '') {
         if (!this.currentUser) {
             this.showToast('Please log in to add items to your wishlist.', 'error');
+            this.openLoginModal();
             return;
         }
 
-        const existingItem = this.currentUser.wishlist.find(item => item.name === cardName);
+        // Initialize wishlist if it doesn't exist
+        if (!this.currentUser.wishlist) {
+            this.currentUser.wishlist = [];
+        }
+
+        // Create unique identifier for items with different sets/rarities
+        const itemKey = `${cardName}_${setCode}_${rarity}`;
+        const existingItem = this.currentUser.wishlist.find(item => item.itemKey === itemKey);
+        
         if (existingItem) {
             this.showToast('Item is already in your wishlist!', 'info');
             return;
         }
 
-        this.currentUser.wishlist.push({
+        const wishlistItem = {
+            id: Date.now() + Math.random(),
+            cardId: cardId,
             name: cardName,
             price: parseFloat(price),
             image: image,
-            addedAt: new Date().toISOString()
-        });
+            setCode: setCode,
+            rarity: rarity,
+            setName: setName,
+            itemKey: itemKey,
+            addedAt: new Date().toISOString(),
+            priceAlerts: true, // Enable price alerts by default
+            targetPrice: null // User can set a target price for notifications
+        };
 
-        // Update user in storage
-        this.users[this.currentUser.email] = this.currentUser;
-        localStorage.setItem('tcg-users', JSON.stringify(this.users));
-        localStorage.setItem('tcg-user', JSON.stringify(this.currentUser));
+        this.currentUser.wishlist.push(wishlistItem);
+        this.saveUserData();
 
-        this.showToast(`${cardName} added to wishlist!`, 'success');
+        // Track wishlist event
+        if (this.dbService) {
+            this.dbService.trackEvent('wishlist_add', {
+                userId: this.currentUser.id,
+                cardName: cardName,
+                cardId: cardId,
+                price: price
+            });
+        }
+
+        const displayName = setCode && rarity ? 
+            `${cardName} (${setCode} - ${rarity})` : cardName;
+        this.showToast(`${displayName} added to wishlist!`, 'success');
+        
+        // Update wishlist UI if currently viewing wishlist
+        this.updateWishlistUI();
     }
 
-    removeFromWishlist(cardName) {
-        if (!this.currentUser) return;
+    removeFromWishlist(itemId) {
+        if (!this.currentUser || !this.currentUser.wishlist) return;
 
-        this.currentUser.wishlist = this.currentUser.wishlist.filter(item => item.name !== cardName);
+        const item = this.currentUser.wishlist.find(item => item.id === itemId);
+        if (!item) return;
 
-        // Update user in storage
-        this.users[this.currentUser.email] = this.currentUser;
-        localStorage.setItem('tcg-users', JSON.stringify(this.users));
-        localStorage.setItem('tcg-user', JSON.stringify(this.currentUser));
+        this.currentUser.wishlist = this.currentUser.wishlist.filter(item => item.id !== itemId);
+        this.saveUserData();
+
+        // Track wishlist removal event
+        if (this.dbService) {
+            this.dbService.trackEvent('wishlist_remove', {
+                userId: this.currentUser.id,
+                cardName: item.name,
+                cardId: item.cardId
+            });
+        }
 
         this.showToast('Item removed from wishlist.', 'info');
+        this.updateWishlistUI();
+    }
+
+    moveWishlistItemToCart(itemId) {
+        if (!this.currentUser || !this.currentUser.wishlist) return;
+
+        const item = this.currentUser.wishlist.find(item => item.id === itemId);
+        if (!item) return;
+
+        // Add to cart with all details
+        this.addToCartWithDetails(
+            item.name, 
+            item.price, 
+            item.image, 
+            item.setCode, 
+            item.rarity, 
+            item.setName
+        );
+
+        // Remove from wishlist
+        this.removeFromWishlist(itemId);
+    }
+
+    updateWishlistItemPrice(itemId, newPrice) {
+        if (!this.currentUser || !this.currentUser.wishlist) return;
+
+        const item = this.currentUser.wishlist.find(item => item.id === itemId);
+        if (!item) return;
+
+        const oldPrice = item.price;
+        item.price = parseFloat(newPrice);
+        item.lastPriceUpdate = new Date().toISOString();
+
+        // Check if price dropped below target price
+        if (item.targetPrice && newPrice <= item.targetPrice && item.priceAlerts) {
+            this.showToast(`Price Alert: ${item.name} is now $${newPrice} (Target: $${item.targetPrice})!`, 'success', 5000);
+        }
+
+        this.saveUserData();
+        this.updateWishlistUI();
+    }
+
+    setWishlistItemTargetPrice(itemId, targetPrice) {
+        if (!this.currentUser || !this.currentUser.wishlist) return;
+
+        const item = this.currentUser.wishlist.find(item => item.id === itemId);
+        if (!item) return;
+
+        item.targetPrice = targetPrice ? parseFloat(targetPrice) : null;
+        this.saveUserData();
+        this.updateWishlistUI();
+        
+        if (targetPrice) {
+            this.showToast(`Price alert set for ${item.name} at $${targetPrice}`, 'success');
+        } else {
+            this.showToast(`Price alert removed for ${item.name}`, 'info');
+        }
+    }
+
+    toggleWishlistPriceAlerts(itemId) {
+        if (!this.currentUser || !this.currentUser.wishlist) return;
+
+        const item = this.currentUser.wishlist.find(item => item.id === itemId);
+        if (!item) return;
+
+        item.priceAlerts = !item.priceAlerts;
+        this.saveUserData();
+        this.updateWishlistUI();
+        
+        const status = item.priceAlerts ? 'enabled' : 'disabled';
+        this.showToast(`Price alerts ${status} for ${item.name}`, 'info');
+    }
+
+    openWishlistModal() {
+        if (!this.currentUser) {
+            this.showToast('Please log in to view your wishlist.', 'error');
+            this.openLoginModal();
+            return;
+        }
+
+        this.createWishlistModal();
+        this.displayWishlistModal();
+    }
+
+    createWishlistModal() {
+        // Remove existing modal if it exists
+        const existingModal = document.getElementById('wishlist-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        const modal = document.createElement('div');
+        modal.id = 'wishlist-modal';
+        modal.className = 'wishlist-modal';
+        modal.innerHTML = this.generateWishlistModalHTML();
+        document.body.appendChild(modal);
+
+        // Add event listeners
+        this.setupWishlistModalEventListeners();
+    }
+
+    generateWishlistModalHTML() {
+        const wishlist = this.currentUser?.wishlist || [];
+        const totalItems = wishlist.length;
+        const totalValue = wishlist.reduce((sum, item) => sum + item.price, 0);
+
+        return `
+            <div class="wishlist-modal-overlay" onclick="tcgStore.closeWishlistModal()">
+                <div class="wishlist-modal-content" onclick="event.stopPropagation()">
+                    <div class="wishlist-modal-header">
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin: 0;">
+                            <i class="fas fa-heart" style="color: var(--error-color); margin-right: var(--space-2);"></i>
+                            My Wishlist (${totalItems} items)
+                        </h2>
+                        <button class="wishlist-close-btn" onclick="tcgStore.closeWishlistModal()">×</button>
+                    </div>
+                    
+                    <div class="wishlist-modal-body">
+                        ${wishlist.length === 0 ? this.generateEmptyWishlistHTML() : this.generateWishlistItemsHTML()}
+                    </div>
+                    
+                    ${wishlist.length > 0 ? this.generateWishlistFooterHTML(totalValue) : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    generateEmptyWishlistHTML() {
+        return `
+            <div class="empty-wishlist">
+                <div style="text-align: center; padding: var(--space-12) var(--space-6);">
+                    <div style="font-size: 4rem; margin-bottom: var(--space-4); opacity: 0.5;">💝</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Your wishlist is empty</h3>
+                    <p style="color: var(--gray-600); margin-bottom: var(--space-6);">Save cards you want to purchase later and get notified when prices drop!</p>
+                    <button class="primary-btn" onclick="tcgStore.closeWishlistModal(); navigateTo('singles')">
+                        Browse Singles
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    generateWishlistItemsHTML() {
+        const wishlist = this.currentUser.wishlist || [];
+        
+        return `
+            <div class="wishlist-items">
+                ${wishlist.map(item => this.generateWishlistItemHTML(item)).join('')}
+            </div>
+        `;
+    }
+
+    generateWishlistItemHTML(item) {
+        const hasSetInfo = item.setCode && item.rarity;
+        const addedDate = new Date(item.addedAt).toLocaleDateString();
+        const hasTargetPrice = item.targetPrice && item.targetPrice > 0;
+        const isPriceBelow = hasTargetPrice && item.price <= item.targetPrice;
+        
+        return `
+            <div class="wishlist-item" data-item-id="${item.id}">
+                <div class="wishlist-item-image">
+                    <img src="${item.image}" alt="${item.name}" style="width: 60px; height: 84px; object-fit: contain; border-radius: var(--radius-md); cursor: pointer;" onclick="tcgStore.navigateToProduct({id: '${item.cardId || item.name}'})">
+                </div>
+                <div class="wishlist-item-details">
+                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1); line-height: 1.3; cursor: pointer;" onclick="tcgStore.navigateToProduct({id: '${item.cardId || item.name}'})">${item.name}</h4>
+                    ${hasSetInfo ? `
+                        <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-1);">
+                            <span style="background: var(--primary-color); color: white; padding: 2px 6px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">${item.setCode}</span>
+                            <span style="background: var(--secondary-color); color: var(--gray-900); padding: 2px 6px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">${item.rarity}</span>
+                        </div>
+                    ` : ''}
+                    <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2);">
+                        <span style="font-size: 1.125rem; font-weight: 700; color: var(--primary-color);">$${item.price.toFixed(2)}</span>
+                        ${isPriceBelow ? '<span style="background: var(--success-color); color: white; padding: 2px 6px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">TARGET REACHED!</span>' : ''}
+                    </div>
+                    <p style="font-size: 0.75rem; color: var(--gray-500); margin-bottom: var(--space-2);">Added ${addedDate}</p>
+                    
+                    <!-- Price Alert Section -->
+                    <div style="margin-bottom: var(--space-3);">
+                        <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-1);">
+                            <label style="font-size: 0.875rem; color: var(--gray-700);">Price Alert:</label>
+                            <input type="checkbox" ${item.priceAlerts ? 'checked' : ''} onchange="tcgStore.toggleWishlistPriceAlerts(${item.id})" style="margin: 0;">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: var(--space-2);">
+                            <input type="number" 
+                                   placeholder="Target price" 
+                                   value="${item.targetPrice || ''}" 
+                                   step="0.01" 
+                                   min="0" 
+                                   style="width: 100px; padding: 4px 8px; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 0.875rem;"
+                                   onchange="tcgStore.setWishlistItemTargetPrice(${item.id}, this.value)">
+                            <span style="font-size: 0.75rem; color: var(--gray-500);">Alert when price drops to this amount</span>
+                        </div>
+                    </div>
+                    
+                    <div class="wishlist-item-controls">
+                        <button class="primary-btn" style="padding: var(--space-2) var(--space-3); font-size: 0.875rem;" onclick="tcgStore.moveWishlistItemToCart(${item.id})">
+                            Add to Cart
+                        </button>
+                        <button class="secondary-btn" style="padding: var(--space-2) var(--space-3); font-size: 0.875rem;" onclick="tcgStore.removeFromWishlist(${item.id})">
+                            Remove
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    generateWishlistFooterHTML(totalValue) {
+        const wishlist = this.currentUser.wishlist || [];
+        const itemsWithAlerts = wishlist.filter(item => item.priceAlerts).length;
+        
+        return `
+            <div class="wishlist-modal-footer">
+                <div class="wishlist-summary">
+                    <div class="summary-row">
+                        <span>Total Items:</span>
+                        <span>${wishlist.length}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Total Value:</span>
+                        <span>$${totalValue.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Price Alerts Active:</span>
+                        <span>${itemsWithAlerts}</span>
+                    </div>
+                </div>
+                <div class="wishlist-actions">
+                    <button class="secondary-btn" onclick="tcgStore.closeWishlistModal()">Close</button>
+                    <button class="primary-btn" onclick="tcgStore.addAllWishlistToCart()">Add All to Cart</button>
+                </div>
+            </div>
+        `;
+    }
+
+    setupWishlistModalEventListeners() {
+        // Close modal when clicking outside
+        const overlay = document.querySelector('.wishlist-modal-overlay');
+        if (overlay) {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    this.closeWishlistModal();
+                }
+            });
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('wishlist-modal')) {
+                this.closeWishlistModal();
+            }
+        });
+    }
+
+    displayWishlistModal() {
+        const modal = document.getElementById('wishlist-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    closeWishlistModal() {
+        const modal = document.getElementById('wishlist-modal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.remove();
+            document.body.style.overflow = '';
+        }
+    }
+
+    addAllWishlistToCart() {
+        if (!this.currentUser || !this.currentUser.wishlist || this.currentUser.wishlist.length === 0) {
+            this.showToast('Your wishlist is empty.', 'info');
+            return;
+        }
+
+        let addedCount = 0;
+        const wishlistCopy = [...this.currentUser.wishlist];
+        
+        wishlistCopy.forEach(item => {
+            this.addToCartWithDetails(
+                item.name, 
+                item.price, 
+                item.image, 
+                item.setCode, 
+                item.rarity, 
+                item.setName
+            );
+            addedCount++;
+        });
+
+        // Clear wishlist after adding all to cart
+        this.currentUser.wishlist = [];
+        this.saveUserData();
+        this.updateWishlistUI();
+
+        this.showToast(`${addedCount} items added to cart from wishlist!`, 'success');
+        this.closeWishlistModal();
+    }
+
+    updateWishlistUI() {
+        // Update wishlist badge/counter if it exists
+        const wishlistBadge = document.querySelector('.wishlist-badge');
+        if (wishlistBadge && this.currentUser) {
+            const wishlistCount = this.currentUser.wishlist ? this.currentUser.wishlist.length : 0;
+            wishlistBadge.textContent = wishlistCount;
+            wishlistBadge.style.display = wishlistCount > 0 ? 'block' : 'none';
+        }
+
+        // Update wishlist modal content if it's open
+        const wishlistModal = document.getElementById('wishlist-modal');
+        if (wishlistModal && wishlistModal.style.display !== 'none') {
+            this.updateWishlistModalContent();
+        }
+    }
+
+    updateWishlistModalContent() {
+        const wishlistModal = document.getElementById('wishlist-modal');
+        if (!wishlistModal) return;
+
+        const modalContent = wishlistModal.querySelector('.wishlist-modal-content');
+        if (modalContent) {
+            modalContent.innerHTML = this.generateWishlistModalHTML().match(/<div class="wishlist-modal-content"[^>]*>([\s\S]*)<\/div>$/)[1];
+            this.setupWishlistModalEventListeners();
+        }
+    }
+
+    saveUserData() {
+        if (!this.currentUser) return;
+
+        // Update user in localStorage
+        localStorage.setItem('tcg-user', JSON.stringify(this.currentUser));
+
+        // Update user in users database if using database service
+        if (this.dbService) {
+            const users = JSON.parse(localStorage.getItem('tcg-users') || '{}');
+            users[this.currentUser.email] = this.currentUser;
+            localStorage.setItem('tcg-users', JSON.stringify(users));
+        }
+    }
+
+    isInWishlist(cardName, setCode = '', rarity = '') {
+        if (!this.currentUser || !this.currentUser.wishlist) return false;
+        
+        const itemKey = `${cardName}_${setCode}_${rarity}`;
+        return this.currentUser.wishlist.some(item => item.itemKey === itemKey);
+    }
+
+    toggleWishlist(cardName, price, image, cardId = null, setCode = '', rarity = '', setName = '') {
+        if (!this.currentUser) {
+            this.showToast('Please log in to manage your wishlist.', 'error');
+            this.openLoginModal();
+            return;
+        }
+
+        const itemKey = `${cardName}_${setCode}_${rarity}`;
+        const existingItem = this.currentUser.wishlist?.find(item => item.itemKey === itemKey);
+        
+        if (existingItem) {
+            // Remove from wishlist
+            this.removeFromWishlist(existingItem.id);
+        } else {
+            // Add to wishlist
+            this.addToWishlist(cardName, price, image, cardId, setCode, rarity, setName);
+        }
+
+        // Refresh the cards display to update wishlist icons
+        this.refreshCardsDisplay();
+    }
+
+    refreshCardsDisplay() {
+        // Refresh the current cards display to update wishlist icons
+        const container = document.querySelector('.modern-card-grid, #meta-cards-grid, #cards-grid');
+        if (container && this.filteredCards.length > 0) {
+            this.displayCards(container);
+        }
     }
 
     initializeToastContainer() {
