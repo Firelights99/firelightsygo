@@ -583,43 +583,190 @@ class AppRouter {
         if (!cardId) {
             return `
                 <div class="loading-container">
-                    <p class="loading-text" style="color: var(--error-color);">Card not found. Please try again.</p>
+                    <p class="loading-text" style="color: var(--error-color);">Card ID not provided. Please try again.</p>
                     <a href="#" onclick="navigateTo('singles')" style="padding: var(--space-3) var(--space-6); background: var(--primary-color); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 600; margin-top: var(--space-4); display: inline-block;">Browse All Cards</a>
                 </div>
             `;
         }
 
         try {
-            // Load card data from API
+            // Load card data directly from API instead of relying on tcgStore
             let card = null;
+            const apiBaseURL = 'https://db.ygoprodeck.com/api/v7';
+            
             if (!isNaN(cardId)) {
-                card = await window.tcgStore.getCardById(cardId);
+                // Fetch by ID
+                const response = await fetch(`${apiBaseURL}/cardinfo.php?id=${cardId}`);
+                if (response.ok) {
+                    const result = await response.json();
+                    card = result.data ? result.data[0] : null;
+                }
             } else {
+                // Fetch by name
                 const cardName = cardId.replace(/-/g, ' ');
-                card = await window.tcgStore.getCardByName(cardName);
+                const response = await fetch(`${apiBaseURL}/cardinfo.php?name=${encodeURIComponent(cardName)}`);
+                if (response.ok) {
+                    const result = await response.json();
+                    card = result.data ? result.data[0] : null;
+                }
             }
 
             if (!card) {
                 return `
                     <div class="loading-container">
-                        <p class="loading-text" style="color: var(--error-color);">Card not found. Please try again.</p>
+                        <p class="loading-text" style="color: var(--error-color);">Card not found in database. Card ID: ${cardId}</p>
                         <a href="#" onclick="navigateTo('singles')" style="padding: var(--space-3) var(--space-6); background: var(--primary-color); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 600; margin-top: var(--space-4); display: inline-block;">Browse All Cards</a>
                     </div>
                 `;
             }
 
-            const formattedCard = await window.tcgStore.formatCardForDisplay(card);
+            const formattedCard = await this.formatCardForDisplay(card);
             return this.generateProductHTML(formattedCard);
 
         } catch (error) {
             console.error('Error loading product:', error);
             return `
                 <div class="loading-container">
-                    <p class="loading-text" style="color: var(--error-color);">Error loading card. Please try again.</p>
+                    <p class="loading-text" style="color: var(--error-color);">Error loading card: ${error.message}</p>
                     <a href="#" onclick="navigateTo('singles')" style="padding: var(--space-3) var(--space-6); background: var(--primary-color); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 600; margin-top: var(--space-4); display: inline-block;">Browse All Cards</a>
                 </div>
             `;
         }
+    }
+
+    async formatCardForDisplay(card) {
+        if (!card) return null;
+
+        const price = await this.getCardPrice(card);
+
+        return {
+            id: card.id,
+            name: card.name,
+            type: this.getCardTypeDisplay(card),
+            race: card.race,
+            attribute: card.attribute,
+            level: card.level,
+            atk: card.atk,
+            def: card.def,
+            desc: card.desc,
+            archetype: card.archetype,
+            image: this.getCardImageURL(card),
+            imageSmall: this.getCardImageURL(card, 'small'),
+            price: price,
+            priceChange: this.getMockPriceChange(),
+            rarity: this.getCardRarity(card),
+            sets: card.card_sets || []
+        };
+    }
+
+    getCardImageURL(card, size = 'normal') {
+        if (!card || !card.card_images || card.card_images.length === 0) {
+            return 'https://images.ygoprodeck.com/images/cards/back.jpg';
+        }
+
+        const image = card.card_images[0];
+        switch (size) {
+            case 'small':
+                return image.image_url_small;
+            case 'cropped':
+                return image.image_url_cropped;
+            default:
+                return image.image_url;
+        }
+    }
+
+    getCardTypeDisplay(card) {
+        if (card.type.includes('Monster')) {
+            if (card.type.includes('Effect')) return 'Effect Monster';
+            if (card.type.includes('Normal')) return 'Normal Monster';
+            if (card.type.includes('Fusion')) return 'Fusion Monster';
+            if (card.type.includes('Synchro')) return 'Synchro Monster';
+            if (card.type.includes('Xyz')) return 'Xyz Monster';
+            if (card.type.includes('Link')) return 'Link Monster';
+            return 'Monster';
+        }
+        if (card.type.includes('Spell')) return 'Spell Card';
+        if (card.type.includes('Trap')) return 'Trap Card';
+        return card.type;
+    }
+
+    async getCardPrice(card) {
+        try {
+            // Try to get price from YGOPRODeck API
+            const apiBaseURL = 'https://db.ygoprodeck.com/api/v7';
+            const response = await fetch(`${apiBaseURL}/cardinfo.php?id=${card.id}`);
+            if (response.ok) {
+                const result = await response.json();
+                const cardData = result.data ? result.data[0] : null;
+                
+                if (cardData && cardData.card_prices && cardData.card_prices.length > 0) {
+                    const prices = cardData.card_prices[0];
+                    // Use TCGPlayer market price as base (USD)
+                    let usdPrice = parseFloat(prices.tcgplayer_price) || 
+                                  parseFloat(prices.ebay_price) || 
+                                  parseFloat(prices.amazon_price) || 
+                                  parseFloat(prices.coolstuffinc_price);
+                    
+                    if (usdPrice && usdPrice > 0) {
+                        // Convert USD to CAD (approximate rate: 1 USD = 1.35 CAD)
+                        const cadPrice = usdPrice * 1.35;
+                        return cadPrice.toFixed(2);
+                    }
+                }
+            }
+        } catch (error) {
+            console.warn('Error fetching price from API:', error);
+        }
+        
+        // Fallback to mock pricing in CAD
+        return this.getMockPriceCAD(card.name);
+    }
+
+    getMockPriceCAD(cardName) {
+        const hash = this.hashCode(cardName);
+        const basePrice = Math.abs(hash % 80) + 1; // Reduced base for more realistic CAD prices
+        
+        if (cardName.includes('Ash') || cardName.includes('Snake-Eye')) {
+            return (basePrice * 2.5 + 65).toFixed(2); // Higher for meta cards in CAD
+        }
+        if (cardName.includes('Blue-Eyes') || cardName.includes('Dark Magician')) {
+            return (basePrice * 0.7 + 8).toFixed(2); // Classic cards
+        }
+        if (cardName.includes('Kashtira') || cardName.includes('Infinite')) {
+            return (basePrice * 2 + 30).toFixed(2); // Meta staples
+        }
+        if (cardName.includes('Nibiru') || cardName.includes('Effect Veiler')) {
+            return (basePrice * 1.8 + 25).toFixed(2); // Hand traps
+        }
+        
+        return (basePrice * 1.35).toFixed(2); // Base conversion to CAD
+    }
+
+    getMockPriceChange() {
+        const changes = [
+            { direction: 'up', amount: (Math.random() * 10).toFixed(2) },
+            { direction: 'down', amount: (Math.random() * 5).toFixed(2) },
+            { direction: 'stable', amount: '0.00' }
+        ];
+        
+        return changes[Math.floor(Math.random() * changes.length)];
+    }
+
+    getCardRarity(card) {
+        if (!card.card_sets || card.card_sets.length === 0) return 'Common';
+        
+        const rarities = ['Common', 'Rare', 'Super Rare', 'Ultra Rare', 'Secret Rare'];
+        return rarities[Math.floor(Math.random() * rarities.length)];
+    }
+
+    hashCode(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash;
+        }
+        return hash;
     }
 
     generateProductHTML(card) {
