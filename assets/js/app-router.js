@@ -664,7 +664,10 @@ class AppRouter {
     }
 
     processCardSets(cardSets) {
+        console.log('Processing card sets:', cardSets); // Debug log
+        
         if (!cardSets || cardSets.length === 0) {
+            console.log('No card sets found, using fallback');
             return [{
                 set_name: 'Unknown Set',
                 set_code: 'UNKNOWN',
@@ -674,13 +677,16 @@ class AppRouter {
             }];
         }
 
-        return cardSets.map(set => ({
-            set_name: set.set_name,
-            set_code: set.set_code,
-            rarity: set.set_rarity,
-            rarity_code: set.set_rarity_code,
-            price: set.set_price || this.calculateSetPrice(set.set_rarity)
-        })).sort((a, b) => {
+        const processedSets = cardSets.map(set => {
+            console.log('Processing set:', set); // Debug log
+            return {
+                set_name: set.set_name || 'Unknown Set',
+                set_code: set.set_code || 'UNKNOWN',
+                rarity: set.set_rarity || 'Common',
+                rarity_code: set.set_rarity_code || 'C',
+                price: set.set_price || this.calculateSetPrice(set.set_rarity || 'Common')
+            };
+        }).sort((a, b) => {
             // Sort by rarity value (higher rarity first)
             const rarityOrder = {
                 'Secret Rare': 6,
@@ -692,6 +698,9 @@ class AppRouter {
             };
             return (rarityOrder[b.rarity] || 0) - (rarityOrder[a.rarity] || 0);
         });
+
+        console.log('Processed sets:', processedSets); // Debug log
+        return processedSets;
     }
 
     calculateSetPrice(rarity) {
@@ -1009,11 +1018,15 @@ class AppRouter {
     }
 
     generateSetSelectorHTML(sets, selectedSet) {
+        console.log('Generating set selector HTML for sets:', sets); // Debug log
+        
         if (!sets || sets.length === 0) {
+            console.log('No sets provided to generateSetSelectorHTML');
             return '<p style="color: var(--gray-600); font-style: italic;">No set information available</p>';
         }
 
-        return sets.map(set => {
+        const html = sets.map((set, index) => {
+            console.log(`Generating HTML for set ${index}:`, set); // Debug log
             const isSelected = selectedSet && selectedSet.set_code === set.set_code;
             const rarityColor = this.getRarityColor(set.rarity);
             
@@ -1025,8 +1038,8 @@ class AppRouter {
                             cursor: pointer; 
                             transition: var(--transition-fast);
                             background: ${isSelected ? 'var(--primary-color)' : 'white'};
-                            color: ${isSelected ? 'white' : 'var(--gray-900)'}"
-                     onclick="selectSet('${set.set_code}', '${set.rarity}', '${set.price}', '${set.set_name}')">
+                            color: ${isSelected ? 'white' : 'var(--gray-900)'};"
+                     onclick="selectSet('${set.set_code}', '${set.rarity}', '${set.price}', '${set.set_name.replace(/'/g, "\\'")}')">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div>
                             <div style="font-weight: 600; margin-bottom: var(--space-1);">${set.set_name}</div>
@@ -1042,6 +1055,9 @@ class AppRouter {
                 </div>
             `;
         }).join('');
+
+        console.log('Generated HTML:', html); // Debug log
+        return html;
     }
 
     getRarityColor(rarity) {
