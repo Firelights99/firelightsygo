@@ -677,8 +677,10 @@ class AppRouter {
                 window.deckBuilder = new DeckBuilderService();
             }
             
-            // Load user decks on page load
-            loadUserDecks();
+            // Ensure deck builder is ready before loading decks
+            setTimeout(() => {
+                loadUserDecks();
+            }, 100);
             
             // Deck management functions
             function loadUserDecks() {
