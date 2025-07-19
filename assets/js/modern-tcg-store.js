@@ -18,6 +18,7 @@ class ModernTCGStore {
         // Account system - integrated with database service
         this.currentUser = JSON.parse(localStorage.getItem('tcg-user') || 'null');
         this.dbService = window.dbService; // Reference to database service
+        this.orders = JSON.parse(localStorage.getItem('tcg-orders') || '[]');
         
         this.init();
     }
@@ -610,36 +611,67 @@ class ModernTCGStore {
         this.saveCart();
         this.updateCartBadge();
         this.showToast(`${cardName} added to cart!`, 'success');
-    }
-
-    removeFromCart(itemId) {
-        this.cart = this.cart.filter(item => item.id !== itemId);
-        this.saveCart();
-        this.updateCartBadge();
-        this.showToast('Item removed from cart', 'info');
         
         // Live update the cart modal if it's open
         const cartModal = document.getElementById('cart-modal');
         if (cartModal && cartModal.style.display !== 'none') {
-            this.updateCartModalContent();
+            if (existingItem) {
+                // Update existing item display
+                this.updateCartItemDisplay(existingItem.id, existingItem);
+                this.updateCartSummary();
+            } else {
+                // Regenerate entire modal for new items
+                this.updateCartModalContent();
+            }
+        }
+    }
+
+    removeFromCart(itemId) {
+        const item = this.cart.find(item => item.id === itemId);
+        if (!item) return;
+        
+        const itemName = item.name;
+        this.cart = this.cart.filter(item => item.id !== itemId);
+        this.saveCart();
+        this.updateCartBadge();
+        this.showToast(`${itemName} removed from cart`, 'info');
+        
+        // Live update the cart modal if it's open
+        const cartModal = document.getElementById('cart-modal');
+        if (cartModal && cartModal.style.display !== 'none') {
+            // Add a smooth transition effect
+            const cartItem = document.querySelector(`[data-item-id="${itemId}"]`);
+            if (cartItem) {
+                cartItem.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+                cartItem.style.opacity = '0';
+                cartItem.style.transform = 'translateX(100%)';
+                
+                setTimeout(() => {
+                    this.updateCartModalContent();
+                }, 300);
+            } else {
+                this.updateCartModalContent();
+            }
         }
     }
 
     updateCartQuantity(itemId, newQuantity) {
         const item = this.cart.find(item => item.id === itemId);
-        if (item) {
-            if (newQuantity <= 0) {
-                this.removeFromCart(itemId);
-            } else {
-                item.quantity = newQuantity;
-                this.saveCart();
-                this.updateCartBadge();
-                
-                // Live update the cart modal if it's open
-                const cartModal = document.getElementById('cart-modal');
-                if (cartModal && cartModal.style.display !== 'none') {
-                    this.updateCartModalContent();
-                }
+        if (!item) return;
+        
+        if (newQuantity <= 0) {
+            this.removeFromCart(itemId);
+        } else {
+            item.quantity = newQuantity;
+            this.saveCart();
+            this.updateCartBadge();
+            
+            // Live update the cart modal if it's open
+            const cartModal = document.getElementById('cart-modal');
+            if (cartModal && cartModal.style.display !== 'none') {
+                // Update specific elements instead of regenerating entire modal for better UX
+                this.updateCartItemDisplay(itemId, item);
+                this.updateCartSummary();
             }
         }
     }
@@ -648,10 +680,18 @@ class ModernTCGStore {
         const cartModal = document.getElementById('cart-modal');
         if (!cartModal) return;
 
+        // Get the modal content container
         const modalContent = cartModal.querySelector('.cart-modal-content');
-        if (modalContent) {
-            modalContent.innerHTML = this.generateCartModalHTML().match(/<div class="cart-modal-content"[^>]*>([\s\S]*)<\/div>$/)[1];
-        }
+        if (!modalContent) return;
+
+        // Generate new modal content HTML
+        const newContentHTML = this.generateCartModalHTML().match(/<div class="cart-modal-content"[^>]*>([\s\S]*)<\/div>$/)[1];
+        
+        // Replace the modal content
+        modalContent.innerHTML = newContentHTML;
+        
+        // Re-setup event listeners for the new content
+        this.setupCartModalEventListeners();
     }
 
     addToCartWithDetails(cardName, price, image, setCode = '', rarity = '', setName = '') {
@@ -681,6 +721,19 @@ class ModernTCGStore {
         const displayName = setCode && rarity ? 
             `${cardName} (${setCode} - ${rarity})` : cardName;
         this.showToast(`${displayName} added to cart!`, 'success');
+        
+        // Live update the cart modal if it's open
+        const cartModal = document.getElementById('cart-modal');
+        if (cartModal && cartModal.style.display !== 'none') {
+            if (existingItem) {
+                // Update existing item display
+                this.updateCartItemDisplay(existingItem.id, existingItem);
+                this.updateCartSummary();
+            } else {
+                // Regenerate entire modal for new items
+                this.updateCartModalContent();
+            }
+        }
     }
 
     saveCart() {
@@ -828,6 +881,9 @@ class ModernTCGStore {
                     ${totalPrice < 75 ? `<p class="shipping-notice">Add $${(75 - totalPrice).toFixed(2)} more for free shipping!</p>` : ''}
                 </div>
                 <div class="cart-actions">
+                    <button class="secondary-btn" onclick="tcgStore.clearCart()" style="background: var(--error-color); color: white;">
+                        Clear Cart
+                    </button>
                     <button class="secondary-btn" onclick="tcgStore.closeCart()">Continue Shopping</button>
                     <button class="primary-btn" onclick="tcgStore.proceedToCheckout()">Proceed to Checkout</button>
                 </div>
@@ -874,19 +930,122 @@ class ModernTCGStore {
     }
 
     proceedToCheckout() {
-        this.showToast('Redirecting to secure checkout...', 'info');
-        // In a real implementation, this would redirect to a payment processor
-        setTimeout(() => {
-            this.showToast('Checkout functionality coming soon!', 'info');
-        }, 1500);
+        if (this.cart.length === 0) {
+            this.showToast('Your cart is empty!', 'error');
+            return;
+        }
+
+        if (!this.currentUser) {
+            this.showToast('Please log in to proceed to checkout.', 'error');
+            this.closeCart();
+            this.openLoginModal();
+            return;
+        }
+
+        // Create order from current cart
+        const order = this.createOrder([...this.cart]);
+        
+        if (order) {
+            // Clear cart after successful order creation
+            this.cart = [];
+            this.saveCart();
+            this.updateCartBadge();
+            this.closeCart();
+            
+            // Show success message and redirect to order confirmation
+            this.showToast(`Order #${order.id} placed successfully!`, 'success', 5000);
+            
+            // Simulate order processing
+            setTimeout(() => {
+                this.updateOrderStatus(order.id, 'processing');
+                this.showToast('Your order is now being processed!', 'info');
+            }, 2000);
+            
+            // Open order history to show the new order
+            setTimeout(() => {
+                this.openOrderHistoryModal();
+            }, 3000);
+        }
+    }
+
+    updateCartItemDisplay(itemId, item) {
+        const cartItemElement = document.querySelector(`[data-item-id="${itemId}"]`);
+        if (!cartItemElement) return;
+
+        // Update quantity display
+        const quantityDisplay = cartItemElement.querySelector('.quantity-display');
+        if (quantityDisplay) {
+            quantityDisplay.textContent = item.quantity;
+        }
+
+        // Update item total
+        const itemTotal = cartItemElement.querySelector('.cart-item-total span');
+        if (itemTotal) {
+            itemTotal.textContent = `$${(item.price * item.quantity).toFixed(2)}`;
+        }
+    }
+
+    updateCartSummary() {
+        const totalPrice = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const shipping = totalPrice >= 75 ? 0 : 9.99;
+        const tax = totalPrice * 0.13;
+        const finalTotal = totalPrice + shipping + tax;
+
+        // Update cart header
+        const cartHeader = document.querySelector('.cart-modal-header h2');
+        if (cartHeader) {
+            const totalItems = this.cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartHeader.innerHTML = `Shopping Cart (${totalItems} items)`;
+        }
+
+        // Update summary rows
+        const summaryRows = document.querySelectorAll('.summary-row');
+        summaryRows.forEach(row => {
+            const label = row.querySelector('span:first-child').textContent;
+            const valueSpan = row.querySelector('span:last-child');
+            
+            if (label === 'Subtotal:') {
+                valueSpan.textContent = `$${totalPrice.toFixed(2)}`;
+            } else if (label === 'Shipping:') {
+                valueSpan.textContent = shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`;
+            } else if (label === 'Tax (HST):') {
+                valueSpan.textContent = `$${tax.toFixed(2)}`;
+            } else if (label === 'Total:') {
+                valueSpan.textContent = `$${finalTotal.toFixed(2)}`;
+            }
+        });
+
+        // Update shipping notice
+        const shippingNotice = document.querySelector('.shipping-notice');
+        if (shippingNotice) {
+            if (totalPrice >= 75) {
+                shippingNotice.style.display = 'none';
+            } else {
+                shippingNotice.style.display = 'block';
+                shippingNotice.textContent = `Add $${(75 - totalPrice).toFixed(2)} more for free shipping!`;
+            }
+        }
     }
 
     clearCart() {
-        this.cart = [];
-        this.saveCart();
-        this.updateCartBadge();
-        this.closeCart();
-        this.showToast('Cart cleared!', 'info');
+        if (this.cart.length === 0) {
+            this.showToast('Cart is already empty!', 'info');
+            return;
+        }
+        
+        // Confirm before clearing
+        if (confirm('Are you sure you want to remove all items from your cart?')) {
+            this.cart = [];
+            this.saveCart();
+            this.updateCartBadge();
+            this.showToast('Cart cleared!', 'info');
+            
+            // Update cart modal if it's open
+            const cartModal = document.getElementById('cart-modal');
+            if (cartModal && cartModal.style.display !== 'none') {
+                this.updateCartModalContent();
+            }
+        }
     }
 
     // Account System Methods
@@ -1343,14 +1502,542 @@ class ModernTCGStore {
             total: total,
             status: 'pending',
             createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
             shippingAddress: null,
-            trackingNumber: null
+            trackingNumber: null,
+            estimatedDelivery: this.calculateEstimatedDelivery()
         };
 
         this.orders.push(order);
         localStorage.setItem('tcg-orders', JSON.stringify(this.orders));
 
+        // Track order creation event
+        if (this.dbService) {
+            this.dbService.trackEvent('order_created', {
+                userId: this.currentUser.id,
+                orderId: order.id,
+                total: total,
+                itemCount: cartItems.reduce((sum, item) => sum + item.quantity, 0)
+            });
+        }
+
         return order;
+    }
+
+    updateOrderStatus(orderId, newStatus) {
+        const order = this.orders.find(o => o.id === orderId);
+        if (!order) return;
+
+        order.status = newStatus;
+        order.updatedAt = new Date().toISOString();
+
+        // Add tracking number for shipped orders
+        if (newStatus === 'shipped' && !order.trackingNumber) {
+            order.trackingNumber = this.generateTrackingNumber();
+        }
+
+        localStorage.setItem('tcg-orders', JSON.stringify(this.orders));
+
+        // Track status update event
+        if (this.dbService) {
+            this.dbService.trackEvent('order_status_updated', {
+                userId: order.userId,
+                orderId: orderId,
+                status: newStatus
+            });
+        }
+    }
+
+    calculateEstimatedDelivery() {
+        const now = new Date();
+        const deliveryDate = new Date(now);
+        deliveryDate.setDate(now.getDate() + 5); // 5 business days
+        return deliveryDate.toISOString();
+    }
+
+    generateTrackingNumber() {
+        const prefix = 'FD';
+        const timestamp = Date.now().toString().slice(-8);
+        const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+        return `${prefix}${timestamp}${random}`;
+    }
+
+    openOrderHistoryModal() {
+        if (!this.currentUser) {
+            this.showToast('Please log in to view your order history.', 'error');
+            this.openLoginModal();
+            return;
+        }
+
+        this.createOrderHistoryModal();
+        this.displayOrderHistoryModal();
+    }
+
+    createOrderHistoryModal() {
+        // Remove existing modal if it exists
+        const existingModal = document.getElementById('order-history-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        const modal = document.createElement('div');
+        modal.id = 'order-history-modal';
+        modal.className = 'order-history-modal';
+        modal.innerHTML = this.generateOrderHistoryModalHTML();
+        document.body.appendChild(modal);
+
+        // Add event listeners
+        this.setupOrderHistoryModalEventListeners();
+    }
+
+    generateOrderHistoryModalHTML() {
+        const userOrders = this.getUserOrders().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        const totalSpent = userOrders.reduce((sum, order) => sum + order.total, 0);
+
+        return `
+            <div class="order-history-modal-overlay" onclick="tcgStore.closeOrderHistoryModal()">
+                <div class="order-history-modal-content" onclick="event.stopPropagation()">
+                    <div class="order-history-modal-header">
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin: 0;">
+                            <i class="fas fa-receipt" style="color: var(--primary-color); margin-right: var(--space-2);"></i>
+                            Order History (${userOrders.length} orders)
+                        </h2>
+                        <button class="order-history-close-btn" onclick="tcgStore.closeOrderHistoryModal()">×</button>
+                    </div>
+                    
+                    <div class="order-history-modal-body">
+                        ${userOrders.length === 0 ? this.generateEmptyOrderHistoryHTML() : this.generateOrderHistoryItemsHTML(userOrders)}
+                    </div>
+                    
+                    ${userOrders.length > 0 ? this.generateOrderHistoryFooterHTML(totalSpent, userOrders.length) : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    generateEmptyOrderHistoryHTML() {
+        return `
+            <div class="empty-order-history">
+                <div style="text-align: center; padding: var(--space-12) var(--space-6);">
+                    <div style="font-size: 4rem; margin-bottom: var(--space-4); opacity: 0.5;">📦</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">No orders yet</h3>
+                    <p style="color: var(--gray-600); margin-bottom: var(--space-6);">Start shopping to see your order history here!</p>
+                    <button class="primary-btn" onclick="tcgStore.closeOrderHistoryModal(); navigateTo('singles')">
+                        Browse Singles
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    generateOrderHistoryItemsHTML(orders) {
+        return `
+            <div class="order-history-items">
+                ${orders.map(order => this.generateOrderHistoryItemHTML(order)).join('')}
+            </div>
+        `;
+    }
+
+    generateOrderHistoryItemHTML(order) {
+        const orderDate = new Date(order.createdAt).toLocaleDateString();
+        const statusColor = this.getOrderStatusColor(order.status);
+        const statusIcon = this.getOrderStatusIcon(order.status);
+        const itemCount = order.items.reduce((sum, item) => sum + item.quantity, 0);
+
+        return `
+            <div class="order-history-item" data-order-id="${order.id}">
+                <div class="order-header">
+                    <div class="order-info">
+                        <h4 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">
+                            Order #${order.id}
+                        </h4>
+                        <p style="font-size: 0.875rem; color: var(--gray-600);">
+                            Placed on ${orderDate} • ${itemCount} item${itemCount !== 1 ? 's' : ''}
+                        </p>
+                    </div>
+                    <div class="order-status">
+                        <span style="background: ${statusColor}; color: white; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; display: flex; align-items: center; gap: var(--space-1);">
+                            ${statusIcon} ${order.status}
+                        </span>
+                        <div style="font-size: 1.25rem; font-weight: 700; color: var(--primary-color); margin-top: var(--space-1);">
+                            $${order.total.toFixed(2)}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="order-items-preview">
+                    ${order.items.slice(0, 3).map(item => `
+                        <div class="order-item-preview">
+                            <img src="${item.image}" alt="${item.name}" style="width: 40px; height: 56px; object-fit: contain; border-radius: var(--radius-sm);">
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="font-size: 0.875rem; font-weight: 600; color: var(--gray-900); margin-bottom: 2px; line-height: 1.2;">${item.name}</div>
+                                <div style="font-size: 0.75rem; color: var(--gray-600);">Qty: ${item.quantity} • $${item.price.toFixed(2)} each</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                    ${order.items.length > 3 ? `
+                        <div style="font-size: 0.875rem; color: var(--gray-600); text-align: center; padding: var(--space-2);">
+                            +${order.items.length - 3} more item${order.items.length - 3 !== 1 ? 's' : ''}
+                        </div>
+                    ` : ''}
+                </div>
+                
+                <div class="order-actions">
+                    <button class="secondary-btn" onclick="tcgStore.viewOrderDetails(${order.id})" style="padding: var(--space-2) var(--space-4); font-size: 0.875rem;">
+                        View Details
+                    </button>
+                    ${order.status === 'shipped' && order.trackingNumber ? `
+                        <button class="secondary-btn" onclick="tcgStore.trackOrder('${order.trackingNumber}')" style="padding: var(--space-2) var(--space-4); font-size: 0.875rem;">
+                            Track Package
+                        </button>
+                    ` : ''}
+                    ${order.status === 'delivered' ? `
+                        <button class="primary-btn" onclick="tcgStore.reorderItems(${order.id})" style="padding: var(--space-2) var(--space-4); font-size: 0.875rem;">
+                            Reorder
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    generateOrderHistoryFooterHTML(totalSpent, orderCount) {
+        return `
+            <div class="order-history-modal-footer">
+                <div class="order-history-summary">
+                    <div class="summary-row">
+                        <span>Total Orders:</span>
+                        <span>${orderCount}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Total Spent:</span>
+                        <span>$${totalSpent.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Average Order:</span>
+                        <span>$${(totalSpent / orderCount).toFixed(2)}</span>
+                    </div>
+                </div>
+                <div class="order-history-actions">
+                    <button class="secondary-btn" onclick="tcgStore.closeOrderHistoryModal()">Close</button>
+                    <button class="primary-btn" onclick="tcgStore.closeOrderHistoryModal(); navigateTo('singles')">Continue Shopping</button>
+                </div>
+            </div>
+        `;
+    }
+
+    getOrderStatusColor(status) {
+        const colors = {
+            'pending': 'var(--warning-color)',
+            'processing': 'var(--info-color)',
+            'shipped': 'var(--primary-color)',
+            'delivered': 'var(--success-color)',
+            'cancelled': 'var(--error-color)'
+        };
+        return colors[status] || 'var(--gray-500)';
+    }
+
+    getOrderStatusIcon(status) {
+        const icons = {
+            'pending': '⏳',
+            'processing': '⚙️',
+            'shipped': '🚚',
+            'delivered': '✅',
+            'cancelled': '❌'
+        };
+        return icons[status] || '📦';
+    }
+
+    setupOrderHistoryModalEventListeners() {
+        // Close modal when clicking outside
+        const overlay = document.querySelector('.order-history-modal-overlay');
+        if (overlay) {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    this.closeOrderHistoryModal();
+                }
+            });
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('order-history-modal')) {
+                this.closeOrderHistoryModal();
+            }
+        });
+    }
+
+    displayOrderHistoryModal() {
+        const modal = document.getElementById('order-history-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    closeOrderHistoryModal() {
+        const modal = document.getElementById('order-history-modal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.remove();
+            document.body.style.overflow = '';
+        }
+    }
+
+    viewOrderDetails(orderId) {
+        const order = this.orders.find(o => o.id === orderId);
+        if (!order) return;
+
+        this.createOrderDetailsModal(order);
+    }
+
+    createOrderDetailsModal(order) {
+        // Remove existing modal if it exists
+        const existingModal = document.getElementById('order-details-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        const modal = document.createElement('div');
+        modal.id = 'order-details-modal';
+        modal.className = 'order-details-modal';
+        modal.innerHTML = this.generateOrderDetailsModalHTML(order);
+        document.body.appendChild(modal);
+
+        // Add event listeners
+        this.setupOrderDetailsModalEventListeners();
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    generateOrderDetailsModalHTML(order) {
+        const orderDate = new Date(order.createdAt).toLocaleDateString();
+        const statusColor = this.getOrderStatusColor(order.status);
+        const statusIcon = this.getOrderStatusIcon(order.status);
+
+        return `
+            <div class="order-details-modal-overlay" onclick="tcgStore.closeOrderDetailsModal()">
+                <div class="order-details-modal-content" onclick="event.stopPropagation()">
+                    <div class="order-details-modal-header">
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin: 0;">
+                            Order #${order.id} Details
+                        </h2>
+                        <button class="order-details-close-btn" onclick="tcgStore.closeOrderDetailsModal()">×</button>
+                    </div>
+                    
+                    <div class="order-details-modal-body">
+                        <!-- Order Status -->
+                        <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
+                                <span style="background: ${statusColor}; color: white; padding: var(--space-2) var(--space-4); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 600; text-transform: uppercase; display: flex; align-items: center; gap: var(--space-2);">
+                                    ${statusIcon} ${order.status}
+                                </span>
+                                <span style="font-size: 0.875rem; color: var(--gray-600);">Placed on ${orderDate}</span>
+                            </div>
+                            ${order.trackingNumber ? `
+                                <div style="margin-bottom: var(--space-2);">
+                                    <strong>Tracking Number:</strong> ${order.trackingNumber}
+                                    <button onclick="tcgStore.trackOrder('${order.trackingNumber}')" style="margin-left: var(--space-2); padding: var(--space-1) var(--space-2); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-sm); font-size: 0.75rem; cursor: pointer;">Track</button>
+                                </div>
+                            ` : ''}
+                            ${order.estimatedDelivery ? `
+                                <div style="font-size: 0.875rem; color: var(--gray-600);">
+                                    <strong>Estimated Delivery:</strong> ${new Date(order.estimatedDelivery).toLocaleDateString()}
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <!-- Order Items -->
+                        <div style="margin-bottom: var(--space-6);">
+                            <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4);">Items Ordered</h3>
+                            <div class="order-details-items">
+                                ${order.items.map(item => `
+                                    <div style="display: flex; gap: var(--space-3); padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md); margin-bottom: var(--space-3);">
+                                        <img src="${item.image}" alt="${item.name}" style="width: 60px; height: 84px; object-fit: contain; border-radius: var(--radius-md);">
+                                        <div style="flex: 1;">
+                                            <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">${item.name}</h4>
+                                            ${item.setCode && item.rarity ? `
+                                                <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-1);">
+                                                    <span style="background: var(--primary-color); color: white; padding: 2px 6px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">${item.setCode}</span>
+                                                    <span style="background: var(--secondary-color); color: var(--gray-900); padding: 2px 6px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">${item.rarity}</span>
+                                                </div>
+                                            ` : ''}
+                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                <span style="font-size: 0.875rem; color: var(--gray-600);">Quantity: ${item.quantity}</span>
+                                                <span style="font-size: 1rem; font-weight: 600; color: var(--primary-color);">$${(item.price * item.quantity).toFixed(2)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Order Summary -->
+                        <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-4);">
+                            <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4);">Order Summary</h3>
+                            <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Subtotal:</span>
+                                    <span>$${order.subtotal.toFixed(2)}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Shipping:</span>
+                                    <span>${order.shipping === 0 ? 'FREE' : '$' + order.shipping.toFixed(2)}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Tax (HST):</span>
+                                    <span>$${order.tax.toFixed(2)}</span>
+                                </div>
+                                <hr style="margin: var(--space-2) 0; border: none; border-top: 1px solid var(--gray-300);">
+                                <div style="display: flex; justify-content: space-between; font-size: 1.125rem; font-weight: 700;">
+                                    <span>Total:</span>
+                                    <span style="color: var(--primary-color);">$${order.total.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="order-details-modal-footer">
+                        <button class="secondary-btn" onclick="tcgStore.closeOrderDetailsModal()">Close</button>
+                        ${order.status === 'delivered' ? `
+                            <button class="primary-btn" onclick="tcgStore.reorderItems(${order.id})">Reorder Items</button>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    setupOrderDetailsModalEventListeners() {
+        // Close modal when clicking outside
+        const overlay = document.querySelector('.order-details-modal-overlay');
+        if (overlay) {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    this.closeOrderDetailsModal();
+                }
+            });
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('order-details-modal')) {
+                this.closeOrderDetailsModal();
+            }
+        });
+    }
+
+    closeOrderDetailsModal() {
+        const modal = document.getElementById('order-details-modal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.remove();
+            document.body.style.overflow = '';
+        }
+    }
+
+    trackOrder(trackingNumber) {
+        // Simulate tracking information
+        const trackingInfo = this.generateTrackingInfo(trackingNumber);
+        this.showTrackingModal(trackingNumber, trackingInfo);
+    }
+
+    generateTrackingInfo(trackingNumber) {
+        return [
+            {
+                status: 'Order Placed',
+                date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+                description: 'Your order has been received and is being processed.'
+            },
+            {
+                status: 'Processing',
+                date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+                description: 'Your items are being picked and packed.'
+            },
+            {
+                status: 'Shipped',
+                date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+                description: 'Your package has been shipped and is on its way.'
+            },
+            {
+                status: 'In Transit',
+                date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+                description: 'Your package is in transit to the destination.'
+            }
+        ];
+    }
+
+    showTrackingModal(trackingNumber, trackingInfo) {
+        const modal = document.createElement('div');
+        modal.id = 'tracking-modal';
+        modal.className = 'tracking-modal';
+        modal.innerHTML = `
+            <div class="tracking-modal-overlay" onclick="tcgStore.closeTrackingModal()">
+                <div class="tracking-modal-content" onclick="event.stopPropagation()">
+                    <div class="tracking-modal-header">
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin: 0;">
+                            Package Tracking
+                        </h2>
+                        <button onclick="tcgStore.closeTrackingModal()">×</button>
+                    </div>
+                    <div class="tracking-modal-body">
+                        <div style="margin-bottom: var(--space-4);">
+                            <strong>Tracking Number:</strong> ${trackingNumber}
+                        </div>
+                        <div class="tracking-timeline">
+                            ${trackingInfo.map((event, index) => `
+                                <div class="tracking-event ${index === trackingInfo.length - 1 ? 'current' : ''}">
+                                    <div class="tracking-dot"></div>
+                                    <div class="tracking-content">
+                                        <div class="tracking-status">${event.status}</div>
+                                        <div class="tracking-date">${event.date}</div>
+                                        <div class="tracking-description">${event.description}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="tracking-modal-footer">
+                        <button class="secondary-btn" onclick="tcgStore.closeTrackingModal()">Close</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    closeTrackingModal() {
+        const modal = document.getElementById('tracking-modal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.remove();
+            document.body.style.overflow = '';
+        }
+    }
+
+    reorderItems(orderId) {
+        const order = this.orders.find(o => o.id === orderId);
+        if (!order) return;
+
+        // Add all items from the order to cart
+        let addedCount = 0;
+        order.items.forEach(item => {
+            this.addToCartWithDetails(
+                item.name,
+                item.price,
+                item.image,
+                item.setCode || '',
+                item.rarity || '',
+                item.setName || ''
+            );
+            addedCount += item.quantity;
+        });
+
+        this.closeOrderDetailsModal();
+        this.closeOrderHistoryModal();
+        this.showToast(`${addedCount} items from order #${orderId} added to cart!`, 'success');
     }
 
     // Enhanced Wishlist Functionality

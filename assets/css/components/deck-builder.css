@@ -770,3 +770,135 @@
 .shortcuts-help:hover {
     opacity: 1;
 }
+
+/* Deck Grid Styles for My Decks Section */
+.deck-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: var(--space-6);
+    margin-top: var(--space-4);
+}
+
+.deck-card-item {
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+    transition: var(--transition-fast);
+    position: relative;
+}
+
+.deck-card-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.deck-card-item .deck-actions {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.deck-card-item .deck-actions button {
+    padding: var(--space-1) var(--space-2);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.deck-card-item .deck-actions button:hover {
+    transform: translateY(-1px);
+}
+
+/* Deck Management Buttons */
+.primary-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.primary-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.secondary-btn {
+    background: var(--gray-100);
+    color: var(--gray-700);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.secondary-btn:hover {
+    background: var(--gray-200);
+    transform: translateY(-1px);
+}
+
+/* Empty State for Deck Grid */
+.deck-grid .deck-section-empty {
+    grid-column: 1 / -1;
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    border: 2px dashed var(--gray-300);
+    padding: var(--space-12);
+    text-align: center;
+    color: var(--gray-500);
+}
+
+.deck-grid .deck-section-empty-icon {
+    font-size: 4rem;
+    margin-bottom: var(--space-4);
+    opacity: 0.5;
+}
+
+.deck-grid .deck-section-empty h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+    color: var(--gray-700);
+}
+
+.deck-grid .deck-section-empty p {
+    margin-bottom: var(--space-6);
+    color: var(--gray-600);
+}
+
+/* Responsive adjustments for deck grid */
+@media (max-width: 768px) {
+    .deck-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-4);
+    }
+    
+    .deck-card-item {
+        margin-bottom: var(--space-4);
+    }
+}
+
+@media (max-width: 480px) {
+    .deck-grid {
+        gap: var(--space-3);
+    }
+    
+    .deck-card-item .deck-actions {
+        flex-wrap: wrap;
+        gap: var(--space-1);
+    }
+    
+    .deck-card-item .deck-actions button {
+        font-size: 0.625rem;
+        padding: var(--space-1);
+    }
+}

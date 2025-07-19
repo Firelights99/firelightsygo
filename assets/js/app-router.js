@@ -404,23 +404,60 @@ class AppRouter {
         <!-- Page Header -->
         <section style="text-align: center; margin-bottom: var(--space-8);">
             <h1 style="font-size: 3rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
-                Deck Builder & Popular Decks
+                Deck Editor
             </h1>
             <p style="font-size: 1.125rem; color: var(--gray-600); max-width: 600px; margin: 0 auto;">
-                Build your own deck or explore popular strategies from tournament winners
+                Manage your decks, build new strategies, and explore popular deck lists
             </p>
         </section>
 
-        <!-- Deck Builder Toggle -->
+        <!-- Deck Management Actions -->
         <section style="margin-bottom: var(--space-8);">
-            <div style="display: flex; justify-content: center; gap: var(--space-4); margin-bottom: var(--space-6);">
-                <button class="filter-btn active" onclick="showDeckBuilder()" id="builder-btn">Deck Builder</button>
+            <div style="display: flex; justify-content: center; gap: var(--space-4); margin-bottom: var(--space-6); flex-wrap: wrap;">
+                <button class="filter-btn active" onclick="showMyDecks()" id="my-decks-btn">My Decks</button>
+                <button class="filter-btn" onclick="showDeckBuilder()" id="builder-btn">Deck Builder</button>
                 <button class="filter-btn" onclick="showPopularDecks()" id="popular-btn">Popular Decks</button>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div style="display: flex; justify-content: center; gap: var(--space-3); margin-bottom: var(--space-6); flex-wrap: wrap;">
+                <button class="primary-btn" onclick="createNewDeck()" style="padding: var(--space-3) var(--space-6);">
+                    <span style="margin-right: var(--space-2);">➕</span> New Deck
+                </button>
+                <button class="secondary-btn" onclick="importDeck()" style="padding: var(--space-3) var(--space-6);">
+                    <span style="margin-right: var(--space-2);">📁</span> Import Deck
+                </button>
+                <button class="secondary-btn" onclick="showDeckTemplates()" style="padding: var(--space-3) var(--space-6);">
+                    <span style="margin-right: var(--space-2);">📋</span> Templates
+                </button>
+            </div>
+        </section>
+
+        <!-- My Decks Section -->
+        <section id="my-decks-section" style="display: block;">
+            <div style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200); margin-bottom: var(--space-8);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6);">
+                    <h2 style="font-size: 2rem; font-weight: 700; color: var(--gray-900);">My Decks</h2>
+                    <div style="display: flex; gap: var(--space-3);">
+                        <select id="deck-sort" style="padding: var(--space-2) var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md);" onchange="sortDecks()">
+                            <option value="updated">Last Modified</option>
+                            <option value="created">Date Created</option>
+                            <option value="name">Name A-Z</option>
+                        </select>
+                        <button class="secondary-btn" onclick="refreshDeckList()" style="padding: var(--space-2) var(--space-3);">
+                            🔄 Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="user-decks-grid" class="deck-grid">
+                    <!-- Decks will be loaded here -->
+                </div>
             </div>
         </section>
 
         <!-- Deck Builder Interface -->
-        <section id="deck-builder-section" style="display: block;">
+        <section id="deck-builder-section" style="display: none;">
             <link rel="stylesheet" href="assets/css/components/deck-builder.css">
             
             <div class="deck-builder-container">
@@ -599,30 +636,34 @@ class AppRouter {
 
         <!-- Popular Decks Section -->
         <section id="popular-decks-section" style="display: none;">
-            <div style="display: flex; justify-content: center; gap: var(--space-4); margin-bottom: var(--space-8); flex-wrap: wrap;">
-                <button class="filter-btn active" onclick="showCategory('meta')" id="meta-btn">Meta Decks</button>
-                <button class="filter-btn" onclick="showCategory('budget')" id="budget-btn">Budget Builds</button>
-                <button class="filter-btn" onclick="showCategory('rogue')" id="rogue-btn">Rogue Decks</button>
-                <button class="filter-btn" onclick="showCategory('classic')" id="classic-btn">Classic Decks</button>
-            </div>
+            <div style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+                <h2 style="font-size: 2rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-6);">Popular Deck Lists</h2>
+                
+                <div style="display: flex; justify-content: center; gap: var(--space-4); margin-bottom: var(--space-8); flex-wrap: wrap;">
+                    <button class="filter-btn active" onclick="showCategory('meta')" id="meta-btn">Meta Decks</button>
+                    <button class="filter-btn" onclick="showCategory('budget')" id="budget-btn">Budget Builds</button>
+                    <button class="filter-btn" onclick="showCategory('rogue')" id="rogue-btn">Rogue Decks</button>
+                    <button class="filter-btn" onclick="showCategory('classic')" id="classic-btn">Classic Decks</button>
+                </div>
 
-            <div id="meta-decks" class="deck-section">
-                <div class="modern-card-grid">
-                    <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid var(--gray-200);" class="interactive-hover">
-                        <div style="aspect-ratio: 16/9; background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); display: flex; align-items: center; justify-content: center; position: relative;">
-                            <img src="https://images.ygoprodeck.com/images/cards/76375976.jpg" alt="Snake-Eye Fire King" style="width: 120px; height: auto; border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
-                            <div style="position: absolute; top: var(--space-3); right: var(--space-3); background: var(--secondary-color); color: var(--gray-900); padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700;">TIER 1</div>
-                        </div>
-                        <div style="padding: var(--space-6);">
-                            <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Snake-Eye Fire King</h3>
-                            <p style="color: var(--gray-600); margin-bottom: var(--space-4); line-height: 1.5;">Dominant combo deck featuring Snake-Eye engine with Fire King support for consistent disruption.</p>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
-                                <span style="background: var(--success-color); color: white; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 600;">68% Win Rate</span>
-                                <span style="font-size: 1.25rem; font-weight: 700; color: var(--primary-color);">~$450</span>
+                <div id="meta-decks" class="deck-section">
+                    <div class="modern-card-grid">
+                        <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid var(--gray-200);" class="interactive-hover">
+                            <div style="aspect-ratio: 16/9; background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); display: flex; align-items: center; justify-content: center; position: relative;">
+                                <img src="https://images.ygoprodeck.com/images/cards/76375976.jpg" alt="Snake-Eye Fire King" style="width: 120px; height: auto; border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
+                                <div style="position: absolute; top: var(--space-3); right: var(--space-3); background: var(--secondary-color); color: var(--gray-900); padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700;">TIER 1</div>
                             </div>
-                            <div style="display: flex; gap: var(--space-3);">
-                                <button style="flex: 1; padding: var(--space-3); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" onclick="loadSampleDeck('snake-eye')">Load in Builder</button>
-                                <button style="flex: 1; padding: var(--space-3); background: var(--gray-100); color: var(--gray-700); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" onclick="buyDeck('snake-eye')">Buy Singles</button>
+                            <div style="padding: var(--space-6);">
+                                <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Snake-Eye Fire King</h3>
+                                <p style="color: var(--gray-600); margin-bottom: var(--space-4); line-height: 1.5;">Dominant combo deck featuring Snake-Eye engine with Fire King support for consistent disruption.</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                                    <span style="background: var(--success-color); color: white; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 600;">68% Win Rate</span>
+                                    <span style="font-size: 1.25rem; font-weight: 700; color: var(--primary-color);">~$450</span>
+                                </div>
+                                <div style="display: flex; gap: var(--space-3);">
+                                    <button style="flex: 1; padding: var(--space-3); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" onclick="loadSampleDeck('snake-eye')">Load in Builder</button>
+                                    <button style="flex: 1; padding: var(--space-3); background: var(--gray-100); color: var(--gray-700); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" onclick="buyDeck('snake-eye')">Buy Singles</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -634,6 +675,237 @@ class AppRouter {
             // Initialize deck builder when page loads
             if (!window.deckBuilder) {
                 window.deckBuilder = new DeckBuilderService();
+            }
+            
+            // Load user decks on page load
+            loadUserDecks();
+            
+            // Deck management functions
+            function loadUserDecks() {
+                const savedDecks = window.deckBuilder ? window.deckBuilder.getSavedDecks() : {};
+                const container = document.getElementById('user-decks-grid');
+                
+                if (!container) return;
+                
+                if (Object.keys(savedDecks).length === 0) {
+                    container.innerHTML = \`
+                        <div style="text-align: center; padding: var(--space-12); color: var(--gray-500);">
+                            <div style="font-size: 4rem; margin-bottom: var(--space-4);">🃏</div>
+                            <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3);">No Decks Yet</h3>
+                            <p style="margin-bottom: var(--space-6);">Create your first deck to get started!</p>
+                            <button class="primary-btn" onclick="createNewDeck()">Create New Deck</button>
+                        </div>
+                    \`;
+                    return;
+                }
+                
+                const sortedDecks = Object.entries(savedDecks).sort((a, b) => {
+                    const sortBy = document.getElementById('deck-sort')?.value || 'updated';
+                    switch (sortBy) {
+                        case 'created':
+                            return new Date(b[1].metadata.createdAt) - new Date(a[1].metadata.createdAt);
+                        case 'name':
+                            return a[1].metadata.name.localeCompare(b[1].metadata.name);
+                        default: // updated
+                            return new Date(b[1].metadata.updatedAt) - new Date(a[1].metadata.updatedAt);
+                    }
+                });
+                
+                container.innerHTML = sortedDecks.map(([id, deckData]) => generateDeckCardHTML(id, deckData)).join('');
+            }
+            
+            function generateDeckCardHTML(id, deckData) {
+                const stats = calculateDeckStats(deckData.deck);
+                const lastModified = new Date(deckData.metadata.updatedAt).toLocaleDateString();
+                
+                return \`
+                    <div class="deck-card-item" style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); border: 1px solid var(--gray-200); overflow: hidden; transition: var(--transition-fast);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-lg)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-md)'">
+                        <div style="padding: var(--space-6);">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--space-4);">
+                                <div>
+                                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">\${deckData.metadata.name}</h3>
+                                    <p style="color: var(--gray-600); font-size: 0.875rem;">Modified: \${lastModified}</p>
+                                </div>
+                                <div class="deck-actions" style="display: flex; gap: var(--space-2);">
+                                    <button onclick="editDeck('\${id}')" style="padding: var(--space-1) var(--space-2); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-sm); font-size: 0.75rem; cursor: pointer;" title="Edit Deck">✏️</button>
+                                    <button onclick="duplicateDeck('\${id}')" style="padding: var(--space-1) var(--space-2); background: var(--secondary-color); color: var(--gray-900); border: none; border-radius: var(--radius-sm); font-size: 0.75rem; cursor: pointer;" title="Duplicate">📋</button>
+                                    <button onclick="exportDeck('\${id}')" style="padding: var(--space-1) var(--space-2); background: var(--accent-color); color: var(--gray-900); border: none; border-radius: var(--radius-sm); font-size: 0.75rem; cursor: pointer;" title="Export">📤</button>
+                                    <button onclick="deleteDeckConfirm('\${id}')" style="padding: var(--space-1) var(--space-2); background: var(--error-color); color: white; border: none; border-radius: var(--radius-sm); font-size: 0.75rem; cursor: pointer;" title="Delete">🗑️</button>
+                                </div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); margin-bottom: var(--space-4);">
+                                <div style="text-align: center; padding: var(--space-2); background: var(--gray-50); border-radius: var(--radius-md);">
+                                    <div style="font-size: 1.25rem; font-weight: 700; color: \${stats.main.total < 40 || stats.main.total > 60 ? 'var(--error-color)' : 'var(--success-color)'};">\${stats.main.total}</div>
+                                    <div style="font-size: 0.75rem; color: var(--gray-600);">Main Deck</div>
+                                </div>
+                                <div style="text-align: center; padding: var(--space-2); background: var(--gray-50); border-radius: var(--radius-md);">
+                                    <div style="font-size: 1.25rem; font-weight: 700; color: \${stats.extra.total > 15 ? 'var(--error-color)' : 'var(--success-color)'};">\${stats.extra.total}</div>
+                                    <div style="font-size: 0.75rem; color: var(--gray-600);">Extra Deck</div>
+                                </div>
+                                <div style="text-align: center; padding: var(--space-2); background: var(--gray-50); border-radius: var(--radius-md);">
+                                    <div style="font-size: 1.25rem; font-weight: 700; color: \${stats.side.total > 15 ? 'var(--error-color)' : 'var(--success-color)'};">\${stats.side.total}</div>
+                                    <div style="font-size: 0.75rem; color: var(--gray-600);">Side Deck</div>
+                                </div>
+                            </div>
+                            
+                            \${deckData.metadata.description ? \`
+                                <p style="color: var(--gray-600); font-size: 0.875rem; line-height: 1.4; margin-bottom: var(--space-4);">\${deckData.metadata.description}</p>
+                            \` : ''}
+                            
+                            <div style="display: flex; gap: var(--space-3);">
+                                <button onclick="editDeck('\${id}')" style="flex: 1; padding: var(--space-3); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
+                                    View/Edit Deck
+                                </button>
+                                <button onclick="testDeck('\${id}')" style="flex: 1; padding: var(--space-3); background: var(--gray-100); color: var(--gray-700); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
+                                    Test Deck
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                \`;
+            }
+            
+            function calculateDeckStats(deck) {
+                const stats = {
+                    main: { total: 0, monsters: 0, spells: 0, traps: 0 },
+                    extra: { total: 0, fusion: 0, synchro: 0, xyz: 0, link: 0 },
+                    side: { total: 0 }
+                };
+                
+                if (deck.main) {
+                    stats.main.total = deck.main.reduce((sum, card) => sum + (card.quantity || 1), 0);
+                    deck.main.forEach(card => {
+                        const qty = card.quantity || 1;
+                        if (card.type && card.type.includes('Monster')) {
+                            stats.main.monsters += qty;
+                        } else if (card.type && card.type.includes('Spell')) {
+                            stats.main.spells += qty;
+                        } else if (card.type && card.type.includes('Trap')) {
+                            stats.main.traps += qty;
+                        }
+                    });
+                }
+                
+                if (deck.extra) {
+                    stats.extra.total = deck.extra.reduce((sum, card) => sum + (card.quantity || 1), 0);
+                }
+                
+                if (deck.side) {
+                    stats.side.total = deck.side.reduce((sum, card) => sum + (card.quantity || 1), 0);
+                }
+                
+                return stats;
+            }
+            
+            function createNewDeck() {
+                if (window.deckBuilder) {
+                    window.deckBuilder.newDeck();
+                    showDeckBuilder();
+                }
+            }
+            
+            function editDeck(deckId) {
+                if (window.deckBuilder) {
+                    window.deckBuilder.loadSavedDeck(deckId);
+                    showDeckBuilder();
+                }
+            }
+            
+            function duplicateDeck(deckId) {
+                if (window.deckBuilder) {
+                    const savedDecks = window.deckBuilder.getSavedDecks();
+                    const originalDeck = savedDecks[deckId];
+                    
+                    if (originalDeck) {
+                        const duplicatedDeck = {
+                            deck: JSON.parse(JSON.stringify(originalDeck.deck)),
+                            metadata: {
+                                ...originalDeck.metadata,
+                                name: originalDeck.metadata.name + ' (Copy)',
+                                id: undefined,
+                                createdAt: new Date().toISOString(),
+                                updatedAt: new Date().toISOString()
+                            }
+                        };
+                        
+                        window.deckBuilder.loadDeck(duplicatedDeck);
+                        window.deckBuilder.saveDeck();
+                        loadUserDecks();
+                        window.deckBuilder.showToast('Deck duplicated successfully!', 'success');
+                    }
+                }
+            }
+            
+            function exportDeck(deckId) {
+                if (window.deckBuilder) {
+                    const savedDecks = window.deckBuilder.getSavedDecks();
+                    const deckData = savedDecks[deckId];
+                    
+                    if (deckData) {
+                        // Load the deck temporarily to export it
+                        const currentDeck = window.deckBuilder.currentDeck;
+                        const currentMetadata = window.deckBuilder.deckMetadata;
+                        
+                        window.deckBuilder.currentDeck = deckData.deck;
+                        window.deckBuilder.deckMetadata = deckData.metadata;
+                        window.deckBuilder.downloadYDK();
+                        
+                        // Restore current deck
+                        window.deckBuilder.currentDeck = currentDeck;
+                        window.deckBuilder.deckMetadata = currentMetadata;
+                    }
+                }
+            }
+            
+            function deleteDeckConfirm(deckId) {
+                const savedDecks = window.deckBuilder ? window.deckBuilder.getSavedDecks() : {};
+                const deckData = savedDecks[deckId];
+                
+                if (deckData && confirm(\`Are you sure you want to delete "\${deckData.metadata.name}"? This action cannot be undone.\`)) {
+                    if (window.deckBuilder) {
+                        window.deckBuilder.deleteDeck(deckId);
+                        loadUserDecks();
+                    }
+                }
+            }
+            
+            function testDeck(deckId) {
+                // Placeholder for deck testing functionality
+                alert('Deck testing feature coming soon! This will allow you to test hands and simulate games.');
+            }
+            
+            function importDeck() {
+                if (window.deckBuilder) {
+                    window.deckBuilder.openLoadDeckModal();
+                }
+            }
+            
+            function showDeckTemplates() {
+                alert('Deck templates feature coming soon! This will provide starter decks for different archetypes.');
+            }
+            
+            function sortDecks() {
+                loadUserDecks();
+            }
+            
+            function refreshDeckList() {
+                loadUserDecks();
+                if (window.deckBuilder) {
+                    window.deckBuilder.showToast('Deck list refreshed!', 'info');
+                }
+            }
+            
+            function showMyDecks() {
+                document.getElementById('my-decks-section').style.display = 'block';
+                document.getElementById('deck-builder-section').style.display = 'none';
+                document.getElementById('popular-decks-section').style.display = 'none';
+                
+                document.getElementById('my-decks-btn').classList.add('active');
+                document.getElementById('builder-btn').classList.remove('active');
+                document.getElementById('popular-btn').classList.remove('active');
+                
+                loadUserDecks();
             }
 
             // Search functionality
@@ -729,15 +1001,21 @@ class AppRouter {
             }
 
             function showDeckBuilder() {
+                document.getElementById('my-decks-section').style.display = 'none';
                 document.getElementById('deck-builder-section').style.display = 'block';
                 document.getElementById('popular-decks-section').style.display = 'none';
+                
+                document.getElementById('my-decks-btn').classList.remove('active');
                 document.getElementById('builder-btn').classList.add('active');
                 document.getElementById('popular-btn').classList.remove('active');
             }
 
             function showPopularDecks() {
+                document.getElementById('my-decks-section').style.display = 'none';
                 document.getElementById('deck-builder-section').style.display = 'none';
                 document.getElementById('popular-decks-section').style.display = 'block';
+                
+                document.getElementById('my-decks-btn').classList.remove('active');
                 document.getElementById('builder-btn').classList.remove('active');
                 document.getElementById('popular-btn').classList.add('active');
             }
@@ -987,7 +1265,7 @@ class AppRouter {
                             <div style="font-size: 0.875rem; color: var(--gray-600);">${new Date(orders[0].createdAt).toLocaleDateString()} - $${orders[0].total.toFixed(2)}</div>
                         </div>
                     ` : ''}
-                    <button style="width: 100%; padding: var(--space-3) var(--space-6); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);" onclick="alert('Order history feature coming soon!')">View All Orders</button>
+                    <button style="width: 100%; padding: var(--space-3) var(--space-6); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);" onclick="window.tcgStore.openOrderHistoryModal()">View All Orders</button>
                 </div>
             </div>
             
