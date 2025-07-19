@@ -15,6 +15,11 @@ class ModernTCGStore {
         this.currentPage = 1;
         this.cardsPerPage = 20;
         
+        // Account system
+        this.currentUser = JSON.parse(localStorage.getItem('tcg-user') || 'null');
+        this.users = JSON.parse(localStorage.getItem('tcg-users') || '{}');
+        this.orders = JSON.parse(localStorage.getItem('tcg-orders') || '[]');
+        
         this.init();
     }
 
@@ -808,6 +813,302 @@ class ModernTCGStore {
         this.updateCartBadge();
         this.closeCart();
         this.showToast('Cart cleared!', 'info');
+    }
+
+    // Account System Methods
+    openLoginModal() {
+        this.createAccountModal('login');
+    }
+
+    openRegisterModal() {
+        this.createAccountModal('register');
+    }
+
+    createAccountModal(type = 'login') {
+        // Remove existing modal if it exists
+        const existingModal = document.getElementById('account-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        const modal = document.createElement('div');
+        modal.id = 'account-modal';
+        modal.className = 'account-modal';
+        modal.innerHTML = this.generateAccountModalHTML(type);
+        document.body.appendChild(modal);
+
+        // Add event listeners
+        this.setupAccountModalEventListeners();
+    }
+
+    generateAccountModalHTML(type) {
+        const isLogin = type === 'login';
+        const title = isLogin ? 'Sign In' : 'Create Account';
+        const switchText = isLogin ? "Don't have an account?" : "Already have an account?";
+        const switchAction = isLogin ? 'register' : 'login';
+        const switchLabel = isLogin ? 'Sign Up' : 'Sign In';
+
+        return `
+            <div class="account-modal-overlay" onclick="tcgStore.closeAccountModal()">
+                <div class="account-modal-content" onclick="event.stopPropagation()">
+                    <div class="account-modal-header">
+                        <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--gray-900); margin: 0;">
+                            ${title}
+                        </h2>
+                        <button class="account-close-btn" onclick="tcgStore.closeAccountModal()">×</button>
+                    </div>
+                    
+                    <div class="account-modal-body">
+                        <form id="account-form" onsubmit="tcgStore.handleAccountSubmit(event, '${type}')">
+                            ${!isLogin ? `
+                                <div class="form-group">
+                                    <label for="firstName">First Name</label>
+                                    <input type="text" id="firstName" name="firstName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="lastName">Last Name</label>
+                                    <input type="text" id="lastName" name="lastName" required>
+                                </div>
+                            ` : ''}
+                            
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" id="password" name="password" required minlength="6">
+                            </div>
+                            
+                            ${!isLogin ? `
+                                <div class="form-group">
+                                    <label for="confirmPassword">Confirm Password</label>
+                                    <input type="password" id="confirmPassword" name="confirmPassword" required minlength="6">
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone Number (Optional)</label>
+                                    <input type="tel" id="phone" name="phone">
+                                </div>
+                            ` : ''}
+                            
+                            <button type="submit" class="primary-btn" style="width: 100%; margin-bottom: var(--space-4);">
+                                ${title}
+                            </button>
+                        </form>
+                        
+                        <div class="account-switch">
+                            <p style="text-align: center; color: var(--gray-600);">
+                                ${switchText} 
+                                <button type="button" onclick="tcgStore.createAccountModal('${switchAction}')" 
+                                        style="background: none; border: none; color: var(--primary-color); font-weight: 600; cursor: pointer; text-decoration: underline;">
+                                    ${switchLabel}
+                                </button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    setupAccountModalEventListeners() {
+        // Close modal when clicking outside
+        const overlay = document.querySelector('.account-modal-overlay');
+        if (overlay) {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    this.closeAccountModal();
+                }
+            });
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('account-modal')) {
+                this.closeAccountModal();
+            }
+        });
+    }
+
+    closeAccountModal() {
+        const modal = document.getElementById('account-modal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.remove();
+            document.body.style.overflow = '';
+        }
+    }
+
+    handleAccountSubmit(event, type) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData.entries());
+
+        if (type === 'register') {
+            this.registerUser(data);
+        } else {
+            this.loginUser(data);
+        }
+    }
+
+    registerUser(data) {
+        // Validate passwords match
+        if (data.password !== data.confirmPassword) {
+            this.showToast('Passwords do not match!', 'error');
+            return;
+        }
+
+        // Check if user already exists
+        if (this.users[data.email]) {
+            this.showToast('An account with this email already exists!', 'error');
+            return;
+        }
+
+        // Create new user
+        const newUser = {
+            id: Date.now(),
+            email: data.email,
+            password: data.password, // In real app, this would be hashed
+            firstName: data.firstName,
+            lastName: data.lastName,
+            phone: data.phone || '',
+            createdAt: new Date().toISOString(),
+            orders: [],
+            wishlist: [],
+            addresses: []
+        };
+
+        // Save user
+        this.users[data.email] = newUser;
+        localStorage.setItem('tcg-users', JSON.stringify(this.users));
+
+        // Auto-login the new user
+        this.currentUser = newUser;
+        localStorage.setItem('tcg-user', JSON.stringify(newUser));
+
+        this.closeAccountModal();
+        this.updateAccountUI();
+        this.showToast(`Welcome to Firelight Duel Academy, ${newUser.firstName}!`, 'success');
+    }
+
+    loginUser(data) {
+        const user = this.users[data.email];
+        
+        if (!user || user.password !== data.password) {
+            this.showToast('Invalid email or password!', 'error');
+            return;
+        }
+
+        // Login successful
+        this.currentUser = user;
+        localStorage.setItem('tcg-user', JSON.stringify(user));
+
+        this.closeAccountModal();
+        this.updateAccountUI();
+        this.showToast(`Welcome back, ${user.firstName}!`, 'success');
+    }
+
+    logout() {
+        this.currentUser = null;
+        localStorage.removeItem('tcg-user');
+        this.updateAccountUI();
+        this.showToast('You have been logged out.', 'info');
+        
+        // Redirect to home if on account page
+        if (window.location.hash.includes('account')) {
+            navigateTo('home');
+        }
+    }
+
+    updateAccountUI() {
+        // Update account button in header
+        const accountBtn = document.querySelector('.action-btn[onclick*="account"]');
+        if (accountBtn) {
+            if (this.currentUser) {
+                accountBtn.innerHTML = `👤 ${this.currentUser.firstName}`;
+                accountBtn.onclick = () => navigateTo('account');
+            } else {
+                accountBtn.innerHTML = '👤 Account';
+                accountBtn.onclick = () => this.openLoginModal();
+            }
+        }
+    }
+
+    getUserOrders() {
+        if (!this.currentUser) return [];
+        return this.orders.filter(order => order.userId === this.currentUser.id);
+    }
+
+    createOrder(cartItems) {
+        if (!this.currentUser) {
+            this.showToast('Please log in to place an order.', 'error');
+            return null;
+        }
+
+        const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const shipping = subtotal >= 75 ? 0 : 9.99;
+        const tax = subtotal * 0.13;
+        const total = subtotal + shipping + tax;
+
+        const order = {
+            id: Date.now(),
+            userId: this.currentUser.id,
+            items: cartItems.map(item => ({...item})),
+            subtotal: subtotal,
+            shipping: shipping,
+            tax: tax,
+            total: total,
+            status: 'pending',
+            createdAt: new Date().toISOString(),
+            shippingAddress: null,
+            trackingNumber: null
+        };
+
+        this.orders.push(order);
+        localStorage.setItem('tcg-orders', JSON.stringify(this.orders));
+
+        return order;
+    }
+
+    addToWishlist(cardName, price, image) {
+        if (!this.currentUser) {
+            this.showToast('Please log in to add items to your wishlist.', 'error');
+            return;
+        }
+
+        const existingItem = this.currentUser.wishlist.find(item => item.name === cardName);
+        if (existingItem) {
+            this.showToast('Item is already in your wishlist!', 'info');
+            return;
+        }
+
+        this.currentUser.wishlist.push({
+            name: cardName,
+            price: parseFloat(price),
+            image: image,
+            addedAt: new Date().toISOString()
+        });
+
+        // Update user in storage
+        this.users[this.currentUser.email] = this.currentUser;
+        localStorage.setItem('tcg-users', JSON.stringify(this.users));
+        localStorage.setItem('tcg-user', JSON.stringify(this.currentUser));
+
+        this.showToast(`${cardName} added to wishlist!`, 'success');
+    }
+
+    removeFromWishlist(cardName) {
+        if (!this.currentUser) return;
+
+        this.currentUser.wishlist = this.currentUser.wishlist.filter(item => item.name !== cardName);
+
+        // Update user in storage
+        this.users[this.currentUser.email] = this.currentUser;
+        localStorage.setItem('tcg-users', JSON.stringify(this.users));
+        localStorage.setItem('tcg-user', JSON.stringify(this.currentUser));
+
+        this.showToast('Item removed from wishlist.', 'info');
     }
 
     initializeToastContainer() {

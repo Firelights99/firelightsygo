@@ -82,7 +82,7 @@
                         🛒 Cart
                         <span class="cart-badge" style="display: none;">0</span>
                     </button>
-                    <a href="#" class="action-btn" onclick="navigateTo('account')">
+                    <a href="#" class="action-btn" id="account-btn" onclick="handleAccountClick()">
                         👤 Account
                     </a>
                 </div>
@@ -278,6 +278,27 @@
                 setName: setName
             };
         }
+
+        // Account functionality
+        function handleAccountClick() {
+            if (window.tcgStore && window.tcgStore.currentUser) {
+                navigateTo('account');
+            } else if (window.tcgStore) {
+                window.tcgStore.openLoginModal();
+            } else {
+                navigateTo('account');
+            }
+        }
+
+        // Initialize account UI when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait for tcgStore to be initialized
+            setTimeout(() => {
+                if (window.tcgStore) {
+                    window.tcgStore.updateAccountUI();
+                }
+            }, 100);
+        });
 
         // Close modal when clicking outside
         window.addEventListener('click', function(event) {
