@@ -545,8 +545,25 @@ class AppRouter {
     }
 
     getLoggedInAccountContent(user) {
-        const orders = window.tcgStore ? window.tcgStore.getUserOrders() : [];
-        const wishlistCount = user.wishlist ? user.wishlist.length : 0;
+        // Safely get orders and wishlist data
+        let orders = [];
+        let wishlistCount = 0;
+        
+        try {
+            if (window.tcgStore && typeof window.tcgStore.getUserOrders === 'function') {
+                orders = window.tcgStore.getUserOrders();
+            } else {
+                // Fallback: get orders from localStorage
+                const allOrders = JSON.parse(localStorage.getItem('tcg-orders') || '[]');
+                orders = allOrders.filter(order => order.userId === user.id);
+            }
+            
+            wishlistCount = user.wishlist ? user.wishlist.length : 0;
+        } catch (error) {
+            console.warn('Error getting user data:', error);
+            orders = [];
+            wishlistCount = 0;
+        }
         
         return `
         <!-- Welcome Header -->
