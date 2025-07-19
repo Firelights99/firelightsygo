@@ -327,6 +327,22 @@
                 closeImageZoom();
             }
         });
+
+        // Global FAQ toggle function
+        function toggleFAQ(button) {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('span');
+            
+            if (content.style.display === 'none' || content.style.display === '') {
+                content.style.display = 'block';
+                icon.textContent = '−';
+                button.setAttribute('aria-expanded', 'true');
+            } else {
+                content.style.display = 'none';
+                icon.textContent = '+';
+                button.setAttribute('aria-expanded', 'false');
+            }
+        }
     </script>
 </body>
 </html>
