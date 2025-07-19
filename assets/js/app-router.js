@@ -1882,7 +1882,16 @@ class AppRouter {
                             <span style="font-size: 1.5rem;">+</span>
                         </button>
                         <div style="padding: var(--space-4); display: none;">
-                            <p style="color: var(--gray-700); line-height: 1.6;">Browse our singles collection, add cards to your cart, and proceed to checkout. You can create an account for faster future orders or checkout as a guest. We accept major credit cards, PayPal, and other secure payment methods.</p>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-3);">Placing an order is simple:</p>
+                            <ol style="color: var(--gray-700); line-height: 1.6; margin-left: var(--space-4);">
+                                <li>Browse our singles collection using the search bar or filters</li>
+                                <li>Click on any card to view details, condition, and pricing</li>
+                                <li>Select your preferred condition and quantity, then click "Add to Cart"</li>
+                                <li>Review your cart and proceed to checkout</li>
+                                <li>Enter shipping information and payment details</li>
+                                <li>Confirm your order and receive an email confirmation</li>
+                            </ol>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-top: var(--space-3);">You can create an account for faster future orders or checkout as a guest. All payments are processed securely.</p>
                         </div>
                     </div>
                     
@@ -1892,7 +1901,14 @@ class AppRouter {
                             <span style="font-size: 1.5rem;">+</span>
                         </button>
                         <div style="padding: var(--space-4); display: none;">
-                            <p style="color: var(--gray-700); line-height: 1.6;">We accept Visa, Mastercard, American Express, Discover, PayPal, Apple Pay, Google Pay, and store credit. All payments are processed securely through our encrypted checkout system with SSL protection.</p>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-3);">We accept multiple secure payment methods:</p>
+                            <ul style="color: var(--gray-700); line-height: 1.6; margin-left: var(--space-4);">
+                                <li><strong>Credit Cards:</strong> Visa, Mastercard, American Express, Discover</li>
+                                <li><strong>Digital Wallets:</strong> PayPal, Apple Pay, Google Pay</li>
+                                <li><strong>Store Credit:</strong> Earned from returns or promotions</li>
+                                <li><strong>Interac e-Transfer:</strong> For Canadian customers</li>
+                            </ul>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-top: var(--space-3);">All payments are processed through our encrypted checkout system with SSL protection. We never store your payment information on our servers.</p>
                         </div>
                     </div>
                     
@@ -1902,7 +1918,13 @@ class AppRouter {
                             <span style="font-size: 1.5rem;">+</span>
                         </button>
                         <div style="padding: var(--space-4); display: none;">
-                            <p style="color: var(--gray-700); line-height: 1.6;">Orders can be modified or cancelled within 2 hours of placement, provided they haven't been processed for shipping. Contact us immediately at (647) 555-DUEL or orders@firelightduelacademy.com for assistance.</p>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-3);">Order modifications depend on the processing status:</p>
+                            <ul style="color: var(--gray-700); line-height: 1.6; margin-left: var(--space-4);">
+                                <li><strong>Within 2 hours:</strong> Full modifications or cancellations available</li>
+                                <li><strong>After 2 hours:</strong> Limited changes possible if not yet shipped</li>
+                                <li><strong>After shipping:</strong> Changes not possible, but returns are accepted</li>
+                            </ul>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-top: var(--space-3);">To request changes, contact us immediately at (647) 555-DUEL or orders@firelightduelacademy.com with your order number. Our team processes orders quickly, so early contact is essential.</p>
                         </div>
                     </div>
                     
@@ -1912,7 +1934,15 @@ class AppRouter {
                             <span style="font-size: 1.5rem;">+</span>
                         </button>
                         <div style="padding: var(--space-4); display: none;">
-                            <p style="color: var(--gray-700); line-height: 1.6;">Yes! We offer bulk discounts for orders over $500 CAD. Contact us directly for custom pricing on large orders, complete deck builds, or store inventory purchases. Educational institutions and tournament organizers may qualify for additional discounts.</p>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-3);">Yes! We offer several bulk discount options:</p>
+                            <ul style="color: var(--gray-700); line-height: 1.6; margin-left: var(--space-4);">
+                                <li><strong>$500+ CAD:</strong> 5% discount on entire order</li>
+                                <li><strong>$1000+ CAD:</strong> 8% discount on entire order</li>
+                                <li><strong>$2000+ CAD:</strong> 12% discount + free expedited shipping</li>
+                                <li><strong>Complete Deck Builds:</strong> Custom pricing available</li>
+                                <li><strong>Store Inventory:</strong> Wholesale pricing for retailers</li>
+                            </ul>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-top: var(--space-3);">Educational institutions, tournament organizers, and content creators may qualify for additional discounts. Contact us at bulk@firelightduelacademy.com for custom quotes.</p>
                         </div>
                     </div>
                     
@@ -1922,7 +1952,48 @@ class AppRouter {
                             <span style="font-size: 1.5rem;">+</span>
                         </button>
                         <div style="padding: var(--space-4); display: none;">
-                            <p style="color: var(--gray-700); line-height: 1.6;">Once your order ships, you'll receive an email with tracking information. You can also log into your account to view order status and tracking details. All orders include tracking at no extra cost.</p>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-3);">Tracking your order is easy with multiple options:</p>
+                            <ul style="color: var(--gray-700); line-height: 1.6; margin-left: var(--space-4);">
+                                <li><strong>Email Updates:</strong> Automatic notifications at each shipping milestone</li>
+                                <li><strong>Account Dashboard:</strong> Real-time status updates when logged in</li>
+                                <li><strong>Tracking Number:</strong> Direct carrier tracking via Canada Post or courier</li>
+                                <li><strong>SMS Notifications:</strong> Optional text updates (opt-in during checkout)</li>
+                            </ul>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-top: var(--space-3);">All orders include tracking at no extra cost. You'll receive your tracking number within 24 hours of shipment, usually much sooner.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;">
+                        <button style="width: 100%; padding: var(--space-4); background: var(--gray-50); border: none; text-align: left; font-weight: 600; color: var(--gray-900); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleFAQ(this)">
+                            What if an item is out of stock?
+                            <span style="font-size: 1.5rem;">+</span>
+                        </button>
+                        <div style="padding: var(--space-4); display: none;">
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-3);">When items are out of stock, you have several options:</p>
+                            <ul style="color: var(--gray-700); line-height: 1.6; margin-left: var(--space-4);">
+                                <li><strong>Wishlist:</strong> Add items to your wishlist for restock notifications</li>
+                                <li><strong>Backorder:</strong> Pre-order items with expected restock dates</li>
+                                <li><strong>Substitutions:</strong> We can suggest similar cards or different conditions</li>
+                                <li><strong>Partial Shipment:</strong> Ship available items now, rest when restocked</li>
+                            </ul>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-top: var(--space-3);">Our inventory updates in real-time, but high-demand cards can sell quickly. We restock popular items weekly and can often source specific cards within 1-2 weeks.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;">
+                        <button style="width: 100%; padding: var(--space-4); background: var(--gray-50); border: none; text-align: left; font-weight: 600; color: var(--gray-900); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleFAQ(this)">
+                            Do you price match?
+                            <span style="font-size: 1.5rem;">+</span>
+                        </button>
+                        <div style="padding: var(--space-4); display: none;">
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-3);">We offer competitive price matching on identical items:</p>
+                            <ul style="color: var(--gray-700); line-height: 1.6; margin-left: var(--space-4);">
+                                <li><strong>Requirements:</strong> Same card, condition, and set from authorized retailers</li>
+                                <li><strong>Verification:</strong> Provide link or screenshot of competitor's price</li>
+                                <li><strong>Exclusions:</strong> Auction sites, damaged items, or clearance sales</li>
+                                <li><strong>Time Limit:</strong> Must be requested before order completion</li>
+                            </ul>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-top: var(--space-3);">Contact us at pricematch@firelightduelacademy.com with your request. We'll match legitimate prices and often beat them by 5% when possible.</p>
                         </div>
                     </div>
                 </div>
@@ -1943,7 +2014,16 @@ class AppRouter {
                             <span style="font-size: 1.5rem;">+</span>
                         </button>
                         <div style="padding: var(--space-4); display: none;">
-                            <p style="color: var(--gray-700); line-height: 1.6;">Shipping within Canada starts at $8.99 CAD and is FREE on orders over $75 CAD. USA shipping starts at $12.99 CAD and is FREE on orders over $100 CAD. Express options are available for faster delivery.</p>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-3);">Our shipping rates are competitive and transparent:</p>
+                            <ul style="color: var(--gray-700); line-height: 1.6; margin-left: var(--space-4);">
+                                <li><strong>Canada Standard:</strong> $8.99 CAD (FREE on orders $75+)</li>
+                                <li><strong>Canada Expedited:</strong> $15.99 CAD (2-3 business days)</li>
+                                <li><strong>Canada Express:</strong> $24.99 CAD (1-2 business days)</li>
+                                <li><strong>USA Standard:</strong> $12.99 CAD (FREE on orders $100+)</li>
+                                <li><strong>USA Expedited:</strong> $22.99 CAD (5-8 business days)</li>
+                                <li><strong>Local Pickup (GTA):</strong> FREE</li>
+                            </ul>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-top: var(--space-3);">All orders include tracking and insurance. High-value orders over $200 CAD automatically include signature confirmation.</p>
                         </div>
                     </div>
                     
@@ -1953,7 +2033,16 @@ class AppRouter {
                             <span style="font-size: 1.5rem;">+</span>
                         </button>
                         <div style="padding: var(--space-4); display: none;">
-                            <p style="color: var(--gray-700); line-height: 1.6;">Standard shipping within Canada takes 3-7 business days. USA orders take 7-14 business days. Express options are available for 1-3 day delivery. Orders placed before 2 PM EST ship the same day.</p>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-3);">Delivery times vary by location and service level:</p>
+                            <ul style="color: var(--gray-700); line-height: 1.6; margin-left: var(--space-4);">
+                                <li><strong>Canada Standard:</strong> 3-7 business days</li>
+                                <li><strong>Canada Expedited:</strong> 2-3 business days</li>
+                                <li><strong>Canada Express:</strong> 1-2 business days</li>
+                                <li><strong>USA Standard:</strong> 7-14 business days</li>
+                                <li><strong>USA Expedited:</strong> 5-8 business days</li>
+                                <li><strong>USA Express:</strong> 3-5 business days</li>
+                            </ul>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-top: var(--space-3);">Orders placed before 2 PM EST ship the same day. Weekend orders are processed on the next business day. Remote areas may require additional 1-2 days.</p>
                         </div>
                     </div>
                     
@@ -1963,7 +2052,13 @@ class AppRouter {
                             <span style="font-size: 1.5rem;">+</span>
                         </button>
                         <div style="padding: var(--space-4); display: none;">
-                            <p style="color: var(--gray-700); line-height: 1.6;">Currently, we ship to Canada and the USA only. We're working on expanding to other countries. International customers are responsible for customs duties and taxes.</p>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-3);">Currently, we ship to Canada and the USA only. We're actively working on expanding to other countries including:</p>
+                            <ul style="color: var(--gray-700); line-height: 1.6; margin-left: var(--space-4);">
+                                <li><strong>Coming Soon:</strong> United Kingdom, Australia, Japan</li>
+                                <li><strong>Under Review:</strong> European Union countries</li>
+                                <li><strong>Future Plans:</strong> Additional international markets</li>
+                            </ul>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-top: var(--space-3);">International customers are responsible for customs duties, taxes, and any additional fees imposed by their country's customs office. We'll notify our mailing list when international shipping becomes available.</p>
                         </div>
                     </div>
                     
@@ -1973,7 +2068,50 @@ class AppRouter {
                             <span style="font-size: 1.5rem;">+</span>
                         </button>
                         <div style="padding: var(--space-4); display: none;">
-                            <p style="color: var(--gray-700); line-height: 1.6;">Every card is placed in a protective toploader or sleeve. Orders are shipped in bubble mailers with tracking. High-value orders receive additional protection and signature confirmation.</p>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-3);">We take card protection seriously with multiple layers of security:</p>
+                            <ul style="color: var(--gray-700); line-height: 1.6; margin-left: var(--space-4);">
+                                <li><strong>Individual Protection:</strong> Every card in protective toploader or sleeve</li>
+                                <li><strong>Team Bags:</strong> High-value cards get additional team bag protection</li>
+                                <li><strong>Bubble Mailers:</strong> Padded envelopes for all orders</li>
+                                <li><strong>Fragile Marking:</strong> High-value packages marked as fragile</li>
+                                <li><strong>Signature Required:</strong> Orders over $200 CAD require signature</li>
+                                <li><strong>Insurance:</strong> All packages include tracking and insurance</li>
+                            </ul>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-top: var(--space-3);">We've shipped thousands of cards with a 99.8% safe delivery rate. If anything arrives damaged, we'll make it right immediately.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;">
+                        <button style="width: 100%; padding: var(--space-4); background: var(--gray-50); border: none; text-align: left; font-weight: 600; color: var(--gray-900); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleFAQ(this)">
+                            What if my package is lost or damaged?
+                            <span style="font-size: 1.5rem;">+</span>
+                        </button>
+                        <div style="padding: var(--space-4); display: none;">
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-3);">We stand behind every shipment and will resolve any issues:</p>
+                            <ul style="color: var(--gray-700); line-height: 1.6; margin-left: var(--space-4);">
+                                <li><strong>Lost Packages:</strong> We'll file insurance claims and send replacements</li>
+                                <li><strong>Damaged Items:</strong> Full refund or replacement at your choice</li>
+                                <li><strong>Delayed Delivery:</strong> We'll track down your package and provide updates</li>
+                                <li><strong>Wrong Address:</strong> We'll help redirect packages when possible</li>
+                            </ul>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-top: var(--space-3);">Contact us immediately at shipping@firelightduelacademy.com or (647) 555-DUEL if you experience any shipping issues. We typically resolve problems within 24 hours.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;">
+                        <button style="width: 100%; padding: var(--space-4); background: var(--gray-50); border: none; text-align: left; font-weight: 600; color: var(--gray-900); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleFAQ(this)">
+                            Can I change my shipping address after ordering?
+                            <span style="font-size: 1.5rem;">+</span>
+                        </button>
+                        <div style="padding: var(--space-4); display: none;">
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-3);">Address changes depend on order status:</p>
+                            <ul style="color: var(--gray-700); line-height: 1.6; margin-left: var(--space-4);">
+                                <li><strong>Before Processing:</strong> Full address changes available (within 2 hours)</li>
+                                <li><strong>After Processing:</strong> Limited to same city/postal code changes</li>
+                                <li><strong>After Shipping:</strong> Contact carrier directly for delivery changes</li>
+                                <li><strong>Emergency Changes:</strong> We'll do our best to help with urgent requests</li>
+                            </ul>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-top: var(--space-3);">Contact us immediately at orders@firelightduelacademy.com with your order number and new address. The sooner you contact us, the more options we have to help.</p>
                         </div>
                     </div>
                 </div>
