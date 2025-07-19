@@ -800,12 +800,13 @@ class AppRouter {
                 return stats;
             }
             
-            function createNewDeck() {
+            // Make functions globally available
+            window.createNewDeck = function() {
                 if (window.deckBuilder) {
                     window.deckBuilder.newDeck();
                     showDeckBuilder();
                 }
-            }
+            };
             
             function editDeck(deckId) {
                 if (window.deckBuilder) {
