@@ -480,16 +480,86 @@ class AppRouter {
 
         <!-- Account Dashboard -->
         <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-6); margin-bottom: var(--space-16);">
-            <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); padding: var(--space-6); border: 1px solid var(--gray-200);">
-                <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4);">Order History</h3>
-                <p style="color: var(--gray-600); margin-bottom: var(--space-4);">View your recent purchases and track orders</p>
-                <button style="padding: var(--space-3) var(--space-6); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">View Orders</button>
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid var(--gray-200);" class="interactive-hover">
+                <div style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); padding: var(--space-6); text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: var(--space-3);">📦</div>
+                    <h3 style="font-size: 1.5rem; font-weight: 600; color: white; margin-bottom: var(--space-2);">Order History</h3>
+                </div>
+                <div style="padding: var(--space-6);">
+                    <p style="color: var(--gray-600); margin-bottom: var(--space-4); line-height: 1.6;">View your recent purchases, track current orders, and download invoices for your records.</p>
+                    <button style="width: 100%; padding: var(--space-3) var(--space-6); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);" onmouseover="this.style.background='var(--primary-dark)'" onmouseout="this.style.background='var(--primary-color)'">View Orders</button>
+                </div>
             </div>
             
-            <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); padding: var(--space-6); border: 1px solid var(--gray-200);">
-                <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4);">Account Settings</h3>
-                <p style="color: var(--gray-600); margin-bottom: var(--space-4);">Update your profile and preferences</p>
-                <button style="padding: var(--space-3) var(--space-6); background: var(--secondary-color); color: var(--gray-900); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">Edit Profile</button>
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid var(--gray-200);" class="interactive-hover">
+                <div style="background: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-dark) 100%); padding: var(--space-6); text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: var(--space-3);">⚙️</div>
+                    <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Account Settings</h3>
+                </div>
+                <div style="padding: var(--space-6);">
+                    <p style="color: var(--gray-600); margin-bottom: var(--space-4); line-height: 1.6;">Update your profile information, change password, and manage your notification preferences.</p>
+                    <button style="width: 100%; padding: var(--space-3) var(--space-6); background: var(--secondary-color); color: var(--gray-900); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);" onmouseover="this.style.background='var(--secondary-dark)'" onmouseout="this.style.background='var(--secondary-color)'">Edit Profile</button>
+                </div>
+            </div>
+
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid var(--gray-200);" class="interactive-hover">
+                <div style="background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%); padding: var(--space-6); text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: var(--space-3);">❤️</div>
+                    <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Wishlist</h3>
+                </div>
+                <div style="padding: var(--space-6);">
+                    <p style="color: var(--gray-600); margin-bottom: var(--space-4); line-height: 1.6;">Save cards you want to purchase later and get notified when prices drop.</p>
+                    <button style="width: 100%; padding: var(--space-3) var(--space-6); background: var(--accent-color); color: var(--gray-900); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);" onmouseover="this.style.background='var(--accent-dark)'" onmouseout="this.style.background='var(--accent-color)'">View Wishlist</button>
+                </div>
+            </div>
+
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid var(--gray-200);" class="interactive-hover">
+                <div style="background: linear-gradient(135deg, var(--gray-600) 0%, var(--gray-700) 100%); padding: var(--space-6); text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: var(--space-3);">🏆</div>
+                    <h3 style="font-size: 1.5rem; font-weight: 600; color: white; margin-bottom: var(--space-2);">Tournament History</h3>
+                </div>
+                <div style="padding: var(--space-6);">
+                    <p style="color: var(--gray-600); margin-bottom: var(--space-4); line-height: 1.6;">View your tournament results, rankings, and upcoming event registrations.</p>
+                    <button style="width: 100%; padding: var(--space-3) var(--space-6); background: var(--gray-600); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);" onmouseover="this.style.background='var(--gray-700)'" onmouseout="this.style.background='var(--gray-600)'">View Results</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-12); margin-bottom: var(--space-16); border: 1px solid var(--gray-200);">
+            <div style="text-align: center; margin-bottom: var(--space-8);">
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
+                    Quick Actions
+                </h2>
+                <p style="font-size: 1.125rem; color: var(--gray-600);">
+                    Common tasks and shortcuts for your account
+                </p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-6);">
+                <div style="text-align: center; padding: var(--space-4); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); transition: var(--transition-fast); cursor: pointer;" class="interactive-hover" onclick="navigateTo('singles')">
+                    <div style="font-size: 2rem; margin-bottom: var(--space-3);">🛒</div>
+                    <h4 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Continue Shopping</h4>
+                    <p style="color: var(--gray-600); font-size: 0.875rem;">Browse our latest Yu-Gi-Oh! singles</p>
+                </div>
+                
+                <div style="text-align: center; padding: var(--space-4); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); transition: var(--transition-fast); cursor: pointer;" class="interactive-hover" onclick="navigateTo('decks')">
+                    <div style="font-size: 2rem; margin-bottom: var(--space-3);">🃏</div>
+                    <h4 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Browse Decks</h4>
+                    <p style="color: var(--gray-600); font-size: 0.875rem;">Explore popular deck strategies</p>
+                </div>
+                
+                <div style="text-align: center; padding: var(--space-4); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); transition: var(--transition-fast); cursor: pointer;" class="interactive-hover" onclick="navigateTo('events')">
+                    <div style="font-size: 2rem; margin-bottom: var(--space-3);">🏆</div>
+                    <h4 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Join Events</h4>
+                    <p style="color: var(--gray-600); font-size: 0.875rem;">Register for tournaments</p>
+                </div>
+                
+                <div style="text-align: center; padding: var(--space-4); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); transition: var(--transition-fast); cursor: pointer;" class="interactive-hover">
+                    <div style="font-size: 2rem; margin-bottom: var(--space-3);">📞</div>
+                    <h4 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Contact Support</h4>
+                    <p style="color: var(--gray-600); font-size: 0.875rem;">Get help with your account</p>
+                </div>
             </div>
         </section>
         `;
