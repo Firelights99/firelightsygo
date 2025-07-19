@@ -42,6 +42,16 @@ class AppRouter {
                 title: 'Shipping Policy | Firelight Duel Academy',
                 description: 'Learn about our shipping rates, delivery times, and policies for Canada and USA.',
                 template: 'templates/shipping-policy.html'
+            },
+            'return-policy': {
+                title: 'Return Policy | Firelight Duel Academy',
+                description: 'Understand our return and refund policies for Yu-Gi-Oh! cards and merchandise.',
+                template: 'templates/return-policy.html'
+            },
+            'faq': {
+                title: 'FAQ | Firelight Duel Academy',
+                description: 'Frequently asked questions about ordering, shipping, cards, and our services.',
+                template: 'templates/faq.html'
             }
         };
         
@@ -138,6 +148,10 @@ class AppRouter {
                 return await this.getProductContent(params);
             case 'shipping-policy':
                 return this.getShippingPolicyContent();
+            case 'return-policy':
+                return this.getReturnPolicyContent();
+            case 'faq':
+                return this.getFAQContent();
             default:
                 return this.getHomeContent();
         }
@@ -1616,6 +1630,521 @@ class AppRouter {
                 </div>
             </div>
         </section>
+        `;
+    }
+
+    getReturnPolicyContent() {
+        return `
+        <!-- Page Header -->
+        <section style="text-align: center; margin-bottom: var(--space-12);">
+            <div style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); border-radius: var(--radius-2xl); color: white; padding: var(--space-12); margin-bottom: var(--space-8);">
+                <h1 style="font-size: 3rem; font-weight: 700; margin-bottom: var(--space-4);">
+                    Return Policy
+                </h1>
+                <p style="font-size: 1.125rem; opacity: 0.9; max-width: 600px; margin: 0 auto;">
+                    Your satisfaction is our priority. Learn about our flexible return and refund policies.
+                </p>
+            </div>
+        </section>
+
+        <!-- Quick Reference -->
+        <section style="margin-bottom: var(--space-16);">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-6);">
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-6); text-align: center; border: 1px solid var(--gray-200);">
+                    <div style="font-size: 3rem; margin-bottom: var(--space-3);">📅</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">30-Day Returns</h3>
+                    <p style="color: var(--gray-600);">Return most items within 30 days</p>
+                    <p style="color: var(--gray-600);">of purchase for full refund</p>
+                </div>
+                
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-6); text-align: center; border: 1px solid var(--gray-200);">
+                    <div style="font-size: 3rem; margin-bottom: var(--space-3);">💳</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Easy Refunds</h3>
+                    <p style="color: var(--gray-600);">Refunds processed within 3-5 business days</p>
+                    <p style="color: var(--gray-600);">to original payment method</p>
+                </div>
+                
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-6); text-align: center; border: 1px solid var(--gray-200);">
+                    <div style="font-size: 3rem; margin-bottom: var(--space-3);">🔄</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Free Exchanges</h3>
+                    <p style="color: var(--gray-600);">Exchange for different condition</p>
+                    <p style="color: var(--gray-600);">or set at no extra cost</p>
+                </div>
+                
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-6); text-align: center; border: 1px solid var(--gray-200);">
+                    <div style="font-size: 3rem; margin-bottom: var(--space-3);">🛡️</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Condition Guarantee</h3>
+                    <p style="color: var(--gray-600);">Cards not as described?</p>
+                    <p style="color: var(--gray-600);">Full refund guaranteed</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Return Eligibility -->
+        <section style="margin-bottom: var(--space-16);">
+            <div style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-12); border: 1px solid var(--gray-200);">
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-8); text-align: center;">
+                    Return Eligibility
+                </h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8);">
+                    <div>
+                        <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--success-color); margin-bottom: var(--space-4);">✅ Returnable Items</h3>
+                        <ul style="list-style: none; padding: 0; margin: 0;">
+                            <li style="padding: var(--space-3); border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; gap: var(--space-3);">
+                                <span style="color: var(--success-color);">✓</span>
+                                <span>Single cards in original condition</span>
+                            </li>
+                            <li style="padding: var(--space-3); border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; gap: var(--space-3);">
+                                <span style="color: var(--success-color);">✓</span>
+                                <span>Sealed products (unopened)</span>
+                            </li>
+                            <li style="padding: var(--space-3); border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; gap: var(--space-3);">
+                                <span style="color: var(--success-color);">✓</span>
+                                <span>Accessories and supplies</span>
+                            </li>
+                            <li style="padding: var(--space-3); border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; gap: var(--space-3);">
+                                <span style="color: var(--success-color);">✓</span>
+                                <span>Items not as described</span>
+                            </li>
+                            <li style="padding: var(--space-3); display: flex; align-items: center; gap: var(--space-3);">
+                                <span style="color: var(--success-color);">✓</span>
+                                <span>Damaged during shipping</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--error-color); margin-bottom: var(--space-4);">❌ Non-Returnable Items</h3>
+                        <ul style="list-style: none; padding: 0; margin: 0;">
+                            <li style="padding: var(--space-3); border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; gap: var(--space-3);">
+                                <span style="color: var(--error-color);">✗</span>
+                                <span>Opened booster packs or boxes</span>
+                            </li>
+                            <li style="padding: var(--space-3); border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; gap: var(--space-3);">
+                                <span style="color: var(--error-color);">✗</span>
+                                <span>Cards damaged by customer</span>
+                            </li>
+                            <li style="padding: var(--space-3); border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; gap: var(--space-3);">
+                                <span style="color: var(--error-color);">✗</span>
+                                <span>Items returned after 30 days</span>
+                            </li>
+                            <li style="padding: var(--space-3); border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; gap: var(--space-3);">
+                                <span style="color: var(--error-color);">✗</span>
+                                <span>Custom or special orders</span>
+                            </li>
+                            <li style="padding: var(--space-3); display: flex; align-items: center; gap: var(--space-3);">
+                                <span style="color: var(--error-color);">✗</span>
+                                <span>Items without original packaging</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Return Process -->
+        <section style="margin-bottom: var(--space-16);">
+            <div style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-12); border: 1px solid var(--gray-200);">
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-8); text-align: center;">
+                    How to Return Items
+                </h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-6);">
+                    <div style="text-align: center; padding: var(--space-6); border: 1px solid var(--gray-200); border-radius: var(--radius-lg);">
+                        <div style="width: 60px; height: 60px; background: var(--primary-color); color: white; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4); font-size: 1.5rem; font-weight: 700;">1</div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Contact Us</h3>
+                        <p style="color: var(--gray-600); line-height: 1.6;">Email us at returns@firelightduelacademy.com or call (647) 555-DUEL to initiate your return.</p>
+                    </div>
+                    
+                    <div style="text-align: center; padding: var(--space-6); border: 1px solid var(--gray-200); border-radius: var(--radius-lg);">
+                        <div style="width: 60px; height: 60px; background: var(--primary-color); color: white; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4); font-size: 1.5rem; font-weight: 700;">2</div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Get RMA Number</h3>
+                        <p style="color: var(--gray-600); line-height: 1.6;">We'll provide you with a Return Merchandise Authorization (RMA) number and return instructions.</p>
+                    </div>
+                    
+                    <div style="text-align: center; padding: var(--space-6); border: 1px solid var(--gray-200); border-radius: var(--radius-lg);">
+                        <div style="width: 60px; height: 60px; background: var(--primary-color); color: white; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4); font-size: 1.5rem; font-weight: 700;">3</div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Package & Ship</h3>
+                        <p style="color: var(--gray-600); line-height: 1.6;">Securely package your items with the RMA number and ship to our returns center using the provided label.</p>
+                    </div>
+                    
+                    <div style="text-align: center; padding: var(--space-6); border: 1px solid var(--gray-200); border-radius: var(--radius-lg);">
+                        <div style="width: 60px; height: 60px; background: var(--primary-color); color: white; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4); font-size: 1.5rem; font-weight: 700;">4</div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Receive Refund</h3>
+                        <p style="color: var(--gray-600); line-height: 1.6;">Once we receive and inspect your return, we'll process your refund within 3-5 business days.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Information -->
+        <section style="margin-bottom: var(--space-16);">
+            <div style="background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%); border-radius: var(--radius-2xl); color: white; padding: var(--space-12); text-align: center;">
+                <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: var(--space-6);">
+                    Need Help with a Return?
+                </h2>
+                <p style="font-size: 1.125rem; margin-bottom: var(--space-8); opacity: 0.9; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    Our customer service team is ready to assist you with any return questions.
+                </p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-6); margin-bottom: var(--space-8);">
+                    <div>
+                        <div style="font-size: 2rem; margin-bottom: var(--space-2);">📧</div>
+                        <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-1);">Returns Email</h3>
+                        <p style="opacity: 0.8;">returns@firelightduelacademy.com</p>
+                    </div>
+                    
+                    <div>
+                        <div style="font-size: 2rem; margin-bottom: var(--space-2);">📞</div>
+                        <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-1);">Phone Support</h3>
+                        <p style="opacity: 0.8;">(647) 555-DUEL</p>
+                    </div>
+                    
+                    <div>
+                        <div style="font-size: 2rem; margin-bottom: var(--space-2);">⏰</div>
+                        <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-1);">Support Hours</h3>
+                        <p style="opacity: 0.8;">Mon-Fri: 9 AM - 5 PM EST</p>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap;">
+                    <a href="mailto:returns@firelightduelacademy.com" style="padding: var(--space-4) var(--space-8); background: var(--primary-color); color: white; text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; transition: var(--transition-fast);">
+                        Start Return
+                    </a>
+                    <a href="#" onclick="navigateTo('faq')" style="padding: var(--space-4) var(--space-8); background: transparent; color: white; text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; transition: var(--transition-fast); border: 1px solid rgba(255,255,255,0.3);">
+                        View FAQ
+                    </a>
+                </div>
+            </div>
+        </section>
+        `;
+    }
+
+    getFAQContent() {
+        return `
+        <!-- Page Header -->
+        <section style="text-align: center; margin-bottom: var(--space-12);">
+            <div style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); border-radius: var(--radius-2xl); color: white; padding: var(--space-12); margin-bottom: var(--space-8);">
+                <h1 style="font-size: 3rem; font-weight: 700; margin-bottom: var(--space-4);">
+                    Frequently Asked Questions
+                </h1>
+                <p style="font-size: 1.125rem; opacity: 0.9; max-width: 600px; margin: 0 auto;">
+                    Find answers to common questions about ordering, shipping, cards, and our services.
+                </p>
+            </div>
+        </section>
+
+        <!-- Quick Help Cards -->
+        <section style="margin-bottom: var(--space-16);">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-6);">
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-6); text-align: center; border: 1px solid var(--gray-200);">
+                    <div style="font-size: 3rem; margin-bottom: var(--space-3);">🛒</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Ordering Help</h3>
+                    <p style="color: var(--gray-600);">Questions about placing orders,</p>
+                    <p style="color: var(--gray-600);">payment methods, and checkout</p>
+                </div>
+                
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-6); text-align: center; border: 1px solid var(--gray-200);">
+                    <div style="font-size: 3rem; margin-bottom: var(--space-3);">🚚</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Shipping Info</h3>
+                    <p style="color: var(--gray-600);">Delivery times, tracking,</p>
+                    <p style="color: var(--gray-600);">and shipping costs</p>
+                </div>
+                
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-6); text-align: center; border: 1px solid var(--gray-200);">
+                    <div style="font-size: 3rem; margin-bottom: var(--space-3);">🃏</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Card Conditions</h3>
+                    <p style="color: var(--gray-600);">Understanding card grades,</p>
+                    <p style="color: var(--gray-600);">authenticity, and quality</p>
+                </div>
+                
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-6); text-align: center; border: 1px solid var(--gray-200);">
+                    <div style="font-size: 3rem; margin-bottom: var(--space-3);">🔄</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Returns & Refunds</h3>
+                    <p style="color: var(--gray-600);">Return policies, exchanges,</p>
+                    <p style="color: var(--gray-600);">and refund processes</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Ordering FAQ -->
+        <section style="margin-bottom: var(--space-16);">
+            <div style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-12); border: 1px solid var(--gray-200);">
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-8); text-align: center;">
+                    🛒 Ordering Questions
+                </h2>
+                
+                <div style="display: grid; gap: var(--space-4);">
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;">
+                        <button style="width: 100%; padding: var(--space-4); background: var(--gray-50); border: none; text-align: left; font-weight: 600; color: var(--gray-900); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleFAQ(this)">
+                            How do I place an order?
+                            <span style="font-size: 1.5rem;">+</span>
+                        </button>
+                        <div style="padding: var(--space-4); display: none;">
+                            <p style="color: var(--gray-700); line-height: 1.6;">Browse our singles collection, add cards to your cart, and proceed to checkout. You can create an account for faster future orders or checkout as a guest. We accept major credit cards, PayPal, and other secure payment methods.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;">
+                        <button style="width: 100%; padding: var(--space-4); background: var(--gray-50); border: none; text-align: left; font-weight: 600; color: var(--gray-900); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleFAQ(this)">
+                            What payment methods do you accept?
+                            <span style="font-size: 1.5rem;">+</span>
+                        </button>
+                        <div style="padding: var(--space-4); display: none;">
+                            <p style="color: var(--gray-700); line-height: 1.6;">We accept Visa, Mastercard, American Express, Discover, PayPal, Apple Pay, Google Pay, and store credit. All payments are processed securely through our encrypted checkout system with SSL protection.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;">
+                        <button style="width: 100%; padding: var(--space-4); background: var(--gray-50); border: none; text-align: left; font-weight: 600; color: var(--gray-900); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleFAQ(this)">
+                            Can I modify or cancel my order?
+                            <span style="font-size: 1.5rem;">+</span>
+                        </button>
+                        <div style="padding: var(--space-4); display: none;">
+                            <p style="color: var(--gray-700); line-height: 1.6;">Orders can be modified or cancelled within 2 hours of placement, provided they haven't been processed for shipping. Contact us immediately at (647) 555-DUEL or orders@firelightduelacademy.com for assistance.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;">
+                        <button style="width: 100%; padding: var(--space-4); background: var(--gray-50); border: none; text-align: left; font-weight: 600; color: var(--gray-900); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleFAQ(this)">
+                            Do you offer bulk discounts?
+                            <span style="font-size: 1.5rem;">+</span>
+                        </button>
+                        <div style="padding: var(--space-4); display: none;">
+                            <p style="color: var(--gray-700); line-height: 1.6;">Yes! We offer bulk discounts for orders over $500 CAD. Contact us directly for custom pricing on large orders, complete deck builds, or store inventory purchases. Educational institutions and tournament organizers may qualify for additional discounts.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;">
+                        <button style="width: 100%; padding: var(--space-4); background: var(--gray-50); border: none; text-align: left; font-weight: 600; color: var(--gray-900); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleFAQ(this)">
+                            How do I track my order?
+                            <span style="font-size: 1.5rem;">+</span>
+                        </button>
+                        <div style="padding: var(--space-4); display: none;">
+                            <p style="color: var(--gray-700); line-height: 1.6;">Once your order ships, you'll receive an email with tracking information. You can also log into your account to view order status and tracking details. All orders include tracking at no extra cost.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Shipping FAQ -->
+        <section style="margin-bottom: var(--space-16);">
+            <div style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-12); border: 1px solid var(--gray-200);">
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-8); text-align: center;">
+                    🚚 Shipping Questions
+                </h2>
+                
+                <div style="display: grid; gap: var(--space-4);">
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;">
+                        <button style="width: 100%; padding: var(--space-4); background: var(--gray-50); border: none; text-align: left; font-weight: 600; color: var(--gray-900); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleFAQ(this)">
+                            How much does shipping cost?
+                            <span style="font-size: 1.5rem;">+</span>
+                        </button>
+                        <div style="padding: var(--space-4); display: none;">
+                            <p style="color: var(--gray-700); line-height: 1.6;">Shipping within Canada starts at $8.99 CAD and is FREE on orders over $75 CAD. USA shipping starts at $12.99 CAD and is FREE on orders over $100 CAD. Express options are available for faster delivery.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;">
+                        <button style="width: 100%; padding: var(--space-4); background: var(--gray-50); border: none; text-align: left; font-weight: 600; color: var(--gray-900); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleFAQ(this)">
+                            How long does shipping take?
+                            <span style="font-size: 1.5rem;">+</span>
+                        </button>
+                        <div style="padding: var(--space-4); display: none;">
+                            <p style="color: var(--gray-700); line-height: 1.6;">Standard shipping within Canada takes 3-7 business days. USA orders take 7-14 business days. Express options are available for 1-3 day delivery. Orders placed before 2 PM EST ship the same day.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;">
+                        <button style="width: 100%; padding: var(--space-4); background: var(--gray-50); border: none; text-align: left; font-weight: 600; color: var(--gray-900); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleFAQ(this)">
+                            Do you ship internationally?
+                            <span style="font-size: 1.5rem;">+</span>
+                        </button>
+                        <div style="padding: var(--space-4); display: none;">
+                            <p style="color: var(--gray-700); line-height: 1.6;">Currently, we ship to Canada and the USA only. We're working on expanding to other countries. International customers are responsible for customs duties and taxes.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;">
+                        <button style="width: 100%; padding: var(--space-4); background: var(--gray-50); border: none; text-align: left; font-weight: 600; color: var(--gray-900); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleFAQ(this)">
+                            How are cards protected during shipping?
+                            <span style="font-size: 1.5rem;">+</span>
+                        </button>
+                        <div style="padding: var(--space-4); display: none;">
+                            <p style="color: var(--gray-700); line-height: 1.6;">Every card is placed in a protective toploader or sleeve. Orders are shipped in bubble mailers with tracking. High-value orders receive additional protection and signature confirmation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Card Condition FAQ -->
+        <section style="margin-bottom: var(--space-16);">
+            <div style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-12); border: 1px solid var(--gray-200);">
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-8); text-align: center;">
+                    🃏 Card Condition & Quality
+                </h2>
+                
+                <div style="display: grid; gap: var(--space-4);">
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;">
+                        <button style="width: 100%; padding: var(--space-4); background: var(--gray-50); border: none; text-align: left; font-weight: 600; color: var(--gray-900); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleFAQ(this)">
+                            What do the condition grades mean?
+                            <span style="font-size: 1.5rem;">+</span>
+                        </button>
+                        <div style="padding: var(--space-4); display: none;">
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-3);"><strong>Near Mint (NM):</strong> Cards appear fresh from pack with minimal wear. May have very slight edge wear or minor printing imperfections.</p>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-3);"><strong>Lightly Played (LP):</strong> Light edge wear, slight corner wear, or minor scratches. Still tournament playable.</p>
+                            <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-3);"><strong>Moderately Played (MP):</strong> Moderate edge/corner wear, light scratches, or minor creases. Playable with sleeves.</p>
+                            <p style="color: var(--gray-700); line-height: 1.6;"><strong>Heavily Played (HP) / Damaged (DMG):</strong> Significant wear, creases, or damage. Priced for collectors or casual play.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;">
+                        <button style="width: 100%; padding: var(--space-4); background: var(--gray-50); border: none; text-align: left; font-weight: 600; color: var(--gray-900); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleFAQ(this)">
+                            Are all cards authentic?
+                            <span style="font-size: 1.5rem;">+</span>
+                        </button>
+                        <div style="padding: var(--space-4); display: none;">
+                            <p style="color: var(--gray-700); line-height: 1.6;">Yes, we guarantee 100% authentic Yu-Gi-Oh! cards. All cards are sourced from official distributors and verified for authenticity. We do not sell proxy, counterfeit, or reproduction cards.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;">
+                        <button style="width: 100%; padding: var(--space-4); background: var(--gray-50); border: none; text-align: left; font-weight: 600; color: var(--gray-900); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleFAQ(this)">
+                            What if a card arrives in worse condition than described?
+                            <span style="font-size: 1.5rem;">+</span>
+                        </button>
+                        <div style="padding: var(--space-4); display: none;">
+                            <p style="color: var(--gray-700); line-height: 1.6;">If a card doesn't match our condition description, contact us within 7 days for a full refund or replacement. We stand behind our condition grading and want you to be completely satisfied.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;">
+                        <button style="width: 100%; padding: var(--space-4); background: var(--gray-50); border: none; text-align: left; font-weight: 600; color: var(--gray-900); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleFAQ(this)">
+                            Do you offer grading services?
+                            <span style="font-size: 1.5rem;">+</span>
+                        </button>
+                        <div style="padding: var(--space-4); display: none;">
+                            <p style="color: var(--gray-700); line-height: 1.6;">Currently, we don't offer in-house grading services, but we can recommend trusted grading companies like PSA and BGS. We do carry some pre-graded cards from these services.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Returns & Account FAQ -->
+        <section style="margin-bottom: var(--space-16);">
+            <div style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-12); border: 1px solid var(--gray-200);">
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-8); text-align: center;">
+                    🔄 Returns & Account
+                </h2>
+                
+                <div style="display: grid; gap: var(--space-4);">
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;">
+                        <button style="width: 100%; padding: var(--space-4); background: var(--gray-50); border: none; text-align: left; font-weight: 600; color: var(--gray-900); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleFAQ(this)">
+                            How do I create an account?
+                            <span style="font-size: 1.5rem;">+</span>
+                        </button>
+                        <div style="padding: var(--space-4); display: none;">
+                            <p style="color: var(--gray-700); line-height: 1.6;">Click "Sign In" in the top navigation, then select "Create Account." You'll need to provide your email, create a password, and fill in your shipping information. Account creation is free and gives you access to order tracking, wishlists, and faster checkout.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;">
+                        <button style="width: 100%; padding: var(--space-4); background: var(--gray-50); border: none; text-align: left; font-weight: 600; color: var(--gray-900); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleFAQ(this)">
+                            What is your return policy?
+                            <span style="font-size: 1.5rem;">+</span>
+                        </button>
+                        <div style="padding: var(--space-4); display: none;">
+                            <p style="color: var(--gray-700); line-height: 1.6;">We offer 30-day returns on most items in original condition. Sealed products must remain unopened. Contact us for a Return Merchandise Authorization (RMA) number before shipping items back. Refunds are processed within 3-5 business days of receiving your return.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;">
+                        <button style="width: 100%; padding: var(--space-4); background: var(--gray-50); border: none; text-align: left; font-weight: 600; color: var(--gray-900); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleFAQ(this)">
+                            Do you offer store credit?
+                            <span style="font-size: 1.5rem;">+</span>
+                        </button>
+                        <div style="padding: var(--space-4); display: none;">
+                            <p style="color: var(--gray-700); line-height: 1.6;">Yes! Store credit never expires and can be used for any purchase. We also offer store credit as an option for returns, which processes faster than refunds to your original payment method.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;">
+                        <button style="width: 100%; padding: var(--space-4); background: var(--gray-50); border: none; text-align: left; font-weight: 600; color: var(--gray-900); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleFAQ(this)">
+                            How do I reset my password?
+                            <span style="font-size: 1.5rem;">+</span>
+                        </button>
+                        <div style="padding: var(--space-4); display: none;">
+                            <p style="color: var(--gray-700); line-height: 1.6;">On the sign-in page, click "Forgot Password?" and enter your email address. We'll send you a secure link to reset your password. If you don't receive the email within a few minutes, check your spam folder or contact support.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Support -->
+        <section style="margin-bottom: var(--space-16);">
+            <div style="background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%); border-radius: var(--radius-2xl); color: white; padding: var(--space-12); text-align: center;">
+                <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: var(--space-6);">
+                    Still Have Questions?
+                </h2>
+                <p style="font-size: 1.125rem; margin-bottom: var(--space-8); opacity: 0.9; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    Our knowledgeable team is here to help with any questions about Yu-Gi-Oh! cards, orders, or our services.
+                </p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-6); margin-bottom: var(--space-8);">
+                    <div>
+                        <div style="font-size: 2rem; margin-bottom: var(--space-2);">📧</div>
+                        <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-1);">Email Support</h3>
+                        <p style="opacity: 0.8;">support@firelightduelacademy.com</p>
+                    </div>
+                    
+                    <div>
+                        <div style="font-size: 2rem; margin-bottom: var(--space-2);">📞</div>
+                        <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-1);">Phone Support</h3>
+                        <p style="opacity: 0.8;">(647) 555-DUEL</p>
+                    </div>
+                    
+                    <div>
+                        <div style="font-size: 2rem; margin-bottom: var(--space-2);">💬</div>
+                        <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-1);">Live Chat</h3>
+                        <p style="opacity: 0.8;">Available during business hours</p>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap;">
+                    <a href="mailto:support@firelightduelacademy.com" style="padding: var(--space-4) var(--space-8); background: var(--primary-color); color: white; text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; transition: var(--transition-fast);">
+                        Contact Support
+                    </a>
+                    <a href="#" onclick="navigateTo('singles')" style="padding: var(--space-4) var(--space-8); background: transparent; color: white; text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; transition: var(--transition-fast); border: 1px solid rgba(255,255,255,0.3);">
+                        Start Shopping
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            function toggleFAQ(button) {
+                const content = button.nextElementSibling;
+                const icon = button.querySelector('span');
+                
+                if (content.style.display === 'none' || content.style.display === '') {
+                    content.style.display = 'block';
+                    icon.textContent = '−';
+                } else {
+                    content.style.display = 'none';
+                    icon.textContent = '+';
+                }
+            }
+            
+            function showFAQCategory(category) {
+                // This would show different FAQ categories
+                console.log('Showing FAQ category:', category);
+            }
+        </script>
         `;
     }
 }
