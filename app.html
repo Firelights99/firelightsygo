@@ -302,26 +302,54 @@
 
         // Account functionality
         function handleAccountClick() {
+            console.log('Account button clicked'); // Debug log
+            
             // Check if user is logged in and validate account
             if (window.tcgStore && window.tcgStore.currentUser) {
+                console.log('User is logged in, validating...'); // Debug log
                 // Validate that the user account still exists
                 if (window.tcgStore.validateCurrentUser()) {
                     // User is valid, navigate to account page
-                    navigateTo('account');
+                    console.log('User validated, navigating to account page'); // Debug log
+                    if (typeof navigateTo === 'function') {
+                        navigateTo('account');
+                    } else if (window.appRouter) {
+                        window.appRouter.loadPage('account', true);
+                    } else {
+                        console.error('Navigation functions not available');
+                        // Fallback: reload page with hash
+                        window.location.hash = '#page=account';
+                        window.location.reload();
+                    }
                 } else {
                     // Account doesn't exist anymore, auto-logout
                     console.warn('User account no longer exists, logging out...');
                     window.tcgStore.logout();
-                    window.tcgStore.showToast('Your account session has expired. Please log in again.', 'warning');
-                    window.tcgStore.openLoginModal();
+                    if (window.tcgStore.showToast) {
+                        window.tcgStore.showToast('Your account session has expired. Please log in again.', 'warning');
+                    }
+                    if (window.tcgStore.openLoginModal) {
+                        window.tcgStore.openLoginModal();
+                    }
                 }
             } else {
+                console.log('User not logged in, showing login modal'); // Debug log
                 // User not logged in, show login modal
                 if (window.tcgStore && typeof window.tcgStore.openLoginModal === 'function') {
                     window.tcgStore.openLoginModal();
                 } else {
+                    console.log('Login modal not available, navigating to account page'); // Debug log
                     // Fallback: navigate to account page which will show login prompt
-                    navigateTo('account');
+                    if (typeof navigateTo === 'function') {
+                        navigateTo('account');
+                    } else if (window.appRouter) {
+                        window.appRouter.loadPage('account', true);
+                    } else {
+                        console.error('Navigation functions not available');
+                        // Fallback: reload page with hash
+                        window.location.hash = '#page=account';
+                        window.location.reload();
+                    }
                 }
             }
         }
