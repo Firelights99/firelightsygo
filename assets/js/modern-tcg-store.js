@@ -601,6 +601,12 @@ class ModernTCGStore {
         this.saveCart();
         this.updateCartBadge();
         this.showToast('Item removed from cart', 'info');
+        
+        // Live update the cart modal if it's open
+        const cartModal = document.getElementById('cart-modal');
+        if (cartModal && cartModal.style.display !== 'none') {
+            this.updateCartModalContent();
+        }
     }
 
     updateCartQuantity(itemId, newQuantity) {
@@ -612,8 +618,53 @@ class ModernTCGStore {
                 item.quantity = newQuantity;
                 this.saveCart();
                 this.updateCartBadge();
+                
+                // Live update the cart modal if it's open
+                const cartModal = document.getElementById('cart-modal');
+                if (cartModal && cartModal.style.display !== 'none') {
+                    this.updateCartModalContent();
+                }
             }
         }
+    }
+
+    updateCartModalContent() {
+        const cartModal = document.getElementById('cart-modal');
+        if (!cartModal) return;
+
+        const modalContent = cartModal.querySelector('.cart-modal-content');
+        if (modalContent) {
+            modalContent.innerHTML = this.generateCartModalHTML().match(/<div class="cart-modal-content"[^>]*>([\s\S]*)<\/div>$/)[1];
+        }
+    }
+
+    addToCartWithDetails(cardName, price, image, setCode = '', rarity = '', setName = '') {
+        // Create a unique identifier for items with different sets/rarities
+        const itemKey = `${cardName}_${setCode}_${rarity}`;
+        const existingItem = this.cart.find(item => item.itemKey === itemKey);
+        
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            this.cart.push({
+                name: cardName,
+                price: parseFloat(price),
+                image: image,
+                quantity: 1,
+                id: Date.now() + Math.random(), // Ensure unique ID
+                itemKey: itemKey,
+                setCode: setCode,
+                rarity: rarity,
+                setName: setName
+            });
+        }
+        
+        this.saveCart();
+        this.updateCartBadge();
+        
+        const displayName = setCode && rarity ? 
+            `${cardName} (${setCode} - ${rarity})` : cardName;
+        this.showToast(`${displayName} added to cart!`, 'success');
     }
 
     saveCart() {
@@ -700,6 +751,7 @@ class ModernTCGStore {
 
     generateCartItemHTML(item) {
         const itemTotal = (item.price * item.quantity).toFixed(2);
+        const hasSetInfo = item.setCode && item.rarity;
         
         return `
             <div class="cart-item" data-item-id="${item.id}">
@@ -708,6 +760,12 @@ class ModernTCGStore {
                 </div>
                 <div class="cart-item-details">
                     <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1); line-height: 1.3;">${item.name}</h4>
+                    ${hasSetInfo ? `
+                        <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-1);">
+                            <span style="background: var(--primary-color); color: white; padding: 2px 6px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">${item.setCode}</span>
+                            <span style="background: var(--secondary-color); color: var(--gray-900); padding: 2px 6px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">${item.rarity}</span>
+                        </div>
+                    ` : ''}
                     <p style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2);">$${item.price.toFixed(2)} each</p>
                     <div class="cart-item-controls">
                         <div class="quantity-controls">

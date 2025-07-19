@@ -216,10 +216,21 @@
                 const quantity = parseInt(document.getElementById('product-quantity')?.value) || 1;
                 const condition = parseFloat(document.getElementById('product-condition')?.value) || 1.0;
                 
-                const adjustedPrice = (basePrice * condition).toFixed(2);
+                // Get selected set data if available
+                const selectedSetData = window.selectedSetData || {};
+                const finalPrice = selectedSetData.price ? 
+                    (parseFloat(selectedSetData.price) * condition).toFixed(2) : 
+                    (basePrice * condition).toFixed(2);
                 
                 for (let i = 0; i < quantity; i++) {
-                    window.tcgStore.addToCart(cardName, adjustedPrice, image);
+                    window.tcgStore.addToCartWithDetails(
+                        cardName, 
+                        finalPrice, 
+                        image,
+                        selectedSetData.setCode || '',
+                        selectedSetData.rarity || '',
+                        selectedSetData.setName || ''
+                    );
                 }
             }
         }
