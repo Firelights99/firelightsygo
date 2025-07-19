@@ -60,9 +60,10 @@
                         <li><a href="#" class="nav-link" id="nav-home" onclick="navigateTo('home')">Home</a></li>
                         <li><a href="#" class="nav-link" id="nav-singles" onclick="navigateTo('singles')">Singles</a></li>
                         <li><a href="#" class="nav-link" id="nav-decks" onclick="navigateTo('decks')">Decks</a></li>
-                        <!-- Events and Account hidden but functionality preserved -->
+                        <!-- Events hidden - store not hosting events -->
                         <li style="display: none;"><a href="#" class="nav-link" id="nav-events" onclick="navigateTo('events')">Events</a></li>
-                        <li style="display: none;"><a href="#" class="nav-link" id="nav-account" onclick="navigateTo('account')">Account</a></li>
+                        <!-- Account navigation available -->
+                        <li><a href="#" class="nav-link" id="nav-account" onclick="navigateTo('account')">Account</a></li>
                     </ul>
                 </nav>
 
@@ -302,13 +303,8 @@
 
         // Account functionality
         function handleAccountClick() {
-            if (window.tcgStore && window.tcgStore.currentUser) {
-                navigateTo('account');
-            } else if (window.tcgStore) {
-                window.tcgStore.openLoginModal();
-            } else {
-                navigateTo('account');
-            }
+            // Always navigate to account page - it will handle login state internally
+            navigateTo('account');
         }
 
         // Initialize account UI when page loads
