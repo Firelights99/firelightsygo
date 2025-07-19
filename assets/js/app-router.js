@@ -37,6 +37,11 @@ class AppRouter {
                 title: 'Product | Firelight Duel Academy',
                 description: 'View detailed information about Yu-Gi-Oh! cards.',
                 template: 'templates/product.html'
+            },
+            'shipping-policy': {
+                title: 'Shipping Policy | Firelight Duel Academy',
+                description: 'Learn about our shipping rates, delivery times, and policies for Canada and USA.',
+                template: 'templates/shipping-policy.html'
             }
         };
         
@@ -131,6 +136,8 @@ class AppRouter {
                 return this.getAccountContent();
             case 'product':
                 return await this.getProductContent(params);
+            case 'shipping-policy':
+                return this.getShippingPolicyContent();
             default:
                 return this.getHomeContent();
         }
@@ -1330,6 +1337,286 @@ class AppRouter {
             console.error('Error loading related cards:', error);
             relatedContainer.innerHTML = '<p style="text-align: center; color: var(--gray-600);">Unable to load related cards.</p>';
         }
+    }
+
+    getShippingPolicyContent() {
+        return `
+        <!-- Page Header -->
+        <section style="text-align: center; margin-bottom: var(--space-12);">
+            <div style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); border-radius: var(--radius-2xl); color: white; padding: var(--space-12); margin-bottom: var(--space-8);">
+                <h1 style="font-size: 3rem; font-weight: 700; margin-bottom: var(--space-4);">
+                    Shipping Policy
+                </h1>
+                <p style="font-size: 1.125rem; opacity: 0.9; max-width: 600px; margin: 0 auto;">
+                    Fast, reliable shipping across Canada and the USA with competitive rates and tracking
+                </p>
+            </div>
+        </section>
+
+        <!-- Quick Reference -->
+        <section style="margin-bottom: var(--space-16);">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-6);">
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-6); text-align: center; border: 1px solid var(--gray-200);">
+                    <div style="font-size: 3rem; margin-bottom: var(--space-3);">🚚</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Free Shipping</h3>
+                    <p style="color: var(--gray-600);">Orders $75+ CAD within Canada</p>
+                    <p style="color: var(--gray-600);">Orders $100+ CAD to USA</p>
+                </div>
+                
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-6); text-align: center; border: 1px solid var(--gray-200);">
+                    <div style="font-size: 3rem; margin-bottom: var(--space-3);">⚡</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Fast Processing</h3>
+                    <p style="color: var(--gray-600);">Orders ship within 1-2 business days</p>
+                    <p style="color: var(--gray-600);">Same-day processing for orders before 2 PM EST</p>
+                </div>
+                
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-6); text-align: center; border: 1px solid var(--gray-200);">
+                    <div style="font-size: 3rem; margin-bottom: var(--space-3);">📦</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Secure Packaging</h3>
+                    <p style="color: var(--gray-600);">Cards protected in toploaders</p>
+                    <p style="color: var(--gray-600);">Bubble mailers and tracking included</p>
+                </div>
+                
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-6); text-align: center; border: 1px solid var(--gray-200);">
+                    <div style="font-size: 3rem; margin-bottom: var(--space-3);">🔍</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Full Tracking</h3>
+                    <p style="color: var(--gray-600);">Track your order from ship to delivery</p>
+                    <p style="color: var(--gray-600);">Email notifications at every step</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Shipping Rates -->
+        <section style="margin-bottom: var(--space-16);">
+            <div style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-12); border: 1px solid var(--gray-200);">
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-8); text-align: center;">
+                    Shipping Rates & Delivery Times
+                </h2>
+                
+                <!-- Canada Shipping -->
+                <div style="margin-bottom: var(--space-10);">
+                    <h3 style="font-size: 1.75rem; font-weight: 600; color: var(--primary-color); margin-bottom: var(--space-6); display: flex; align-items: center; gap: var(--space-3);">
+                        🇨🇦 Canada Shipping
+                    </h3>
+                    
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: var(--space-6);">
+                            <thead>
+                                <tr style="background: var(--gray-50);">
+                                    <th style="padding: var(--space-4); text-align: left; font-weight: 600; color: var(--gray-900); border-bottom: 2px solid var(--gray-200);">Service</th>
+                                    <th style="padding: var(--space-4); text-align: left; font-weight: 600; color: var(--gray-900); border-bottom: 2px solid var(--gray-200);">Delivery Time</th>
+                                    <th style="padding: var(--space-4); text-align: left; font-weight: 600; color: var(--gray-900); border-bottom: 2px solid var(--gray-200);">Cost</th>
+                                    <th style="padding: var(--space-4); text-align: left; font-weight: 600; color: var(--gray-900); border-bottom: 2px solid var(--gray-200);">Tracking</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: var(--space-4); border-bottom: 1px solid var(--gray-200);"><strong>Standard Shipping</strong></td>
+                                    <td style="padding: var(--space-4); border-bottom: 1px solid var(--gray-200);">3-7 business days</td>
+                                    <td style="padding: var(--space-4); border-bottom: 1px solid var(--gray-200);">$8.99 CAD<br><span style="color: var(--success-color); font-weight: 600;">FREE on orders $75+</span></td>
+                                    <td style="padding: var(--space-4); border-bottom: 1px solid var(--gray-200);">✅ Included</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: var(--space-4); border-bottom: 1px solid var(--gray-200);"><strong>Expedited Shipping</strong></td>
+                                    <td style="padding: var(--space-4); border-bottom: 1px solid var(--gray-200);">2-3 business days</td>
+                                    <td style="padding: var(--space-4); border-bottom: 1px solid var(--gray-200);">$15.99 CAD</td>
+                                    <td style="padding: var(--space-4); border-bottom: 1px solid var(--gray-200);">✅ Included</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: var(--space-4); border-bottom: 1px solid var(--gray-200);"><strong>Express Shipping</strong></td>
+                                    <td style="padding: var(--space-4); border-bottom: 1px solid var(--gray-200);">1-2 business days</td>
+                                    <td style="padding: var(--space-4); border-bottom: 1px solid var(--gray-200);">$24.99 CAD</td>
+                                    <td style="padding: var(--space-4); border-bottom: 1px solid var(--gray-200);">✅ Included</td>
+                                </tr>
+                                <tr style="background: var(--secondary-color); color: var(--gray-900);">
+                                    <td style="padding: var(--space-4);"><strong>Local Pickup (GTA)</strong></td>
+                                    <td style="padding: var(--space-4);">Same day available</td>
+                                    <td style="padding: var(--space-4);"><strong>FREE</strong></td>
+                                    <td style="padding: var(--space-4);">N/A</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- USA Shipping -->
+                <div style="margin-bottom: var(--space-10);">
+                    <h3 style="font-size: 1.75rem; font-weight: 600; color: var(--primary-color); margin-bottom: var(--space-6); display: flex; align-items: center; gap: var(--space-3);">
+                        🇺🇸 USA Shipping
+                    </h3>
+                    
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: var(--space-6);">
+                            <thead>
+                                <tr style="background: var(--gray-50);">
+                                    <th style="padding: var(--space-4); text-align: left; font-weight: 600; color: var(--gray-900); border-bottom: 2px solid var(--gray-200);">Service</th>
+                                    <th style="padding: var(--space-4); text-align: left; font-weight: 600; color: var(--gray-900); border-bottom: 2px solid var(--gray-200);">Delivery Time</th>
+                                    <th style="padding: var(--space-4); text-align: left; font-weight: 600; color: var(--gray-900); border-bottom: 2px solid var(--gray-200);">Cost</th>
+                                    <th style="padding: var(--space-4); text-align: left; font-weight: 600; color: var(--gray-900); border-bottom: 2px solid var(--gray-200);">Tracking</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: var(--space-4); border-bottom: 1px solid var(--gray-200);"><strong>Standard International</strong></td>
+                                    <td style="padding: var(--space-4); border-bottom: 1px solid var(--gray-200);">7-14 business days</td>
+                                    <td style="padding: var(--space-4); border-bottom: 1px solid var(--gray-200);">$12.99 CAD<br><span style="color: var(--success-color); font-weight: 600;">FREE on orders $100+</span></td>
+                                    <td style="padding: var(--space-4); border-bottom: 1px solid var(--gray-200);">✅ Included</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: var(--space-4); border-bottom: 1px solid var(--gray-200);"><strong>Expedited International</strong></td>
+                                    <td style="padding: var(--space-4); border-bottom: 1px solid var(--gray-200);">5-8 business days</td>
+                                    <td style="padding: var(--space-4); border-bottom: 1px solid var(--gray-200);">$22.99 CAD</td>
+                                    <td style="padding: var(--space-4); border-bottom: 1px solid var(--gray-200);">✅ Included</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: var(--space-4);"><strong>Express International</strong></td>
+                                    <td style="padding: var(--space-4);">3-5 business days</td>
+                                    <td style="padding: var(--space-4);">$34.99 CAD</td>
+                                    <td style="padding: var(--space-4);">✅ Included</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div style="background: var(--accent-color); border-radius: var(--radius-lg); padding: var(--space-4); margin-top: var(--space-4);">
+                        <p style="color: var(--gray-900); font-weight: 600; margin: 0;">
+                            📋 <strong>Important:</strong> USA customers are responsible for any customs duties or taxes imposed by their local customs office. These fees are not included in our shipping costs.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Packaging & Protection -->
+        <section style="margin-bottom: var(--space-16);">
+            <div style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-12); border: 1px solid var(--gray-200);">
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-8); text-align: center;">
+                    Card Protection & Packaging
+                </h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-8);">
+                    <div style="text-align: center;">
+                        <div style="font-size: 4rem; margin-bottom: var(--space-4);">🛡️</div>
+                        <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Individual Protection</h3>
+                        <p style="color: var(--gray-600); line-height: 1.6;">Every single card is placed in a protective toploader or card sleeve to prevent damage during shipping. High-value cards receive additional protection with team bags.</p>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <div style="font-size: 4rem; margin-bottom: var(--space-4);">📦</div>
+                        <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Secure Packaging</h3>
+                        <p style="color: var(--gray-600); line-height: 1.6;">Orders are shipped in bubble mailers or boxes depending on size. All packages include tracking and are marked as fragile when containing high-value items.</p>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <div style="font-size: 4rem; margin-bottom: var(--space-4);">💎</div>
+                        <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">High-Value Orders</h3>
+                        <p style="color: var(--gray-600); line-height: 1.6;">Orders over $200 CAD are automatically shipped with signature confirmation and additional insurance for your peace of mind.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Processing Times -->
+        <section style="margin-bottom: var(--space-16);">
+            <div style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-12); border: 1px solid var(--gray-200);">
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-8); text-align: center;">
+                    Order Processing
+                </h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-6);">
+                    <div style="background: var(--success-color); color: white; border-radius: var(--radius-lg); padding: var(--space-6); text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: var(--space-3);">⚡</div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: var(--space-2);">Same-Day Processing</h3>
+                        <p style="opacity: 0.9;">Orders placed before 2:00 PM EST on business days are processed and shipped the same day.</p>
+                    </div>
+                    
+                    <div style="background: var(--primary-color); color: white; border-radius: var(--radius-lg); padding: var(--space-6); text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: var(--space-3);">📅</div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: var(--space-2);">Standard Processing</h3>
+                        <p style="opacity: 0.9;">All other orders are processed within 1-2 business days. You'll receive tracking information via email.</p>
+                    </div>
+                    
+                    <div style="background: var(--secondary-color); color: var(--gray-900); border-radius: var(--radius-lg); padding: var(--space-6); text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: var(--space-3);">🏪</div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: var(--space-2);">Business Hours</h3>
+                        <p>Orders are processed Monday-Friday, 9 AM - 5 PM EST. Weekend orders are processed on the next business day.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Special Policies -->
+        <section style="margin-bottom: var(--space-16);">
+            <div style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-12); border: 1px solid var(--gray-200);">
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-8); text-align: center;">
+                    Special Shipping Policies
+                </h2>
+                
+                <div style="display: grid; gap: var(--space-6);">
+                    <div style="border-left: 4px solid var(--primary-color); padding-left: var(--space-4);">
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">🎯 Pre-Orders</h3>
+                        <p style="color: var(--gray-600); line-height: 1.6;">Pre-order items ship on their official release date. If your order contains both in-stock and pre-order items, we'll hold the entire order unless you request split shipping (additional shipping charges may apply).</p>
+                    </div>
+                    
+                    <div style="border-left: 4px solid var(--accent-color); padding-left: var(--space-4);">
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">🏪 Local Pickup</h3>
+                        <p style="color: var(--gray-600); line-height: 1.6;">Available for customers in the Greater Toronto Area. Orders are ready for pickup within 2-4 hours during business hours. We'll send you a confirmation email when your order is ready. Pickup available at both our Queen Street West and Yonge Street locations.</p>
+                    </div>
+                    
+                    <div style="border-left: 4px solid var(--secondary-color); padding-left: var(--space-4);">
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">🌍 International Shipping</h3>
+                        <p style="color: var(--gray-600); line-height: 1.6;">Currently, we only ship to Canada and the USA. We're working on expanding to other countries. International customers are responsible for customs duties, taxes, and any additional fees imposed by their country's customs office.</p>
+                    </div>
+                    
+                    <div style="border-left: 4px solid var(--error-color); padding-left: var(--space-4);">
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">📦 Lost or Damaged Packages</h3>
+                        <p style="color: var(--gray-600); line-height: 1.6;">If your package is lost or damaged during shipping, please contact us immediately. We'll work with the shipping carrier to resolve the issue and ensure you receive your cards. All packages include tracking and insurance for your protection.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Information -->
+        <section style="margin-bottom: var(--space-16);">
+            <div style="background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%); border-radius: var(--radius-2xl); color: white; padding: var(--space-12); text-align: center;">
+                <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: var(--space-6);">
+                    Questions About Shipping?
+                </h2>
+                <p style="font-size: 1.125rem; margin-bottom: var(--space-8); opacity: 0.9; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    Our customer service team is here to help with any shipping questions or concerns.
+                </p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-6); margin-bottom: var(--space-8);">
+                    <div>
+                        <div style="font-size: 2rem; margin-bottom: var(--space-2);">📧</div>
+                        <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-1);">Email Support</h3>
+                        <p style="opacity: 0.8;">shipping@firelightduelacademy.com</p>
+                    </div>
+                    
+                    <div>
+                        <div style="font-size: 2rem; margin-bottom: var(--space-2);">📞</div>
+                        <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-1);">Phone Support</h3>
+                        <p style="opacity: 0.8;">(647) 555-DUEL</p>
+                    </div>
+                    
+                    <div>
+                        <div style="font-size: 2rem; margin-bottom: var(--space-2);">⏰</div>
+                        <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-1);">Business Hours</h3>
+                        <p style="opacity: 0.8;">Mon-Fri: 9 AM - 5 PM EST</p>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap;">
+                    <a href="mailto:shipping@firelightduelacademy.com" style="padding: var(--space-4) var(--space-8); background: var(--primary-color); color: white; text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; transition: var(--transition-fast);">
+                        Contact Support
+                    </a>
+                    <a href="#" onclick="navigateTo('singles')" style="padding: var(--space-4) var(--space-8); background: transparent; color: white; text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; transition: var(--transition-fast); border: 1px solid rgba(255,255,255,0.3);">
+                        Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </section>
+        `;
     }
 }
 
