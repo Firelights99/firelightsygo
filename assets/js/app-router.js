@@ -61,7 +61,7 @@ class AppRouter {
         return params.get('page') || hash || null;
     }
 
-    async loadPage(pageName, pushState = true) {
+    async loadPage(pageName, pushState = true, params = '') {
         if (!this.routes[pageName]) {
             console.error(`Page "${pageName}" not found`);
             pageName = 'home';
@@ -72,7 +72,7 @@ class AppRouter {
 
         try {
             // Load page content
-            const content = await this.fetchPageContent(pageName);
+            const content = await this.fetchPageContent(pageName, params);
             
             // Update page
             this.renderPage(content);
@@ -81,12 +81,12 @@ class AppRouter {
             
             // Update URL
             if (pushState) {
-                const url = pageName === 'home' ? '#' : `#page=${pageName}`;
-                history.pushState({ page: pageName }, '', url);
+                const url = pageName === 'home' ? '#' : `#page=${pageName}${params}`;
+                history.pushState({ page: pageName, params: params }, '', url);
             }
             
             // Execute page-specific JavaScript
-            this.executePageScript(pageName);
+            this.executePageScript(pageName, params);
             
             this.currentPage = pageName;
             
@@ -96,15 +96,20 @@ class AppRouter {
         }
     }
 
-    async fetchPageContent(pageName) {
-        // Check cache first
+    async fetchPageContent(pageName, params = '') {
+        // Don't cache product pages as they have dynamic content
+        if (pageName === 'product') {
+            return await this.generatePageContent(pageName, params);
+        }
+
+        // Check cache first for other pages
         if (this.pageCache.has(pageName)) {
             return this.pageCache.get(pageName);
         }
 
         // For now, we'll generate content dynamically
         // In a real implementation, you'd fetch from templates/
-        const content = this.generatePageContent(pageName);
+        const content = await this.generatePageContent(pageName, params);
         
         // Cache the content
         this.pageCache.set(pageName, content);
@@ -112,7 +117,7 @@ class AppRouter {
         return content;
     }
 
-    generatePageContent(pageName) {
+    async generatePageContent(pageName, params = '') {
         switch (pageName) {
             case 'home':
                 return this.getHomeContent();
@@ -125,7 +130,7 @@ class AppRouter {
             case 'account':
                 return this.getAccountContent();
             case 'product':
-                return this.getProductContent();
+                return await this.getProductContent(params);
             default:
                 return this.getHomeContent();
         }
@@ -570,34 +575,200 @@ class AppRouter {
         `;
     }
 
-    getProductContent() {
+    async getProductContent(params = '') {
+        // Parse the card ID from params
+        const urlParams = new URLSearchParams(params);
+        const cardId = urlParams.get('id');
+        
+        if (!cardId) {
+            return `
+                <div class="loading-container">
+                    <p class="loading-text" style="color: var(--error-color);">Card not found. Please try again.</p>
+                    <a href="#" onclick="navigateTo('singles')" style="padding: var(--space-3) var(--space-6); background: var(--primary-color); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 600; margin-top: var(--space-4); display: inline-block;">Browse All Cards</a>
+                </div>
+            `;
+        }
+
+        try {
+            // Load card data from API
+            let card = null;
+            if (!isNaN(cardId)) {
+                card = await window.tcgStore.getCardById(cardId);
+            } else {
+                const cardName = cardId.replace(/-/g, ' ');
+                card = await window.tcgStore.getCardByName(cardName);
+            }
+
+            if (!card) {
+                return `
+                    <div class="loading-container">
+                        <p class="loading-text" style="color: var(--error-color);">Card not found. Please try again.</p>
+                        <a href="#" onclick="navigateTo('singles')" style="padding: var(--space-3) var(--space-6); background: var(--primary-color); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 600; margin-top: var(--space-4); display: inline-block;">Browse All Cards</a>
+                    </div>
+                `;
+            }
+
+            const formattedCard = await window.tcgStore.formatCardForDisplay(card);
+            return this.generateProductHTML(formattedCard);
+
+        } catch (error) {
+            console.error('Error loading product:', error);
+            return `
+                <div class="loading-container">
+                    <p class="loading-text" style="color: var(--error-color);">Error loading card. Please try again.</p>
+                    <a href="#" onclick="navigateTo('singles')" style="padding: var(--space-3) var(--space-6); background: var(--primary-color); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 600; margin-top: var(--space-4); display: inline-block;">Browse All Cards</a>
+                </div>
+            `;
+        }
+    }
+
+    generateProductHTML(card) {
+        const statsHTML = this.generateCardStatsHTML(card);
+        const priceChangeSymbol = card.priceChange.direction === 'up' ? '↗' : 
+                                card.priceChange.direction === 'down' ? '↘' : '→';
+        const priceChangeText = card.priceChange.direction === 'stable' ? '$0.00' : 
+                              (card.priceChange.direction === 'up' ? '+' : '-') + '$' + card.priceChange.amount;
+
         return `
-        <!-- Page Header -->
-        <section style="text-align: center; margin-bottom: var(--space-12);">
-            <h1 style="font-size: 3rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
-                Card Details
-            </h1>
-            <p style="font-size: 1.125rem; color: var(--gray-600); max-width: 600px; margin: 0 auto;">
-                Detailed information about this Yu-Gi-Oh! card
-            </p>
-        </section>
+        <!-- Breadcrumb -->
+        <div style="margin-bottom: var(--space-6);">
+            <nav style="display: flex; align-items: center; gap: var(--space-2); font-size: 0.875rem; color: var(--gray-600);">
+                <a href="#" onclick="navigateTo('home')" style="color: var(--primary-color); text-decoration: none;">Home</a>
+                <span>›</span>
+                <a href="#" onclick="navigateTo('singles')" style="color: var(--primary-color); text-decoration: none;">Singles</a>
+                <span>›</span>
+                <span>${card.name}</span>
+            </nav>
+        </div>
 
         <!-- Product Details -->
-        <section style="display: grid; grid-template-columns: 1fr 2fr; gap: var(--space-8); margin-bottom: var(--space-16);">
-            <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); padding: var(--space-6); text-align: center;">
-                <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Card Image" style="width: 100%; max-width: 300px; border-radius: var(--radius-lg);">
-            </div>
+        <section style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); margin-bottom: var(--space-16);">
             
-            <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); padding: var(--space-6);">
-                <h2 style="font-size: 2rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4);">Card Name</h2>
-                <p style="color: var(--gray-600); margin-bottom: var(--space-6);">Card description and details will be loaded here.</p>
-                <div style="display: flex; gap: var(--space-4);">
-                    <button style="flex: 1; padding: var(--space-4); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">Add to Cart</button>
-                    <button style="flex: 1; padding: var(--space-4); background: var(--gray-100); color: var(--gray-700); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">Add to Wishlist</button>
+            <!-- Product Images -->
+            <div>
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+                    <div style="aspect-ratio: 3/4; background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: var(--space-4); cursor: pointer;" onclick="openImageZoom('${card.image}', '${card.name}')">
+                        <img src="${card.image}" alt="${card.name}" style="width: 100%; height: 100%; object-fit: contain; padding: var(--space-2);">
+                    </div>
+                    <div style="display: flex; gap: var(--space-2); justify-content: center;">
+                        <img src="${card.image}" alt="Normal view" style="width: 60px; height: 80px; object-fit: contain; border-radius: var(--radius-md); border: 2px solid var(--primary-color); cursor: pointer;">
+                        <img src="${card.imageSmall}" alt="Small view" style="width: 60px; height: 80px; object-fit: contain; border-radius: var(--radius-md); border: 2px solid var(--gray-300); cursor: pointer;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Information -->
+            <div>
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+                    
+                    <!-- Product Header -->
+                    <div style="margin-bottom: var(--space-6);">
+                        <h1 style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-3); line-height: 1.2;">${card.name}</h1>
+                        <div style="display: flex; gap: var(--space-4); margin-bottom: var(--space-4);">
+                            <span style="background: var(--primary-color); color: white; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 600;">${card.type}</span>
+                            <span style="background: var(--secondary-color); color: var(--gray-900); padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 600;">${card.rarity}</span>
+                        </div>
+                    </div>
+
+                    <!-- Card Stats -->
+                    <div style="margin-bottom: var(--space-6);">
+                        ${statsHTML}
+                    </div>
+
+                    <!-- Pricing Section -->
+                    <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-6);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4);">
+                            <span style="font-size: 2rem; font-weight: 700; color: var(--primary-color);">$${card.price}</span>
+                            <span style="font-size: 0.875rem; font-weight: 600; padding: var(--space-1) var(--space-3); border-radius: var(--radius-md);" class="price-trend ${card.priceChange.direction}">
+                                ${priceChangeSymbol} ${priceChangeText}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Add to Cart Section -->
+                    <div style="margin-bottom: var(--space-6);">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-bottom: var(--space-4);">
+                            <div>
+                                <label style="display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);">Quantity:</label>
+                                <div style="display: flex; align-items: center; border: 1px solid var(--gray-300); border-radius: var(--radius-md); overflow: hidden;">
+                                    <button style="padding: var(--space-3); background: var(--gray-100); border: none; cursor: pointer;" onclick="changeProductQuantity(-1)">-</button>
+                                    <input type="number" id="product-quantity" value="1" min="1" max="99" style="flex: 1; padding: var(--space-3); border: none; text-align: center; font-weight: 600;">
+                                    <button style="padding: var(--space-3); background: var(--gray-100); border: none; cursor: pointer;" onclick="changeProductQuantity(1)">+</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label style="display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);">Condition:</label>
+                                <select id="product-condition" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-size: 0.875rem;">
+                                    <option value="1.0">Near Mint</option>
+                                    <option value="0.9">Lightly Played (-10%)</option>
+                                    <option value="0.8">Moderately Played (-20%)</option>
+                                    <option value="0.65">Heavily Played (-35%)</option>
+                                    <option value="0.5">Damaged (-50%)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button style="width: 100%; padding: var(--space-4); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; font-size: 1.125rem; cursor: pointer; transition: var(--transition-fast); text-transform: uppercase; letter-spacing: 0.05em;" onclick="addProductToCart('${card.name}', ${card.price}, '${card.image}')">
+                            Add to Cart
+                        </button>
+                    </div>
+
+                    <!-- Card Description -->
+                    <div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Card Description</h3>
+                        <p style="color: var(--gray-700); line-height: 1.6;">${card.desc || 'No description available.'}</p>
+                    </div>
+
                 </div>
             </div>
         </section>
+
+        <!-- Related Cards Section -->
+        <div>
+            <h2 style="font-size: 2rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-8); text-align: center;">You May Also Like</h2>
+            <div id="related-cards-grid" class="modern-card-grid">
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text">Loading related cards...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Image Zoom Modal -->
+        <div id="image-zoom-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center;">
+            <div style="position: relative; max-width: 90vw; max-height: 90vh;">
+                <button onclick="closeImageZoom()" style="position: absolute; top: -40px; right: 0; background: none; border: none; color: white; font-size: 2rem; cursor: pointer;">×</button>
+                <img id="zoomed-image" src="" alt="" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+        </div>
         `;
+    }
+
+    generateCardStatsHTML(card) {
+        let statsHTML = '';
+
+        if (card.type.includes('Monster')) {
+            if (card.atk !== undefined) {
+                statsHTML += `<div style="display: flex; justify-content: space-between; padding: var(--space-2) 0; border-bottom: 1px solid var(--gray-200);"><span style="font-weight: 600; color: var(--gray-700);">ATK:</span><span style="color: var(--gray-900);">${card.atk}</span></div>`;
+            }
+            if (card.def !== undefined) {
+                statsHTML += `<div style="display: flex; justify-content: space-between; padding: var(--space-2) 0; border-bottom: 1px solid var(--gray-200);"><span style="font-weight: 600; color: var(--gray-700);">DEF:</span><span style="color: var(--gray-900);">${card.def}</span></div>`;
+            }
+            if (card.level !== undefined) {
+                statsHTML += `<div style="display: flex; justify-content: space-between; padding: var(--space-2) 0; border-bottom: 1px solid var(--gray-200);"><span style="font-weight: 600; color: var(--gray-700);">Level:</span><span style="color: var(--gray-900);">${card.level}</span></div>`;
+            }
+            if (card.attribute) {
+                statsHTML += `<div style="display: flex; justify-content: space-between; padding: var(--space-2) 0; border-bottom: 1px solid var(--gray-200);"><span style="font-weight: 600; color: var(--gray-700);">Attribute:</span><span style="color: var(--gray-900);">${card.attribute}</span></div>`;
+            }
+            if (card.race) {
+                statsHTML += `<div style="display: flex; justify-content: space-between; padding: var(--space-2) 0;"><span style="font-weight: 600; color: var(--gray-700);">Type:</span><span style="color: var(--gray-900);">${card.race}</span></div>`;
+            }
+        }
+
+        if (card.archetype) {
+            statsHTML += `<div style="display: flex; justify-content: space-between; padding: var(--space-2) 0;"><span style="font-weight: 600; color: var(--gray-700);">Archetype:</span><span style="color: var(--gray-900);">${card.archetype}</span></div>`;
+        }
+
+        return statsHTML;
     }
 
     showLoading() {
@@ -653,7 +824,7 @@ class AppRouter {
         }
     }
 
-    executePageScript(pageName) {
+    executePageScript(pageName, params = '') {
         // Execute page-specific JavaScript based on the page
         switch (pageName) {
             case 'home':
@@ -677,7 +848,69 @@ class AppRouter {
                 break;
             case 'product':
                 // Initialize product-specific functionality
+                this.initializeProductPage(params);
                 break;
+        }
+    }
+
+    async initializeProductPage(params) {
+        // Load related cards
+        const urlParams = new URLSearchParams(params);
+        const cardId = urlParams.get('id');
+        
+        if (cardId && window.tcgStore) {
+            try {
+                let card = null;
+                if (!isNaN(cardId)) {
+                    card = await window.tcgStore.getCardById(cardId);
+                } else {
+                    const cardName = cardId.replace(/-/g, ' ');
+                    card = await window.tcgStore.getCardByName(cardName);
+                }
+
+                if (card) {
+                    const formattedCard = await window.tcgStore.formatCardForDisplay(card);
+                    await this.loadRelatedCards(formattedCard);
+                }
+            } catch (error) {
+                console.error('Error initializing product page:', error);
+            }
+        }
+    }
+
+    async loadRelatedCards(card) {
+        const relatedContainer = document.getElementById('related-cards-grid');
+        if (!relatedContainer) return;
+        
+        try {
+            let relatedCards = [];
+            
+            if (card.archetype) {
+                relatedCards = await window.tcgStore.getCardsByArchetype(card.archetype);
+                relatedCards = relatedCards.filter(c => c.id !== card.id).slice(0, 4);
+            }
+            
+            if (relatedCards.length < 4) {
+                const metaCards = await window.tcgStore.getMetaCards();
+                const additionalCards = metaCards.filter(c => c.id !== card.id).slice(0, 4 - relatedCards.length);
+                relatedCards = [...relatedCards, ...additionalCards];
+            }
+
+            if (relatedCards.length === 0) {
+                relatedContainer.innerHTML = '<p style="text-align: center; color: var(--gray-600);">No related cards found.</p>';
+                return;
+            }
+
+            relatedContainer.innerHTML = '';
+            for (const relatedCard of relatedCards) {
+                const formatted = await window.tcgStore.formatCardForDisplay(relatedCard);
+                const cardElement = window.tcgStore.createModernCardElement(formatted);
+                relatedContainer.appendChild(cardElement);
+            }
+            
+        } catch (error) {
+            console.error('Error loading related cards:', error);
+            relatedContainer.innerHTML = '<p style="text-align: center; color: var(--gray-600);">Unable to load related cards.</p>';
         }
     }
 }

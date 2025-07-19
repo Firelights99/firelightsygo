@@ -436,8 +436,14 @@ class ModernTCGStore {
     }
 
     navigateToProduct(card) {
-        const productUrl = `pages/product.html?id=${card.id}`;
-        window.location.href = productUrl;
+        // Use the SPA router instead of direct navigation
+        if (window.appRouter) {
+            window.appRouter.loadPage('product', `?id=${card.id}`);
+        } else {
+            // Fallback to direct navigation if router not available
+            const productUrl = `pages/product.html?id=${card.id}`;
+            window.location.href = productUrl;
+        }
     }
 
     showLoading(container) {

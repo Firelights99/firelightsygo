@@ -198,5 +198,57 @@
     <!-- Scripts -->
     <script src="assets/js/modern-tcg-store.js"></script>
     <script src="assets/js/app-router.js"></script>
+    
+    <!-- Global Product Page Functions -->
+    <script>
+        // Global functions for product page functionality
+        function changeProductQuantity(delta) {
+            const quantityInput = document.getElementById('product-quantity');
+            if (quantityInput) {
+                const currentValue = parseInt(quantityInput.value) || 1;
+                const newValue = Math.max(1, Math.min(99, currentValue + delta));
+                quantityInput.value = newValue;
+            }
+        }
+
+        function addProductToCart(cardName, basePrice, image) {
+            if (window.tcgStore) {
+                const quantity = parseInt(document.getElementById('product-quantity')?.value) || 1;
+                const condition = parseFloat(document.getElementById('product-condition')?.value) || 1.0;
+                
+                const adjustedPrice = (basePrice * condition).toFixed(2);
+                
+                for (let i = 0; i < quantity; i++) {
+                    window.tcgStore.addToCart(cardName, adjustedPrice, image);
+                }
+            }
+        }
+
+        function openImageZoom(imageSrc, altText) {
+            const modal = document.getElementById('image-zoom-modal');
+            const zoomedImage = document.getElementById('zoomed-image');
+            
+            if (modal && zoomedImage) {
+                zoomedImage.src = imageSrc;
+                zoomedImage.alt = altText;
+                modal.style.display = 'flex';
+            }
+        }
+
+        function closeImageZoom() {
+            const modal = document.getElementById('image-zoom-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('image-zoom-modal');
+            if (event.target === modal) {
+                closeImageZoom();
+            }
+        });
+    </script>
 </body>
 </html>
