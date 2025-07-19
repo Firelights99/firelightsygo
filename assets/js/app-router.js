@@ -649,7 +649,7 @@ class AppRouter {
                             <div style="font-size: 0.875rem; color: var(--gray-600);">$${user.wishlist[user.wishlist.length - 1].price.toFixed(2)}</div>
                         </div>
                     ` : ''}
-                    <button style="width: 100%; padding: var(--space-3) var(--space-6); background: var(--accent-color); color: var(--gray-900); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);" onclick="alert('Wishlist feature coming soon!')">View Wishlist (${wishlistCount})</button>
+                    <button style="width: 100%; padding: var(--space-3) var(--space-6); background: var(--accent-color); color: var(--gray-900); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);" onclick="window.tcgStore.openWishlistModal()">View Wishlist (${wishlistCount})</button>
                 </div>
             </div>
 
