@@ -1,5 +1,12 @@
 /* Deck Builder Styles */
 
+:root {
+    --gray-25: #fafafa;
+    --z-modal: 1000;
+    --z-tooltip: 1100;
+    --font-mono: 'Courier New', monospace;
+}
+
 .deck-builder-container {
     display: grid;
     grid-template-columns: 300px 1fr 350px;

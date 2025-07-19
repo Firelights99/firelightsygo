@@ -613,6 +613,38 @@ class DeckBuilderService {
         this.updateDeckSection('main');
         this.updateDeckSection('extra');
         this.updateDeckSection('side');
+        this.updateDeckTitle();
+    }
+
+    updateDeckTitle() {
+        const titleElement = document.getElementById('deck-title');
+        if (titleElement) {
+            titleElement.textContent = this.deckMetadata.name;
+        }
+    }
+
+    updateSectionCount(section) {
+        const countElement = document.getElementById(`${section}-count`);
+        if (countElement) {
+            const total = this.currentDeck[section].reduce((sum, card) => sum + card.quantity, 0);
+            countElement.textContent = total;
+            
+            // Update count styling based on validity
+            countElement.classList.remove('valid', 'invalid');
+            if (section === 'main') {
+                if (total >= 40 && total <= 60) {
+                    countElement.classList.add('valid');
+                } else {
+                    countElement.classList.add('invalid');
+                }
+            } else if (section === 'extra' || section === 'side') {
+                if (total <= 15) {
+                    countElement.classList.add('valid');
+                } else {
+                    countElement.classList.add('invalid');
+                }
+            }
+        }
     }
 
     updateDeckSection(section) {
@@ -620,7 +652,28 @@ class DeckBuilderService {
         if (!container) return;
         
         const cards = this.currentDeck[section];
-        container.innerHTML = cards.map(card => this.generateDeckCardHTML(card, section)).join('');
+        
+        if (cards.length === 0) {
+            // Show empty state
+            const emptyMessages = {
+                main: { icon: '🃏', text: 'Add cards to your main deck' },
+                extra: { icon: '⭐', text: 'Add extra deck monsters' },
+                side: { icon: '🔄', text: 'Add side deck cards' }
+            };
+            
+            const message = emptyMessages[section];
+            container.innerHTML = `
+                <div class="deck-section-empty">
+                    <div class="deck-section-empty-icon">${message.icon}</div>
+                    <div class="deck-section-empty-text">${message.text}</div>
+                </div>
+            `;
+        } else {
+            container.innerHTML = cards.map(card => this.generateDeckCardHTML(card, section)).join('');
+        }
+        
+        // Update section count
+        this.updateSectionCount(section);
     }
 
     generateDeckCardHTML(card, section) {
@@ -777,7 +830,13 @@ class DeckBuilderService {
 
 // Initialize deck builder when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    if (window.location.hash.includes('decks')) {
+    // Initialize deck builder globally so it's available when needed
+    window.deckBuilder = new DeckBuilderService();
+});
+
+// Also initialize when navigating to decks page
+window.addEventListener('hashchange', () => {
+    if (window.location.hash.includes('decks') && !window.deckBuilder) {
         window.deckBuilder = new DeckBuilderService();
     }
 });
