@@ -100,15 +100,49 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Modern Header */
+/* 401Games-Style Header */
 .modern-header {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: white;
+    border-bottom: 1px solid var(--gray-200);
     position: sticky;
     top: 0;
     z-index: var(--z-sticky);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.header-top {
+    background: var(--gray-900);
+    color: white;
+    padding: var(--space-2) 0;
+    font-size: 0.875rem;
+}
+
+.header-top-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--space-6);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-top-left {
+    display: flex;
+    gap: var(--space-6);
+}
+
+.header-top-link {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.header-top-link:hover {
+    color: white;
+}
+
+.header-main {
+    padding: var(--space-4) 0;
 }
 
 .header-container {
@@ -118,7 +152,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 80px;
 }
 
 .brand-section {
@@ -148,18 +181,22 @@ body {
 .brand-name {
     font-size: 1.5rem;
     font-weight: 700;
-    color: white;
+    color: var(--gray-900);
     text-decoration: none;
     transition: color var(--transition-fast);
 }
 
+.brand-name:hover {
+    color: var(--primary-color);
+}
+
 .brand-tagline {
     font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--gray-600);
     font-weight: 400;
 }
 
-/* Modern Navigation */
+/* 401Games-Style Navigation */
 .nav-section {
     display: flex;
     align-items: center;
@@ -174,20 +211,22 @@ body {
 }
 
 .nav-link {
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--gray-700);
     text-decoration: none;
     font-weight: 500;
     padding: var(--space-2) var(--space-4);
     border-radius: var(--radius-md);
     transition: all var(--transition-fast);
     position: relative;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
 }
 
 .nav-link:hover,
 .nav-link.active {
-    color: white;
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateY(-1px);
+    color: var(--primary-color);
+    background: var(--gray-50);
 }
 
 .nav-link::after {
@@ -197,7 +236,7 @@ body {
     left: 50%;
     width: 0;
     height: 2px;
-    background: var(--secondary-color);
+    background: var(--primary-color);
     transition: all var(--transition-fast);
     transform: translateX(-50%);
 }
@@ -207,7 +246,7 @@ body {
     width: 80%;
 }
 
-/* Modern Search */
+/* 401Games-Style Search */
 .search-section {
     position: relative;
     max-width: 400px;
@@ -223,35 +262,33 @@ body {
 .search-input {
     width: 100%;
     padding: var(--space-3) var(--space-4) var(--space-3) var(--space-12);
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: var(--radius-full);
-    color: white;
+    background: white;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    color: var(--gray-900);
     font-size: 0.875rem;
-    backdrop-filter: blur(10px);
     transition: all var(--transition-fast);
 }
 
 .search-input::placeholder {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--gray-500);
 }
 
 .search-input:focus {
     outline: none;
-    background: rgba(255, 255, 255, 0.15);
-    border-color: var(--secondary-color);
-    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .search-icon {
     position: absolute;
     left: var(--space-4);
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--gray-500);
     font-size: 1.125rem;
     pointer-events: none;
 }
 
-/* Action Buttons */
+/* 401Games-Style Action Buttons */
 .action-section {
     display: flex;
     align-items: center;
@@ -263,20 +300,22 @@ body {
     align-items: center;
     gap: var(--space-2);
     padding: var(--space-3) var(--space-4);
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--primary-color);
+    border: 1px solid var(--primary-color);
     border-radius: var(--radius-md);
     color: white;
     text-decoration: none;
     font-weight: 500;
     font-size: 0.875rem;
     transition: all var(--transition-fast);
-    backdrop-filter: blur(10px);
     cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .action-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
     transform: translateY(-1px);
     box-shadow: var(--shadow-md);
 }
@@ -290,6 +329,148 @@ body {
     border-radius: var(--radius-full);
     min-width: 1.25rem;
     text-align: center;
+}
+
+/* 401Games-Style Footer */
+.modern-footer {
+    background: var(--gray-900);
+    color: white;
+    margin-top: var(--space-20);
+}
+
+.footer-main {
+    padding: var(--space-16) 0 var(--space-12);
+}
+
+.footer-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--space-6);
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-8);
+    margin-bottom: var(--space-12);
+}
+
+.footer-section h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: var(--space-4);
+    color: var(--secondary-color);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.footer-section p {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+    margin-bottom: var(--space-4);
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links li {
+    margin-bottom: var(--space-2);
+}
+
+.footer-links a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+    font-size: 0.875rem;
+}
+
+.footer-links a:hover {
+    color: white;
+}
+
+.footer-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-6);
+    margin-bottom: var(--space-12);
+    padding: var(--space-8) 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-feature {
+    text-align: center;
+    padding: var(--space-4);
+}
+
+.footer-feature-icon {
+    font-size: 3rem;
+    margin-bottom: var(--space-3);
+}
+
+.footer-feature h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+    color: var(--secondary-color);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.footer-feature p {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.5;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding: var(--space-6) 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-bottom p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.store-locations {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-8);
+    margin-bottom: var(--space-8);
+}
+
+.store-location {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.store-location h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+    color: var(--secondary-color);
+}
+
+.store-location p {
+    margin-bottom: var(--space-2);
+    font-size: 0.875rem;
+}
+
+.store-phone {
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.store-phone:hover {
+    color: white;
 }
 
 /* Modern Card Grid */
