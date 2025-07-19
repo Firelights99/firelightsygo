@@ -864,9 +864,6 @@ body {
     height: 100vh;
     z-index: var(--z-modal);
     display: none;
-    align-items: center;
-    justify-content: center;
-    padding: var(--space-4);
 }
 
 .cart-modal-overlay {
@@ -881,6 +878,7 @@ body {
     align-items: center;
     justify-content: center;
     padding: var(--space-4);
+    box-sizing: border-box;
 }
 
 .cart-modal-content {
@@ -894,7 +892,7 @@ body {
     display: flex;
     flex-direction: column;
     animation: modalSlideIn 0.3s ease-out;
-    margin: auto;
+    box-sizing: border-box;
 }
 
 .cart-modal-header {

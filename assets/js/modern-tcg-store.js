@@ -1023,7 +1023,7 @@ class ModernTCGStore {
 
     updateAccountUI() {
         // Update account button in header
-        const accountBtn = document.querySelector('.action-btn[onclick*="account"]');
+        const accountBtn = document.getElementById('account-btn');
         if (accountBtn) {
             if (this.currentUser) {
                 accountBtn.innerHTML = `👤 ${this.currentUser.firstName}`;
