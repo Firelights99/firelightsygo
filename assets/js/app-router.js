@@ -402,48 +402,404 @@ class AppRouter {
     getDecksContent() {
         return `
         <!-- Page Header -->
-        <section style="text-align: center; margin-bottom: var(--space-12);">
+        <section style="text-align: center; margin-bottom: var(--space-8);">
             <h1 style="font-size: 3rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
-                Popular Yu-Gi-Oh! Decks
+                Deck Builder & Popular Decks
             </h1>
             <p style="font-size: 1.125rem; color: var(--gray-600); max-width: 600px; margin: 0 auto;">
-                Discover the latest meta decks and competitive strategies from tournament winners
+                Build your own deck or explore popular strategies from tournament winners
             </p>
         </section>
 
-        <!-- Deck Categories -->
-        <section style="margin-bottom: var(--space-12);">
+        <!-- Deck Builder Toggle -->
+        <section style="margin-bottom: var(--space-8);">
+            <div style="display: flex; justify-content: center; gap: var(--space-4); margin-bottom: var(--space-6);">
+                <button class="filter-btn active" onclick="showDeckBuilder()" id="builder-btn">Deck Builder</button>
+                <button class="filter-btn" onclick="showPopularDecks()" id="popular-btn">Popular Decks</button>
+            </div>
+        </section>
+
+        <!-- Deck Builder Interface -->
+        <section id="deck-builder-section" style="display: block;">
+            <link rel="stylesheet" href="assets/css/components/deck-builder.css">
+            
+            <div class="deck-builder-container">
+                <!-- Card Search Panel -->
+                <div class="card-search-panel">
+                    <div class="search-header">
+                        <h3>Card Search</h3>
+                        <input type="text" class="card-search-input" id="card-search" placeholder="Search cards..." onkeyup="searchCards()">
+                        <div class="search-filters">
+                            <select class="filter-select" id="type-filter" onchange="searchCards()">
+                                <option value="">All Types</option>
+                                <option value="Monster">Monster</option>
+                                <option value="Spell">Spell</option>
+                                <option value="Trap">Trap</option>
+                            </select>
+                            <select class="filter-select" id="race-filter" onchange="searchCards()">
+                                <option value="">All Races</option>
+                                <option value="Dragon">Dragon</option>
+                                <option value="Spellcaster">Spellcaster</option>
+                                <option value="Warrior">Warrior</option>
+                                <option value="Beast">Beast</option>
+                                <option value="Fiend">Fiend</option>
+                                <option value="Machine">Machine</option>
+                            </select>
+                            <select class="filter-select" id="attribute-filter" onchange="searchCards()">
+                                <option value="">All Attributes</option>
+                                <option value="DARK">DARK</option>
+                                <option value="LIGHT">LIGHT</option>
+                                <option value="FIRE">FIRE</option>
+                                <option value="WATER">WATER</option>
+                                <option value="EARTH">EARTH</option>
+                                <option value="WIND">WIND</option>
+                            </select>
+                            <select class="filter-select" id="level-filter" onchange="searchCards()">
+                                <option value="">All Levels</option>
+                                <option value="1">Level 1</option>
+                                <option value="2">Level 2</option>
+                                <option value="3">Level 3</option>
+                                <option value="4">Level 4</option>
+                                <option value="5">Level 5</option>
+                                <option value="6">Level 6</option>
+                                <option value="7">Level 7</option>
+                                <option value="8">Level 8</option>
+                                <option value="9">Level 9</option>
+                                <option value="10">Level 10</option>
+                                <option value="11">Level 11</option>
+                                <option value="12">Level 12</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="search-results" id="search-results">
+                        <div style="text-align: center; padding: var(--space-8); color: var(--gray-500);">
+                            <div style="font-size: 2rem; margin-bottom: var(--space-2);">🔍</div>
+                            <p>Search for cards to add to your deck</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deck Builder Main -->
+                <div class="deck-builder-main">
+                    <div class="deck-builder-header">
+                        <div class="deck-title" id="deck-title">Untitled Deck</div>
+                        <div class="deck-actions">
+                            <button class="deck-btn" onclick="deckBuilder.newDeck()">New</button>
+                            <button class="deck-btn secondary" onclick="deckBuilder.openLoadDeckModal()">Load</button>
+                            <button class="deck-btn" onclick="deckBuilder.saveDeck()">Save</button>
+                            <button class="deck-btn secondary" onclick="deckBuilder.downloadYDK()">Export YDK</button>
+                        </div>
+                    </div>
+                    
+                    <div class="deck-sections">
+                        <!-- Main Deck -->
+                        <div class="deck-section main-deck">
+                            <div class="deck-section-header">
+                                <span class="deck-section-title">Main Deck</span>
+                                <span class="deck-section-count" id="main-count">0</span>
+                            </div>
+                            <div class="deck-section-body" id="main-deck">
+                                <div class="deck-section-empty">
+                                    <div class="deck-section-empty-icon">🃏</div>
+                                    <div class="deck-section-empty-text">Add cards to your main deck</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Extra Deck -->
+                        <div class="deck-section extra-deck">
+                            <div class="deck-section-header">
+                                <span class="deck-section-title">Extra Deck</span>
+                                <span class="deck-section-count" id="extra-count">0</span>
+                            </div>
+                            <div class="deck-section-body" id="extra-deck">
+                                <div class="deck-section-empty">
+                                    <div class="deck-section-empty-icon">⭐</div>
+                                    <div class="deck-section-empty-text">Add extra deck monsters</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Side Deck -->
+                        <div class="deck-section side-deck">
+                            <div class="deck-section-header">
+                                <span class="deck-section-title">Side Deck</span>
+                                <span class="deck-section-count" id="side-count">0</span>
+                            </div>
+                            <div class="deck-section-body" id="side-deck">
+                                <div class="deck-section-empty">
+                                    <div class="deck-section-empty-icon">🔄</div>
+                                    <div class="deck-section-empty-text">Add side deck cards</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deck Info Panel -->
+                <div class="deck-info-panel">
+                    <div class="deck-info-header">
+                        <h3>Deck Statistics</h3>
+                    </div>
+                    <div class="deck-info-body">
+                        <div id="deck-stats">
+                            <div class="deck-stats-grid">
+                                <div class="stat-card">
+                                    <h4>Main Deck</h4>
+                                    <div class="stat-number invalid">0</div>
+                                    <div class="stat-breakdown">
+                                        <span>Monsters: 0</span>
+                                        <span>Spells: 0</span>
+                                        <span>Traps: 0</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-card">
+                                    <h4>Extra Deck</h4>
+                                    <div class="stat-number valid">0</div>
+                                    <div class="stat-breakdown">
+                                        <span>Fusion: 0</span>
+                                        <span>Synchro: 0</span>
+                                        <span>Xyz: 0</span>
+                                        <span>Link: 0</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-card">
+                                    <h4>Side Deck</h4>
+                                    <div class="stat-number valid">0</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="deck-price">
+                            <div class="price-summary">
+                                <h4>Deck Price</h4>
+                                <div class="total-price">$0.00 CAD</div>
+                                <div class="price-breakdown">
+                                    <div>Main: $0.00</div>
+                                    <div>Extra: $0.00</div>
+                                    <div>Side: $0.00</div>
+                                </div>
+                                <button class="primary-btn" onclick="deckBuilder.addDeckToCart()">
+                                    Add Deck to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Keyboard Shortcuts Help -->
+            <div class="shortcuts-help">
+                <strong>Shortcuts:</strong><br>
+                Ctrl+S: Save | Ctrl+O: Load | Ctrl+N: New | Ctrl+Z: Undo
+            </div>
+        </section>
+
+        <!-- Popular Decks Section -->
+        <section id="popular-decks-section" style="display: none;">
             <div style="display: flex; justify-content: center; gap: var(--space-4); margin-bottom: var(--space-8); flex-wrap: wrap;">
                 <button class="filter-btn active" onclick="showCategory('meta')" id="meta-btn">Meta Decks</button>
                 <button class="filter-btn" onclick="showCategory('budget')" id="budget-btn">Budget Builds</button>
                 <button class="filter-btn" onclick="showCategory('rogue')" id="rogue-btn">Rogue Decks</button>
                 <button class="filter-btn" onclick="showCategory('classic')" id="classic-btn">Classic Decks</button>
             </div>
-        </section>
 
-        <!-- Meta Decks Section -->
-        <section id="meta-decks" class="deck-section">
-            <div class="modern-card-grid">
-                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid var(--gray-200);" class="interactive-hover">
-                    <div style="aspect-ratio: 16/9; background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); display: flex; align-items: center; justify-content: center; position: relative;">
-                        <img src="https://images.ygoprodeck.com/images/cards/76375976.jpg" alt="Snake-Eye Fire King" style="width: 120px; height: auto; border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
-                        <div style="position: absolute; top: var(--space-3); right: var(--space-3); background: var(--secondary-color); color: var(--gray-900); padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700;">TIER 1</div>
-                    </div>
-                    <div style="padding: var(--space-6);">
-                        <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Snake-Eye Fire King</h3>
-                        <p style="color: var(--gray-600); margin-bottom: var(--space-4); line-height: 1.5;">Dominant combo deck featuring Snake-Eye engine with Fire King support for consistent disruption.</p>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
-                            <span style="background: var(--success-color); color: white; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 600;">68% Win Rate</span>
-                            <span style="font-size: 1.25rem; font-weight: 700; color: var(--primary-color);">~$450</span>
+            <div id="meta-decks" class="deck-section">
+                <div class="modern-card-grid">
+                    <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid var(--gray-200);" class="interactive-hover">
+                        <div style="aspect-ratio: 16/9; background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); display: flex; align-items: center; justify-content: center; position: relative;">
+                            <img src="https://images.ygoprodeck.com/images/cards/76375976.jpg" alt="Snake-Eye Fire King" style="width: 120px; height: auto; border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
+                            <div style="position: absolute; top: var(--space-3); right: var(--space-3); background: var(--secondary-color); color: var(--gray-900); padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700;">TIER 1</div>
                         </div>
-                        <div style="display: flex; gap: var(--space-3);">
-                            <button style="flex: 1; padding: var(--space-3); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" onclick="viewDeck('snake-eye')">View Deck</button>
-                            <button style="flex: 1; padding: var(--space-3); background: var(--gray-100); color: var(--gray-700); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" onclick="buyDeck('snake-eye')">Buy Singles</button>
+                        <div style="padding: var(--space-6);">
+                            <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Snake-Eye Fire King</h3>
+                            <p style="color: var(--gray-600); margin-bottom: var(--space-4); line-height: 1.5;">Dominant combo deck featuring Snake-Eye engine with Fire King support for consistent disruption.</p>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                                <span style="background: var(--success-color); color: white; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 600;">68% Win Rate</span>
+                                <span style="font-size: 1.25rem; font-weight: 700; color: var(--primary-color);">~$450</span>
+                            </div>
+                            <div style="display: flex; gap: var(--space-3);">
+                                <button style="flex: 1; padding: var(--space-3); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" onclick="loadSampleDeck('snake-eye')">Load in Builder</button>
+                                <button style="flex: 1; padding: var(--space-3); background: var(--gray-100); color: var(--gray-700); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" onclick="buyDeck('snake-eye')">Buy Singles</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
+
+        <script>
+            // Initialize deck builder when page loads
+            if (!window.deckBuilder) {
+                window.deckBuilder = new DeckBuilderService();
+            }
+
+            // Search functionality
+            let searchTimeout;
+            async function searchCards() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(async () => {
+                    const query = document.getElementById('card-search').value;
+                    const filters = {
+                        type: document.getElementById('type-filter').value,
+                        race: document.getElementById('race-filter').value,
+                        attribute: document.getElementById('attribute-filter').value,
+                        level: document.getElementById('level-filter').value
+                    };
+
+                    if (query.length >= 2 || Object.values(filters).some(f => f)) {
+                        const results = await window.deckBuilder.searchCards(query, filters);
+                        displaySearchResults(results);
+                    } else {
+                        document.getElementById('search-results').innerHTML = \`
+                            <div style="text-align: center; padding: var(--space-8); color: var(--gray-500);">
+                                <div style="font-size: 2rem; margin-bottom: var(--space-2);">🔍</div>
+                                <p>Search for cards to add to your deck</p>
+                            </div>
+                        \`;
+                    }
+                }, 300);
+            }
+
+            function displaySearchResults(results) {
+                const container = document.getElementById('search-results');
+                
+                if (results.length === 0) {
+                    container.innerHTML = \`
+                        <div style="text-align: center; padding: var(--space-8); color: var(--gray-500);">
+                            <div style="font-size: 2rem; margin-bottom: var(--space-2);">❌</div>
+                            <p>No cards found</p>
+                        </div>
+                    \`;
+                    return;
+                }
+
+                container.innerHTML = results.slice(0, 50).map(card => \`
+                    <div class="search-result-card" onclick="addCardToDeck(\${JSON.stringify(card).replace(/"/g, '&quot;')})">
+                        <img src="\${card.card_images ? card.card_images[0].image_url_small : 'https://images.ygoprodeck.com/images/cards/back.jpg'}" 
+                             alt="\${card.name}" class="search-result-image" loading="lazy">
+                        <div class="search-result-info">
+                            <div class="search-result-name">\${card.name}</div>
+                            <div class="search-result-type">\${getCardTypeDisplay(card)}</div>
+                            <div class="search-result-stats">\${getCardStats(card)}</div>
+                        </div>
+                    </div>
+                \`).join('');
+            }
+
+            function addCardToDeck(card) {
+                const section = determineCardSection(card);
+                window.deckBuilder.addCardToDeck(card, section, 1);
+            }
+
+            function determineCardSection(card) {
+                if (card.type.includes('Fusion') || card.type.includes('Synchro') || 
+                    card.type.includes('Xyz') || card.type.includes('Link')) {
+                    return 'extra';
+                }
+                return 'main';
+            }
+
+            function getCardTypeDisplay(card) {
+                if (card.type.includes('Monster')) {
+                    if (card.type.includes('Effect')) return 'Effect Monster';
+                    if (card.type.includes('Normal')) return 'Normal Monster';
+                    if (card.type.includes('Fusion')) return 'Fusion Monster';
+                    if (card.type.includes('Synchro')) return 'Synchro Monster';
+                    if (card.type.includes('Xyz')) return 'Xyz Monster';
+                    if (card.type.includes('Link')) return 'Link Monster';
+                    return 'Monster';
+                }
+                if (card.type.includes('Spell')) return 'Spell Card';
+                if (card.type.includes('Trap')) return 'Trap Card';
+                return card.type;
+            }
+
+            function getCardStats(card) {
+                if (card.type.includes('Monster')) {
+                    if (card.type.includes('Link')) {
+                        return \`LINK-\${card.linkval || '?'} | ATK: \${card.atk || '?'}\`;
+                    } else {
+                        return \`Level \${card.level || '?'} | ATK: \${card.atk || '?'} | DEF: \${card.def || '?'}\`;
+                    }
+                }
+                return '';
+            }
+
+            function showDeckBuilder() {
+                document.getElementById('deck-builder-section').style.display = 'block';
+                document.getElementById('popular-decks-section').style.display = 'none';
+                document.getElementById('builder-btn').classList.add('active');
+                document.getElementById('popular-btn').classList.remove('active');
+            }
+
+            function showPopularDecks() {
+                document.getElementById('deck-builder-section').style.display = 'none';
+                document.getElementById('popular-decks-section').style.display = 'block';
+                document.getElementById('builder-btn').classList.remove('active');
+                document.getElementById('popular-btn').classList.add('active');
+            }
+
+            function loadSampleDeck(deckType) {
+                showDeckBuilder();
+                // Load a sample deck based on type
+                if (deckType === 'snake-eye') {
+                    loadSnakeEyeDeck();
+                }
+            }
+
+            async function loadSnakeEyeDeck() {
+                // Sample Snake-Eye deck list
+                const sampleYDK = \`#created by Firelight Duel Academy
+#main
+89631139
+89631139
+89631139
+76375976
+76375976
+76375976
+14558127
+14558127
+14558127
+23434538
+23434538
+23434538
+40044918
+40044918
+40044918
+97268402
+97268402
+97268402
+#extra
+63767246
+63767246
+63767246
+86066372
+86066372
+86066372
+#side
+14558127
+14558127
+23434538
+23434538
+\`;
+                await window.deckBuilder.loadFromYDK(sampleYDK);
+                window.deckBuilder.deckMetadata.name = 'Snake-Eye Fire King';
+                document.getElementById('deck-title').textContent = 'Snake-Eye Fire King';
+                window.deckBuilder.showToast('Sample Snake-Eye deck loaded!', 'success');
+            }
+
+            function showCategory(category) {
+                // Handle popular deck categories
+                console.log('Showing category:', category);
+            }
+
+            function buyDeck(deckType) {
+                alert('This would add all cards from the ' + deckType + ' deck to your cart.');
+            }
+        </script>
         `;
     }
 
