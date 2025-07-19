@@ -11,6 +11,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <!-- Stylesheets -->
     <link rel="stylesheet" href="assets/css/modern-tcg-store.css">
     <link rel="icon" href="https://images.ygoprodeck.com/images/cards/89631139.jpg">
@@ -28,13 +31,13 @@
         <div class="header-top">
             <div class="header-top-container">
                 <div class="header-top-left">
-                    <a href="tel:647-555-DUEL" class="header-top-link">📞 (647) 555-DUEL</a>
-                    <a href="mailto:support@firelightduelacademy.com" class="header-top-link">✉️ Support</a>
+                    <a href="tel:647-555-DUEL" class="header-top-link"><i class="fas fa-phone"></i> (647) 555-DUEL</a>
+                    <a href="mailto:support@firelightduelacademy.com" class="header-top-link"><i class="fas fa-envelope"></i> Support</a>
                     <!-- Tournaments link hidden - store not hosting events -->
-                    <!-- <a href="#" class="header-top-link" onclick="navigateTo('events')">🏆 Tournaments</a> -->
+                    <!-- <a href="#" class="header-top-link" onclick="navigateTo('events')"><i class="fas fa-trophy"></i> Tournaments</a> -->
                 </div>
                 <div class="header-top-right">
-                    <span>🚚 Free Shipping on Orders $100+ CAD</span>
+                    <span><i class="fas fa-shipping-fast"></i> Free Shipping on Orders $100+ CAD</span>
                 </div>
             </div>
         </div>
@@ -66,7 +69,7 @@
                 <!-- Search Section -->
                 <div class="search-section">
                     <div class="search-container">
-                        <span class="search-icon">🔍</span>
+                        <span class="search-icon"><i class="fas fa-search"></i></span>
                         <input type="text" class="search-input" placeholder="Search Yu-Gi-Oh! cards..." id="search-dropdown-input">
                         <div class="search-dropdown" id="search-dropdown" style="display: none;">
                             <div class="search-results" id="search-results">
@@ -79,11 +82,11 @@
                 <!-- Action Section -->
                 <div class="action-section">
                     <button class="action-btn" onclick="tcgStore.openCart()">
-                        🛒 Cart
+                        <i class="fas fa-shopping-cart"></i> Cart
                         <span class="cart-badge" style="display: none;">0</span>
                     </button>
                     <a href="#" class="action-btn" id="account-btn" onclick="handleAccountClick()">
-                        👤 Account
+                        <i class="fas fa-user"></i> Account
                     </a>
                 </div>
             </div>
@@ -107,25 +110,25 @@
                 <!-- Store Features -->
                 <div class="footer-features">
                     <div class="footer-feature">
-                        <div class="footer-feature-icon">🚚</div>
+                        <div class="footer-feature-icon"><i class="fas fa-shipping-fast"></i></div>
                         <h4>Fast & Free Shipping</h4>
                         <p>Free shipping on orders $75+ CAD. Expedited shipping to Canada and USA.</p>
                     </div>
                     <!-- Community Events feature hidden - store not hosting events -->
                     <!--
                     <div class="footer-feature">
-                        <div class="footer-feature-icon">🎯</div>
+                        <div class="footer-feature-icon"><i class="fas fa-trophy"></i></div>
                         <h4>Community Events</h4>
                         <p>Daily events at our store! From casual to competitive, we have something for everyone.</p>
                     </div>
                     -->
                     <div class="footer-feature">
-                        <div class="footer-feature-icon">💰</div>
+                        <div class="footer-feature-icon"><i class="fas fa-dollar-sign"></i></div>
                         <h4>Competitive Pricing</h4>
                         <p>Real-time market pricing powered by YGOPRODeck API ensures the best deals.</p>
                     </div>
                     <div class="footer-feature">
-                        <div class="footer-feature-icon">🛡️</div>
+                        <div class="footer-feature-icon"><i class="fas fa-shield-alt"></i></div>
                         <h4>Secure Shopping</h4>
                         <p>Safe and secure checkout with multiple payment options and buyer protection.</p>
                     </div>

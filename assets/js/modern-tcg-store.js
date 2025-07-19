@@ -1089,10 +1089,10 @@ class ModernTCGStore {
         const accountBtn = document.getElementById('account-btn');
         if (accountBtn) {
             if (this.currentUser) {
-                accountBtn.innerHTML = `👤 ${this.currentUser.firstName}`;
+                accountBtn.innerHTML = `<i class="fas fa-user"></i> ${this.currentUser.firstName}`;
                 accountBtn.onclick = () => navigateTo('account');
             } else {
-                accountBtn.innerHTML = '👤 Account';
+                accountBtn.innerHTML = '<i class="fas fa-user"></i> Account';
                 accountBtn.onclick = () => this.openLoginModal();
             }
         }
@@ -1209,10 +1209,10 @@ class ModernTCGStore {
 
     getToastIcon(type) {
         const icons = {
-            success: '✅',
-            error: '❌',
-            warning: '⚠️',
-            info: 'ℹ️'
+            success: '<i class="fas fa-check-circle"></i>',
+            error: '<i class="fas fa-times-circle"></i>',
+            warning: '<i class="fas fa-exclamation-triangle"></i>',
+            info: '<i class="fas fa-info-circle"></i>'
         };
         return icons[type] || icons.info;
     }
