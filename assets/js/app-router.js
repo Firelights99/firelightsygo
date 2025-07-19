@@ -610,7 +610,7 @@ class AppRouter {
                             <div style="font-size: 0.875rem; color: var(--gray-600);">${new Date(orders[0].createdAt).toLocaleDateString()} - $${orders[0].total.toFixed(2)}</div>
                         </div>
                     ` : ''}
-                    <button style="width: 100%; padding: var(--space-3) var(--space-6); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);" onclick="this.showOrderHistory()">View All Orders</button>
+                    <button style="width: 100%; padding: var(--space-3) var(--space-6); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);" onclick="alert('Order history feature coming soon!')">View All Orders</button>
                 </div>
             </div>
             
@@ -628,7 +628,7 @@ class AppRouter {
                             <div style="font-size: 0.875rem; color: var(--gray-600);">$${user.wishlist[user.wishlist.length - 1].price.toFixed(2)}</div>
                         </div>
                     ` : ''}
-                    <button style="width: 100%; padding: var(--space-3) var(--space-6); background: var(--accent-color); color: var(--gray-900); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);" onclick="this.showWishlist()">View Wishlist (${wishlistCount})</button>
+                    <button style="width: 100%; padding: var(--space-3) var(--space-6); background: var(--accent-color); color: var(--gray-900); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);" onclick="alert('Wishlist feature coming soon!')">View Wishlist (${wishlistCount})</button>
                 </div>
             </div>
 
