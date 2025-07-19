@@ -15,10 +15,9 @@ class ModernTCGStore {
         this.currentPage = 1;
         this.cardsPerPage = 20;
         
-        // Account system
+        // Account system - integrated with database service
         this.currentUser = JSON.parse(localStorage.getItem('tcg-user') || 'null');
-        this.users = JSON.parse(localStorage.getItem('tcg-users') || '{}');
-        this.orders = JSON.parse(localStorage.getItem('tcg-orders') || '[]');
+        this.dbService = window.dbService; // Reference to database service
         
         this.init();
     }
@@ -1015,61 +1014,69 @@ class ModernTCGStore {
         }
     }
 
-    registerUser(data) {
-        // Validate passwords match
-        if (data.password !== data.confirmPassword) {
-            this.showToast('Passwords do not match!', 'error');
-            return;
+    async registerUser(data) {
+        try {
+            // Validate passwords match
+            if (data.password !== data.confirmPassword) {
+                this.showToast('Passwords do not match!', 'error');
+                return;
+            }
+
+            // Use database service to create user
+            const newUser = await this.dbService.createUser({
+                email: data.email,
+                password: data.password,
+                firstName: data.firstName,
+                lastName: data.lastName,
+                phone: data.phone || '',
+                favoriteArchetype: null
+            });
+
+            // Auto-login the new user
+            this.currentUser = newUser;
+            localStorage.setItem('tcg-user', JSON.stringify(newUser));
+
+            // Track registration event
+            this.dbService.trackEvent('user_registered', {
+                userId: newUser.id,
+                email: newUser.email,
+                registrationMethod: 'website'
+            });
+
+            this.closeAccountModal();
+            this.updateAccountUI();
+            this.showToast(`Welcome to Firelight Duel Academy, ${newUser.firstName}!`, 'success');
+
+        } catch (error) {
+            console.error('Registration error:', error);
+            this.showToast(error.message || 'Registration failed. Please try again.', 'error');
         }
-
-        // Check if user already exists
-        if (this.users[data.email]) {
-            this.showToast('An account with this email already exists!', 'error');
-            return;
-        }
-
-        // Create new user
-        const newUser = {
-            id: Date.now(),
-            email: data.email,
-            password: data.password, // In real app, this would be hashed
-            firstName: data.firstName,
-            lastName: data.lastName,
-            phone: data.phone || '',
-            createdAt: new Date().toISOString(),
-            orders: [],
-            wishlist: [],
-            addresses: []
-        };
-
-        // Save user
-        this.users[data.email] = newUser;
-        localStorage.setItem('tcg-users', JSON.stringify(this.users));
-
-        // Auto-login the new user
-        this.currentUser = newUser;
-        localStorage.setItem('tcg-user', JSON.stringify(newUser));
-
-        this.closeAccountModal();
-        this.updateAccountUI();
-        this.showToast(`Welcome to Firelight Duel Academy, ${newUser.firstName}!`, 'success');
     }
 
-    loginUser(data) {
-        const user = this.users[data.email];
-        
-        if (!user || user.password !== data.password) {
-            this.showToast('Invalid email or password!', 'error');
-            return;
+    async loginUser(data) {
+        try {
+            // Use database service to authenticate user
+            const user = await this.dbService.authenticateUser(data.email, data.password);
+
+            // Login successful
+            this.currentUser = user;
+            localStorage.setItem('tcg-user', JSON.stringify(user));
+
+            // Track login event
+            this.dbService.trackEvent('user_login', {
+                userId: user.id,
+                email: user.email,
+                loginMethod: 'website'
+            });
+
+            this.closeAccountModal();
+            this.updateAccountUI();
+            this.showToast(`Welcome back, ${user.firstName}!`, 'success');
+
+        } catch (error) {
+            console.error('Login error:', error);
+            this.showToast(error.message || 'Login failed. Please try again.', 'error');
         }
-
-        // Login successful
-        this.currentUser = user;
-        localStorage.setItem('tcg-user', JSON.stringify(user));
-
-        this.closeAccountModal();
-        this.updateAccountUI();
-        this.showToast(`Welcome back, ${user.firstName}!`, 'success');
     }
 
     logout() {
