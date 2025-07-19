@@ -296,61 +296,8 @@ class DatabaseInitializer {
     }
 
     showInitializationMessage() {
-        // Create a temporary notification
-        const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-            color: white;
-            padding: 16px 24px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
-            z-index: 10000;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            max-width: 400px;
-            animation: slideInRight 0.5s ease-out;
-        `;
-
-        notification.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <div style="font-size: 24px;">🚀</div>
-                <div>
-                    <div style="font-size: 16px; margin-bottom: 4px;">Database Ready!</div>
-                    <div style="font-size: 14px; opacity: 0.9;">Firelight Duel Academy is fully operational</div>
-                </div>
-            </div>
-        `;
-
-        document.body.appendChild(notification);
-
-        // Add animation styles
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideInRight {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-
-        // Remove after 5 seconds
-        setTimeout(() => {
-            notification.style.animation = 'slideInRight 0.5s ease-out reverse';
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 500);
-        }, 5000);
+        // Database initialization complete - no popup needed
+        console.log('✅ Database initialization message suppressed');
     }
 
     showErrorMessage(message) {
