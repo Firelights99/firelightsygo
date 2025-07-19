@@ -5,249 +5,418 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Events | Firelight Duel Academy - Yu-Gi-Oh! Tournaments</title>
     <meta name="description" content="Join our Yu-Gi-Oh! tournaments and events. Weekly locals, special events, and competitive play at Firelight Duel Academy.">
-    <link rel="stylesheet" href="../assets/css/main.css">
-    <link rel="stylesheet" href="../assets/css/components/advanced-layout.css">
-    <link rel="stylesheet" href="../assets/css/pages/yugioh-store.css">
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/modern-tcg-store.css">
     <link rel="icon" href="https://images.ygoprodeck.com/images/cards/89631139.jpg">
 </head>
 <body>
-    <div class="page-wrapper">
-        <!-- Top Header Bar -->
-        <header class="top-header">
+    <!-- 401Games-Style Header -->
+    <header class="modern-header">
+        <!-- Top Bar -->
+        <div class="header-top">
+            <div class="header-top-container">
+                <div class="header-top-left">
+                    <a href="tel:647-555-DUEL" class="header-top-link">📞 (647) 555-DUEL</a>
+                    <a href="mailto:support@firelightduelacademy.com" class="header-top-link">✉️ Support</a>
+                    <a href="events.html" class="header-top-link">🏆 Tournaments</a>
+                </div>
+                <div class="header-top-right">
+                    <span>🚚 Free Shipping on Orders $100+ CAD</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Header -->
+        <div class="header-main">
             <div class="header-container">
-                <div class="site-branding">
-                    <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Firelight Duel Academy" class="site-logo">
-                    <h1 class="site-name">Firelight Duel Academy</h1>
-                    <p class="site-tagline">Yu-Gi-Oh! Trading Cards & Competitive Play</p>
+                <!-- Brand Section -->
+                <div class="brand-section">
+                    <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Firelight Duel Academy" class="brand-logo">
+                    <div class="brand-text">
+                        <a href="../index.html" class="brand-name">Firelight Duel Academy</a>
+                        <span class="brand-tagline">Yu-Gi-Oh! Singles & Tournament Store</span>
+                    </div>
                 </div>
-                <div class="header-actions">
+
+                <!-- Navigation Section -->
+                <nav class="nav-section">
+                    <ul class="nav-links">
+                        <li><a href="../index.html" class="nav-link">Home</a></li>
+                        <li><a href="singles.html" class="nav-link">Singles</a></li>
+                        <li><a href="decks.html" class="nav-link">Decks</a></li>
+                        <li><a href="events.html" class="nav-link active">Events</a></li>
+                        <li><a href="account.html" class="nav-link">Account</a></li>
+                    </ul>
+                </nav>
+
+                <!-- Search Section -->
+                <div class="search-section">
                     <div class="search-container">
-                        <input type="text" id="card-search" placeholder="Search Yu-Gi-Oh! cards..." class="search-input">
-                        <button class="search-btn" onclick="performSearch()">🔍</button>
+                        <span class="search-icon">🔍</span>
+                        <input type="text" class="search-input" placeholder="Search Yu-Gi-Oh! cards..." id="search-dropdown-input">
+                        <div class="search-dropdown" id="search-dropdown" style="display: none;">
+                            <div class="search-results" id="search-results">
+                                <!-- Search results will be populated here -->
+                            </div>
+                        </div>
                     </div>
-                    <div class="user-actions">
-                        <button class="account-btn" onclick="showLogin()">👤 Account</button>
-                        <button class="cart-btn" onclick="openCart()">
-                            🛒 Cart <span class="cart-count">0</span>
-                        </button>
+                </div>
+
+                <!-- Action Section -->
+                <div class="action-section">
+                    <button class="action-btn" onclick="tcgStore.openCart()">
+                        🛒 Cart
+                        <span class="cart-badge" style="display: none;">0</span>
+                    </button>
+                    <a href="account.html" class="action-btn">
+                        👤 Account
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main style="width: 100%; margin: 0 auto; padding: var(--space-8) var(--space-8);">
+        
+        <!-- Page Header -->
+        <section style="text-align: center; margin-bottom: var(--space-12);">
+            <h1 style="font-size: 3rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
+                Yu-Gi-Oh! Events & Tournaments
+            </h1>
+            <p style="font-size: 1.125rem; color: var(--gray-600); max-width: 600px; margin: 0 auto;">
+                Join our competitive community and test your skills in weekly tournaments and special events
+            </p>
+        </section>
+
+        <!-- Upcoming Events -->
+        <section style="margin-bottom: var(--space-16);">
+            <div style="text-align: center; margin-bottom: var(--space-8);">
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
+                    Upcoming Events
+                </h2>
+                <p style="font-size: 1.125rem; color: var(--gray-600);">
+                    Register now for our exciting tournaments and events
+                </p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: var(--space-6);">
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; border: 2px solid var(--secondary-color); position: relative;" class="interactive-hover">
+                    <div style="position: absolute; top: var(--space-4); right: var(--space-4); background: var(--secondary-color); color: var(--gray-900); padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">FEATURED</div>
+                    <div style="padding: var(--space-6);">
+                        <div style="display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4);">
+                            <div style="background: var(--primary-color); color: white; padding: var(--space-3); border-radius: var(--radius-lg); text-align: center; min-width: 80px;">
+                                <div style="font-size: 0.875rem; font-weight: 600;">JAN</div>
+                                <div style="font-size: 1.5rem; font-weight: 700;">25</div>
+                            </div>
+                            <div>
+                                <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Weekly Locals Tournament</h3>
+                                <p style="color: var(--gray-600); font-size: 0.875rem;">📅 Friday, 7:00 PM - 11:00 PM</p>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: var(--space-4);">
+                            <p style="color: var(--gray-700); margin-bottom: var(--space-1);">🎯 Format: Advanced (TCG)</p>
+                            <p style="color: var(--gray-700); margin-bottom: var(--space-1);">💰 Entry: $10 CAD</p>
+                            <p style="color: var(--gray-700);">🏆 Prizes: Store Credit + Packs</p>
+                        </div>
+                        <button style="width: 100%; padding: var(--space-3) var(--space-4); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast); text-transform: uppercase;" onclick="registerEvent('weekly-locals')">Register Now</button>
+                    </div>
+                </div>
+
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); overflow: hidden; border: 1px solid var(--gray-200);" class="interactive-hover">
+                    <div style="padding: var(--space-6);">
+                        <div style="display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4);">
+                            <div style="background: var(--accent-color); color: var(--gray-900); padding: var(--space-3); border-radius: var(--radius-lg); text-align: center; min-width: 80px;">
+                                <div style="font-size: 0.875rem; font-weight: 600;">JAN</div>
+                                <div style="font-size: 1.5rem; font-weight: 700;">27</div>
+                            </div>
+                            <div>
+                                <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Casual Sunday Duels</h3>
+                                <p style="color: var(--gray-600); font-size: 0.875rem;">📅 Sunday, 2:00 PM - 6:00 PM</p>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: var(--space-4);">
+                            <p style="color: var(--gray-700); margin-bottom: var(--space-1);">🎯 Format: Casual/Fun Decks</p>
+                            <p style="color: var(--gray-700); margin-bottom: var(--space-1);">💰 Entry: Free</p>
+                            <p style="color: var(--gray-700);">🏆 Prizes: Participation Packs</p>
+                        </div>
+                        <button style="width: 100%; padding: var(--space-3) var(--space-4); background: var(--accent-color); color: var(--gray-900); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast); text-transform: uppercase;" onclick="registerEvent('casual-sunday')">Join Event</button>
+                    </div>
+                </div>
+
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); overflow: hidden; border: 1px solid var(--gray-200);" class="interactive-hover">
+                    <div style="padding: var(--space-6);">
+                        <div style="display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4);">
+                            <div style="background: var(--primary-color); color: white; padding: var(--space-3); border-radius: var(--radius-lg); text-align: center; min-width: 80px;">
+                                <div style="font-size: 0.875rem; font-weight: 600;">FEB</div>
+                                <div style="font-size: 1.5rem; font-weight: 700;">01</div>
+                            </div>
+                            <div>
+                                <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Monthly Championship</h3>
+                                <p style="color: var(--gray-600); font-size: 0.875rem;">📅 Saturday, 1:00 PM - 8:00 PM</p>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: var(--space-4);">
+                            <p style="color: var(--gray-700); margin-bottom: var(--space-1);">🎯 Format: Advanced (TCG)</p>
+                            <p style="color: var(--gray-700); margin-bottom: var(--space-1);">💰 Entry: $25 CAD</p>
+                            <p style="color: var(--gray-700);">🏆 Prizes: $500 Store Credit</p>
+                        </div>
+                        <button style="width: 100%; padding: var(--space-3) var(--space-4); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast); text-transform: uppercase;" onclick="registerEvent('monthly-championship')">Register Now</button>
                     </div>
                 </div>
             </div>
-        </header>
+        </section>
 
-        <!-- Navigation Tabs -->
-        <nav class="main-navigation">
-            <div class="nav-container">
-                <ul class="nav-tabs">
-                    <li><a href="../index.html" class="nav-link">Home</a></li>
-                    <li><a href="singles.html" class="nav-link">Singles</a></li>
-                    <li><a href="decks.html" class="nav-link">Popular Decks</a></li>
-                    <li><a href="events.html" class="nav-link active">Events</a></li>
-                    <li><a href="account.html" class="nav-link">My Account</a></li>
-                </ul>
+        <!-- Weekly Schedule -->
+        <section style="margin-bottom: var(--space-16);">
+            <div style="text-align: center; margin-bottom: var(--space-8);">
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
+                    Weekly Schedule
+                </h2>
+                <p style="font-size: 1.125rem; color: var(--gray-600);">
+                    Regular events throughout the week for all skill levels
+                </p>
             </div>
-        </nav>
-
-        <!-- Main Content Area -->
-        <main class="content-area">
-            <div class="page-header">
-                <h1>Yu-Gi-Oh! Events & Tournaments</h1>
-                <p>Join our competitive community and test your skills</p>
+            
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid var(--gray-200);">
+                <div style="background: var(--gray-900); color: white; padding: var(--space-4); display: grid; grid-template-columns: 1fr 1fr 2fr 1fr; gap: var(--space-4); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+                    <div>Day</div>
+                    <div>Time</div>
+                    <div>Event</div>
+                    <div>Format</div>
+                </div>
+                <div style="padding: var(--space-4); display: grid; grid-template-columns: 1fr 1fr 2fr 1fr; gap: var(--space-4); border-bottom: 1px solid var(--gray-200);">
+                    <div style="font-weight: 600; color: var(--primary-color);">Monday</div>
+                    <div style="color: var(--gray-700);">6:00 PM</div>
+                    <div style="color: var(--gray-900); font-weight: 500;">Beginner Night</div>
+                    <div style="color: var(--gray-600);">Teaching/Casual</div>
+                </div>
+                <div style="padding: var(--space-4); display: grid; grid-template-columns: 1fr 1fr 2fr 1fr; gap: var(--space-4); border-bottom: 1px solid var(--gray-200);">
+                    <div style="font-weight: 600; color: var(--primary-color);">Wednesday</div>
+                    <div style="color: var(--gray-700);">7:00 PM</div>
+                    <div style="color: var(--gray-900); font-weight: 500;">Mid-Week Locals</div>
+                    <div style="color: var(--gray-600);">Advanced TCG</div>
+                </div>
+                <div style="padding: var(--space-4); display: grid; grid-template-columns: 1fr 1fr 2fr 1fr; gap: var(--space-4); border-bottom: 1px solid var(--gray-200);">
+                    <div style="font-weight: 600; color: var(--primary-color);">Friday</div>
+                    <div style="color: var(--gray-700);">7:00 PM</div>
+                    <div style="color: var(--gray-900); font-weight: 500;">Weekly Locals</div>
+                    <div style="color: var(--gray-600);">Advanced TCG</div>
+                </div>
+                <div style="padding: var(--space-4); display: grid; grid-template-columns: 1fr 1fr 2fr 1fr; gap: var(--space-4); border-bottom: 1px solid var(--gray-200);">
+                    <div style="font-weight: 600; color: var(--primary-color);">Saturday</div>
+                    <div style="color: var(--gray-700);">2:00 PM</div>
+                    <div style="color: var(--gray-900); font-weight: 500;">Special Events</div>
+                    <div style="color: var(--gray-600);">Various</div>
+                </div>
+                <div style="padding: var(--space-4); display: grid; grid-template-columns: 1fr 1fr 2fr 1fr; gap: var(--space-4);">
+                    <div style="font-weight: 600; color: var(--primary-color);">Sunday</div>
+                    <div style="color: var(--gray-700);">2:00 PM</div>
+                    <div style="color: var(--gray-900); font-weight: 500;">Casual Duels</div>
+                    <div style="color: var(--gray-600);">Fun/Casual</div>
+                </div>
             </div>
+        </section>
 
-            <!-- Upcoming Events -->
-            <section class="upcoming-events">
-                <h2>Upcoming Events</h2>
-                <div class="events-grid">
-                    <div class="event-card featured">
-                        <div class="event-badge">FEATURED</div>
-                        <div class="event-date">
-                            <span class="month">JAN</span>
-                            <span class="day">25</span>
-                        </div>
-                        <div class="event-info">
-                            <h3>Weekly Locals Tournament</h3>
-                            <p class="event-time">📅 Friday, 7:00 PM - 11:00 PM</p>
-                            <p class="event-format">🎯 Format: Advanced (TCG)</p>
-                            <p class="event-entry">💰 Entry: $10</p>
-                            <p class="event-prizes">🏆 Prizes: Store Credit + Packs</p>
-                            <button class="register-btn" onclick="registerEvent('weekly-locals')">Register Now</button>
-                        </div>
-                    </div>
-
-                    <div class="event-card">
-                        <div class="event-date">
-                            <span class="month">JAN</span>
-                            <span class="day">27</span>
-                        </div>
-                        <div class="event-info">
-                            <h3>Casual Sunday Duels</h3>
-                            <p class="event-time">📅 Sunday, 2:00 PM - 6:00 PM</p>
-                            <p class="event-format">🎯 Format: Casual/Fun Decks</p>
-                            <p class="event-entry">💰 Entry: Free</p>
-                            <p class="event-prizes">🏆 Prizes: Participation Packs</p>
-                            <button class="register-btn" onclick="registerEvent('casual-sunday')">Join Event</button>
-                        </div>
-                    </div>
-
-                    <div class="event-card">
-                        <div class="event-date">
-                            <span class="month">FEB</span>
-                            <span class="day">01</span>
-                        </div>
-                        <div class="event-info">
-                            <h3>Monthly Championship</h3>
-                            <p class="event-time">📅 Saturday, 1:00 PM - 8:00 PM</p>
-                            <p class="event-format">🎯 Format: Advanced (TCG)</p>
-                            <p class="event-entry">💰 Entry: $25</p>
-                            <p class="event-prizes">🏆 Prizes: $500 Store Credit</p>
-                            <button class="register-btn" onclick="registerEvent('monthly-championship')">Register Now</button>
-                        </div>
-                    </div>
-
-                    <div class="event-card">
-                        <div class="event-date">
-                            <span class="month">FEB</span>
-                            <span class="day">08</span>
-                        </div>
-                        <div class="event-info">
-                            <h3>Draft Tournament</h3>
-                            <p class="event-time">📅 Saturday, 3:00 PM - 7:00 PM</p>
-                            <p class="event-format">🎯 Format: Booster Draft</p>
-                            <p class="event-entry">💰 Entry: $20 (includes packs)</p>
-                            <p class="event-prizes">🏆 Prizes: Additional Packs</p>
-                            <button class="register-btn" onclick="registerEvent('draft-tournament')">Register Now</button>
-                        </div>
-                    </div>
+        <!-- Tournament Information -->
+        <section style="margin-bottom: var(--space-16);">
+            <div style="text-align: center; margin-bottom: var(--space-8);">
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
+                    Tournament Information
+                </h2>
+                <p style="font-size: 1.125rem; color: var(--gray-600);">
+                    Everything you need to know about our tournaments
+                </p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-6);">
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); padding: var(--space-6); border: 1px solid var(--gray-200);">
+                    <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-2);">
+                        🎯 Tournament Format
+                    </h3>
+                    <ul style="list-style: none; padding: 0; color: var(--gray-700); line-height: 1.6;">
+                        <li style="margin-bottom: var(--space-2);">• Swiss rounds followed by top cut</li>
+                        <li style="margin-bottom: var(--space-2);">• Best of 3 matches</li>
+                        <li style="margin-bottom: var(--space-2);">• 40 minute time limit per match</li>
+                        <li>• Current TCG banlist enforced</li>
+                    </ul>
                 </div>
-            </section>
-
-            <!-- Event Schedule -->
-            <section class="event-schedule">
-                <h2>Weekly Schedule</h2>
-                <div class="schedule-table">
-                    <div class="schedule-row header">
-                        <div class="day">Day</div>
-                        <div class="time">Time</div>
-                        <div class="event">Event</div>
-                        <div class="format">Format</div>
-                    </div>
-                    <div class="schedule-row">
-                        <div class="day">Monday</div>
-                        <div class="time">6:00 PM</div>
-                        <div class="event">Beginner Night</div>
-                        <div class="format">Teaching/Casual</div>
-                    </div>
-                    <div class="schedule-row">
-                        <div class="day">Wednesday</div>
-                        <div class="time">7:00 PM</div>
-                        <div class="event">Mid-Week Locals</div>
-                        <div class="format">Advanced TCG</div>
-                    </div>
-                    <div class="schedule-row">
-                        <div class="day">Friday</div>
-                        <div class="time">7:00 PM</div>
-                        <div class="event">Weekly Locals</div>
-                        <div class="format">Advanced TCG</div>
-                    </div>
-                    <div class="schedule-row">
-                        <div class="day">Saturday</div>
-                        <div class="time">2:00 PM</div>
-                        <div class="event">Special Events</div>
-                        <div class="format">Various</div>
-                    </div>
-                    <div class="schedule-row">
-                        <div class="day">Sunday</div>
-                        <div class="time">2:00 PM</div>
-                        <div class="event">Casual Duels</div>
-                        <div class="format">Fun/Casual</div>
-                    </div>
+                
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); padding: var(--space-6); border: 1px solid var(--gray-200);">
+                    <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-2);">
+                        📋 Registration
+                    </h3>
+                    <ul style="list-style: none; padding: 0; color: var(--gray-700); line-height: 1.6;">
+                        <li style="margin-bottom: var(--space-2);">• Register online or at the store</li>
+                        <li style="margin-bottom: var(--space-2);">• Bring valid deck list</li>
+                        <li style="margin-bottom: var(--space-2);">• Check-in 30 minutes before start</li>
+                        <li>• Late registration may be refused</li>
+                    </ul>
                 </div>
-            </section>
-
-            <!-- Tournament Rules -->
-            <section class="tournament-rules">
-                <h2>Tournament Information</h2>
-                <div class="rules-grid">
-                    <div class="rule-card">
-                        <h3>🎯 Tournament Format</h3>
-                        <ul>
-                            <li>Swiss rounds followed by top cut</li>
-                            <li>Best of 3 matches</li>
-                            <li>40 minute time limit per match</li>
-                            <li>Current TCG banlist enforced</li>
-                        </ul>
-                    </div>
-                    <div class="rule-card">
-                        <h3>📋 Registration</h3>
-                        <ul>
-                            <li>Register online or at the store</li>
-                            <li>Bring valid deck list</li>
-                            <li>Check-in 30 minutes before start</li>
-                            <li>Late registration may be refused</li>
-                        </ul>
-                    </div>
-                    <div class="rule-card">
-                        <h3>🏆 Prize Structure</h3>
-                        <ul>
-                            <li>Store credit for top finishers</li>
-                            <li>Booster packs for all participants</li>
-                            <li>Special prizes for monthly events</li>
-                            <li>Loyalty points for regular players</li>
-                        </ul>
-                    </div>
-                    <div class="rule-card">
-                        <h3>📱 What to Bring</h3>
-                        <ul>
-                            <li>Tournament legal deck (40+ cards)</li>
-                            <li>Extra deck (0-15 cards)</li>
-                            <li>Side deck (0-15 cards)</li>
-                            <li>Pen and paper for life points</li>
-                        </ul>
-                    </div>
+                
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); padding: var(--space-6); border: 1px solid var(--gray-200);">
+                    <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-2);">
+                        🏆 Prize Structure
+                    </h3>
+                    <ul style="list-style: none; padding: 0; color: var(--gray-700); line-height: 1.6;">
+                        <li style="margin-bottom: var(--space-2);">• Store credit for top finishers</li>
+                        <li style="margin-bottom: var(--space-2);">• Booster packs for all participants</li>
+                        <li style="margin-bottom: var(--space-2);">• Special prizes for monthly events</li>
+                        <li>• Loyalty points for regular players</li>
+                    </ul>
                 </div>
-            </section>
-
-            <!-- Contact Info -->
-            <section class="event-contact">
-                <h2>Questions About Events?</h2>
-                <div class="contact-info">
-                    <p>📞 Call us at (555) 123-DUEL</p>
-                    <p>📧 Email: events@firelightduelacademy.com</p>
-                    <p>📍 Visit us at 123 Duel Monsters Lane, Card City</p>
-                    <p>💬 Join our Discord community for updates</p>
-                </div>
-            </section>
-        </main>
-
-        <!-- Footer -->
-        <footer class="site-footer">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Firelight Duel Academy</h3>
-                    <p>Your premier destination for Yu-Gi-Oh! singles</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="singles.html">Browse Singles</a></li>
-                        <li><a href="events.html">Events</a></li>
-                        <li><a href="account.html">My Account</a></li>
+                
+                <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); padding: var(--space-6); border: 1px solid var(--gray-200);">
+                    <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-2);">
+                        📱 What to Bring
+                    </h3>
+                    <ul style="list-style: none; padding: 0; color: var(--gray-700); line-height: 1.6;">
+                        <li style="margin-bottom: var(--space-2);">• Tournament legal deck (40+ cards)</li>
+                        <li style="margin-bottom: var(--space-2);">• Extra deck (0-15 cards)</li>
+                        <li style="margin-bottom: var(--space-2);">• Side deck (0-15 cards)</li>
+                        <li>• Pen and paper for life points</li>
                     </ul>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Firelight Duel Academy. All rights reserved.</p>
+        </section>
+
+        <!-- Contact Section -->
+        <section style="text-align: center; padding: var(--space-16) var(--space-6); background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%); border-radius: var(--radius-2xl); color: white;">
+            <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: var(--space-4);">
+                Questions About Events?
+            </h2>
+            <p style="font-size: 1.125rem; margin-bottom: var(--space-8); opacity: 0.9; max-width: 500px; margin-left: auto; margin-right: auto;">
+                Get in touch with us for event registration, rules questions, or general information.
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-6); max-width: 800px; margin: 0 auto;">
+                <div>
+                    <div style="font-size: 2rem; margin-bottom: var(--space-2);">📞</div>
+                    <p style="font-weight: 600; margin-bottom: var(--space-1);">Call Us</p>
+                    <p style="opacity: 0.8;">(647) 555-DUEL</p>
+                </div>
+                <div>
+                    <div style="font-size: 2rem; margin-bottom: var(--space-2);">📧</div>
+                    <p style="font-weight: 600; margin-bottom: var(--space-1);">Email Us</p>
+                    <p style="opacity: 0.8;">events@firelightduelacademy.com</p>
+                </div>
+                <div>
+                    <div style="font-size: 2rem; margin-bottom: var(--space-2);">📍</div>
+                    <p style="font-weight: 600; margin-bottom: var(--space-1);">Visit Us</p>
+                    <p style="opacity: 0.8;">1247 Queen Street West, Toronto</p>
+                </div>
+                <div>
+                    <div style="font-size: 2rem; margin-bottom: var(--space-2);">💬</div>
+                    <p style="font-weight: 600; margin-bottom: var(--space-1);">Discord</p>
+                    <p style="opacity: 0.8;">Join our community</p>
+                </div>
             </div>
-        </footer>
-    </div>
+        </section>
+
+    </main>
+
+    <!-- 401Games-Style Footer -->
+    <footer class="modern-footer">
+        <div class="footer-main">
+            <div class="footer-container">
+                
+                <!-- Store Features -->
+                <div class="footer-features">
+                    <div class="footer-feature">
+                        <div class="footer-feature-icon">🚚</div>
+                        <h4>Fast & Free Shipping</h4>
+                        <p>Free shipping on orders $75+ CAD. Expedited shipping to Canada and USA.</p>
+                    </div>
+                    <div class="footer-feature">
+                        <div class="footer-feature-icon">🎯</div>
+                        <h4>Community Events</h4>
+                        <p>Daily events at our store! From casual to competitive, we have something for everyone.</p>
+                    </div>
+                    <div class="footer-feature">
+                        <div class="footer-feature-icon">💰</div>
+                        <h4>Competitive Pricing</h4>
+                        <p>Real-time market pricing powered by YGOPRODeck API ensures the best deals.</p>
+                    </div>
+                    <div class="footer-feature">
+                        <div class="footer-feature-icon">🛡️</div>
+                        <h4>Secure Shopping</h4>
+                        <p>Safe and secure checkout with multiple payment options and buyer protection.</p>
+                    </div>
+                </div>
+
+                <!-- Store Locations -->
+                <div class="store-locations">
+                    <div class="store-location">
+                        <h4>Firelight Academy - Main</h4>
+                        <p>1247 Queen Street West, Toronto, Ontario</p>
+                        <p>Queen & Dovercourt Intersection</p>
+                        <a href="tel:647-555-DUEL" class="store-phone">(647) 555-DUEL</a>
+                    </div>
+                    <div class="store-location">
+                        <h4>Firelight Academy - North</h4>
+                        <p>8850 Yonge Street, Richmond Hill, Ontario</p>
+                        <p>Yonge & Major Mackenzie Intersection</p>
+                        <a href="tel:905-555-FIRE" class="store-phone">(905) 555-FIRE</a>
+                    </div>
+                </div>
+
+                <!-- Footer Links -->
+                <div class="footer-grid">
+                    <div class="footer-section">
+                        <h3>Firelight Duel Academy</h3>
+                        <p>Your premier destination for Yu-Gi-Oh! singles, competitive play, and tournament events. We pride ourselves on providing the best selection and prices in Canada.</p>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h3>Quick Links</h3>
+                        <ul class="footer-links">
+                            <li><a href="singles.html">Yu-Gi-Oh! Singles</a></li>
+                            <li><a href="decks.html">Popular Decks</a></li>
+                            <li><a href="events.html">Tournament Events</a></li>
+                            <li><a href="account.html">My Account</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h3>Customer Service</h3>
+                        <ul class="footer-links">
+                            <li><a href="mailto:info@firelightduelacademy.com">Contact Us</a></li>
+                            <li><a href="#">Shipping Policy</a></li>
+                            <li><a href="#">Return Policy</a></li>
+                            <li><a href="#">FAQ</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h3>Connect</h3>
+                        <ul class="footer-links">
+                            <li><a href="#">Facebook</a></li>
+                            <li><a href="#">Instagram</a></li>
+                            <li><a href="#">Twitter</a></li>
+                            <li><a href="#">Discord</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="footer-container">
+                <p>&copy; 2025 Firelight Duel Academy. All rights reserved. | Yu-Gi-Oh! is a trademark of Konami Digital Entertainment.</p>
+            </div>
+        </div>
+    </footer>
 
     <!-- Scripts -->
-    <script src="../assets/js/components/advanced-functionality.js"></script>
-    <script src="../assets/js/pages/yugioh-store.js"></script>
+    <script src="../assets/js/modern-tcg-store.js"></script>
     <script>
         function registerEvent(eventName) {
-            alert('Registration for ' + eventName + ' would open here. Please call the store or visit in person to register.');
+            tcgStore.showToast('Registration for ' + eventName + ' would open here. Please call the store or visit in person to register.', 'info');
         }
     </script>
 </body>

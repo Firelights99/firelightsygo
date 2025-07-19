@@ -16,52 +16,74 @@
     <link rel="icon" href="https://images.ygoprodeck.com/images/cards/89631139.jpg">
 </head>
 <body>
-    <!-- Modern Header -->
+    <!-- 401Games-Style Header -->
     <header class="modern-header">
-        <div class="header-container">
-            <!-- Brand Section -->
-            <div class="brand-section">
-                <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Firelight Duel Academy" class="brand-logo">
-                <div class="brand-text">
-                    <a href="../index.html" class="brand-name">Firelight Duel Academy</a>
-                    <span class="brand-tagline">Modern Yu-Gi-Oh! TCG Store</span>
+        <!-- Top Bar -->
+        <div class="header-top">
+            <div class="header-top-container">
+                <div class="header-top-left">
+                    <a href="tel:647-555-DUEL" class="header-top-link">📞 (647) 555-DUEL</a>
+                    <a href="mailto:support@firelightduelacademy.com" class="header-top-link">✉️ Support</a>
+                    <a href="events.html" class="header-top-link">🏆 Tournaments</a>
+                </div>
+                <div class="header-top-right">
+                    <span>🚚 Free Shipping on Orders $100+ CAD</span>
                 </div>
             </div>
+        </div>
 
-            <!-- Navigation Section -->
-            <nav class="nav-section">
-                <ul class="nav-links">
-                    <li><a href="../index.html" class="nav-link">Home</a></li>
-                    <li><a href="singles.html" class="nav-link active">Singles</a></li>
-                    <li><a href="decks.html" class="nav-link">Decks</a></li>
-                    <li><a href="events.html" class="nav-link">Events</a></li>
-                    <li><a href="account.html" class="nav-link">Account</a></li>
-                </ul>
-            </nav>
-
-            <!-- Search Section -->
-            <div class="search-section">
-                <div class="search-container">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" class="search-input" placeholder="Search Yu-Gi-Oh! cards...">
+        <!-- Main Header -->
+        <div class="header-main">
+            <div class="header-container">
+                <!-- Brand Section -->
+                <div class="brand-section">
+                    <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Firelight Duel Academy" class="brand-logo">
+                    <div class="brand-text">
+                        <a href="../index.html" class="brand-name">Firelight Duel Academy</a>
+                        <span class="brand-tagline">Yu-Gi-Oh! Singles & Tournament Store</span>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Action Section -->
-            <div class="action-section">
-                <button class="action-btn" onclick="tcgStore.openCart()">
-                    🛒 Cart
-                    <span class="cart-badge" style="display: none;">0</span>
-                </button>
-                <a href="account.html" class="action-btn">
-                    👤 Account
-                </a>
+                <!-- Navigation Section -->
+                <nav class="nav-section">
+                    <ul class="nav-links">
+                        <li><a href="../index.html" class="nav-link">Home</a></li>
+                        <li><a href="singles.html" class="nav-link active">Singles</a></li>
+                        <li><a href="decks.html" class="nav-link">Decks</a></li>
+                        <li><a href="events.html" class="nav-link">Events</a></li>
+                        <li><a href="account.html" class="nav-link">Account</a></li>
+                    </ul>
+                </nav>
+
+                <!-- Search Section -->
+                <div class="search-section">
+                    <div class="search-container">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" class="search-input" placeholder="Search Yu-Gi-Oh! cards..." id="search-dropdown-input">
+                        <div class="search-dropdown" id="search-dropdown" style="display: none;">
+                            <div class="search-results" id="search-results">
+                                <!-- Search results will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Section -->
+                <div class="action-section">
+                    <button class="action-btn" onclick="tcgStore.openCart()">
+                        🛒 Cart
+                        <span class="cart-badge" style="display: none;">0</span>
+                    </button>
+                    <a href="account.html" class="action-btn">
+                        👤 Account
+                    </a>
+                </div>
             </div>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main style="max-width: 1400px; margin: 0 auto; padding: var(--space-8) var(--space-6);">
+    <main style="width: 100%; margin: 0 auto; padding: var(--space-8) var(--space-8);">
         
         <!-- Page Header -->
         <section style="text-align: center; margin-bottom: var(--space-12);">
@@ -180,29 +202,94 @@
 
     </main>
 
-    <!-- Footer -->
-    <footer style="background: var(--gray-900); color: white; padding: var(--space-12) var(--space-6) var(--space-6); margin-top: var(--space-20);">
-        <div style="max-width: 1400px; margin: 0 auto;">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-8); margin-bottom: var(--space-8);">
-                <div>
-                    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: var(--space-4); color: var(--secondary-color);">Firelight Duel Academy</h3>
-                    <p style="color: rgba(255,255,255,0.8); line-height: 1.6;">Your premier destination for Yu-Gi-Oh! singles</p>
-                </div>
+    <!-- 401Games-Style Footer -->
+    <footer class="modern-footer">
+        <div class="footer-main">
+            <div class="footer-container">
                 
-                <div>
-                    <h4 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-4); color: var(--secondary-color);">Quick Links</h4>
-                    <ul style="list-style: none; padding: 0;">
-                        <li style="margin-bottom: var(--space-2);"><a href="singles.html" style="color: rgba(255,255,255,0.8); text-decoration: none;">Browse Singles</a></li>
-                        <li style="margin-bottom: var(--space-2);"><a href="account.html" style="color: rgba(255,255,255,0.8); text-decoration: none;">My Account</a></li>
-                        <li style="margin-bottom: var(--space-2);"><a href="../index.html" style="color: rgba(255,255,255,0.8); text-decoration: none;">Home</a></li>
-                    </ul>
+                <!-- Store Features -->
+                <div class="footer-features">
+                    <div class="footer-feature">
+                        <div class="footer-feature-icon">🚚</div>
+                        <h4>Fast & Free Shipping</h4>
+                        <p>Free shipping on orders $75+ CAD. Expedited shipping to Canada and USA.</p>
+                    </div>
+                    <div class="footer-feature">
+                        <div class="footer-feature-icon">🎯</div>
+                        <h4>Community Events</h4>
+                        <p>Daily events at our store! From casual to competitive, we have something for everyone.</p>
+                    </div>
+                    <div class="footer-feature">
+                        <div class="footer-feature-icon">💰</div>
+                        <h4>Competitive Pricing</h4>
+                        <p>Real-time market pricing powered by YGOPRODeck API ensures the best deals.</p>
+                    </div>
+                    <div class="footer-feature">
+                        <div class="footer-feature-icon">🛡️</div>
+                        <h4>Secure Shopping</h4>
+                        <p>Safe and secure checkout with multiple payment options and buyer protection.</p>
+                    </div>
+                </div>
+
+                <!-- Store Locations -->
+                <div class="store-locations">
+                    <div class="store-location">
+                        <h4>Firelight Academy - Main</h4>
+                        <p>1247 Queen Street West, Toronto, Ontario</p>
+                        <p>Queen & Dovercourt Intersection</p>
+                        <a href="tel:647-555-DUEL" class="store-phone">(647) 555-DUEL</a>
+                    </div>
+                    <div class="store-location">
+                        <h4>Firelight Academy - North</h4>
+                        <p>8850 Yonge Street, Richmond Hill, Ontario</p>
+                        <p>Yonge & Major Mackenzie Intersection</p>
+                        <a href="tel:905-555-FIRE" class="store-phone">(905) 555-FIRE</a>
+                    </div>
+                </div>
+
+                <!-- Footer Links -->
+                <div class="footer-grid">
+                    <div class="footer-section">
+                        <h3>Firelight Duel Academy</h3>
+                        <p>Your premier destination for Yu-Gi-Oh! singles, competitive play, and tournament events. We pride ourselves on providing the best selection and prices in Canada.</p>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h3>Quick Links</h3>
+                        <ul class="footer-links">
+                            <li><a href="singles.html">Yu-Gi-Oh! Singles</a></li>
+                            <li><a href="decks.html">Popular Decks</a></li>
+                            <li><a href="events.html">Tournament Events</a></li>
+                            <li><a href="account.html">My Account</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h3>Customer Service</h3>
+                        <ul class="footer-links">
+                            <li><a href="mailto:info@firelightduelacademy.com">Contact Us</a></li>
+                            <li><a href="#">Shipping Policy</a></li>
+                            <li><a href="#">Return Policy</a></li>
+                            <li><a href="#">FAQ</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h3>Connect</h3>
+                        <ul class="footer-links">
+                            <li><a href="#">Facebook</a></li>
+                            <li><a href="#">Instagram</a></li>
+                            <li><a href="#">Twitter</a></li>
+                            <li><a href="#">Discord</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-            
-            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: var(--space-6); text-align: center;">
-                <p style="color: rgba(255,255,255,0.6); font-size: 0.875rem;">
-                    &copy; 2025 Firelight Duel Academy. All rights reserved.
-                </p>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="footer-container">
+                <p>&copy; 2025 Firelight Duel Academy. All rights reserved. | Yu-Gi-Oh! is a trademark of Konami Digital Entertainment.</p>
             </div>
         </div>
     </footer>
