@@ -674,14 +674,14 @@ class AppRouter {
                 if (!container) return;
                 
                 if (Object.keys(savedDecks).length === 0) {
-                    container.innerHTML = \`
+                    container.innerHTML = `
                         <div style="text-align: center; padding: var(--space-12); color: var(--gray-500);">
                             <div style="font-size: 4rem; margin-bottom: var(--space-4);">🃏</div>
                             <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3);">No Decks Yet</h3>
                             <p style="margin-bottom: var(--space-6);">Create your first deck to get started!</p>
                             <button class="primary-btn" onclick="createNewDeck()">Create New Deck</button>
                         </div>
-                    \`;
+                    `;
                     return;
                 }
                 
