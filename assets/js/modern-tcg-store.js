@@ -461,6 +461,9 @@ class ModernTCGStore {
         // Use the SPA router instead of direct navigation
         if (window.appRouter) {
             window.appRouter.loadPage('product', true, `?id=${card.id}`);
+        } else if (window.navigateTo) {
+            // Use global navigation function
+            window.navigateTo('product', `?id=${card.id}`);
         } else {
             // Fallback to direct navigation if router not available
             const productUrl = `pages/product.html?id=${card.id}`;

@@ -24,6 +24,7 @@ const orderRoutes = require('./routes/orders');
 const cartRoutes = require('./routes/cart');
 const paymentRoutes = require('./routes/payments');
 const adminRoutes = require('./routes/admin');
+const crystalCommerceRoutes = require('./routes/crystal-commerce');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -116,6 +117,7 @@ app.use('/api/v1/orders', authMiddleware, orderRoutes);
 app.use('/api/v1/cart', cartRoutes);
 app.use('/api/v1/payments', authMiddleware, paymentRoutes);
 app.use('/api/v1/admin', authMiddleware, adminRoutes);
+app.use('/api/v1/crystal-commerce', crystalCommerceRoutes);
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {

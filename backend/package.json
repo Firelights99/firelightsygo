@@ -36,6 +36,8 @@
     "winston": "^3.11.0",
     "node-cron": "^3.0.3",
     "stripe": "^14.9.0",
+    "squareup": "^29.0.0",
+    "axios": "^1.6.2",
     "nodemailer": "^6.9.7",
     "redis": "^4.6.10",
     "socket.io": "^4.7.4"

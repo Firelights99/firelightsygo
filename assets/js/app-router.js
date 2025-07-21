@@ -634,38 +634,22 @@ class AppRouter {
             </div>
         </section>
 
-        <!-- Popular Decks Section -->
+        <!-- Deck Templates Section (includes Popular Decks) -->
         <section id="popular-decks-section" style="display: none;">
             <div style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
-                <h2 style="font-size: 2rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-6);">Popular Deck Lists</h2>
+                <h2 style="font-size: 2rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-6);">🃏 Deck Templates & Popular Lists</h2>
                 
                 <div style="display: flex; justify-content: center; gap: var(--space-4); margin-bottom: var(--space-8); flex-wrap: wrap;">
-                    <button class="filter-btn active" onclick="showCategory('meta')" id="meta-btn">Meta Decks</button>
-                    <button class="filter-btn" onclick="showCategory('budget')" id="budget-btn">Budget Builds</button>
-                    <button class="filter-btn" onclick="showCategory('rogue')" id="rogue-btn">Rogue Decks</button>
-                    <button class="filter-btn" onclick="showCategory('classic')" id="classic-btn">Classic Decks</button>
+                    <button class="filter-btn active" onclick="showTemplateCategory('all')" id="all-templates-btn">All Templates</button>
+                    <button class="filter-btn" onclick="showTemplateCategory('meta')" id="meta-btn">Meta Decks</button>
+                    <button class="filter-btn" onclick="showTemplateCategory('tier2')" id="tier2-btn">Tier 2</button>
+                    <button class="filter-btn" onclick="showTemplateCategory('casual')" id="casual-btn">Casual</button>
                 </div>
 
-                <div id="meta-decks" class="deck-section">
-                    <div class="modern-card-grid">
-                        <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid var(--gray-200);" class="interactive-hover">
-                            <div style="aspect-ratio: 16/9; background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); display: flex; align-items: center; justify-content: center; position: relative;">
-                                <img src="https://images.ygoprodeck.com/images/cards/76375976.jpg" alt="Snake-Eye Fire King" style="width: 120px; height: auto; border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
-                                <div style="position: absolute; top: var(--space-3); right: var(--space-3); background: var(--secondary-color); color: var(--gray-900); padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700;">TIER 1</div>
-                            </div>
-                            <div style="padding: var(--space-6);">
-                                <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Snake-Eye Fire King</h3>
-                                <p style="color: var(--gray-600); margin-bottom: var(--space-4); line-height: 1.5;">Dominant combo deck featuring Snake-Eye engine with Fire King support for consistent disruption.</p>
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
-                                    <span style="background: var(--success-color); color: white; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 600;">68% Win Rate</span>
-                                    <span style="font-size: 1.25rem; font-weight: 700; color: var(--primary-color);">~$450</span>
-                                </div>
-                                <div style="display: flex; gap: var(--space-3);">
-                                    <button style="flex: 1; padding: var(--space-3); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" onclick="loadSampleDeck('snake-eye')">Load in Builder</button>
-                                    <button style="flex: 1; padding: var(--space-3); background: var(--gray-100); color: var(--gray-700); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" onclick="buyDeck('snake-eye')">Buy Singles</button>
-                                </div>
-                            </div>
-                        </div>
+                <div id="templates-container">
+                    <div class="loading-container">
+                        <div class="loading-spinner"></div>
+                        <p class="loading-text">Loading deck templates...</p>
                     </div>
                 </div>
             </div>
@@ -677,8 +661,10 @@ class AppRouter {
                 window.deckBuilder = new DeckBuilderService();
             }
             
-            // Load user decks on page load
-            loadUserDecks();
+            // Ensure deck builder is ready before loading decks
+            setTimeout(() => {
+                loadUserDecks();
+            }, 100);
             
             // Deck management functions
             function loadUserDecks() {
@@ -688,14 +674,14 @@ class AppRouter {
                 if (!container) return;
                 
                 if (Object.keys(savedDecks).length === 0) {
-                    container.innerHTML = \`
+                    container.innerHTML = `
                         <div style="text-align: center; padding: var(--space-12); color: var(--gray-500);">
                             <div style="font-size: 4rem; margin-bottom: var(--space-4);">🃏</div>
                             <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3);">No Decks Yet</h3>
                             <p style="margin-bottom: var(--space-6);">Create your first deck to get started!</p>
                             <button class="primary-btn" onclick="createNewDeck()">Create New Deck</button>
                         </div>
-                    \`;
+                    `;
                     return;
                 }
                 
@@ -798,12 +784,515 @@ class AppRouter {
                 return stats;
             }
             
-            function createNewDeck() {
+            // Make ALL deck functions globally available
+            window.createNewDeck = function() {
+                console.log('createNewDeck called');
                 if (window.deckBuilder) {
                     window.deckBuilder.newDeck();
                     showDeckBuilder();
+                } else {
+                    console.error('deckBuilder not available');
                 }
+            };
+            
+            window.importDeck = function() {
+                console.log('importDeck called');
+                if (window.deckBuilder) {
+                    window.deckBuilder.openLoadDeckModal();
+                } else {
+                    console.error('deckBuilder not available');
+                }
+            };
+            
+            window.showDeckTemplates = async function() {
+                console.log('showDeckTemplates called');
+                
+                if (!window.deckBuilder) {
+                    console.error('deckBuilder not available');
+                    return;
+                }
+                
+                // Load templates directly into the popular decks section
+                try {
+                    const templates = await window.deckBuilder.getDeckTemplates();
+                    const container = document.getElementById('templates-container');
+                    if (container) {
+                        container.innerHTML = generateTemplatesGridHTML(templates);
+                    }
+                    
+                    // Switch to popular decks section to show templates
+                    window.showPopularDecks();
+                } catch (error) {
+                    console.error('Error loading deck templates:', error);
+                    alert('Error loading deck templates. Please try again.');
+                }
+            };
+
+            // Generate templates grid HTML
+            function generateTemplatesGridHTML(templates) {
+                if (!templates || templates.length === 0) {
+                    return `
+                        <div style="text-align: center; padding: var(--space-12); color: var(--gray-500);">
+                            <div style="font-size: 4rem; margin-bottom: var(--space-4);">🃏</div>
+                            <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3);">No Templates Available</h3>
+                            <p>Check back later for deck templates!</p>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: var(--space-6);">
+                        ${templates.map(template => `
+                            <div class="template-card" style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid var(--gray-200); transition: var(--transition-fast);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-xl)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-lg)'">
+                                <div style="background: linear-gradient(135deg, ${getTierColor(template.tier)} 0%, ${getTierColorDark(template.tier)} 100%); padding: var(--space-6); color: white; position: relative;">
+                                    <div style="position: absolute; top: var(--space-3); right: var(--space-3); background: rgba(255,255,255,0.2); padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">
+                                        ${template.tier}
+                                    </div>
+                                    <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: var(--space-2);">${template.name}</h3>
+                                    <p style="opacity: 0.9; font-size: 0.875rem; margin-bottom: var(--space-3);">${template.archetype} • ${template.format}</p>
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="font-size: 1.25rem; font-weight: 700;">$${template.estimatedPrice} CAD</span>
+                                        <span style="background: rgba(255,255,255,0.2); padding: var(--space-1) var(--space-3); border-radius: var(--radius-md); font-size: 0.875rem; font-weight: 600;">
+                                            ${template.winRate} Win Rate
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div style="padding: var(--space-6);">
+                                    <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-4);">${template.description}</p>
+                                    
+                                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); margin-bottom: var(--space-4);">
+                                        <div style="text-align: center; padding: var(--space-2); background: var(--gray-50); border-radius: var(--radius-md);">
+                                            <div style="font-size: 1.125rem; font-weight: 700; color: var(--primary-color);">${template.cardList.main.reduce((sum, card) => sum + card.quantity, 0)}</div>
+                                            <div style="font-size: 0.75rem; color: var(--gray-600);">Main Deck</div>
+                                        </div>
+                                        <div style="text-align: center; padding: var(--space-2); background: var(--gray-50); border-radius: var(--radius-md);">
+                                            <div style="font-size: 1.125rem; font-weight: 700; color: var(--secondary-color);">${template.cardList.extra.reduce((sum, card) => sum + card.quantity, 0)}</div>
+                                            <div style="font-size: 0.75rem; color: var(--gray-600);">Extra Deck</div>
+                                        </div>
+                                        <div style="text-align: center; padding: var(--space-2); background: var(--gray-50); border-radius: var(--radius-md);">
+                                            <div style="font-size: 1.125rem; font-weight: 700; color: var(--accent-color);">${template.cardList.side.reduce((sum, card) => sum + card.quantity, 0)}</div>
+                                            <div style="font-size: 0.75rem; color: var(--gray-600);">Side Deck</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                                        <div style="display: flex; gap: var(--space-2);">
+                                            <span style="background: ${getDifficultyColor(template.difficulty)}; color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">
+                                                ${template.difficulty}
+                                            </span>
+                                            <span style="background: var(--gray-200); color: var(--gray-700); padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">
+                                                Updated ${new Date(template.lastUpdated).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="display: flex; gap: var(--space-3);">
+                                        <button onclick="loadDeckTemplate('${template.id}')" style="flex: 1; padding: var(--space-3); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);">
+                                            Load Template
+                                        </button>
+                                        <button onclick="buyDeckTemplate('${template.id}')" style="flex: 1; padding: var(--space-3); background: var(--secondary-color); color: var(--gray-900); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);">
+                                            Buy Deck ($${template.estimatedPrice})
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
             }
+
+            // Helper functions for template display
+            function getTierColor(tier) {
+                const colors = {
+                    'Tier 1': 'var(--success-color)',
+                    'Tier 2': 'var(--primary-color)',
+                    'Tier 3': 'var(--accent-color)',
+                    'Casual': 'var(--secondary-color)'
+                };
+                return colors[tier] || 'var(--gray-600)';
+            }
+            
+            function getTierColorDark(tier) {
+                const colors = {
+                    'Tier 1': '#059669',
+                    'Tier 2': '#1d4ed8',
+                    'Tier 3': '#c2410c',
+                    'Casual': '#4338ca'
+                };
+                return colors[tier] || '#374151';
+            }
+            
+            function getDifficultyColor(difficulty) {
+                const colors = {
+                    'Beginner': 'var(--success-color)',
+                    'Intermediate': 'var(--accent-color)',
+                    'Advanced': 'var(--error-color)'
+                };
+                return colors[difficulty] || 'var(--gray-600)';
+            }
+            
+            function generateDeckTemplatesModalHTML(templates) {
+                return `
+                    <div class="deck-modal-overlay" onclick="closeDeckTemplatesModal()">
+                        <div class="deck-modal-content" onclick="event.stopPropagation()" style="max-width: 1200px; max-height: 90vh; overflow-y: auto;">
+                            <div class="deck-modal-header">
+                                <h2>🃏 Deck Templates</h2>
+                                <button onclick="closeDeckTemplatesModal()">×</button>
+                            </div>
+                            <div class="deck-modal-body">
+                                <div style="margin-bottom: var(--space-6); text-align: center;">
+                                    <p style="color: var(--gray-600); font-size: 1.125rem;">Choose from popular competitive deck lists powered by YGOPRODeck data</p>
+                                </div>
+                                
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: var(--space-6);">
+                                    ${templates.map(template => `
+                                        <div class="template-card" style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid var(--gray-200); transition: var(--transition-fast);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-xl)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-lg)'">
+                                            <div style="background: linear-gradient(135deg, ${getTierColor(template.tier)} 0%, ${getTierColorDark(template.tier)} 100%); padding: var(--space-6); color: white; position: relative;">
+                                                <div style="position: absolute; top: var(--space-3); right: var(--space-3); background: rgba(255,255,255,0.2); padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">
+                                                    ${template.tier}
+                                                </div>
+                                                <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: var(--space-2);">${template.name}</h3>
+                                                <p style="opacity: 0.9; font-size: 0.875rem; margin-bottom: var(--space-3);">${template.archetype} • ${template.format}</p>
+                                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                    <span style="font-size: 1.25rem; font-weight: 700;">$${template.estimatedPrice} CAD</span>
+                                                    <span style="background: rgba(255,255,255,0.2); padding: var(--space-1) var(--space-3); border-radius: var(--radius-md); font-size: 0.875rem; font-weight: 600;">
+                                                        ${template.winRate} Win Rate
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div style="padding: var(--space-6);">
+                                                <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-4);">${template.description}</p>
+                                                
+                                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); margin-bottom: var(--space-4);">
+                                                    <div style="text-align: center; padding: var(--space-2); background: var(--gray-50); border-radius: var(--radius-md);">
+                                                        <div style="font-size: 1.125rem; font-weight: 700; color: var(--primary-color);">${template.cardList.main.reduce((sum, card) => sum + card.quantity, 0)}</div>
+                                                        <div style="font-size: 0.75rem; color: var(--gray-600);">Main Deck</div>
+                                                    </div>
+                                                    <div style="text-align: center; padding: var(--space-2); background: var(--gray-50); border-radius: var(--radius-md);">
+                                                        <div style="font-size: 1.125rem; font-weight: 700; color: var(--secondary-color);">${template.cardList.extra.reduce((sum, card) => sum + card.quantity, 0)}</div>
+                                                        <div style="font-size: 0.75rem; color: var(--gray-600);">Extra Deck</div>
+                                                    </div>
+                                                    <div style="text-align: center; padding: var(--space-2); background: var(--gray-50); border-radius: var(--radius-md);">
+                                                        <div style="font-size: 1.125rem; font-weight: 700; color: var(--accent-color);">${template.cardList.side.reduce((sum, card) => sum + card.quantity, 0)}</div>
+                                                        <div style="font-size: 0.75rem; color: var(--gray-600);">Side Deck</div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                                                    <div style="display: flex; gap: var(--space-2);">
+                                                        <span style="background: ${getDifficultyColor(template.difficulty)}; color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">
+                                                            ${template.difficulty}
+                                                        </span>
+                                                        <span style="background: var(--gray-200); color: var(--gray-700); padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">
+                                                            Updated ${new Date(template.lastUpdated).toLocaleDateString()}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div style="display: flex; gap: var(--space-3);">
+                                                    <button onclick="loadDeckTemplate('${template.id}')" style="flex: 1; padding: var(--space-3); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);">
+                                                        Load Template
+                                                    </button>
+                                                    <button onclick="previewDeckTemplate('${template.id}')" style="flex: 1; padding: var(--space-3); background: var(--gray-100); color: var(--gray-700); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);">
+                                                        Preview Cards
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                
+                                <div style="margin-top: var(--space-8); padding: var(--space-6); background: var(--gray-50); border-radius: var(--radius-lg); text-align: center;">
+                                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">💡 Template Tips</h3>
+                                    <ul style="list-style: none; padding: 0; margin: 0; color: var(--gray-700); line-height: 1.6;">
+                                        <li style="margin-bottom: var(--space-2);">• Templates are loaded with real card data from YGOPRODeck API</li>
+                                        <li style="margin-bottom: var(--space-2);">• All decks are tournament-legal and follow current banlist</li>
+                                        <li style="margin-bottom: var(--space-2);">• You can modify templates after loading to suit your playstyle</li>
+                                        <li>• Prices are estimated in CAD and may vary based on card condition</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            function getTierColor(tier) {
+                const colors = {
+                    'Tier 1': 'var(--success-color)',
+                    'Tier 2': 'var(--primary-color)',
+                    'Tier 3': 'var(--accent-color)',
+                    'Casual': 'var(--secondary-color)'
+                };
+                return colors[tier] || 'var(--gray-600)';
+            }
+            
+            function getTierColorDark(tier) {
+                const colors = {
+                    'Tier 1': '#059669',
+                    'Tier 2': '#1d4ed8',
+                    'Tier 3': '#c2410c',
+                    'Casual': '#4338ca'
+                };
+                return colors[tier] || '#374151';
+            }
+            
+            function getDifficultyColor(difficulty) {
+                const colors = {
+                    'Beginner': 'var(--success-color)',
+                    'Intermediate': 'var(--accent-color)',
+                    'Advanced': 'var(--error-color)'
+                };
+                return colors[difficulty] || 'var(--gray-600)';
+            }
+            
+            window.closeDeckTemplatesModal = function() {
+                const modal = document.getElementById('deck-templates-modal');
+                if (modal) {
+                    modal.remove();
+                    document.body.style.overflow = '';
+                }
+            };
+            
+            window.loadDeckTemplate = async function(templateId) {
+                if (window.deckBuilder) {
+                    try {
+                        await window.deckBuilder.loadDeckTemplate(templateId);
+                        window.closeDeckTemplatesModal();
+                        window.showDeckBuilder();
+                    } catch (error) {
+                        console.error('Error loading template:', error);
+                        alert('Error loading deck template. Please try again.');
+                    }
+                }
+            };
+            
+            window.previewDeckTemplate = async function(templateId) {
+                if (window.deckBuilder) {
+                    try {
+                        const templates = await window.deckBuilder.getDeckTemplates();
+                        const template = templates.find(t => t.id === templateId);
+                        
+                        if (template) {
+                            // Create preview modal
+                            const previewModal = document.createElement('div');
+                            previewModal.id = 'deck-preview-modal';
+                            previewModal.className = 'deck-modal';
+                            previewModal.style.display = 'flex';
+                            previewModal.innerHTML = generateDeckPreviewHTML(template);
+                            document.body.appendChild(previewModal);
+                        }
+                    } catch (error) {
+                        console.error('Error previewing template:', error);
+                        alert('Error previewing deck template. Please try again.');
+                    }
+                }
+            };
+            
+            function generateDeckPreviewHTML(template) {
+                return `
+                    <div class="deck-modal-overlay" onclick="closeDeckPreviewModal()">
+                        <div class="deck-modal-content" onclick="event.stopPropagation()" style="max-width: 1000px; max-height: 90vh; overflow-y: auto;">
+                            <div class="deck-modal-header">
+                                <h2>📋 ${template.name} - Card List</h2>
+                                <button onclick="closeDeckPreviewModal()">×</button>
+                            </div>
+                            <div class="deck-modal-body">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-6);">
+                                    <div>
+                                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--primary-color); margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-2);">
+                                            🃏 Main Deck (${template.cardList.main.reduce((sum, card) => sum + card.quantity, 0)})
+                                        </h3>
+                                        <div style="space-y: var(--space-2);">
+                                            ${template.cardList.main.map(card => `
+                                                <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-2); background: var(--gray-50); border-radius: var(--radius-md); margin-bottom: var(--space-1);">
+                                                    <span style="font-size: 0.875rem; color: var(--gray-900);">${card.name}</span>
+                                                    <span style="background: var(--primary-color); color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">×${card.quantity}</span>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--secondary-color); margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-2);">
+                                            ⭐ Extra Deck (${template.cardList.extra.reduce((sum, card) => sum + card.quantity, 0)})
+                                        </h3>
+                                        <div style="space-y: var(--space-2);">
+                                            ${template.cardList.extra.map(card => `
+                                                <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-2); background: var(--gray-50); border-radius: var(--radius-md); margin-bottom: var(--space-1);">
+                                                    <span style="font-size: 0.875rem; color: var(--gray-900);">${card.name}</span>
+                                                    <span style="background: var(--secondary-color); color: var(--gray-900); padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">×${card.quantity}</span>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--accent-color); margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-2);">
+                                            🔄 Side Deck (${template.cardList.side.reduce((sum, card) => sum + card.quantity, 0)})
+                                        </h3>
+                                        <div style="space-y: var(--space-2);">
+                                            ${template.cardList.side.map(card => `
+                                                <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-2); background: var(--gray-50); border-radius: var(--radius-md); margin-bottom: var(--space-1);">
+                                                    <span style="font-size: 0.875rem; color: var(--gray-900);">${card.name}</span>
+                                                    <span style="background: var(--accent-color); color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">×${card.quantity}</span>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-top: var(--space-8); padding: var(--space-6); background: linear-gradient(135deg, ${getTierColor(template.tier)} 0%, ${getTierColorDark(template.tier)} 100%); border-radius: var(--radius-lg); color: white; text-align: center;">
+                                    <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: var(--space-3);">${template.name}</h3>
+                                    <p style="opacity: 0.9; margin-bottom: var(--space-4);">${template.description}</p>
+                                    <div style="display: flex; justify-content: center; gap: var(--space-4);">
+                                        <button onclick="loadDeckTemplate('${template.id}'); closeDeckPreviewModal();" style="padding: var(--space-3) var(--space-6); background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);">
+                                            Load This Template
+                                        </button>
+                                        <button onclick="closeDeckPreviewModal()" style="padding: var(--space-3) var(--space-6); background: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);">
+                                            Close Preview
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            window.closeDeckPreviewModal = function() {
+                const modal = document.getElementById('deck-preview-modal');
+                if (modal) {
+                    modal.remove();
+                }
+            };
+
+            window.showTemplateCategory = function(category) {
+                console.log('Showing template category:', category);
+                
+                // Update active button
+                document.querySelectorAll('#popular-decks-section .filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.getElementById(category === 'all' ? 'all-templates-btn' : category + '-btn')?.classList.add('active');
+                
+                // Filter and display templates
+                if (window.deckBuilder) {
+                    window.deckBuilder.getDeckTemplates().then(templates => {
+                        let filteredTemplates = templates;
+                        
+                        if (category !== 'all') {
+                            filteredTemplates = templates.filter(template => {
+                                switch (category) {
+                                    case 'meta':
+                                        return template.tier === 'Tier 1';
+                                    case 'tier2':
+                                        return template.tier === 'Tier 2';
+                                    case 'casual':
+                                        return template.tier === 'Casual';
+                                    default:
+                                        return true;
+                                }
+                            });
+                        }
+                        
+                        const container = document.getElementById('templates-container');
+                        if (container) {
+                            container.innerHTML = generateTemplatesGridHTML(filteredTemplates);
+                        }
+                    });
+                }
+            };
+
+            window.loadDeckTemplate = async function(templateId) {
+                if (window.deckBuilder) {
+                    try {
+                        await window.deckBuilder.loadDeckTemplate(templateId);
+                        window.showDeckBuilder();
+                    } catch (error) {
+                        console.error('Error loading template:', error);
+                        alert('Error loading deck template. Please try again.');
+                    }
+                }
+            };
+
+            window.buyDeckTemplate = function(templateId) {
+                alert('This would add all cards from template ' + templateId + ' to your cart.');
+            };
+
+            window.showMyDecks = function() {
+                console.log('showMyDecks called');
+                document.getElementById('my-decks-section').style.display = 'block';
+                document.getElementById('deck-builder-section').style.display = 'none';
+                document.getElementById('popular-decks-section').style.display = 'none';
+                
+                document.getElementById('my-decks-btn').classList.add('active');
+                document.getElementById('builder-btn').classList.remove('active');
+                document.getElementById('popular-btn').classList.remove('active');
+                
+                loadUserDecks();
+            };
+
+            window.showDeckBuilder = function() {
+                console.log('showDeckBuilder called');
+                document.getElementById('my-decks-section').style.display = 'none';
+                document.getElementById('deck-builder-section').style.display = 'block';
+                document.getElementById('popular-decks-section').style.display = 'none';
+                
+                document.getElementById('my-decks-btn').classList.remove('active');
+                document.getElementById('builder-btn').classList.add('active');
+                document.getElementById('popular-btn').classList.remove('active');
+            };
+
+            window.showPopularDecks = function() {
+                console.log('showPopularDecks called');
+                document.getElementById('my-decks-section').style.display = 'none';
+                document.getElementById('deck-builder-section').style.display = 'none';
+                document.getElementById('popular-decks-section').style.display = 'block';
+                
+                document.getElementById('my-decks-btn').classList.remove('active');
+                document.getElementById('builder-btn').classList.remove('active');
+                document.getElementById('popular-btn').classList.add('active');
+            };
+
+            window.loadUserDecks = function() {
+                console.log('loadUserDecks called');
+                const savedDecks = window.deckBuilder ? window.deckBuilder.getSavedDecks() : {};
+                const container = document.getElementById('user-decks-grid');
+                
+                if (!container) {
+                    console.error('user-decks-grid container not found');
+                    return;
+                }
+                
+                if (Object.keys(savedDecks).length === 0) {
+                    container.innerHTML = \`
+                        <div style="text-align: center; padding: var(--space-12); color: var(--gray-500);">
+                            <div style="font-size: 4rem; margin-bottom: var(--space-4);">🃏</div>
+                            <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3);">No Decks Yet</h3>
+                            <p style="margin-bottom: var(--space-6);">Create your first deck to get started!</p>
+                            <button class="primary-btn" onclick="createNewDeck()">Create New Deck</button>
+                        </div>
+                    \`;
+                    return;
+                }
+                
+                const sortedDecks = Object.entries(savedDecks).sort((a, b) => {
+                    const sortBy = document.getElementById('deck-sort')?.value || 'updated';
+                    switch (sortBy) {
+                        case 'created':
+                            return new Date(b[1].metadata.createdAt) - new Date(a[1].metadata.createdAt);
+                        case 'name':
+                            return a[1].metadata.name.localeCompare(b[1].metadata.name);
+                        default: // updated
+                            return new Date(b[1].metadata.updatedAt) - new Date(a[1].metadata.updatedAt);
+                    }
+                });
+                
+                container.innerHTML = sortedDecks.map(([id, deckData]) => generateDeckCardHTML(id, deckData)).join('');
+            };
             
             function editDeck(deckId) {
                 if (window.deckBuilder) {
@@ -1912,6 +2401,7 @@ class AppRouter {
                 break;
             case 'decks':
                 // Initialize deck-specific functionality
+                this.initializeDeckFunctions();
                 break;
             case 'events':
                 // Initialize events-specific functionality
@@ -1924,6 +2414,296 @@ class AppRouter {
                 this.initializeProductPage(params);
                 break;
         }
+    }
+
+    initializeDeckFunctions() {
+        // Initialize deck builder when page loads
+        if (!window.deckBuilder) {
+            window.deckBuilder = new DeckBuilderService();
+        }
+        
+        // Define all deck management functions globally
+        window.createNewDeck = function() {
+            console.log('createNewDeck called');
+            if (window.deckBuilder) {
+                window.deckBuilder.newDeck();
+                if (typeof window.showDeckBuilder === 'function') {
+                    window.showDeckBuilder();
+                }
+            } else {
+                console.error('deckBuilder not available');
+            }
+        };
+        
+        window.importDeck = function() {
+            console.log('importDeck called');
+            if (window.deckBuilder) {
+                window.deckBuilder.openLoadDeckModal();
+            } else {
+                console.error('deckBuilder not available');
+            }
+        };
+        
+        window.showDeckTemplates = function() {
+            console.log('showDeckTemplates called');
+            alert('Deck templates feature coming soon! This will provide starter decks for different archetypes.');
+        };
+
+        window.showMyDecks = function() {
+            console.log('showMyDecks called');
+            const myDecksSection = document.getElementById('my-decks-section');
+            const builderSection = document.getElementById('deck-builder-section');
+            const popularSection = document.getElementById('popular-decks-section');
+            
+            if (myDecksSection) myDecksSection.style.display = 'block';
+            if (builderSection) builderSection.style.display = 'none';
+            if (popularSection) popularSection.style.display = 'none';
+            
+            const myDecksBtn = document.getElementById('my-decks-btn');
+            const builderBtn = document.getElementById('builder-btn');
+            const popularBtn = document.getElementById('popular-btn');
+            
+            if (myDecksBtn) myDecksBtn.classList.add('active');
+            if (builderBtn) builderBtn.classList.remove('active');
+            if (popularBtn) popularBtn.classList.remove('active');
+            
+            if (typeof window.loadUserDecks === 'function') {
+                window.loadUserDecks();
+            }
+        };
+
+        window.showDeckBuilder = function() {
+            console.log('showDeckBuilder called');
+            const myDecksSection = document.getElementById('my-decks-section');
+            const builderSection = document.getElementById('deck-builder-section');
+            const popularSection = document.getElementById('popular-decks-section');
+            
+            if (myDecksSection) myDecksSection.style.display = 'none';
+            if (builderSection) builderSection.style.display = 'block';
+            if (popularSection) popularSection.style.display = 'none';
+            
+            const myDecksBtn = document.getElementById('my-decks-btn');
+            const builderBtn = document.getElementById('builder-btn');
+            const popularBtn = document.getElementById('popular-btn');
+            
+            if (myDecksBtn) myDecksBtn.classList.remove('active');
+            if (builderBtn) builderBtn.classList.add('active');
+            if (popularBtn) popularBtn.classList.remove('active');
+        };
+
+        window.showPopularDecks = function() {
+            console.log('showPopularDecks called');
+            const myDecksSection = document.getElementById('my-decks-section');
+            const builderSection = document.getElementById('deck-builder-section');
+            const popularSection = document.getElementById('popular-decks-section');
+            
+            if (myDecksSection) myDecksSection.style.display = 'none';
+            if (builderSection) builderSection.style.display = 'none';
+            if (popularSection) popularSection.style.display = 'block';
+            
+            const myDecksBtn = document.getElementById('my-decks-btn');
+            const builderBtn = document.getElementById('builder-btn');
+            const popularBtn = document.getElementById('popular-btn');
+            
+            if (myDecksBtn) myDecksBtn.classList.remove('active');
+            if (builderBtn) builderBtn.classList.remove('active');
+            if (popularBtn) popularBtn.classList.add('active');
+        };
+
+        window.loadUserDecks = function() {
+            console.log('loadUserDecks called');
+            const savedDecks = window.deckBuilder ? window.deckBuilder.getSavedDecks() : {};
+            const container = document.getElementById('user-decks-grid');
+            
+            if (!container) {
+                console.error('user-decks-grid container not found');
+                return;
+            }
+            
+            if (Object.keys(savedDecks).length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: var(--space-12); color: var(--gray-500);">
+                        <div style="font-size: 4rem; margin-bottom: var(--space-4);">🃏</div>
+                        <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3);">No Decks Yet</h3>
+                        <p style="margin-bottom: var(--space-6);">Create your first deck to get started!</p>
+                        <button class="primary-btn" onclick="createNewDeck()">Create New Deck</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const sortedDecks = Object.entries(savedDecks).sort((a, b) => {
+                const sortBy = document.getElementById('deck-sort')?.value || 'updated';
+                switch (sortBy) {
+                    case 'created':
+                        return new Date(b[1].metadata.createdAt) - new Date(a[1].metadata.createdAt);
+                    case 'name':
+                        return a[1].metadata.name.localeCompare(b[1].metadata.name);
+                    default: // updated
+                        return new Date(b[1].metadata.updatedAt) - new Date(a[1].metadata.updatedAt);
+                }
+            });
+            
+            container.innerHTML = sortedDecks.map(([id, deckData]) => window.generateDeckCardHTML(id, deckData)).join('');
+        };
+
+        // Additional helper functions
+        window.generateDeckCardHTML = function(id, deckData) {
+            const stats = window.calculateDeckStats(deckData.deck);
+            const lastModified = new Date(deckData.metadata.updatedAt).toLocaleDateString();
+            
+            return `
+                <div class="deck-card-item" style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); border: 1px solid var(--gray-200); overflow: hidden; transition: var(--transition-fast);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-lg)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-md)'">
+                    <div style="padding: var(--space-6);">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--space-4);">
+                            <div>
+                                <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">${deckData.metadata.name}</h3>
+                                <p style="color: var(--gray-600); font-size: 0.875rem;">Modified: ${lastModified}</p>
+                            </div>
+                            <div class="deck-actions" style="display: flex; gap: var(--space-2);">
+                                <button onclick="editDeck('${id}')" style="padding: var(--space-1) var(--space-2); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-sm); font-size: 0.75rem; cursor: pointer;" title="Edit Deck">✏️</button>
+                                <button onclick="duplicateDeck('${id}')" style="padding: var(--space-1) var(--space-2); background: var(--secondary-color); color: var(--gray-900); border: none; border-radius: var(--radius-sm); font-size: 0.75rem; cursor: pointer;" title="Duplicate">📋</button>
+                                <button onclick="exportDeck('${id}')" style="padding: var(--space-1) var(--space-2); background: var(--accent-color); color: var(--gray-900); border: none; border-radius: var(--radius-sm); font-size: 0.75rem; cursor: pointer;" title="Export">📤</button>
+                                <button onclick="deleteDeckConfirm('${id}')" style="padding: var(--space-1) var(--space-2); background: var(--error-color); color: white; border: none; border-radius: var(--radius-sm); font-size: 0.75rem; cursor: pointer;" title="Delete">🗑️</button>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); margin-bottom: var(--space-4);">
+                            <div style="text-align: center; padding: var(--space-2); background: var(--gray-50); border-radius: var(--radius-md);">
+                                <div style="font-size: 1.25rem; font-weight: 700; color: ${stats.main.total < 40 || stats.main.total > 60 ? 'var(--error-color)' : 'var(--success-color)'};">${stats.main.total}</div>
+                                <div style="font-size: 0.75rem; color: var(--gray-600);">Main Deck</div>
+                            </div>
+                            <div style="text-align: center; padding: var(--space-2); background: var(--gray-50); border-radius: var(--radius-md);">
+                                <div style="font-size: 1.25rem; font-weight: 700; color: ${stats.extra.total > 15 ? 'var(--error-color)' : 'var(--success-color)'};">${stats.extra.total}</div>
+                                <div style="font-size: 0.75rem; color: var(--gray-600);">Extra Deck</div>
+                            </div>
+                            <div style="text-align: center; padding: var(--space-2); background: var(--gray-50); border-radius: var(--radius-md);">
+                                <div style="font-size: 1.25rem; font-weight: 700; color: ${stats.side.total > 15 ? 'var(--error-color)' : 'var(--success-color)'};">${stats.side.total}</div>
+                                <div style="font-size: 0.75rem; color: var(--gray-600);">Side Deck</div>
+                            </div>
+                        </div>
+                        
+                        ${deckData.metadata.description ? `
+                            <p style="color: var(--gray-600); font-size: 0.875rem; line-height: 1.4; margin-bottom: var(--space-4);">${deckData.metadata.description}</p>
+                        ` : ''}
+                        
+                        <div style="display: flex; gap: var(--space-3);">
+                            <button onclick="editDeck('${id}')" style="flex: 1; padding: var(--space-3); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
+                                View/Edit Deck
+                            </button>
+                            <button onclick="testDeck('${id}')" style="flex: 1; padding: var(--space-3); background: var(--gray-100); color: var(--gray-700); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
+                                Test Deck
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        };
+
+        window.calculateDeckStats = function(deck) {
+            const stats = {
+                main: { total: 0, monsters: 0, spells: 0, traps: 0 },
+                extra: { total: 0, fusion: 0, synchro: 0, xyz: 0, link: 0 },
+                side: { total: 0 }
+            };
+            
+            if (deck.main) {
+                stats.main.total = deck.main.reduce((sum, card) => sum + (card.quantity || 1), 0);
+                deck.main.forEach(card => {
+                    const qty = card.quantity || 1;
+                    if (card.type && card.type.includes('Monster')) {
+                        stats.main.monsters += qty;
+                    } else if (card.type && card.type.includes('Spell')) {
+                        stats.main.spells += qty;
+                    } else if (card.type && card.type.includes('Trap')) {
+                        stats.main.traps += qty;
+                    }
+                });
+            }
+            
+            if (deck.extra) {
+                stats.extra.total = deck.extra.reduce((sum, card) => sum + (card.quantity || 1), 0);
+            }
+            
+            if (deck.side) {
+                stats.side.total = deck.side.reduce((sum, card) => sum + (card.quantity || 1), 0);
+            }
+            
+            return stats;
+        };
+
+        // Define additional deck management functions
+        window.editDeck = function(deckId) {
+            if (window.deckBuilder) {
+                window.deckBuilder.loadSavedDeck(deckId);
+                window.showDeckBuilder();
+            }
+        };
+        
+        window.duplicateDeck = function(deckId) {
+            if (window.deckBuilder) {
+                const savedDecks = window.deckBuilder.getSavedDecks();
+                const originalDeck = savedDecks[deckId];
+                
+                if (originalDeck) {
+                    const duplicatedDeck = {
+                        deck: JSON.parse(JSON.stringify(originalDeck.deck)),
+                        metadata: {
+                            ...originalDeck.metadata,
+                            name: originalDeck.metadata.name + ' (Copy)',
+                            id: undefined,
+                            createdAt: new Date().toISOString(),
+                            updatedAt: new Date().toISOString()
+                        }
+                    };
+                    
+                    window.deckBuilder.loadDeck(duplicatedDeck);
+                    window.deckBuilder.saveDeck();
+                    window.loadUserDecks();
+                    window.deckBuilder.showToast('Deck duplicated successfully!', 'success');
+                }
+            }
+        };
+        
+        window.exportDeck = function(deckId) {
+            if (window.deckBuilder) {
+                const savedDecks = window.deckBuilder.getSavedDecks();
+                const deckData = savedDecks[deckId];
+                
+                if (deckData) {
+                    // Load the deck temporarily to export it
+                    const currentDeck = window.deckBuilder.currentDeck;
+                    const currentMetadata = window.deckBuilder.deckMetadata;
+                    
+                    window.deckBuilder.currentDeck = deckData.deck;
+                    window.deckBuilder.deckMetadata = deckData.metadata;
+                    window.deckBuilder.downloadYDK();
+                    
+                    // Restore current deck
+                    window.deckBuilder.currentDeck = currentDeck;
+                    window.deckBuilder.deckMetadata = currentMetadata;
+                }
+            }
+        };
+        
+        window.deleteDeckConfirm = function(deckId) {
+            const savedDecks = window.deckBuilder ? window.deckBuilder.getSavedDecks() : {};
+            const deckData = savedDecks[deckId];
+            
+            if (deckData && confirm(`Are you sure you want to delete "${deckData.metadata.name}"? This action cannot be undone.`)) {
+                if (window.deckBuilder) {
+                    window.deckBuilder.deleteDeck(deckId);
+                    window.loadUserDecks();
+                }
+            }
+        };
+        
+        window.testDeck = function(deckId) {
+            // Placeholder for deck testing functionality
+            alert('Deck testing feature coming soon! This will allow you to test hands and simulate games.');
+        };
+
+        console.log('All deck functions initialized globally');
     }
 
     async initializeProductPage(params) {
