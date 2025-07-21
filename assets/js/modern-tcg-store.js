@@ -886,45 +886,36 @@ class ModernTCGStore {
     }
 
     generateCartItemHTML(item) {
-        // Ensure all values are properly converted to safe strings/numbers
-        const safeName = this.ensureString(item.name) || 'Unknown Item';
-        const safePrice = parseFloat(item.price) || 0;
-        const safeQuantity = parseInt(item.quantity) || 1;
-        const safeImage = this.ensureString(item.image) || 'https://images.ygoprodeck.com/images/cards/back.jpg';
-        const safeSetCode = this.ensureString(item.setCode);
-        const safeRarity = this.ensureString(item.rarity);
-        const safeId = item.id || Date.now();
-        
-        const itemTotal = safePrice * safeQuantity;
-        const hasSetInfo = safeSetCode && safeRarity;
+        const itemTotal = (item.price * item.quantity).toFixed(2);
+        const hasSetInfo = item.setCode && item.rarity;
 
         return `
-            <div class="cart-item" data-item-id="${safeId}">
+            <div class="cart-item" data-item-id="${item.id}">
                 <div class="cart-item-image">
-                    <img src="${safeImage}" alt="${safeName}" style="width: 60px; height: 84px; object-fit: contain; border-radius: var(--radius-md);">
+                    <img src="${item.image}" alt="${item.name}" style="width: 60px; height: 84px; object-fit: contain; border-radius: var(--radius-md);">
                 </div>
                 <div class="cart-item-details">
-                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1); line-height: 1.3;">${safeName}</h4>
+                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1); line-height: 1.3;">${item.name}</h4>
                     ${hasSetInfo ? `
                         <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-1);">
-                            <span style="background: var(--primary-color); color: white; padding: 2px 6px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">${safeSetCode}</span>
-                            <span style="background: var(--secondary-color); color: var(--gray-900); padding: 2px 6px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">${safeRarity}</span>
+                            <span style="background: var(--primary-color); color: white; padding: 2px 6px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">${item.setCode}</span>
+                            <span style="background: var(--secondary-color); color: var(--gray-900); padding: 2px 6px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">${item.rarity}</span>
                         </div>
                     ` : ''}
-                    <p style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2);">$${safePrice.toFixed(2)} each</p>
+                    <p style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2);">$${item.price.toFixed(2)} each</p>
                     <div class="cart-item-controls">
                         <div class="quantity-controls">
-                            <button class="quantity-btn" onclick="tcgStore.updateCartQuantity(${safeId}, ${Math.max(1, safeQuantity - 1)})">-</button>
-                            <span class="quantity-display">${safeQuantity}</span>
-                            <button class="quantity-btn" onclick="tcgStore.updateCartQuantity(${safeId}, ${safeQuantity + 1})">+</button>
+                            <button class="quantity-btn" onclick="tcgStore.updateCartQuantity(${item.id}, ${item.quantity - 1})">-</button>
+                            <span class="quantity-display">${item.quantity}</span>
+                            <button class="quantity-btn" onclick="tcgStore.updateCartQuantity(${item.id}, ${item.quantity + 1})">+</button>
                         </div>
-                        <button class="remove-btn" onclick="tcgStore.removeFromCart(${safeId})" title="Remove from cart">
+                        <button class="remove-btn" onclick="tcgStore.removeFromCart(${item.id})" title="Remove from cart">
                             🗑️
                         </button>
                     </div>
                 </div>
                 <div class="cart-item-total">
-                    <span style="font-size: 1.125rem; font-weight: 700; color: var(--primary-color);">$${itemTotal.toFixed(2)}</span>
+                    <span style="font-size: 1.125rem; font-weight: 700; color: var(--primary-color);">$${itemTotal}</span>
                 </div>
             </div>
         `;
