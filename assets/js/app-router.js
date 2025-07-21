@@ -886,23 +886,123 @@ function changeQuantity(change) {
 function addProductToCartWithDetails(cardName, price, image, rarity) {
     const quantityInput = document.getElementById('quantity');
     const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
+    const numericPrice = parseFloat(price) || 0;
+    const totalPrice = (numericPrice * quantity).toFixed(2);
     
     // Add to cart with full details
     if (window.tcgStore && window.tcgStore.addToCart) {
         window.tcgStore.addToCart({
             name: cardName,
-            price: parseFloat(price),
+            price: numericPrice,
             image: image,
             rarity: rarity,
             quantity: quantity
         });
-        
-        // Show success message
-        alert(`Added ${quantity}x ${cardName} (${rarity}) to cart for $${(parseFloat(price) * quantity).toFixed(2)}`);
-    } else {
-        // Fallback - show alert for now
-        alert(`Would add ${quantity}x ${cardName} (${rarity}) to cart for $${(parseFloat(price) * quantity).toFixed(2)}`);
     }
+    
+    // Show modern toast notification
+    showToastNotification({
+        title: 'Added to Cart!',
+        message: `${quantity}x ${cardName} (${rarity})`,
+        price: `$${totalPrice}`,
+        image: image,
+        type: 'success'
+    });
+}
+
+// Modern toast notification system
+function showToastNotification(options) {
+    // Create toast container if it doesn't exist
+    let toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toast-container';
+        toastContainer.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        `;
+        document.body.appendChild(toastContainer);
+    }
+    
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        padding: 16px;
+        min-width: 320px;
+        max-width: 400px;
+        border-left: 4px solid #16a34a;
+        transform: translateX(100%);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: auto;
+        position: relative;
+        overflow: hidden;
+    `;
+    
+    toast.innerHTML = `
+        <div style="display: flex; align-items: flex-start; gap: 12px;">
+            <img src="${options.image}" alt="${options.title}" style="width: 48px; height: 64px; object-fit: contain; border-radius: 6px; flex-shrink: 0;">
+            <div style="flex: 1; min-width: 0;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                    <h4 style="margin: 0; font-size: 14px; font-weight: 600; color: #16a34a;">✓ ${options.title}</h4>
+                    <button onclick="this.closest('[id^=toast-]').remove()" style="background: none; border: none; font-size: 18px; color: #6b7280; cursor: pointer; padding: 0; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">×</button>
+                </div>
+                <p style="margin: 0 0 4px 0; font-size: 13px; color: #374151; line-height: 1.4;">${options.message}</p>
+                <p style="margin: 0; font-size: 14px; font-weight: 600; color: #dc2626;">${options.price}</p>
+            </div>
+        </div>
+        <div style="position: absolute; bottom: 0; left: 0; height: 3px; background: #16a34a; width: 100%; transform-origin: left; animation: toastProgress 4s linear forwards;"></div>
+    `;
+    
+    // Add unique ID
+    toast.id = `toast-${Date.now()}`;
+    
+    // Add CSS animation for progress bar
+    if (!document.getElementById('toast-styles')) {
+        const style = document.createElement('style');
+        style.id = 'toast-styles';
+        style.textContent = `
+            @keyframes toastProgress {
+                from { transform: scaleX(1); }
+                to { transform: scaleX(0); }
+            }
+            @keyframes toastSlideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes toastSlideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    toastContainer.appendChild(toast);
+    
+    // Trigger slide-in animation
+    setTimeout(() => {
+        toast.style.transform = 'translateX(0)';
+        toast.style.opacity = '1';
+    }, 10);
+    
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+        toast.style.animation = 'toastSlideOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.remove();
+            }
+        }, 300);
+    }, 4000);
 }
 
 // Initialize router when DOM is loaded
