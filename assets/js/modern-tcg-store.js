@@ -855,7 +855,7 @@ class ModernTCGStore {
         
         // Ensure item name is a string, not an object
         const itemName = String(item.name || 'Unknown Item');
-        const itemImage = String(item.image || '');
+        const itemImage = String(item.image || 'https://images.ygoprodeck.com/images/cards/back.jpg');
         
         return `
             <div class="cart-item" data-item-id="${item.id}">
