@@ -8,6 +8,9 @@ class ModernTCGStore {
         this.apiBaseURL = 'https://db.ygoprodeck.com/api/v7';
         this.cache = new Map();
         this.cacheExpiry = 5 * 60 * 1000; // 5 minutes
+        
+        // Force clear corrupted cart data and start fresh
+        this.clearCorruptedCartData();
         this.cart = this.loadAndCleanCart();
         this.isLoading = false;
         this.currentCards = [];
@@ -21,6 +24,16 @@ class ModernTCGStore {
         this.orders = JSON.parse(localStorage.getItem('tcg-orders') || '[]');
         
         this.init();
+    }
+
+    clearCorruptedCartData() {
+        try {
+            // Force clear any existing cart data to start fresh
+            localStorage.removeItem('tcg-cart');
+            console.log('Cart data cleared for fresh start');
+        } catch (error) {
+            console.error('Error clearing cart data:', error);
+        }
     }
 
     loadAndCleanCart() {
