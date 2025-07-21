@@ -1161,16 +1161,17 @@ class ModernTCGStore {
             return;
         }
 
-        // Animate each item out with staggered timing
+        // Animate each item out with staggered timing - simpler fade out
         cartItems.forEach((item, index) => {
             setTimeout(() => {
-                item.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-                item.style.transform = 'translateX(100%) scale(0.8)';
+                item.style.transition = 'all 0.3s ease-out';
+                item.style.transform = 'translateY(-10px)';
                 item.style.opacity = '0';
-                
-                // Add a subtle shake animation before sliding out
-                item.style.animation = 'cartItemShake 0.2s ease-in-out, cartItemSlideOut 0.4s ease-in-out 0.2s forwards';
-            }, index * 100); // Stagger each item by 100ms
+                item.style.height = '0';
+                item.style.padding = '0';
+                item.style.margin = '0';
+                item.style.overflow = 'hidden';
+            }, index * 80); // Stagger each item by 80ms
         });
 
         // Clear the cart data after all animations complete
@@ -1185,10 +1186,10 @@ class ModernTCGStore {
                 this.updateCartModalContent();
             }
             
-            // Show success message with confetti effect
-            this.showToast('🎉 Cart cleared successfully!', 'success');
+            // Show success message
+            this.showToast('Cart cleared successfully!', 'success');
             
-        }, (totalItems * 100) + 600); // Wait for all animations plus buffer
+        }, (totalItems * 80) + 400); // Wait for all animations plus buffer
     }
 
     // Account System Methods
