@@ -594,6 +594,8 @@ class ModernTCGStore {
     }
 
     addToCart(cardName, price, image) {
+        // Ensure price is a valid number, default to 0 if null/undefined
+        const validPrice = parseFloat(price) || 0;
         const existingItem = this.cart.find(item => item.name === cardName);
         
         if (existingItem) {
@@ -601,7 +603,7 @@ class ModernTCGStore {
         } else {
             this.cart.push({
                 name: cardName,
-                price: parseFloat(price),
+                price: validPrice,
                 image: image,
                 quantity: 1,
                 id: Date.now()
@@ -716,12 +718,15 @@ class ModernTCGStore {
         const itemKey = `${cardName}_${setCode}_${rarity}`;
         const existingItem = this.cart.find(item => item.itemKey === itemKey);
         
+        // Ensure price is a valid number, default to 0 if null/undefined
+        const validPrice = parseFloat(price) || 0;
+        
         if (existingItem) {
             existingItem.quantity += 1;
         } else {
             this.cart.push({
                 name: cardName,
-                price: parseFloat(price),
+                price: validPrice,
                 image: image,
                 quantity: 1,
                 id: Date.now() + Math.random(), // Ensure unique ID
@@ -836,7 +841,10 @@ class ModernTCGStore {
     }
 
     generateCartItemHTML(item) {
-        const itemTotal = (item.price * item.quantity).toFixed(2);
+        // Ensure price is a valid number, default to 0 if null/undefined
+        const price = parseFloat(item.price) || 0;
+        const quantity = parseInt(item.quantity) || 1;
+        const itemTotal = (price * quantity).toFixed(2);
         const hasSetInfo = item.setCode && item.rarity;
         
         return `
@@ -852,7 +860,7 @@ class ModernTCGStore {
                             <span style="background: var(--secondary-color); color: var(--gray-900); padding: 2px 6px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">${item.rarity}</span>
                         </div>
                     ` : ''}
-                    <p style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2);">$${item.price.toFixed(2)} each</p>
+                    <p style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2);">$${price.toFixed(2)} each</p>
                     <div class="cart-item-controls">
                         <div class="quantity-controls">
                             <button class="quantity-btn" onclick="tcgStore.decreaseQuantity(${item.id})" ${item.quantity <= 1 ? 'disabled' : ''}>-</button>
