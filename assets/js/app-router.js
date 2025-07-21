@@ -452,8 +452,7 @@ class AppRouter {
                     </div>
 
                     <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-6); border-left: 4px solid var(--primary-color);">
-                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3); display: flex; align-items: center; gap: var(--space-2);">
-                            <span style="font-size: 1.5rem;">📝</span>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">
                             Card Description
                         </h3>
                         <div style="background: white; padding: var(--space-4); border-radius: var(--radius-md); border: 1px solid var(--gray-200);">
