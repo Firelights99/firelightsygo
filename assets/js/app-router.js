@@ -420,8 +420,8 @@ class AppRouter {
         <section style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); margin-bottom: var(--space-16);">
             <div>
                 <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
-                    <div id="image-container" class="product-image-container" style="max-width: 200px !important; max-height: 280px !important; width: 200px !important; height: 280px !important; margin: 0 auto; background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: var(--space-4);">
-                        <img id="main-card-image" class="product-card-image" src="${image}" alt="${card.name}" style="max-width: 190px !important; max-height: 270px !important; width: 190px !important; height: auto !important; object-fit: contain !important; padding: 8px !important; margin: 0 auto !important; display: block !important;">
+                    <div id="image-container" class="product-image-container" style="max-width: 300px; width: 300px; height: 420px; margin: 0 auto; background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: var(--space-4);">
+                        <img id="main-card-image" class="product-card-image" src="${image}" alt="${card.name}" style="width: 280px; height: auto; max-width: 280px; object-fit: contain; padding: 10px; margin: 0 auto; display: block;">
                     </div>
                 </div>
             </div>

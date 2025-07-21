@@ -620,49 +620,26 @@ body {
     padding: var(--space-2);
 }
 
-/* Product page specific image sizing - OPTIMAL SIZE */
+/* Product page specific image sizing - CLEAN AND SIMPLE */
 #main-card-image,
 .product-card-image {
-    max-width: 190px !important;
-    max-height: 270px !important;
-    width: 190px !important;
-    height: auto !important;
-    object-fit: contain !important;
-    padding: 8px !important;
-    margin: 0 auto !important;
-    display: block !important;
+    width: 280px;
+    height: auto;
+    max-width: 280px;
+    object-fit: contain;
+    padding: 10px;
+    margin: 0 auto;
+    display: block;
 }
 
-/* Force the container div to proper size */
+/* Product image container */
 #image-container,
-.product-image-container,
-#main-card-image + div,
-.product-card-image + div,
-div[style*="aspect-ratio: 3/4"] {
-    max-width: 200px !important;
-    max-height: 280px !important;
-    width: 200px !important;
-    height: 280px !important;
-    aspect-ratio: unset !important;
-    overflow: hidden !important;
-}
-
-/* Target the parent container of the image */
-#main-card-image:parent,
-.product-card-image:parent,
-#main-card-image ~ *,
-.product-card-image ~ * {
-    max-width: 200px !important;
-    max-height: 280px !important;
-}
-
-/* Backup selectors for product images */
-[id*="main-card-image"],
-[class*="product-card-image"],
-[id*="image-container"],
-[class*="product-image-container"] {
-    max-width: 190px !important;
-    max-height: 270px !important;
+.product-image-container {
+    max-width: 300px;
+    width: 300px;
+    height: 420px;
+    margin: 0 auto;
+    overflow: hidden;
 }
 
 .modern-card:hover .card-image {
