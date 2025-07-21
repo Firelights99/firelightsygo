@@ -143,7 +143,11 @@ function displaySetsAndRarities(card) {
     const setsSection = document.getElementById('sets-rarities-section');
     const setSelect = document.getElementById('set-rarity-select');
     
+    console.log('Card data for sets/rarities:', card);
+    console.log('Card sets:', card.sets);
+    
     if (!card.sets || !Array.isArray(card.sets) || card.sets.length === 0) {
+        console.log('No sets data available, hiding section');
         setsSection.style.display = 'none';
         return;
     }
