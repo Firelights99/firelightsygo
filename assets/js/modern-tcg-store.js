@@ -8,7 +8,7 @@ class ModernTCGStore {
         this.apiBaseURL = 'https://db.ygoprodeck.com/api/v7';
         this.cache = new Map();
         this.cacheExpiry = 5 * 60 * 1000; // 5 minutes
-        this.cart = JSON.parse(localStorage.getItem('tcg-cart') || '[]');
+        this.cart = this.loadAndCleanCart();
         this.isLoading = false;
         this.currentCards = [];
         this.filteredCards = [];
@@ -21,6 +21,32 @@ class ModernTCGStore {
         this.orders = JSON.parse(localStorage.getItem('tcg-orders') || '[]');
         
         this.init();
+    }
+
+    loadAndCleanCart() {
+        try {
+            const cartData = JSON.parse(localStorage.getItem('tcg-cart') || '[]');
+            
+            // Clean and validate each cart item
+            return cartData.map(item => {
+                return {
+                    id: item.id || Date.now() + Math.random(),
+                    name: String(item.name || 'Unknown Item'),
+                    price: parseFloat(item.price) || 0,
+                    image: String(item.image || 'https://images.ygoprodeck.com/images/cards/back.jpg'),
+                    quantity: parseInt(item.quantity) || 1,
+                    setCode: item.setCode || '',
+                    rarity: item.rarity || '',
+                    setName: item.setName || '',
+                    itemKey: item.itemKey || `${item.name}_${item.setCode || ''}_${item.rarity || ''}`
+                };
+            }).filter(item => item.name !== 'Unknown Item' || item.price > 0); // Remove completely invalid items
+        } catch (error) {
+            console.error('Error loading cart data:', error);
+            // Clear corrupted cart data
+            localStorage.removeItem('tcg-cart');
+            return [];
+        }
     }
 
     init() {
