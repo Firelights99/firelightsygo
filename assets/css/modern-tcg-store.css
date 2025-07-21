@@ -427,6 +427,17 @@ body {
     box-shadow: var(--shadow-md);
 }
 
+/* Pink wishlist button styling */
+.action-btn[onclick*="handleWishlistClick"] {
+    background: #ec4899;
+    border-color: #ec4899;
+}
+
+.action-btn[onclick*="handleWishlistClick"]:hover {
+    background: #db2777;
+    border-color: #db2777;
+}
+
 .cart-badge {
     background: var(--secondary-color);
     color: var(--gray-900);
@@ -1421,39 +1432,14 @@ input[type="number"] {
 
 /* Wishlist Functionality */
 .wishlist-badge {
-    background: var(--secondary-color);
-    color: var(--gray-900);
+    background: #ec4899;
+    color: white;
     font-size: 0.75rem;
     font-weight: 700;
     padding: 0.125rem var(--space-2);
     border-radius: var(--radius-full);
     min-width: 1.25rem;
     text-align: center;
-}
-
-.wishlist-btn {
-    position: absolute;
-    top: var(--space-3);
-    left: var(--space-3);
-    background: rgba(255, 255, 255, 0.9);
-    border: none;
-    border-radius: var(--radius-full);
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    font-size: 1rem;
-    backdrop-filter: blur(4px);
-    box-shadow: var(--shadow-sm);
-}
-
-.wishlist-btn:hover {
-    background: white;
-    transform: scale(1.1);
-    box-shadow: var(--shadow-md);
 }
 
 .card-actions {
@@ -1463,8 +1449,8 @@ input[type="number"] {
 }
 
 .wishlist-toggle-btn {
-    background: none;
-    border: 1px solid var(--gray-300);
+    background: #ec4899;
+    border: 2px solid #ec4899;
     border-radius: var(--radius-md);
     padding: var(--space-2);
     cursor: pointer;
@@ -1475,13 +1461,14 @@ input[type="number"] {
     justify-content: center;
     min-width: 40px;
     height: 40px;
+    color: white;
 }
 
 .wishlist-toggle-btn:hover {
-    border-color: var(--primary-color);
-    background: var(--primary-color);
-    color: white;
+    background: #db2777;
+    border-color: #db2777;
     transform: scale(1.05);
+    box-shadow: var(--shadow-md);
 }
 
 /* Wishlist Modal */

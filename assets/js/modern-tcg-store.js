@@ -439,9 +439,6 @@ class ModernTCGStore {
             <div class="card-image-container">
                 <img src="${safeImage}" alt="${safeName}" class="card-image" loading="lazy">
                 ${isHot ? '<div class="card-badge">HOT</div>' : ''}
-                <button class="wishlist-btn" onclick="event.stopPropagation(); tcgStore.toggleWishlist('${safeName}', ${safePrice}, '${safeImage}', '${safeId}')" title="${wishlistTitle}">
-                    ${wishlistIcon}
-                </button>
             </div>
             <div class="card-info">
                 <h3 class="card-name">${safeName}</h3>
