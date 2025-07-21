@@ -620,6 +620,19 @@ body {
     padding: var(--space-2);
 }
 
+/* Product page specific image sizing - FORCE SMALL SIZE */
+#main-card-image,
+.product-card-image {
+    max-width: 80px !important;
+    max-height: 110px !important;
+    width: 80px !important;
+    height: auto !important;
+    object-fit: contain !important;
+    padding: 4px !important;
+    margin: 0 auto !important;
+    display: block !important;
+}
+
 .modern-card:hover .card-image {
     transform: scale(1.05);
 }
