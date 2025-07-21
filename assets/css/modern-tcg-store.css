@@ -1015,6 +1015,7 @@ input[type="number"] {
     justify-content: center;
     padding: var(--space-4);
     box-sizing: border-box;
+    overflow-y: auto;
 }
 
 .cart-modal-content {

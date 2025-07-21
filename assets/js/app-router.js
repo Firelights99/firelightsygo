@@ -609,22 +609,59 @@ class AppRouter {
             console.warn('Error getting real card price:', error);
         }
         
-        // Fallback to mock pricing
-        return window.ygoproAPI ? window.ygoproAPI.getMockPrice(card.name) : '25.99';
+        // Fallback - try to get fresh API data
+        try {
+            const response = await fetch(`https://db.ygoprodeck.com/api/v7/cardinfo.php?id=${card.id}`);
+            if (response.ok) {
+                const result = await response.json();
+                const cardData = result.data ? result.data[0] : null;
+                if (cardData && cardData.card_prices && cardData.card_prices.length > 0) {
+                    const prices = cardData.card_prices[0];
+                    const usdPrice = parseFloat(prices.tcgplayer_price) || 
+                                   parseFloat(prices.ebay_price) || 
+                                   parseFloat(prices.amazon_price) || 
+                                   parseFloat(prices.coolstuffinc_price) || 
+                                   1.00;
+                    return (usdPrice * 1.35).toFixed(2);
+                }
+            }
+        } catch (error) {
+            console.warn('Error fetching fresh price data:', error);
+        }
+        
+        // Final fallback
+        return '1.35';
     }
 
     calculateRealPriceByRarity(basePrice, rarity) {
         const base = parseFloat(basePrice);
+        if (isNaN(base) || base <= 0) {
+            // If we don't have a valid base price, use API-based rarity pricing
+            const rarityBasePrices = {
+                'Common': 0.50,
+                'Rare': 2.00,
+                'Super Rare': 5.00,
+                'Ultra Rare': 12.00,
+                'Secret Rare': 25.00,
+                'Ultimate Rare': 40.00,
+                'Ghost Rare': 60.00,
+                'Starlight Rare': 150.00,
+                'Short Print': 3.00
+            };
+            return (rarityBasePrices[rarity] || 1.35).toFixed(2);
+        }
+        
+        // Use multipliers only if we have a valid base price
         const multipliers = {
-            'Common': 0.5,
+            'Common': 0.3,
             'Rare': 1.0,
-            'Super Rare': 1.8,
-            'Ultra Rare': 3.2,
-            'Secret Rare': 5.5,
-            'Ultimate Rare': 8.0,
-            'Ghost Rare': 12.0,
-            'Starlight Rare': 25.0,
-            'Short Print': 1.2
+            'Super Rare': 2.5,
+            'Ultra Rare': 5.0,
+            'Secret Rare': 10.0,
+            'Ultimate Rare': 15.0,
+            'Ghost Rare': 25.0,
+            'Starlight Rare': 50.0,
+            'Short Print': 1.5
         };
         
         const multiplier = multipliers[rarity] || 1.0;
