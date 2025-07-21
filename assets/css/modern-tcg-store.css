@@ -620,7 +620,7 @@ body {
     padding: var(--space-2);
 }
 
-/* Product page specific image sizing - FORCE SMALL SIZE */
+/* Product page specific image sizing - NUCLEAR OPTION - FORCE TINY SIZE */
 #main-card-image,
 .product-card-image {
     max-width: 80px !important;
@@ -631,9 +631,13 @@ body {
     padding: 4px !important;
     margin: 0 auto !important;
     display: block !important;
+    transform: scale(0.3) !important;
+    transform-origin: center !important;
 }
 
 /* Force the container div to be small too */
+#image-container,
+.product-image-container,
 #main-card-image + div,
 .product-card-image + div,
 div[style*="aspect-ratio: 3/4"] {
@@ -642,6 +646,9 @@ div[style*="aspect-ratio: 3/4"] {
     width: 88px !important;
     height: 118px !important;
     aspect-ratio: unset !important;
+    transform: scale(0.3) !important;
+    transform-origin: center !important;
+    overflow: hidden !important;
 }
 
 /* Target the parent container of the image */
@@ -651,6 +658,18 @@ div[style*="aspect-ratio: 3/4"] {
 .product-card-image ~ * {
     max-width: 88px !important;
     max-height: 118px !important;
+    transform: scale(0.3) !important;
+}
+
+/* NUCLEAR OPTION - Scale down everything related to product images */
+[id*="main-card-image"],
+[class*="product-card-image"],
+[id*="image-container"],
+[class*="product-image-container"] {
+    transform: scale(0.3) !important;
+    transform-origin: center !important;
+    max-width: 80px !important;
+    max-height: 110px !important;
 }
 
 .modern-card:hover .card-image {
