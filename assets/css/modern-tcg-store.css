@@ -620,34 +620,30 @@ body {
     padding: var(--space-2);
 }
 
-/* Product page specific image sizing - NUCLEAR OPTION - FORCE TINY SIZE */
+/* Product page specific image sizing - OPTIMAL SIZE */
 #main-card-image,
 .product-card-image {
-    max-width: 80px !important;
-    max-height: 110px !important;
-    width: 80px !important;
+    max-width: 190px !important;
+    max-height: 270px !important;
+    width: 190px !important;
     height: auto !important;
     object-fit: contain !important;
-    padding: 4px !important;
+    padding: 8px !important;
     margin: 0 auto !important;
     display: block !important;
-    transform: scale(0.3) !important;
-    transform-origin: center !important;
 }
 
-/* Force the container div to be small too */
+/* Force the container div to proper size */
 #image-container,
 .product-image-container,
 #main-card-image + div,
 .product-card-image + div,
 div[style*="aspect-ratio: 3/4"] {
-    max-width: 88px !important;
-    max-height: 118px !important;
-    width: 88px !important;
-    height: 118px !important;
+    max-width: 200px !important;
+    max-height: 280px !important;
+    width: 200px !important;
+    height: 280px !important;
     aspect-ratio: unset !important;
-    transform: scale(0.3) !important;
-    transform-origin: center !important;
     overflow: hidden !important;
 }
 
@@ -656,20 +652,17 @@ div[style*="aspect-ratio: 3/4"] {
 .product-card-image:parent,
 #main-card-image ~ *,
 .product-card-image ~ * {
-    max-width: 88px !important;
-    max-height: 118px !important;
-    transform: scale(0.3) !important;
+    max-width: 200px !important;
+    max-height: 280px !important;
 }
 
-/* NUCLEAR OPTION - Scale down everything related to product images */
+/* Backup selectors for product images */
 [id*="main-card-image"],
 [class*="product-card-image"],
 [id*="image-container"],
 [class*="product-image-container"] {
-    transform: scale(0.3) !important;
-    transform-origin: center !important;
-    max-width: 80px !important;
-    max-height: 110px !important;
+    max-width: 190px !important;
+    max-height: 270px !important;
 }
 
 .modern-card:hover .card-image {
