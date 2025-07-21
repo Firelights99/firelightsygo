@@ -895,13 +895,33 @@ function selectSet(setCode, rarity, price, setName) {
     selectedOption.style.background = 'var(--primary-color)';
     selectedOption.style.color = 'white';
     
-    // Update price and rarity displays
+    // Update price and rarity displays with animations
     const priceElement = document.getElementById('product-price');
     const rarityBadge = document.getElementById('rarity-badge');
     const addToCartBtn = document.getElementById('add-to-cart-btn');
     
-    if (priceElement) priceElement.textContent = '$' + price;
-    if (rarityBadge) rarityBadge.textContent = rarity;
+    // Animate price update
+    if (priceElement) {
+        priceElement.classList.add('price-update');
+        priceElement.textContent = '$' + price;
+        setTimeout(() => {
+            priceElement.classList.remove('price-update');
+        }, 500);
+    }
+    
+    // Animate rarity badge update
+    if (rarityBadge) {
+        rarityBadge.classList.add('rarity-badge-update');
+        rarityBadge.textContent = rarity;
+        
+        // Update rarity badge color
+        const rarityColor = getRarityColor(rarity);
+        rarityBadge.style.background = rarityColor;
+        
+        setTimeout(() => {
+            rarityBadge.classList.remove('rarity-badge-update');
+        }, 400);
+    }
     
     // Update add to cart button with new details
     if (addToCartBtn) {
@@ -909,6 +929,22 @@ function selectSet(setCode, rarity, price, setName) {
         const cardImage = document.getElementById('main-card-image').src;
         addToCartBtn.setAttribute('onclick', `addProductToCartWithDetails('${cardName}', ${price}, '${cardImage}', '${rarity}')`);
     }
+}
+
+// Helper function to get rarity colors (same as in app-router class)
+function getRarityColor(rarity) {
+    const rarityColors = {
+        'Common': '#374151',
+        'Rare': '#3B82F6', 
+        'Super Rare': '#10B981',
+        'Ultra Rare': '#F59E0B',
+        'Secret Rare': '#8B5CF6',
+        'Ultimate Rare': '#DC2626',
+        'Ghost Rare': '#6B7280',
+        'Starlight Rare': '#EC4899',
+        'Short Print': '#6B7280'
+    };
+    return rarityColors[rarity] || '#374151';
 }
 
 function changeQuantity(change) {
