@@ -26,6 +26,13 @@ async function loadProduct(params) {
     }
 
     try {
+        // Ensure tcgStore is available
+        if (!window.tcgStore) {
+            console.error('TCG Store not available');
+            showError();
+            return;
+        }
+
         let card = null;
         if (!isNaN(cardId)) {
             card = await window.tcgStore.getCardById(cardId);
@@ -35,11 +42,20 @@ async function loadProduct(params) {
         }
 
         if (!card) {
+            console.error('Card not found:', cardId);
             showError();
             return;
         }
 
-        currentCard = window.tcgStore.formatCardForDisplay(card);
+        // Format card for display with error handling
+        currentCard = await window.tcgStore.formatCardForDisplay(card);
+        
+        if (!currentCard) {
+            console.error('Failed to format card for display');
+            showError();
+            return;
+        }
+
         displayProduct(currentCard);
         await loadRelatedCards(currentCard);
         
@@ -75,10 +91,10 @@ function displayProduct(card) {
     // Update pricing
     document.getElementById('current-price').textContent = `$${card.price}`;
     const trendElement = document.getElementById('price-trend');
-    const priceChange = card.priceChange;
+    const priceChange = card.priceChange || { direction: 'stable', amount: '0.00' };
     const symbol = priceChange.direction === 'up' ? '↗' : priceChange.direction === 'down' ? '↘' : '→';
     const changeText = priceChange.direction === 'stable' ? '$0.00' : 
-                     (priceChange.direction === 'up' ? '+' : '-') + '$' + priceChange.amount;
+                     (priceChange.direction === 'up' ? '+' : '-') + '$' + (priceChange.amount || '0.00');
     trendElement.textContent = `${symbol} ${changeText}`;
     trendElement.className = `price-trend ${priceChange.direction}`;
 
@@ -90,14 +106,17 @@ function displayCardStats(card) {
     const statsContainer = document.getElementById('card-stats');
     let statsHTML = '';
 
-    if (card.type.includes('Monster')) {
-        if (card.atk !== undefined) {
+    // Ensure card.type exists and is a string before using includes
+    const cardType = card.type || '';
+    
+    if (cardType.includes && cardType.includes('Monster')) {
+        if (card.atk !== undefined && card.atk !== null) {
             statsHTML += `<div style="display: flex; justify-content: space-between; padding: var(--space-2) 0; border-bottom: 1px solid var(--gray-200);"><span style="font-weight: 600; color: var(--gray-700);">ATK:</span><span style="color: var(--gray-900);">${card.atk}</span></div>`;
         }
-        if (card.def !== undefined) {
+        if (card.def !== undefined && card.def !== null) {
             statsHTML += `<div style="display: flex; justify-content: space-between; padding: var(--space-2) 0; border-bottom: 1px solid var(--gray-200);"><span style="font-weight: 600; color: var(--gray-700);">DEF:</span><span style="color: var(--gray-900);">${card.def}</span></div>`;
         }
-        if (card.level !== undefined) {
+        if (card.level !== undefined && card.level !== null) {
             statsHTML += `<div style="display: flex; justify-content: space-between; padding: var(--space-2) 0; border-bottom: 1px solid var(--gray-200);"><span style="font-weight: 600; color: var(--gray-700);">Level:</span><span style="color: var(--gray-900);">${card.level}</span></div>`;
         }
         if (card.attribute) {
@@ -112,7 +131,9 @@ function displayCardStats(card) {
         statsHTML += `<div style="display: flex; justify-content: space-between; padding: var(--space-2) 0;"><span style="font-weight: 600; color: var(--gray-700);">Archetype:</span><span style="color: var(--gray-900);">${card.archetype}</span></div>`;
     }
 
-    statsContainer.innerHTML = statsHTML;
+    if (statsContainer) {
+        statsContainer.innerHTML = statsHTML;
+    }
 }
 
 async function loadRelatedCards(card) {
