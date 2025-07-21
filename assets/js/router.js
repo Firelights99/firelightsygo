@@ -1,0 +1,314 @@
+/**
+ * Lightweight Template-Based Router
+ * Loads HTML templates and executes page-specific JavaScript
+ */
+
+class TemplateRouter {
+    constructor() {
+        this.currentPage = null;
+        this.templateCache = new Map();
+        this.routes = {
+            'home': {
+                title: 'Firelight Duel Academy | Modern Yu-Gi-Oh! TCG Store',
+                description: 'Your premier destination for Yu-Gi-Oh! single cards, competitive play, and tournament events.',
+                template: 'templates/home.html',
+                script: 'assets/js/pages/home.js'
+            },
+            'singles': {
+                title: 'Singles | Firelight Duel Academy - Yu-Gi-Oh! Single Cards',
+                description: 'Browse our extensive collection of Yu-Gi-Oh! single cards. Find meta cards, staples, and rare collectibles.',
+                template: 'templates/singles.html',
+                script: 'assets/js/pages/singles.js'
+            },
+            'decks': {
+                title: 'Popular Decks | Firelight Duel Academy - Yu-Gi-Oh! Deck Lists',
+                description: 'Explore popular Yu-Gi-Oh! deck lists and strategies. Find meta decks, budget builds, and competitive tournament lists.',
+                template: 'templates/decks.html',
+                script: 'assets/js/pages/decks.js'
+            },
+            'events': {
+                title: 'Events | Firelight Duel Academy - Yu-Gi-Oh! Tournaments',
+                description: 'Join our Yu-Gi-Oh! tournaments and events. Weekly locals, special events, and competitive play.',
+                template: 'templates/events.html',
+                script: 'assets/js/pages/events.js'
+            },
+            'account': {
+                title: 'Account | Firelight Duel Academy - My Account',
+                description: 'Manage your account, view order history, and update your preferences.',
+                template: 'templates/account.html',
+                script: 'assets/js/pages/account.js'
+            },
+            'product': {
+                title: 'Product | Firelight Duel Academy',
+                description: 'View detailed information about Yu-Gi-Oh! cards.',
+                template: 'templates/product.html',
+                script: 'assets/js/pages/product.js'
+            },
+            'shipping-policy': {
+                title: 'Shipping Policy | Firelight Duel Academy',
+                description: 'Learn about our shipping rates, delivery times, and policies for Canada and USA.',
+                template: 'templates/shipping-policy.html'
+            },
+            'return-policy': {
+                title: 'Return Policy | Firelight Duel Academy',
+                description: 'Understand our return and refund policies for Yu-Gi-Oh! cards and merchandise.',
+                template: 'templates/return-policy.html'
+            },
+            'faq': {
+                title: 'FAQ | Firelight Duel Academy',
+                description: 'Frequently asked questions about ordering, shipping, cards, and our services.',
+                template: 'templates/faq.html'
+            }
+        };
+        
+        this.init();
+    }
+
+    init() {
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', (event) => {
+            const page = event.state?.page || 'home';
+            this.loadPage(page, false);
+        });
+
+        // Load initial page based on URL hash or default to home
+        const initialPage = this.getPageFromURL() || 'home';
+        this.loadPage(initialPage, true);
+    }
+
+    getPageFromURL() {
+        const hash = window.location.hash.substring(1);
+        const params = new URLSearchParams(hash);
+        return params.get('page') || hash || null;
+    }
+
+    async loadPage(pageName, pushState = true, params = '') {
+        if (!this.routes[pageName]) {
+            console.error(`Page "${pageName}" not found`);
+            pageName = 'home';
+        }
+
+        // Show loading state
+        this.showLoading();
+
+        try {
+            // Load template content
+            const content = await this.fetchTemplate(pageName);
+            
+            // Update page
+            this.renderPage(content);
+            this.updateMetadata(pageName);
+            this.updateNavigation(pageName);
+            
+            // Update URL
+            if (pushState) {
+                const url = pageName === 'home' ? '#' : `#page=${pageName}${params}`;
+                history.pushState({ page: pageName, params: params }, '', url);
+            }
+            
+            // Execute page-specific JavaScript
+            await this.executePageScript(pageName, params);
+            
+            this.currentPage = pageName;
+            
+        } catch (error) {
+            console.error('Error loading page:', error);
+            this.showError('Failed to load page. Please try again.');
+        }
+    }
+
+    async fetchTemplate(pageName) {
+        const route = this.routes[pageName];
+        
+        // Check cache first
+        if (this.templateCache.has(pageName)) {
+            return this.templateCache.get(pageName);
+        }
+
+        try {
+            const response = await fetch(route.template);
+            if (!response.ok) {
+                throw new Error(`Failed to load template: ${response.status}`);
+            }
+            
+            const content = await response.text();
+            
+            // Cache the content (except for dynamic pages like product)
+            if (pageName !== 'product') {
+                this.templateCache.set(pageName, content);
+            }
+            
+            return content;
+        } catch (error) {
+            console.error(`Error loading template for ${pageName}:`, error);
+            return `<div class="error-message">Failed to load page content.</div>`;
+        }
+    }
+
+    showLoading() {
+        const mainContent = document.getElementById('main-content');
+        if (mainContent) {
+            mainContent.innerHTML = `
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text">Loading...</p>
+                </div>
+            `;
+        }
+    }
+
+    showError(message) {
+        const mainContent = document.getElementById('main-content');
+        if (mainContent) {
+            mainContent.innerHTML = `
+                <div class="loading-container">
+                    <p class="loading-text" style="color: var(--error-color);">${message}</p>
+                </div>
+            `;
+        }
+    }
+
+    renderPage(content) {
+        const mainContent = document.getElementById('main-content');
+        if (mainContent) {
+            mainContent.innerHTML = content;
+        }
+    }
+
+    updateMetadata(pageName) {
+        const route = this.routes[pageName];
+        if (route) {
+            document.getElementById('page-title').textContent = route.title;
+            document.getElementById('page-description').setAttribute('content', route.description);
+            document.getElementById('og-title').setAttribute('content', route.title);
+            document.getElementById('og-description').setAttribute('content', route.description);
+        }
+    }
+
+    updateNavigation(pageName) {
+        // Remove active class from all nav links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
+
+        // Add active class to current page
+        const activeLink = document.getElementById(`nav-${pageName}`);
+        if (activeLink) {
+            activeLink.classList.add('active');
+        }
+    }
+
+    async executePageScript(pageName, params = '') {
+        const route = this.routes[pageName];
+        
+        if (route.script) {
+            try {
+                // Dynamically import the page script
+                const module = await import(`./${route.script.replace('assets/js/', '')}`);
+                
+                // Execute the page initialization function if it exists
+                if (module.initPage) {
+                    await module.initPage(params);
+                }
+            } catch (error) {
+                console.warn(`No script found for page ${pageName}:`, error);
+            }
+        }
+        
+        // Execute common page logic based on page type
+        switch (pageName) {
+            case 'home':
+            case 'singles':
+                if (window.tcgStore) {
+                    window.tcgStore.loadInitialData();
+                }
+                break;
+            case 'decks':
+                this.initializeDeckBuilder();
+                break;
+            case 'product':
+                this.initializeProductPage(params);
+                break;
+        }
+    }
+
+    initializeDeckBuilder() {
+        // Initialize deck builder when needed
+        if (!window.deckBuilder) {
+            window.deckBuilder = new DeckBuilderService();
+        }
+    }
+
+    async initializeProductPage(params) {
+        // Load product-specific functionality
+        const urlParams = new URLSearchParams(params);
+        const cardId = urlParams.get('id');
+        
+        if (cardId && window.tcgStore) {
+            try {
+                let card = null;
+                if (!isNaN(cardId)) {
+                    card = await window.tcgStore.getCardById(cardId);
+                } else {
+                    const cardName = cardId.replace(/-/g, ' ');
+                    card = await window.tcgStore.getCardByName(cardName);
+                }
+
+                if (card) {
+                    const formattedCard = await window.tcgStore.formatCardForDisplay(card);
+                    await this.loadRelatedCards(formattedCard);
+                }
+            } catch (error) {
+                console.error('Error initializing product page:', error);
+            }
+        }
+    }
+
+    async loadRelatedCards(card) {
+        const relatedContainer = document.getElementById('related-cards-grid');
+        if (!relatedContainer) return;
+        
+        try {
+            let relatedCards = [];
+            
+            if (card.archetype) {
+                relatedCards = await window.tcgStore.getCardsByArchetype(card.archetype);
+                relatedCards = relatedCards.filter(c => c.id !== card.id).slice(0, 4);
+            }
+            
+            if (relatedCards.length < 4) {
+                const metaCards = await window.tcgStore.getMetaCards();
+                const additionalCards = metaCards.filter(c => c.id !== card.id).slice(0, 4 - relatedCards.length);
+                relatedCards = [...relatedCards, ...additionalCards];
+            }
+
+            if (relatedCards.length === 0) {
+                relatedContainer.innerHTML = '<p style="text-align: center; color: var(--gray-600);">No related cards found.</p>';
+                return;
+            }
+
+            relatedContainer.innerHTML = '';
+            for (const relatedCard of relatedCards) {
+                const formatted = await window.tcgStore.formatCardForDisplay(relatedCard);
+                const cardElement = window.tcgStore.createModernCardElement(formatted);
+                relatedContainer.appendChild(cardElement);
+            }
+            
+        } catch (error) {
+            console.error('Error loading related cards:', error);
+            relatedContainer.innerHTML = '<p style="text-align: center; color: var(--gray-600);">Unable to load related cards.</p>';
+        }
+    }
+}
+
+// Global navigation function
+function navigateTo(page, params = '') {
+    if (window.templateRouter) {
+        window.templateRouter.loadPage(page, true, params);
+    }
+}
+
+// Initialize router when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    window.templateRouter = new TemplateRouter();
+});

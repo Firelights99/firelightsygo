@@ -1,0 +1,540 @@
+/**
+ * Singles Page JavaScript
+ * Handles card search, filtering, and display functionality
+ */
+
+let currentSearchResults = [];
+let currentPage = 0;
+const cardsPerPage = 20;
+let isLoading = false;
+
+export async function initPage(params = '') {
+    console.log('Initializing singles page');
+    
+    // Set up global functions
+    setupGlobalFunctions();
+    
+    // Parse URL parameters for initial search
+    const urlParams = new URLSearchParams(params);
+    const searchQuery = urlParams.get('search') || '';
+    const archetype = urlParams.get('archetype') || '';
+    const category = urlParams.get('category') || '';
+    const filter = urlParams.get('filter') || '';
+    
+    // Set initial search values
+    if (searchQuery) {
+        const searchInput = document.getElementById('card-search-input');
+        if (searchInput) searchInput.value = searchQuery;
+    }
+    
+    if (archetype) {
+        const archetypeFilter = document.getElementById('archetype-filter');
+        if (archetypeFilter) archetypeFilter.value = archetype;
+    }
+    
+    // Perform initial search or load featured cards
+    if (searchQuery || archetype || category || filter) {
+        await performCardSearch();
+    } else {
+        await loadFeaturedCards();
+    }
+}
+
+function setupGlobalFunctions() {
+    // Make all singles functions globally available
+    window.performCardSearch = performCardSearch;
+    window.toggleAdvancedFilters = toggleAdvancedFilters;
+    window.clearAllFilters = clearAllFilters;
+    window.searchByCategory = searchByCategory;
+    window.loadMoreCards = loadMoreCards;
+}
+
+async function loadFeaturedCards() {
+    console.log('Loading featured cards');
+    
+    if (!window.tcgStore) {
+        console.warn('TCG Store not available');
+        showPlaceholderCards();
+        return;
+    }
+    
+    try {
+        // Load meta cards as featured cards
+        const metaCards = await window.tcgStore.getMetaCards();
+        
+        if (metaCards && metaCards.length > 0) {
+            currentSearchResults = metaCards;
+            currentPage = 0;
+            await displayCards(metaCards.slice(0, cardsPerPage));
+            updateResultsInfo('Featured Cards', metaCards.length);
+            
+            // Show load more button if there are more cards
+            if (metaCards.length > cardsPerPage) {
+                showLoadMoreButton();
+            }
+        } else {
+            showPlaceholderCards();
+        }
+    } catch (error) {
+        console.error('Error loading featured cards:', error);
+        showPlaceholderCards();
+    }
+}
+
+let searchTimeout;
+async function performCardSearch() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+        await executeCardSearch();
+    }, 300);
+}
+
+async function executeCardSearch() {
+    if (isLoading) return;
+    
+    const searchQuery = document.getElementById('card-search-input')?.value || '';
+    const filters = {
+        type: document.getElementById('type-filter')?.value || '',
+        race: document.getElementById('race-filter')?.value || '',
+        attribute: document.getElementById('attribute-filter')?.value || '',
+        level: document.getElementById('level-filter')?.value || '',
+        archetype: document.getElementById('archetype-filter')?.value || '',
+        sort: document.getElementById('sort-filter')?.value || 'name'
+    };
+    
+    console.log('Performing card search:', { searchQuery, filters });
+    
+    isLoading = true;
+    showLoadingState();
+    
+    try {
+        if (!window.tcgStore) {
+            throw new Error('TCG Store not available');
+        }
+        
+        let results = [];
+        
+        if (searchQuery.length >= 2) {
+            // Search by name
+            results = await window.tcgStore.searchCardsByName(searchQuery);
+        } else if (filters.archetype) {
+            // Search by archetype
+            results = await window.tcgStore.getCardsByArchetype(filters.archetype);
+        } else if (Object.values(filters).some(f => f)) {
+            // Search by filters
+            results = await window.tcgStore.searchCardsByFilters(filters);
+        } else {
+            // Load featured cards if no search criteria
+            await loadFeaturedCards();
+            return;
+        }
+        
+        // Apply additional filters
+        results = applyFilters(results, filters);
+        
+        // Sort results
+        results = sortResults(results, filters.sort);
+        
+        currentSearchResults = results;
+        currentPage = 0;
+        
+        if (results.length > 0) {
+            await displayCards(results.slice(0, cardsPerPage));
+            updateResultsInfo('Search Results', results.length);
+            
+            if (results.length > cardsPerPage) {
+                showLoadMoreButton();
+            } else {
+                hideLoadMoreButton();
+            }
+        } else {
+            showNoResults();
+        }
+        
+    } catch (error) {
+        console.error('Error performing card search:', error);
+        showErrorState();
+    } finally {
+        isLoading = false;
+    }
+}
+
+function applyFilters(cards, filters) {
+    return cards.filter(card => {
+        if (filters.type && !card.type.includes(filters.type)) return false;
+        if (filters.race && card.race !== filters.race) return false;
+        if (filters.attribute && card.attribute !== filters.attribute) return false;
+        if (filters.level && card.level !== parseInt(filters.level)) return false;
+        return true;
+    });
+}
+
+function sortResults(cards, sortBy) {
+    switch (sortBy) {
+        case 'name-desc':
+            return cards.sort((a, b) => b.name.localeCompare(a.name));
+        case 'level':
+            return cards.sort((a, b) => (a.level || 0) - (b.level || 0));
+        case 'level-desc':
+            return cards.sort((a, b) => (b.level || 0) - (a.level || 0));
+        case 'atk':
+            return cards.sort((a, b) => (a.atk || 0) - (b.atk || 0));
+        case 'atk-desc':
+            return cards.sort((a, b) => (b.atk || 0) - (a.atk || 0));
+        default: // name
+            return cards.sort((a, b) => a.name.localeCompare(b.name));
+    }
+}
+
+async function displayCards(cards) {
+    const cardsGrid = document.getElementById('cards-grid');
+    if (!cardsGrid) return;
+    
+    if (currentPage === 0) {
+        cardsGrid.innerHTML = '';
+    }
+    
+    for (const card of cards) {
+        const formattedCard = await window.tcgStore.formatCardForDisplay(card);
+        const cardElement = window.tcgStore.createModernCardElement(formattedCard);
+        cardsGrid.appendChild(cardElement);
+    }
+}
+
+function showLoadingState() {
+    const cardsGrid = document.getElementById('cards-grid');
+    if (cardsGrid && currentPage === 0) {
+        cardsGrid.innerHTML = `
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p class="loading-text">Searching cards...</p>
+            </div>
+        `;
+    }
+    
+    hideLoadMoreButton();
+}
+
+function showPlaceholderCards() {
+    const placeholderCards = [
+        { name: 'Snake-Eye Ash', price: '45.99', image: 'https://images.ygoprodeck.com/images/cards/back.jpg' },
+        { name: 'Kashtira Fenrir', price: '32.50', image: 'https://images.ygoprodeck.com/images/cards/back.jpg' },
+        { name: 'Ash Blossom & Joyous Spring', price: '28.75', image: 'https://images.ygoprodeck.com/images/cards/back.jpg' },
+        { name: 'Maxx "C"', price: '15.99', image: 'https://images.ygoprodeck.com/images/cards/back.jpg' },
+        { name: 'Nibiru, the Primal Being', price: '12.50', image: 'https://images.ygoprodeck.com/images/cards/back.jpg' },
+        { name: 'Effect Veiler', price: '8.99', image: 'https://images.ygoprodeck.com/images/cards/back.jpg' },
+        { name: 'Infinite Impermanence', price: '22.99', image: 'https://images.ygoprodeck.com/images/cards/back.jpg' },
+        { name: 'Lightning Storm', price: '35.00', image: 'https://images.ygoprodeck.com/images/cards/back.jpg' }
+    ];
+    
+    const cardsGrid = document.getElementById('cards-grid');
+    if (cardsGrid) {
+        cardsGrid.innerHTML = '';
+        
+        placeholderCards.forEach(card => {
+            const cardElement = createPlaceholderCardElement(card);
+            cardsGrid.appendChild(cardElement);
+        });
+    }
+    
+    updateResultsInfo('Featured Cards', placeholderCards.length);
+    hideLoadMoreButton();
+}
+
+function createPlaceholderCardElement(card) {
+    const cardDiv = document.createElement('div');
+    cardDiv.className = 'modern-card';
+    cardDiv.innerHTML = `
+        <div class="card-image-container">
+            <img src="${card.image}" alt="${card.name}" class="card-image" loading="lazy">
+            <div class="card-overlay">
+                <button class="card-action-btn" onclick="navigateTo('product', '?id=${encodeURIComponent(card.name)}')">
+                    View Details
+                </button>
+            </div>
+        </div>
+        <div class="card-info">
+            <h3 class="card-name">${card.name}</h3>
+            <div class="card-price">$${card.price} CAD</div>
+            <div class="card-actions">
+                <button class="add-to-cart-btn" onclick="addToCartFromSingles('${card.name}', ${parseFloat(card.price)}, '${card.image}')">
+                    Add to Cart
+                </button>
+            </div>
+        </div>
+    `;
+    
+    return cardDiv;
+}
+
+function showNoResults() {
+    const cardsGrid = document.getElementById('cards-grid');
+    if (cardsGrid) {
+        cardsGrid.innerHTML = `
+            <div style="text-align: center; padding: var(--space-12); color: var(--gray-500); grid-column: 1 / -1;">
+                <div style="font-size: 4rem; margin-bottom: var(--space-4);">🔍</div>
+                <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3);">No Cards Found</h3>
+                <p style="margin-bottom: var(--space-6);">Try adjusting your search criteria or browse our featured cards.</p>
+                <button onclick="clearAllFilters()" style="padding: var(--space-3) var(--space-6); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-lg); font-weight: 600; cursor: pointer;">
+                    Clear Filters
+                </button>
+            </div>
+        `;
+    }
+    
+    updateResultsInfo('Search Results', 0);
+    hideLoadMoreButton();
+}
+
+function showErrorState() {
+    const cardsGrid = document.getElementById('cards-grid');
+    if (cardsGrid) {
+        cardsGrid.innerHTML = `
+            <div style="text-align: center; padding: var(--space-12); color: var(--gray-500); grid-column: 1 / -1;">
+                <div style="font-size: 4rem; margin-bottom: var(--space-4);">⚠️</div>
+                <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3);">Search Error</h3>
+                <p style="margin-bottom: var(--space-6);">Unable to search cards at this time. Please try again.</p>
+                <button onclick="loadFeaturedCards()" style="padding: var(--space-3) var(--space-6); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-lg); font-weight: 600; cursor: pointer;">
+                    Load Featured Cards
+                </button>
+            </div>
+        `;
+    }
+    
+    updateResultsInfo('Error', 0);
+    hideLoadMoreButton();
+}
+
+function updateResultsInfo(title, count) {
+    const resultsTitle = document.getElementById('results-title');
+    const resultsCount = document.getElementById('results-count');
+    
+    if (resultsTitle) {
+        resultsTitle.textContent = title;
+    }
+    
+    if (resultsCount) {
+        if (count > 0) {
+            resultsCount.textContent = `${count} card${count !== 1 ? 's' : ''} found`;
+        } else {
+            resultsCount.textContent = '';
+        }
+    }
+}
+
+function toggleAdvancedFilters() {
+    const filtersDiv = document.getElementById('advanced-filters');
+    if (filtersDiv) {
+        const isVisible = filtersDiv.style.display !== 'none';
+        filtersDiv.style.display = isVisible ? 'none' : 'block';
+    }
+}
+
+function clearAllFilters() {
+    // Clear all filter inputs
+    const inputs = [
+        'card-search-input',
+        'type-filter',
+        'race-filter', 
+        'attribute-filter',
+        'level-filter',
+        'archetype-filter'
+    ];
+    
+    inputs.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.value = '';
+        }
+    });
+    
+    // Reset sort to default
+    const sortFilter = document.getElementById('sort-filter');
+    if (sortFilter) {
+        sortFilter.value = 'name';
+    }
+    
+    // Hide advanced filters
+    const filtersDiv = document.getElementById('advanced-filters');
+    if (filtersDiv) {
+        filtersDiv.style.display = 'none';
+    }
+    
+    // Load featured cards
+    loadFeaturedCards();
+}
+
+async function searchByCategory(category) {
+    console.log('Searching by category:', category);
+    
+    // Clear existing filters
+    clearAllFilters();
+    
+    // Set up search based on category
+    switch (category) {
+        case 'meta':
+            await loadFeaturedCards(); // Meta cards are already featured
+            break;
+        case 'hand-traps':
+            await searchHandTraps();
+            break;
+        case 'boss-monsters':
+            await searchBossMonsters();
+            break;
+        case 'classic':
+            await searchClassicCards();
+            break;
+    }
+}
+
+async function searchHandTraps() {
+    const handTrapNames = [
+        'Ash Blossom & Joyous Spring',
+        'Maxx "C"',
+        'Effect Veiler',
+        'Infinite Impermanence',
+        'Nibiru, the Primal Being',
+        'Ghost Ogre & Snow Rabbit',
+        'Ghost Belle & Haunted Mansion',
+        'Droll & Lock Bird',
+        'Skull Meister',
+        'Called by the Grave'
+    ];
+    
+    await searchMultipleCards(handTrapNames, 'Hand Traps');
+}
+
+async function searchBossMonsters() {
+    const bossMonsterNames = [
+        'Blue-Eyes White Dragon',
+        'Dark Magician',
+        'Red-Eyes Black Dragon',
+        'Elemental HERO Sparkman',
+        'Stardust Dragon',
+        'Number 39: Utopia',
+        'Decode Talker',
+        'Accesscode Talker'
+    ];
+    
+    await searchMultipleCards(bossMonsterNames, 'Boss Monsters');
+}
+
+async function searchClassicCards() {
+    const classicNames = [
+        'Blue-Eyes White Dragon',
+        'Dark Magician',
+        'Red-Eyes Black Dragon',
+        'Exodia the Forbidden One',
+        'Mirror Force',
+        'Mystical Space Typhoon',
+        'Pot of Greed',
+        'Raigeki'
+    ];
+    
+    await searchMultipleCards(classicNames, 'Classic Cards');
+}
+
+async function searchMultipleCards(cardNames, categoryTitle) {
+    if (!window.tcgStore) {
+        showErrorState();
+        return;
+    }
+    
+    showLoadingState();
+    
+    try {
+        const results = [];
+        
+        for (const cardName of cardNames) {
+            try {
+                const cards = await window.tcgStore.searchCardsByName(cardName);
+                if (cards && cards.length > 0) {
+                    results.push(cards[0]); // Take first match
+                }
+            } catch (error) {
+                console.warn(`Could not find card: ${cardName}`);
+            }
+        }
+        
+        currentSearchResults = results;
+        currentPage = 0;
+        
+        if (results.length > 0) {
+            await displayCards(results.slice(0, cardsPerPage));
+            updateResultsInfo(categoryTitle, results.length);
+            
+            if (results.length > cardsPerPage) {
+                showLoadMoreButton();
+            } else {
+                hideLoadMoreButton();
+            }
+        } else {
+            showNoResults();
+        }
+        
+    } catch (error) {
+        console.error('Error searching category:', error);
+        showErrorState();
+    }
+}
+
+async function loadMoreCards() {
+    if (isLoading || currentSearchResults.length <= (currentPage + 1) * cardsPerPage) {
+        return;
+    }
+    
+    isLoading = true;
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    if (loadMoreBtn) {
+        loadMoreBtn.textContent = 'Loading...';
+        loadMoreBtn.disabled = true;
+    }
+    
+    try {
+        currentPage++;
+        const startIndex = currentPage * cardsPerPage;
+        const endIndex = startIndex + cardsPerPage;
+        const nextCards = currentSearchResults.slice(startIndex, endIndex);
+        
+        await displayCards(nextCards);
+        
+        // Hide load more button if no more cards
+        if (endIndex >= currentSearchResults.length) {
+            hideLoadMoreButton();
+        }
+        
+    } catch (error) {
+        console.error('Error loading more cards:', error);
+        currentPage--; // Revert page increment
+    } finally {
+        isLoading = false;
+        if (loadMoreBtn) {
+            loadMoreBtn.textContent = 'Load More Cards';
+            loadMoreBtn.disabled = false;
+        }
+    }
+}
+
+function showLoadMoreButton() {
+    const container = document.getElementById('load-more-container');
+    if (container) {
+        container.style.display = 'block';
+    }
+}
+
+function hideLoadMoreButton() {
+    const container = document.getElementById('load-more-container');
+    if (container) {
+        container.style.display = 'none';
+    }
+}
+
+// Global function for adding cards to cart from singles page
+window.addToCartFromSingles = function(cardName, price, image) {
+    if (window.tcgStore) {
+        window.tcgStore.addToCart(cardName, price, image);
+    } else {
+        console.log(`Added ${cardName} ($${price}) to cart`);
+        alert(`${cardName} added to cart for $${price} CAD`);
+    }
+};
