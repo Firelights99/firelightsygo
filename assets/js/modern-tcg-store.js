@@ -423,16 +423,22 @@ class ModernTCGStore {
         const wishlistIcon = isInWishlist ? '❤️' : '🤍';
         const wishlistTitle = isInWishlist ? 'Remove from wishlist' : 'Add to wishlist';
 
+        // Ensure all values are properly escaped and converted to strings
+        const safeName = String(card.name || '').replace(/'/g, "\\'");
+        const safePrice = parseFloat(card.price) || 0;
+        const safeImage = String(card.image || '').replace(/'/g, "\\'");
+        const safeId = String(card.id || '');
+
         cardDiv.innerHTML = `
             <div class="card-image-container">
-                <img src="${card.image}" alt="${card.name}" class="card-image" loading="lazy">
+                <img src="${safeImage}" alt="${safeName}" class="card-image" loading="lazy">
                 ${isHot ? '<div class="card-badge">HOT</div>' : ''}
-                <button class="wishlist-btn" onclick="event.stopPropagation(); tcgStore.toggleWishlist('${card.name}', ${card.price}, '${card.image}', '${card.id}')" title="${wishlistTitle}">
+                <button class="wishlist-btn" onclick="event.stopPropagation(); tcgStore.toggleWishlist('${safeName}', ${safePrice}, '${safeImage}', '${safeId}')" title="${wishlistTitle}">
                     ${wishlistIcon}
                 </button>
             </div>
             <div class="card-info">
-                <h3 class="card-name">${card.name}</h3>
+                <h3 class="card-name">${safeName}</h3>
                 <p class="card-type">${card.type}</p>
                 <div class="price-section">
                     <span class="card-price">$${card.price}</span>
@@ -441,10 +447,10 @@ class ModernTCGStore {
                     </span>
                 </div>
                 <div class="card-actions">
-                    <button class="add-to-cart-btn" onclick="event.stopPropagation(); tcgStore.addToCart('${card.name}', ${card.price}, '${card.image}')">
+                    <button class="add-to-cart-btn" onclick="event.stopPropagation(); tcgStore.addToCart('${safeName}', ${safePrice}, '${safeImage}')">
                         Add to Cart
                     </button>
-                    <button class="wishlist-toggle-btn" onclick="event.stopPropagation(); tcgStore.toggleWishlist('${card.name}', ${card.price}, '${card.image}', '${card.id}')" title="${wishlistTitle}">
+                    <button class="wishlist-toggle-btn" onclick="event.stopPropagation(); tcgStore.toggleWishlist('${safeName}', ${safePrice}, '${safeImage}', '${safeId}')" title="${wishlistTitle}">
                         ${wishlistIcon}
                     </button>
                 </div>
