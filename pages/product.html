@@ -97,8 +97,8 @@
                 
                 <!-- Product Images -->
                 <div>
-                    <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
-                        <div style="aspect-ratio: 3/4; background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: var(--space-4); cursor: pointer;" onclick="openImageZoom()">
+                    <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-6); border: 1px solid var(--gray-200);">
+                        <div style="aspect-ratio: 3/4; max-width: 400px; margin: 0 auto; background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: var(--space-4); cursor: pointer;" onclick="openImageZoom()">
                             <img id="main-card-image" src="" alt="" style="width: 100%; height: 100%; object-fit: contain; padding: var(--space-2);">
                         </div>
                         <div style="display: flex; gap: var(--space-2); justify-content: center;">
@@ -131,6 +131,17 @@
                             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4);">
                                 <span id="current-price" style="font-size: 2rem; font-weight: 700; color: var(--primary-color);">$0.00</span>
                                 <span id="price-trend" style="font-size: 0.875rem; font-weight: 600; padding: var(--space-1) var(--space-3); border-radius: var(--radius-md);"></span>
+                            </div>
+                        </div>
+
+                        <!-- Sets and Rarities Section -->
+                        <div id="sets-rarities-section" style="margin-bottom: var(--space-6); display: none;">
+                            <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Available Sets & Rarities</h3>
+                            <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-4);">
+                                <label style="display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);">Select Set & Rarity:</label>
+                                <select id="set-rarity-select" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-size: 0.875rem;" onchange="updatePriceForSet()">
+                                    <!-- Options will be populated by JavaScript -->
+                                </select>
                             </div>
                         </div>
 
@@ -260,6 +271,7 @@
             document.getElementById('thumb-small').src = card.imageSmall;
 
             displayCardStats(card);
+            displaySetsAndRarities(card);
 
             document.getElementById('current-price').textContent = `$${card.price}`;
             const trendElement = document.getElementById('price-trend');
@@ -300,6 +312,114 @@
             }
 
             statsContainer.innerHTML = statsHTML;
+        }
+
+        function displaySetsAndRarities(card) {
+            const setsSection = document.getElementById('sets-rarities-section');
+            const setSelect = document.getElementById('set-rarity-select');
+            
+            if (!card.sets || !Array.isArray(card.sets) || card.sets.length === 0) {
+                setsSection.style.display = 'none';
+                return;
+            }
+
+            // Show the sets section
+            setsSection.style.display = 'block';
+            
+            // Clear existing options
+            setSelect.innerHTML = '';
+            
+            // Add default option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = `Default - ${card.rarity} ($${card.price})`;
+            defaultOption.selected = true;
+            setSelect.appendChild(defaultOption);
+            
+            // Add options for each set
+            card.sets.forEach((set, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                
+                // Generate different prices for different sets/rarities
+                const setPrice = generateSetPrice(card.price, set);
+                
+                const setName = set.set_name || 'Unknown Set';
+                const setCode = set.set_code || '';
+                const setRarity = set.set_rarity || 'Common';
+                
+                option.textContent = `${setName} (${setCode}) - ${setRarity} ($${setPrice})`;
+                option.dataset.price = setPrice;
+                option.dataset.rarity = setRarity;
+                option.dataset.setName = setName;
+                option.dataset.setCode = setCode;
+                
+                setSelect.appendChild(option);
+            });
+        }
+
+        function generateSetPrice(basePrice, set) {
+            const base = parseFloat(basePrice) || 1.00;
+            const setRarity = set.set_rarity || 'Common';
+            
+            // Price multipliers based on rarity
+            const rarityMultipliers = {
+                'Common': 0.8,
+                'Rare': 1.0,
+                'Super Rare': 1.5,
+                'Ultra Rare': 2.0,
+                'Secret Rare': 3.0,
+                'Ultimate Rare': 4.0,
+                'Ghost Rare': 5.0,
+                'Starlight Rare': 10.0
+            };
+            
+            const multiplier = rarityMultipliers[setRarity] || 1.0;
+            const price = (base * multiplier).toFixed(2);
+            
+            return price;
+        }
+
+        function updatePriceForSet() {
+            const setSelect = document.getElementById('set-rarity-select');
+            const priceElement = document.getElementById('current-price');
+            const rarityElement = document.getElementById('product-rarity');
+            
+            const selectedOption = setSelect.options[setSelect.selectedIndex];
+            
+            if (selectedOption && selectedOption.value !== '') {
+                // Update price
+                const newPrice = selectedOption.dataset.price;
+                priceElement.textContent = `$${newPrice}`;
+                
+                // Update rarity display
+                const newRarity = selectedOption.dataset.rarity;
+                rarityElement.textContent = newRarity;
+                
+                // Update current card data for cart
+                if (currentCard) {
+                    currentCard.price = newPrice;
+                    currentCard.rarity = newRarity;
+                    currentCard.selectedSet = {
+                        name: selectedOption.dataset.setName,
+                        code: selectedOption.dataset.setCode,
+                        rarity: newRarity
+                    };
+                }
+            } else {
+                // Reset to default values
+                if (currentCard) {
+                    const originalPrice = currentCard.originalPrice || currentCard.price;
+                    const originalRarity = currentCard.originalRarity || currentCard.rarity;
+                    
+                    priceElement.textContent = `$${originalPrice}`;
+                    rarityElement.textContent = originalRarity;
+                    
+                    currentCard.price = originalPrice;
+                    currentCard.rarity = originalRarity;
+                    currentCard.selectedSet = null;
+                }
+            }
         }
 
         async function loadRelatedCards(card) {
