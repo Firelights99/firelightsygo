@@ -97,12 +97,14 @@
 }
 
 .main-card-image {
-    width: 100%;
+    width: 280px;
     height: auto;
     display: block;
-    max-height: 600px;
+    max-width: 280px;
     object-fit: contain;
     background: white;
+    margin: 0 auto;
+    padding: 10px;
 }
 
 .image-zoom-overlay {
