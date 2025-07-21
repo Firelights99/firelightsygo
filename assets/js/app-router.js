@@ -454,6 +454,11 @@ class AppRouter {
                         </div>
                     </div>
 
+                    <div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Card Description</h3>
+                        <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-6);">${card.desc || 'No description available.'}</p>
+                    </div>
+
                     ${hasMultipleSets ? `
                     <div style="margin-bottom: var(--space-6);">
                         <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4);">Available Sets & Rarities</h3>
@@ -483,31 +488,6 @@ class AppRouter {
                             Add to Cart
                         </button>
                     </div>
-
-                    <div>
-                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Card Description</h3>
-                        <p style="color: var(--gray-700); line-height: 1.6;">${card.desc || 'No description available.'}</p>
-                    </div>
-
-                    ${cardSets.length > 0 ? `
-                    <div style="margin-top: var(--space-6); padding-top: var(--space-6); border-top: 1px solid var(--gray-200);">
-                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Available Sets</h3>
-                        <div style="display: flex; flex-direction: column; gap: var(--space-2);">
-                            ${cardSets.map(set => `
-                                <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-2); background: var(--gray-50); border-radius: var(--radius-md);">
-                                    <div>
-                                        <div style="font-weight: 600; font-size: 0.875rem;">${set.set_name}</div>
-                                        <div style="font-size: 0.75rem; color: var(--gray-600);">${set.set_code || 'N/A'}</div>
-                                    </div>
-                                    <div style="text-align: right;">
-                                        <div style="font-weight: 600; color: var(--primary-color);">${set.set_rarity || 'Common'}</div>
-                                        <div style="font-size: 0.875rem; color: var(--gray-600);">$${this.calculatePriceByRarity(basePrice, set.set_rarity || 'Common')}</div>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                    ` : ''}
                 </div>
             </div>
         </section>
