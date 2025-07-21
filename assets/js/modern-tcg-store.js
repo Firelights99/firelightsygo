@@ -847,45 +847,29 @@ class ModernTCGStore {
     }
 
     generateCartItemHTML(item) {
-        // Debug logging to see what we're working with
-        console.log('Cart item data:', item);
-        
-        // Ensure safe values with null checks and proper string conversion
-        const price = parseFloat(item.price) || 0;
-        const quantity = parseInt(item.quantity) || 1;
-        const itemTotal = (price * quantity).toFixed(2);
+        // Only add null safety for the original .toFixed() error, keep everything else simple
+        const itemTotal = (parseFloat(item.price) || 0) * (parseInt(item.quantity) || 1);
         const hasSetInfo = item.setCode && item.rarity;
-        
-        // Ensure all display values are properly converted to strings
-        const safeName = this.ensureString(item.name) || 'Unknown Item';
-        let safeImage = this.ensureString(item.image);
-        
-        // If image is still empty or invalid, use fallback
-        if (!safeImage || safeImage === '' || safeImage === 'undefined') {
-            safeImage = 'https://images.ygoprodeck.com/images/cards/back.jpg';
-        }
-        
-        console.log('Processed cart item:', { safeName, safeImage, price, quantity, itemTotal });
-        
+
         return `
             <div class="cart-item" data-item-id="${item.id}">
                 <div class="cart-item-image">
-                    <img src="${safeImage}" alt="${safeName}" style="width: 60px; height: 84px; object-fit: contain; border-radius: var(--radius-md);">
+                    <img src="${item.image || 'https://images.ygoprodeck.com/images/cards/back.jpg'}" alt="${item.name}" style="width: 60px; height: 84px; object-fit: contain; border-radius: var(--radius-md);">
                 </div>
                 <div class="cart-item-details">
-                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1); line-height: 1.3;">${safeName}</h4>
+                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1); line-height: 1.3;">${item.name}</h4>
                     ${hasSetInfo ? `
                         <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-1);">
                             <span style="background: var(--primary-color); color: white; padding: 2px 6px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">${item.setCode}</span>
                             <span style="background: var(--secondary-color); color: var(--gray-900); padding: 2px 6px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">${item.rarity}</span>
                         </div>
                     ` : ''}
-                    <p style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2);">$${price.toFixed(2)} each</p>
+                    <p style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2);">$${(parseFloat(item.price) || 0).toFixed(2)} each</p>
                     <div class="cart-item-controls">
                         <div class="quantity-controls">
-                            <button class="quantity-btn" onclick="tcgStore.updateCartQuantity(${item.id}, ${quantity - 1})">-</button>
-                            <span class="quantity-display">${quantity}</span>
-                            <button class="quantity-btn" onclick="tcgStore.updateCartQuantity(${item.id}, ${quantity + 1})">+</button>
+                            <button class="quantity-btn" onclick="tcgStore.updateCartQuantity(${item.id}, ${(parseInt(item.quantity) || 1) - 1})">-</button>
+                            <span class="quantity-display">${item.quantity}</span>
+                            <button class="quantity-btn" onclick="tcgStore.updateCartQuantity(${item.id}, ${(parseInt(item.quantity) || 1) + 1})">+</button>
                         </div>
                         <button class="remove-btn" onclick="tcgStore.removeFromCart(${item.id})" title="Remove from cart">
                             🗑️
@@ -893,7 +877,7 @@ class ModernTCGStore {
                     </div>
                 </div>
                 <div class="cart-item-total">
-                    <span style="font-size: 1.125rem; font-weight: 700; color: var(--primary-color);">$${itemTotal}</span>
+                    <span style="font-size: 1.125rem; font-weight: 700; color: var(--primary-color);">$${itemTotal.toFixed(2)}</span>
                 </div>
             </div>
         `;
