@@ -8,127 +8,295 @@
     </p>
 </section>
 
-<!-- Search and Filters -->
+<!-- Advanced Search System -->
 <section style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-6); margin-bottom: var(--space-8); border: 1px solid var(--gray-200);">
-    <div style="display: grid; grid-template-columns: 1fr auto; gap: var(--space-4); align-items: center; margin-bottom: var(--space-6);">
-        <div style="position: relative;">
-            <input type="text" id="card-search-input" placeholder="Search for cards..." style="width: 100%; padding: var(--space-3) var(--space-4); border: 2px solid var(--gray-300); border-radius: var(--radius-lg); font-size: 1rem; transition: var(--transition-fast);" onkeyup="performCardSearch()">
-            <span style="position: absolute; right: var(--space-3); top: 50%; transform: translateY(-50%); color: var(--gray-400);"><i class="fas fa-search"></i></span>
-        </div>
-        <button onclick="toggleAdvancedFilters()" style="padding: var(--space-3) var(--space-6); background: var(--secondary-color); color: var(--gray-900); border: none; border-radius: var(--radius-lg); font-weight: 600; cursor: pointer; white-space: nowrap;">
-            <i class="fas fa-filter"></i> Filters
+    <div style="text-align: center; margin-bottom: var(--space-6);">
+        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-2);">
+            <i class="fas fa-search" style="color: var(--primary-color); margin-right: var(--space-2);"></i>
+            Advanced Card Search
+        </h2>
+        <p style="color: var(--gray-600); font-size: 0.875rem;">Use our comprehensive search system to find exactly what you're looking for</p>
+    </div>
+
+    <!-- Main Search Bar -->
+    <div style="position: relative; margin-bottom: var(--space-6);">
+        <input type="text" id="card-search-input" placeholder="Search by card name, description, or effect text..." 
+               style="width: 100%; padding: var(--space-4) var(--space-12) var(--space-4) var(--space-4); border: 2px solid var(--gray-300); border-radius: var(--radius-lg); font-size: 1.125rem; transition: var(--transition-fast); box-shadow: var(--shadow-sm);" 
+               onkeyup="performCardSearch()" onfocus="this.style.borderColor='var(--primary-color)'" onblur="this.style.borderColor='var(--gray-300)'">
+        <button onclick="performCardSearch()" style="position: absolute; right: var(--space-2); top: 50%; transform: translateY(-50%); background: var(--primary-color); color: white; border: none; padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); cursor: pointer; font-weight: 600;">
+            <i class="fas fa-search"></i> Search
         </button>
     </div>
     
-    <!-- Advanced Filters (Hidden by default) -->
-    <div id="advanced-filters" style="display: none; border-top: 1px solid var(--gray-200); padding-top: var(--space-6);">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4);">
-            <div>
-                <label style="display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700);">Card Type</label>
-                <select id="type-filter" style="width: 100%; padding: var(--space-2) var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md);" onchange="performCardSearch()">
-                    <option value="">All Types</option>
-                    <option value="Monster">Monster</option>
-                    <option value="Spell">Spell</option>
-                    <option value="Trap">Trap</option>
-                </select>
+    <!-- Advanced Filters Toggle -->
+    <div style="text-align: center; margin-bottom: var(--space-4);">
+        <button id="advanced-toggle" onclick="toggleAdvancedFilters()" style="padding: var(--space-3) var(--space-6); background: var(--secondary-color); color: var(--gray-900); border: none; border-radius: var(--radius-lg); font-weight: 600; cursor: pointer; transition: var(--transition-fast); box-shadow: var(--shadow-sm);">
+            <i class="fas fa-sliders-h"></i> Advanced Filters <i class="fas fa-chevron-down" id="filter-chevron"></i>
+        </button>
+    </div>
+    
+    <!-- Advanced Filters Panel -->
+    <div id="advanced-filters" style="display: none; border-top: 2px solid var(--gray-200); padding-top: var(--space-6); background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-6); margin-top: var(--space-4);">
+        
+        <!-- Filter Categories -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-6); margin-bottom: var(--space-6);">
+            
+            <!-- Card Type & Category -->
+            <div class="filter-category">
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3); display: flex; align-items: center;">
+                    <i class="fas fa-layer-group" style="color: var(--primary-color); margin-right: var(--space-2);"></i>
+                    Card Type & Category
+                </h3>
+                
+                <div class="form-group" style="margin-bottom: var(--space-3);">
+                    <label style="display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700);">Card Type</label>
+                    <select id="type-filter" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-size: 0.875rem;" onchange="performCardSearch()">
+                        <option value="">All Types</option>
+                        <option value="Effect Monster">Effect Monster</option>
+                        <option value="Normal Monster">Normal Monster</option>
+                        <option value="Ritual Monster">Ritual Monster</option>
+                        <option value="Fusion Monster">Fusion Monster</option>
+                        <option value="Synchro Monster">Synchro Monster</option>
+                        <option value="Xyz Monster">Xyz Monster</option>
+                        <option value="Pendulum Monster">Pendulum Monster</option>
+                        <option value="Link Monster">Link Monster</option>
+                        <option value="Spell Card">Spell Card</option>
+                        <option value="Trap Card">Trap Card</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700);">Monster Race</label>
+                    <select id="race-filter" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-size: 0.875rem;" onchange="performCardSearch()">
+                        <option value="">All Races</option>
+                        <option value="Aqua">Aqua</option>
+                        <option value="Beast">Beast</option>
+                        <option value="Beast-Warrior">Beast-Warrior</option>
+                        <option value="Creator-God">Creator-God</option>
+                        <option value="Cyberse">Cyberse</option>
+                        <option value="Dinosaur">Dinosaur</option>
+                        <option value="Divine-Beast">Divine-Beast</option>
+                        <option value="Dragon">Dragon</option>
+                        <option value="Fairy">Fairy</option>
+                        <option value="Fiend">Fiend</option>
+                        <option value="Fish">Fish</option>
+                        <option value="Insect">Insect</option>
+                        <option value="Machine">Machine</option>
+                        <option value="Plant">Plant</option>
+                        <option value="Psychic">Psychic</option>
+                        <option value="Pyro">Pyro</option>
+                        <option value="Reptile">Reptile</option>
+                        <option value="Rock">Rock</option>
+                        <option value="Sea Serpent">Sea Serpent</option>
+                        <option value="Spellcaster">Spellcaster</option>
+                        <option value="Thunder">Thunder</option>
+                        <option value="Warrior">Warrior</option>
+                        <option value="Winged Beast">Winged Beast</option>
+                        <option value="Wyrm">Wyrm</option>
+                        <option value="Zombie">Zombie</option>
+                    </select>
+                </div>
             </div>
             
-            <div>
-                <label style="display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700);">Race/Type</label>
-                <select id="race-filter" style="width: 100%; padding: var(--space-2) var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md);" onchange="performCardSearch()">
-                    <option value="">All Races</option>
-                    <option value="Dragon">Dragon</option>
-                    <option value="Spellcaster">Spellcaster</option>
-                    <option value="Warrior">Warrior</option>
-                    <option value="Beast">Beast</option>
-                    <option value="Fiend">Fiend</option>
-                    <option value="Machine">Machine</option>
-                    <option value="Aqua">Aqua</option>
-                    <option value="Pyro">Pyro</option>
-                    <option value="Rock">Rock</option>
-                    <option value="Winged Beast">Winged Beast</option>
-                    <option value="Plant">Plant</option>
-                    <option value="Insect">Insect</option>
-                    <option value="Thunder">Thunder</option>
-                    <option value="Zombie">Zombie</option>
-                    <option value="Reptile">Reptile</option>
-                    <option value="Psychic">Psychic</option>
-                    <option value="Divine-Beast">Divine-Beast</option>
-                    <option value="Creator God">Creator God</option>
-                    <option value="Wyrm">Wyrm</option>
-                    <option value="Cyberse">Cyberse</option>
-                </select>
+            <!-- Monster Stats -->
+            <div class="filter-category">
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3); display: flex; align-items: center;">
+                    <i class="fas fa-chart-bar" style="color: var(--accent-color); margin-right: var(--space-2);"></i>
+                    Monster Stats
+                </h3>
+                
+                <div class="form-group" style="margin-bottom: var(--space-3);">
+                    <label style="display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700);">Attribute</label>
+                    <select id="attribute-filter" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-size: 0.875rem;" onchange="performCardSearch()">
+                        <option value="">All Attributes</option>
+                        <option value="DARK">DARK</option>
+                        <option value="DIVINE">DIVINE</option>
+                        <option value="EARTH">EARTH</option>
+                        <option value="FIRE">FIRE</option>
+                        <option value="LIGHT">LIGHT</option>
+                        <option value="WATER">WATER</option>
+                        <option value="WIND">WIND</option>
+                    </select>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-3);">
+                    <div class="form-group">
+                        <label style="display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700);">Level/Rank</label>
+                        <select id="level-filter" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-size: 0.875rem;" onchange="performCardSearch()">
+                            <option value="">Any Level</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700);">Link Rating</label>
+                        <select id="linkval-filter" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-size: 0.875rem;" onchange="performCardSearch()">
+                            <option value="">Any Link</option>
+                            <option value="1">Link-1</option>
+                            <option value="2">Link-2</option>
+                            <option value="3">Link-3</option>
+                            <option value="4">Link-4</option>
+                            <option value="5">Link-5</option>
+                            <option value="6">Link-6</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+                    <div class="form-group">
+                        <label style="display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700);">ATK Range</label>
+                        <select id="atk-filter" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-size: 0.875rem;" onchange="performCardSearch()">
+                            <option value="">Any ATK</option>
+                            <option value="0-999">0 - 999</option>
+                            <option value="1000-1999">1000 - 1999</option>
+                            <option value="2000-2499">2000 - 2499</option>
+                            <option value="2500-2999">2500 - 2999</option>
+                            <option value="3000+">3000+</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700);">DEF Range</label>
+                        <select id="def-filter" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-size: 0.875rem;" onchange="performCardSearch()">
+                            <option value="">Any DEF</option>
+                            <option value="0-999">0 - 999</option>
+                            <option value="1000-1999">1000 - 1999</option>
+                            <option value="2000-2499">2000 - 2499</option>
+                            <option value="2500-2999">2500 - 2999</option>
+                            <option value="3000+">3000+</option>
+                        </select>
+                    </div>
+                </div>
             </div>
             
-            <div>
-                <label style="display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700);">Attribute</label>
-                <select id="attribute-filter" style="width: 100%; padding: var(--space-2) var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md);" onchange="performCardSearch()">
-                    <option value="">All Attributes</option>
-                    <option value="DARK">DARK</option>
-                    <option value="LIGHT">LIGHT</option>
-                    <option value="FIRE">FIRE</option>
-                    <option value="WATER">WATER</option>
-                    <option value="EARTH">EARTH</option>
-                    <option value="WIND">WIND</option>
-                    <option value="DIVINE">DIVINE</option>
-                </select>
+            <!-- Archetype & Format -->
+            <div class="filter-category">
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3); display: flex; align-items: center;">
+                    <i class="fas fa-tags" style="color: var(--secondary-color); margin-right: var(--space-2);"></i>
+                    Archetype & Format
+                </h3>
+                
+                <div class="form-group" style="margin-bottom: var(--space-3);">
+                    <label style="display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700);">Archetype</label>
+                    <select id="archetype-filter" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-size: 0.875rem;" onchange="performCardSearch()">
+                        <option value="">All Archetypes</option>
+                        <option value="Blue-Eyes">Blue-Eyes</option>
+                        <option value="Dark Magician">Dark Magician</option>
+                        <option value="Red-Eyes">Red-Eyes</option>
+                        <option value="Elemental HERO">Elemental HERO</option>
+                        <option value="Blackwing">Blackwing</option>
+                        <option value="Six Samurai">Six Samurai</option>
+                        <option value="Lightsworn">Lightsworn</option>
+                        <option value="Cyber Dragon">Cyber Dragon</option>
+                        <option value="Gladiator Beast">Gladiator Beast</option>
+                        <option value="Burning Abyss">Burning Abyss</option>
+                        <option value="Shaddoll">Shaddoll</option>
+                        <option value="Kozmo">Kozmo</option>
+                        <option value="Pendulum Magician">Pendulum Magician</option>
+                        <option value="True Draco">True Draco</option>
+                        <option value="Sky Striker">Sky Striker</option>
+                        <option value="Salamangreat">Salamangreat</option>
+                        <option value="Orcust">Orcust</option>
+                        <option value="Thunder Dragon">Thunder Dragon</option>
+                        <option value="Altergeist">Altergeist</option>
+                        <option value="Eldlich">Eldlich</option>
+                        <option value="Dogmatika">Dogmatika</option>
+                        <option value="Tri-Brigade">Tri-Brigade</option>
+                        <option value="Virtual World">Virtual World</option>
+                        <option value="Drytron">Drytron</option>
+                        <option value="Branded">Branded</option>
+                        <option value="Despia">Despia</option>
+                        <option value="Swordsoul">Swordsoul</option>
+                        <option value="Floowandereeze">Floowandereeze</option>
+                        <option value="Spright">Spright</option>
+                        <option value="Tearlaments">Tearlaments</option>
+                        <option value="Kashtira">Kashtira</option>
+                        <option value="Purrely">Purrely</option>
+                        <option value="Labyrinth">Labyrinth</option>
+                        <option value="Snake-Eye">Snake-Eye</option>
+                        <option value="Voiceless Voice">Voiceless Voice</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: var(--space-3);">
+                    <label style="display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700);">Format Legality</label>
+                    <select id="banlist-filter" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-size: 0.875rem;" onchange="performCardSearch()">
+                        <option value="">All Cards</option>
+                        <option value="tcg">TCG Legal</option>
+                        <option value="ocg">OCG Legal</option>
+                        <option value="goat">GOAT Format</option>
+                        <option value="edison">Edison Format</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700);">Card Set</label>
+                    <input type="text" id="cardset-filter" placeholder="e.g., LOB, MRD, PSV..." style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-size: 0.875rem;" onkeyup="performCardSearch()">
+                </div>
             </div>
             
-            <div>
-                <label style="display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700);">Level/Rank</label>
-                <select id="level-filter" style="width: 100%; padding: var(--space-2) var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md);" onchange="performCardSearch()">
-                    <option value="">All Levels</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="11">11</option>
-                    <option value="12">12</option>
-                </select>
-            </div>
-            
-            <div>
-                <label style="display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700);">Archetype</label>
-                <select id="archetype-filter" style="width: 100%; padding: var(--space-2) var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md);" onchange="performCardSearch()">
-                    <option value="">All Archetypes</option>
-                    <option value="Snake-Eye">Snake-Eye</option>
-                    <option value="Kashtira">Kashtira</option>
-                    <option value="Branded">Branded</option>
-                    <option value="Despia">Despia</option>
-                    <option value="Purrely">Purrely</option>
-                    <option value="Sky Striker">Sky Striker</option>
-                    <option value="Blue-Eyes">Blue-Eyes</option>
-                    <option value="Dark Magician">Dark Magician</option>
-                    <option value="Red-Eyes">Red-Eyes</option>
-                    <option value="Elemental HERO">Elemental HERO</option>
-                </select>
-            </div>
-            
-            <div>
-                <label style="display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700);">Sort By</label>
-                <select id="sort-filter" style="width: 100%; padding: var(--space-2) var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md);" onchange="performCardSearch()">
-                    <option value="name">Name A-Z</option>
-                    <option value="name-desc">Name Z-A</option>
-                    <option value="level">Level (Low to High)</option>
-                    <option value="level-desc">Level (High to Low)</option>
-                    <option value="atk">ATK (Low to High)</option>
-                    <option value="atk-desc">ATK (High to Low)</option>
-                </select>
+            <!-- Sorting & Display -->
+            <div class="filter-category">
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3); display: flex; align-items: center;">
+                    <i class="fas fa-sort" style="color: var(--error-color); margin-right: var(--space-2);"></i>
+                    Sorting & Display
+                </h3>
+                
+                <div class="form-group" style="margin-bottom: var(--space-3);">
+                    <label style="display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700);">Sort Results By</label>
+                    <select id="sort-filter" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-size: 0.875rem;" onchange="performCardSearch()">
+                        <option value="name">Name (A-Z)</option>
+                        <option value="name-desc">Name (Z-A)</option>
+                        <option value="level">Level (Low to High)</option>
+                        <option value="level-desc">Level (High to Low)</option>
+                        <option value="atk">ATK (Low to High)</option>
+                        <option value="atk-desc">ATK (High to Low)</option>
+                        <option value="def">DEF (Low to High)</option>
+                        <option value="def-desc">DEF (High to Low)</option>
+                        <option value="price">Price (Low to High)</option>
+                        <option value="price-desc">Price (High to Low)</option>
+                        <option value="release">Release Date (Newest)</option>
+                        <option value="release-desc">Release Date (Oldest)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: var(--space-3);">
+                    <label style="display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700);">Results Per Page</label>
+                    <select id="limit-filter" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-size: 0.875rem;" onchange="performCardSearch()">
+                        <option value="20">20 cards</option>
+                        <option value="50">50 cards</option>
+                        <option value="100">100 cards</option>
+                        <option value="200">200 cards</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: var(--space-2); cursor: pointer; font-weight: 600; color: var(--gray-700);">
+                        <input type="checkbox" id="misc-filter" onchange="performCardSearch()" style="margin: 0;">
+                        <span>Show only cards with prices</span>
+                    </label>
+                </div>
             </div>
         </div>
         
-        <div style="display: flex; gap: var(--space-3); margin-top: var(--space-4);">
-            <button onclick="clearAllFilters()" style="padding: var(--space-2) var(--space-4); background: var(--gray-200); color: var(--gray-700); border: none; border-radius: var(--radius-md); cursor: pointer;">
-                Clear Filters
+        <!-- Filter Action Buttons -->
+        <div style="display: flex; gap: var(--space-3); justify-content: center; padding-top: var(--space-4); border-top: 1px solid var(--gray-200);">
+            <button onclick="clearAllFilters()" style="padding: var(--space-3) var(--space-6); background: var(--gray-200); color: var(--gray-700); border: none; border-radius: var(--radius-lg); font-weight: 600; cursor: pointer; transition: var(--transition-fast);">
+                <i class="fas fa-times"></i> Clear All Filters
             </button>
-            <button onclick="performCardSearch()" style="padding: var(--space-2) var(--space-4); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); cursor: pointer;">
-                Apply Filters
+            <button onclick="performCardSearch()" style="padding: var(--space-3) var(--space-6); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-lg); font-weight: 600; cursor: pointer; transition: var(--transition-fast);">
+                <i class="fas fa-search"></i> Apply Filters
             </button>
         </div>
     </div>
