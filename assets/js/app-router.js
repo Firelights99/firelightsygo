@@ -456,10 +456,10 @@ class AppRouter {
 
                     ${hasMultipleSets ? `
                     <div style="margin-bottom: var(--space-6);">
-                        <label style="display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);">Set & Rarity:</label>
-                        <select id="set-selector" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-size: 1rem; background: white;" onchange="updateProductPrice('${card.name}', '${image}')">
-                            ${setsOptions}
-                        </select>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4);">Available Sets & Rarities</h3>
+                        <div id="set-selector" style="display: grid; gap: var(--space-3);">
+                            ${this.generateSetSelectorHTML(cardSets, cardSets[0])}
+                        </div>
                     </div>
                     ` : ''}
 
@@ -514,24 +514,35 @@ class AppRouter {
 
         <script>
             // Product page functionality
-            function updateProductPrice(cardName, cardImage) {
-                const selector = document.getElementById('set-selector');
+            function selectSet(setCode, rarity, price, setName) {
+                // Update all set options to remove selected state
+                document.querySelectorAll('.set-option').forEach(option => {
+                    option.classList.remove('selected');
+                    option.style.border = '2px solid var(--gray-300)';
+                    option.style.background = 'white';
+                    option.style.color = 'var(--gray-900)';
+                });
+                
+                // Add selected state to clicked option
+                event.target.closest('.set-option').classList.add('selected');
+                const selectedOption = event.target.closest('.set-option');
+                selectedOption.style.border = '2px solid var(--primary-color)';
+                selectedOption.style.background = 'var(--primary-color)';
+                selectedOption.style.color = 'white';
+                
+                // Update price and rarity displays
                 const priceElement = document.getElementById('product-price');
                 const rarityBadge = document.getElementById('rarity-badge');
                 const addToCartBtn = document.getElementById('add-to-cart-btn');
                 
-                if (selector && priceElement && rarityBadge) {
-                    const selectedOption = selector.options[selector.selectedIndex];
-                    const newPrice = selectedOption.dataset.price;
-                    const newRarity = selectedOption.dataset.rarity;
-                    
-                    priceElement.textContent = '$' + newPrice;
-                    rarityBadge.textContent = newRarity;
-                    
-                    // Update add to cart button
-                    if (addToCartBtn) {
-                        addToCartBtn.setAttribute('onclick', \`addProductToCartWithDetails('\${cardName}', \${newPrice}, '\${cardImage}', '\${newRarity}')\`);
-                    }
+                if (priceElement) priceElement.textContent = '$' + price;
+                if (rarityBadge) rarityBadge.textContent = rarity;
+                
+                // Update add to cart button with new details
+                if (addToCartBtn) {
+                    const cardName = document.querySelector('h1').textContent;
+                    const cardImage = document.getElementById('main-card-image').src;
+                    addToCartBtn.setAttribute('onclick', \`addProductToCartWithDetails('\${cardName}', \${price}, '\${cardImage}', '\${rarity}')\`);
                 }
             }
             
@@ -581,6 +592,63 @@ class AppRouter {
         
         const multiplier = multipliers[rarity] || 1.0;
         return (base * multiplier).toFixed(2);
+    }
+
+    generateSetSelectorHTML(sets, selectedSet) {
+        if (!sets || sets.length === 0) {
+            return '<p style="color: var(--gray-600); font-style: italic;">No set information available</p>';
+        }
+
+        // Process sets to add pricing
+        const processedSets = sets.map(set => ({
+            set_name: set.set_name,
+            set_code: set.set_code,
+            rarity: set.set_rarity || 'Common',
+            rarity_code: set.set_rarity_code,
+            price: this.calculatePriceByRarity('25.99', set.set_rarity || 'Common')
+        }));
+
+        return processedSets.map(set => {
+            const isSelected = selectedSet && selectedSet.set_code === set.set_code;
+            const rarityColor = this.getRarityColor(set.rarity);
+
+            return `
+                <div class="set-option ${isSelected ? 'selected' : ''}"
+                     style="border: 2px solid ${isSelected ? 'var(--primary-color)' : 'var(--gray-300)'};
+                            border-radius: var(--radius-lg);
+                            padding: var(--space-4);
+                            cursor: pointer;
+                            transition: var(--transition-fast);
+                            background: ${isSelected ? 'var(--primary-color)' : 'white'};
+                            color: ${isSelected ? 'white' : 'var(--gray-900)'}"
+                     onclick="selectSet('${set.set_code}', '${set.rarity}', '${set.price}', '${set.set_name}')">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: var(--space-1);">${set.set_name}</div>
+                            <div style="font-size: 0.875rem; opacity: 0.8;">${set.set_code}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="background: ${rarityColor}; color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: 0.75rem; font-weight: 600; margin-bottom: var(--space-1);">
+                                ${set.rarity}
+                            </div>
+                            <div style="font-size: 1.125rem; font-weight: 700;">$${set.price}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    getRarityColor(rarity) {
+        const rarityColors = {
+            'Secret Rare': '#8B5CF6',
+            'Ultra Rare': '#F59E0B',
+            'Super Rare': '#3B82F6',
+            'Rare': '#10B981',
+            'Short Print': '#6B7280',
+            'Common': '#374151'
+        };
+        return rarityColors[rarity] || '#374151';
     }
 
     getShippingPolicyContent() {
