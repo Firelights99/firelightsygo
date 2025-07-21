@@ -847,6 +847,9 @@ class ModernTCGStore {
     }
 
     generateCartItemHTML(item) {
+        // Debug logging to see what we're working with
+        console.log('Cart item data:', item);
+        
         // Ensure safe values with null checks and proper string conversion
         const price = parseFloat(item.price) || 0;
         const quantity = parseInt(item.quantity) || 1;
@@ -855,7 +858,14 @@ class ModernTCGStore {
         
         // Ensure all display values are properly converted to strings
         const safeName = this.ensureString(item.name) || 'Unknown Item';
-        const safeImage = this.ensureString(item.image) || 'https://images.ygoprodeck.com/images/cards/back.jpg';
+        let safeImage = this.ensureString(item.image);
+        
+        // If image is still empty or invalid, use fallback
+        if (!safeImage || safeImage === '' || safeImage === 'undefined') {
+            safeImage = 'https://images.ygoprodeck.com/images/cards/back.jpg';
+        }
+        
+        console.log('Processed cart item:', { safeName, safeImage, price, quantity, itemTotal });
         
         return `
             <div class="cart-item" data-item-id="${item.id}">
