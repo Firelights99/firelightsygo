@@ -960,27 +960,19 @@ function addProductToCartWithDetails(cardName, price, image, rarity) {
     const quantityInput = document.getElementById('quantity');
     const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
     const numericPrice = parseFloat(price) || 0;
-    const totalPrice = (numericPrice * quantity).toFixed(2);
     
-    // Add to cart with full details
-    if (window.tcgStore && window.tcgStore.addToCart) {
-        window.tcgStore.addToCart({
-            name: cardName,
-            price: numericPrice,
-            image: image,
-            rarity: rarity,
-            quantity: quantity
-        });
+    // Add to cart using the correct method with individual parameters
+    if (window.tcgStore && window.tcgStore.addToCartWithDetails) {
+        // Add each item individually for the specified quantity
+        for (let i = 0; i < quantity; i++) {
+            window.tcgStore.addToCartWithDetails(cardName, numericPrice, image, '', rarity, '');
+        }
+    } else if (window.tcgStore && window.tcgStore.addToCart) {
+        // Fallback to basic addToCart method
+        for (let i = 0; i < quantity; i++) {
+            window.tcgStore.addToCart(cardName, numericPrice, image);
+        }
     }
-    
-    // Show modern toast notification
-    showToastNotification({
-        title: 'Added to Cart!',
-        message: `${quantity}x ${cardName} (${rarity})`,
-        price: `$${totalPrice}`,
-        image: image,
-        type: 'success'
-    });
 }
 
 // Modern toast notification system
