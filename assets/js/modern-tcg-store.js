@@ -847,19 +847,23 @@ class ModernTCGStore {
     }
 
     generateCartItemHTML(item) {
-        // Ensure price is a valid number, default to 0 if null/undefined
+        // Ensure all values are properly sanitized and converted to strings
         const price = parseFloat(item.price) || 0;
         const quantity = parseInt(item.quantity) || 1;
         const itemTotal = (price * quantity).toFixed(2);
         const hasSetInfo = item.setCode && item.rarity;
         
+        // Ensure item name is a string, not an object
+        const itemName = String(item.name || 'Unknown Item');
+        const itemImage = String(item.image || '');
+        
         return `
             <div class="cart-item" data-item-id="${item.id}">
                 <div class="cart-item-image">
-                    <img src="${item.image}" alt="${item.name}" style="width: 60px; height: 84px; object-fit: contain; border-radius: var(--radius-md);">
+                    <img src="${itemImage}" alt="${itemName}" style="width: 60px; height: 84px; object-fit: contain; border-radius: var(--radius-md);">
                 </div>
                 <div class="cart-item-details">
-                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1); line-height: 1.3;">${item.name}</h4>
+                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1); line-height: 1.3;">${itemName}</h4>
                     ${hasSetInfo ? `
                         <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-1);">
                             <span style="background: var(--primary-color); color: white; padding: 2px 6px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">${item.setCode}</span>
