@@ -32,7 +32,7 @@ jobs:
           for file in *.html pages/*.html admin/*.html; do
             if [ -f "$file" ]; then
               echo "Checking $file"
-              # Check for basic HTML structure
+              # Check for basic HTML structure (skip templates/ as they are fragments)
               if ! grep -q "<!DOCTYPE html>" "$file"; then
                 echo "⚠️  Warning: $file missing DOCTYPE declaration"
               fi
@@ -41,6 +41,21 @@ jobs:
               fi
               if ! grep -q "<meta name=\"viewport\"" "$file"; then
                 echo "⚠️  Warning: $file missing viewport meta tag"
+              fi
+            fi
+          done
+          
+          # Validate HTML templates (fragments) separately
+          echo "🧩 Validating HTML template fragments..."
+          for file in templates/*.html; do
+            if [ -f "$file" ]; then
+              echo "Checking template fragment: $file"
+              # Templates are fragments, so just check for basic HTML validity
+              if grep -q "<script>" "$file" && ! grep -q "</script>" "$file"; then
+                echo "❌ Error: $file has unclosed script tag"
+              fi
+              if grep -q "<style>" "$file" && ! grep -q "</style>" "$file"; then
+                echo "❌ Error: $file has unclosed style tag"
               fi
             fi
           done
@@ -92,9 +107,27 @@ jobs:
             echo "⚠️  Warning: Potential hardcoded secrets found"
           fi
           
-          # Check for console.log statements in production files
-          if grep -r "console\.log" assets/js/ --include="*.js"; then
+          # Check for console.log statements in production files (exclude debug files)
+          echo "🔍 Checking for console.log in production files..."
+          PRODUCTION_FILES="assets/js/script.js assets/js/main.js assets/js/pages/ assets/js/router.js assets/js/square-functionality.js assets/js/components/"
+          CONSOLE_FOUND=false
+          
+          for pattern in $PRODUCTION_FILES; do
+            if [ -d "$pattern" ]; then
+              if grep -r "console\.log" "$pattern" --include="*.js" 2>/dev/null; then
+                CONSOLE_FOUND=true
+              fi
+            elif [ -f "$pattern" ]; then
+              if grep "console\.log" "$pattern" 2>/dev/null; then
+                CONSOLE_FOUND=true
+              fi
+            fi
+          done
+          
+          if [ "$CONSOLE_FOUND" = true ]; then
             echo "⚠️  Warning: console.log statements found in production code"
+          else
+            echo "✅ No console.log statements in production files"
           fi
           
           echo "✅ Security check complete"
