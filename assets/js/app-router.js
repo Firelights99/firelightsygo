@@ -493,68 +493,6 @@ class AppRouter {
             </div>
         </section>
 
-        <script>
-            // Product page functionality
-            function selectSet(setCode, rarity, price, setName) {
-                // Update all set options to remove selected state
-                document.querySelectorAll('.set-option').forEach(option => {
-                    option.classList.remove('selected');
-                    option.style.border = '2px solid var(--gray-300)';
-                    option.style.background = 'white';
-                    option.style.color = 'var(--gray-900)';
-                });
-                
-                // Add selected state to clicked option
-                event.target.closest('.set-option').classList.add('selected');
-                const selectedOption = event.target.closest('.set-option');
-                selectedOption.style.border = '2px solid var(--primary-color)';
-                selectedOption.style.background = 'var(--primary-color)';
-                selectedOption.style.color = 'white';
-                
-                // Update price and rarity displays
-                const priceElement = document.getElementById('product-price');
-                const rarityBadge = document.getElementById('rarity-badge');
-                const addToCartBtn = document.getElementById('add-to-cart-btn');
-                
-                if (priceElement) priceElement.textContent = '$' + price;
-                if (rarityBadge) rarityBadge.textContent = rarity;
-                
-                // Update add to cart button with new details
-                if (addToCartBtn) {
-                    const cardName = document.querySelector('h1').textContent;
-                    const cardImage = document.getElementById('main-card-image').src;
-                    addToCartBtn.setAttribute('onclick', \`addProductToCartWithDetails('\${cardName}', \${price}, '\${cardImage}', '\${rarity}')\`);
-                }
-            }
-            
-            function changeQuantity(change) {
-                const quantityInput = document.getElementById('quantity');
-                if (quantityInput) {
-                    const currentValue = parseInt(quantityInput.value) || 1;
-                    const newValue = Math.max(1, Math.min(99, currentValue + change));
-                    quantityInput.value = newValue;
-                }
-            }
-            
-            function addProductToCartWithDetails(cardName, price, image, rarity) {
-                const quantityInput = document.getElementById('quantity');
-                const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
-                
-                // Add to cart with full details
-                if (window.tcgStore && window.tcgStore.addToCart) {
-                    window.tcgStore.addToCart({
-                        name: cardName,
-                        price: parseFloat(price),
-                        image: image,
-                        rarity: rarity,
-                        quantity: quantity
-                    });
-                } else {
-                    // Fallback to simple add to cart
-                    addProductToCart(cardName, price, image);
-                }
-            }
-        </script>
         `;
     }
 
@@ -900,6 +838,70 @@ function createNewDeck() {
     if (window.deckBuilder) {
         window.deckBuilder.newDeck();
         showDeckBuilder();
+    }
+}
+
+// Global product page functions
+function selectSet(setCode, rarity, price, setName) {
+    // Update all set options to remove selected state
+    document.querySelectorAll('.set-option').forEach(option => {
+        option.classList.remove('selected');
+        option.style.border = '2px solid var(--gray-300)';
+        option.style.background = 'white';
+        option.style.color = 'var(--gray-900)';
+    });
+    
+    // Add selected state to clicked option
+    event.target.closest('.set-option').classList.add('selected');
+    const selectedOption = event.target.closest('.set-option');
+    selectedOption.style.border = '2px solid var(--primary-color)';
+    selectedOption.style.background = 'var(--primary-color)';
+    selectedOption.style.color = 'white';
+    
+    // Update price and rarity displays
+    const priceElement = document.getElementById('product-price');
+    const rarityBadge = document.getElementById('rarity-badge');
+    const addToCartBtn = document.getElementById('add-to-cart-btn');
+    
+    if (priceElement) priceElement.textContent = '$' + price;
+    if (rarityBadge) rarityBadge.textContent = rarity;
+    
+    // Update add to cart button with new details
+    if (addToCartBtn) {
+        const cardName = document.querySelector('h1').textContent;
+        const cardImage = document.getElementById('main-card-image').src;
+        addToCartBtn.setAttribute('onclick', `addProductToCartWithDetails('${cardName}', ${price}, '${cardImage}', '${rarity}')`);
+    }
+}
+
+function changeQuantity(change) {
+    const quantityInput = document.getElementById('quantity');
+    if (quantityInput) {
+        const currentValue = parseInt(quantityInput.value) || 1;
+        const newValue = Math.max(1, Math.min(99, currentValue + change));
+        quantityInput.value = newValue;
+    }
+}
+
+function addProductToCartWithDetails(cardName, price, image, rarity) {
+    const quantityInput = document.getElementById('quantity');
+    const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
+    
+    // Add to cart with full details
+    if (window.tcgStore && window.tcgStore.addToCart) {
+        window.tcgStore.addToCart({
+            name: cardName,
+            price: parseFloat(price),
+            image: image,
+            rarity: rarity,
+            quantity: quantity
+        });
+        
+        // Show success message
+        alert(`Added ${quantity}x ${cardName} (${rarity}) to cart for $${(parseFloat(price) * quantity).toFixed(2)}`);
+    } else {
+        // Fallback - show alert for now
+        alert(`Would add ${quantity}x ${cardName} (${rarity}) to cart for $${(parseFloat(price) * quantity).toFixed(2)}`);
     }
 }
 
