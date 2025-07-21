@@ -401,28 +401,25 @@ class AppRouter {
         }
     }
 
-    generateProductHTML(card) {
+    async generateProductHTML(card) {
         const image = card.card_images && card.card_images.length > 0 ? 
             card.card_images[0].image_url : 
             'https://images.ygoprodeck.com/images/cards/back.jpg';
 
-        // Get base price from API service
-        const basePrice = window.ygoproAPI ? window.ygoproAPI.getMockPrice(card.name) : '25.99';
+        // Get real pricing from YGOPRODeck API
+        const realPrice = await this.getRealCardPrice(card);
         
         // Get available sets and rarities
         const cardSets = card.card_sets || [];
         const hasMultipleSets = cardSets.length > 1;
         
-        // Generate sets dropdown options
-        const setsOptions = cardSets.map((set, index) => {
-            const rarity = set.set_rarity || 'Common';
-            const setPrice = this.calculatePriceByRarity(basePrice, rarity);
-            return `<option value="${index}" data-rarity="${rarity}" data-price="${setPrice}">${set.set_name} - ${rarity}</option>`;
-        }).join('');
-
         // Default rarity and price
         const defaultRarity = cardSets.length > 0 ? cardSets[0].set_rarity || 'Common' : 'Common';
-        const defaultPrice = this.calculatePriceByRarity(basePrice, defaultRarity);
+        const defaultPrice = this.calculateRealPriceByRarity(realPrice, defaultRarity);
+
+        // Get card type and rarity colors
+        const cardTypeColor = this.getCardTypeColor(card.type);
+        const rarityColor = this.getRarityColor(defaultRarity);
 
         return `
         <div style="margin-bottom: var(--space-6);">
@@ -449,14 +446,19 @@ class AppRouter {
                     <div style="margin-bottom: var(--space-6);">
                         <h1 style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-3); line-height: 1.2;">${card.name}</h1>
                         <div style="display: flex; gap: var(--space-4); margin-bottom: var(--space-4);">
-                            <span style="background: var(--primary-color); color: white; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 600;">${card.type}</span>
-                            <span id="rarity-badge" style="background: var(--secondary-color); color: var(--gray-900); padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 600;">${defaultRarity}</span>
+                            <span style="background: ${cardTypeColor}; color: white; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">${card.type}</span>
+                            <span id="rarity-badge" style="background: ${rarityColor}; color: white; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">${defaultRarity}</span>
                         </div>
                     </div>
 
-                    <div>
-                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Card Description</h3>
-                        <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-6);">${card.desc || 'No description available.'}</p>
+                    <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-6); border-left: 4px solid var(--primary-color);">
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3); display: flex; align-items: center; gap: var(--space-2);">
+                            <span style="font-size: 1.5rem;">📝</span>
+                            Card Description
+                        </h3>
+                        <div style="background: white; padding: var(--space-4); border-radius: var(--radius-md); border: 1px solid var(--gray-200);">
+                            <p style="color: var(--gray-700); line-height: 1.8; font-size: 0.95rem; margin: 0;">${card.desc || 'No description available.'}</p>
+                        </div>
                     </div>
 
                     ${hasMultipleSets ? `
@@ -620,15 +622,76 @@ class AppRouter {
     }
 
     getRarityColor(rarity) {
+        // YGOPRODeck-style rarity colors
         const rarityColors = {
-            'Secret Rare': '#8B5CF6',
+            'Common': '#374151',
+            'Rare': '#3B82F6', 
+            'Super Rare': '#10B981',
             'Ultra Rare': '#F59E0B',
-            'Super Rare': '#3B82F6',
-            'Rare': '#10B981',
-            'Short Print': '#6B7280',
-            'Common': '#374151'
+            'Secret Rare': '#8B5CF6',
+            'Ultimate Rare': '#DC2626',
+            'Ghost Rare': '#6B7280',
+            'Starlight Rare': '#EC4899',
+            'Short Print': '#6B7280'
         };
         return rarityColors[rarity] || '#374151';
+    }
+
+    getCardTypeColor(cardType) {
+        // YGOPRODeck-style card type colors
+        if (cardType.includes('Effect Monster')) return '#FF8B00';
+        if (cardType.includes('Normal Monster')) return '#FFC649';
+        if (cardType.includes('Fusion Monster')) return '#A086B7';
+        if (cardType.includes('Synchro Monster')) return '#CCCCCC';
+        if (cardType.includes('Xyz Monster')) return '#000000';
+        if (cardType.includes('Link Monster')) return '#00008B';
+        if (cardType.includes('Ritual Monster')) return '#9DB5CC';
+        if (cardType.includes('Pendulum')) return '#008080';
+        if (cardType.includes('Spell')) return '#1D9E74';
+        if (cardType.includes('Trap')) return '#BC5A84';
+        if (cardType.includes('Monster')) return '#FF8B00'; // Default monster
+        return '#6B7280'; // Default
+    }
+
+    async getRealCardPrice(card) {
+        try {
+            // Use the card's existing price data if available
+            if (card.card_prices && card.card_prices.length > 0) {
+                const prices = card.card_prices[0];
+                // Prefer TCGPlayer price, fallback to others
+                const usdPrice = parseFloat(prices.tcgplayer_price) || 
+                               parseFloat(prices.ebay_price) || 
+                               parseFloat(prices.amazon_price) || 
+                               parseFloat(prices.coolstuffinc_price) || 
+                               1.00;
+                
+                // Convert USD to CAD (approximate)
+                return (usdPrice * 1.35).toFixed(2);
+            }
+        } catch (error) {
+            console.warn('Error getting real card price:', error);
+        }
+        
+        // Fallback to mock pricing
+        return window.ygoproAPI ? window.ygoproAPI.getMockPrice(card.name) : '25.99';
+    }
+
+    calculateRealPriceByRarity(basePrice, rarity) {
+        const base = parseFloat(basePrice);
+        const multipliers = {
+            'Common': 0.5,
+            'Rare': 1.0,
+            'Super Rare': 1.8,
+            'Ultra Rare': 3.2,
+            'Secret Rare': 5.5,
+            'Ultimate Rare': 8.0,
+            'Ghost Rare': 12.0,
+            'Starlight Rare': 25.0,
+            'Short Print': 1.2
+        };
+        
+        const multiplier = multipliers[rarity] || 1.0;
+        return Math.max(0.25, base * multiplier).toFixed(2);
     }
 
     getShippingPolicyContent() {
