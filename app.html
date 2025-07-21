@@ -549,22 +549,88 @@
             }
         }
 
-        // Override the original navigateTo function to handle mobile nav
-        const originalNavigateTo = window.navigateTo;
-        window.navigateTo = function(page, params = '') {
-            // Close mobile nav when navigating
-            closeMobileNav();
-            
-            // Update mobile navigation
-            updateMobileNavigation(page);
-            
-            // Call original navigation function
-            if (originalNavigateTo) {
-                originalNavigateTo(page, params);
-            } else if (window.appRouter) {
-                window.appRouter.loadPage(page, true, params);
+        // Ensure navigateTo function is always available and reliable
+        function ensureNavigateTo() {
+            if (!window.navigateTo || typeof window.navigateTo !== 'function') {
+                window.navigateTo = function(page, params = '') {
+                    console.log('Using fallback navigateTo function for:', page, params);
+                    
+                    // Close mobile nav when navigating
+                    closeMobileNav();
+                    
+                    // Update mobile navigation
+                    updateMobileNavigation(page);
+                    
+                    // Use app router if available
+                    if (window.appRouter && typeof window.appRouter.loadPage === 'function') {
+                        window.appRouter.loadPage(page, true, params);
+                    } else {
+                        // Fallback: use hash-based navigation
+                        console.warn('AppRouter not available, using hash fallback');
+                        const url = page === 'home' ? '#' : `#page=${page}${params}`;
+                        window.location.hash = url;
+                        window.location.reload();
+                    }
+                };
             }
-        };
+        }
+
+        // Enhanced navigateTo wrapper that handles mobile nav
+        function createNavigateToWrapper() {
+            const originalNavigateTo = window.navigateTo;
+            
+            window.navigateTo = function(page, params = '') {
+                console.log('NavigateTo called:', page, params);
+                
+                // Close mobile nav when navigating
+                closeMobileNav();
+                
+                // Update mobile navigation
+                updateMobileNavigation(page);
+                
+                // Call navigation function with multiple fallbacks
+                if (originalNavigateTo && typeof originalNavigateTo === 'function') {
+                    originalNavigateTo(page, params);
+                } else if (window.appRouter && typeof window.appRouter.loadPage === 'function') {
+                    window.appRouter.loadPage(page, true, params);
+                } else {
+                    // Final fallback
+                    console.warn('No navigation method available, using hash fallback');
+                    const url = page === 'home' ? '#' : `#page=${page}${params}`;
+                    window.location.hash = url;
+                    window.location.reload();
+                }
+            };
+        }
+
+        // Initialize navigation with retry mechanism
+        function initializeNavigation() {
+            let retryCount = 0;
+            const maxRetries = 10;
+            
+            function tryInitialize() {
+                if (window.appRouter && typeof window.appRouter.loadPage === 'function') {
+                    console.log('AppRouter found, setting up navigation wrapper');
+                    createNavigateToWrapper();
+                } else if (retryCount < maxRetries) {
+                    retryCount++;
+                    console.log(`AppRouter not ready, retry ${retryCount}/${maxRetries}`);
+                    setTimeout(tryInitialize, 100);
+                } else {
+                    console.warn('AppRouter not available after retries, using fallback navigation');
+                    ensureNavigateTo();
+                }
+            }
+            
+            tryInitialize();
+        }
+
+        // Initialize navigation when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeNavigation);
+        } else {
+            initializeNavigation();
+        }
     </script>
 </body>
 </html>
