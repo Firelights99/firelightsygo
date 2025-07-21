@@ -808,6 +808,16 @@ class AppRouter {
                 }
             };
             
+            window.importDeck = function() {
+                if (window.deckBuilder) {
+                    window.deckBuilder.openLoadDeckModal();
+                }
+            };
+            
+            window.showDeckTemplates = function() {
+                alert('Deck templates feature coming soon! This will provide starter decks for different archetypes.');
+            };
+            
             function editDeck(deckId) {
                 if (window.deckBuilder) {
                     window.deckBuilder.loadSavedDeck(deckId);
