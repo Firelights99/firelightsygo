@@ -47,12 +47,6 @@ class ModernTCGStore {
             }
         });
 
-        // Cart functionality
-        const cartBtn = document.querySelector('.action-btn[onclick*="cart"]');
-        if (cartBtn) {
-            cartBtn.addEventListener('click', this.openCart.bind(this));
-        }
-
         // Filter functionality
         this.setupFilterListeners();
 
