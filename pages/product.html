@@ -219,7 +219,29 @@
         document.addEventListener('DOMContentLoaded', async function() {
             await loadProduct();
             setupSearchDropdown();
+            
+            // Force image size with JavaScript as backup
+            setTimeout(forceImageSize, 100);
+            setTimeout(forceImageSize, 500);
+            setTimeout(forceImageSize, 1000);
         });
+
+        function forceImageSize() {
+            const image = document.getElementById('main-card-image');
+            if (image) {
+                console.log('Forcing image size - before:', image.style.width, image.style.height);
+                image.style.setProperty('width', '80px', 'important');
+                image.style.setProperty('height', 'auto', 'important');
+                image.style.setProperty('max-width', '80px', 'important');
+                image.style.setProperty('max-height', '110px', 'important');
+                image.width = 80;
+                image.height = 110;
+                console.log('Forcing image size - after:', image.style.width, image.style.height);
+                console.log('Image element:', image);
+            } else {
+                console.log('Image element not found!');
+            }
+        }
 
         async function loadProduct() {
             const urlParams = new URLSearchParams(window.location.search);
