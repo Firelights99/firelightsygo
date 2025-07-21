@@ -16,6 +16,7 @@
     
     <!-- Stylesheets -->
     <link rel="stylesheet" href="assets/css/modern-tcg-store.css">
+    <link rel="stylesheet" href="assets/css/mobile.css">
     <link rel="icon" href="https://images.ygoprodeck.com/images/cards/89631139.jpg">
     
     <!-- Meta tags for SEO -->
@@ -82,20 +83,58 @@
                 <!-- Action Section -->
                 <div class="action-section">
                     <button class="action-btn" onclick="handleWishlistClick()">
-                        <i class="fas fa-heart"></i> Wishlist
+                        <i class="fas fa-heart"></i> <span>Wishlist</span>
                         <span class="wishlist-badge" style="display: none;">0</span>
                     </button>
                     <button class="action-btn" onclick="tcgStore.openCart()">
-                        <i class="fas fa-shopping-cart"></i> Cart
+                        <i class="fas fa-shopping-cart"></i> <span>Cart</span>
                         <span class="cart-badge" style="display: none;">0</span>
                     </button>
                     <a href="#" class="action-btn" id="account-btn" onclick="handleAccountClick()">
-                        <i class="fas fa-user"></i> Account
+                        <i class="fas fa-user"></i> <span>Account</span>
                     </a>
                 </div>
+
+                <!-- Mobile Navigation Toggle -->
+                <button class="mobile-nav-toggle" onclick="toggleMobileNav()" aria-label="Toggle navigation menu">
+                    <span></span>
+                </button>
             </div>
         </div>
     </header>
+
+    <!-- Mobile Navigation Menu -->
+    <nav class="mobile-nav-menu" id="mobile-nav-menu">
+        <!-- Mobile Search -->
+        <div class="mobile-search">
+            <div class="search-container">
+                <span class="search-icon"><i class="fas fa-search"></i></span>
+                <input type="text" class="search-input" placeholder="Search Yu-Gi-Oh! cards..." id="mobile-search-input">
+            </div>
+        </div>
+        
+        <!-- Mobile Navigation Links -->
+        <ul class="mobile-nav-links">
+            <li><a href="#" class="mobile-nav-link" id="mobile-nav-home" onclick="navigateTo('home'); closeMobileNav();">
+                <i class="fas fa-home"></i> Home
+            </a></li>
+            <li><a href="#" class="mobile-nav-link" id="mobile-nav-singles" onclick="navigateTo('singles'); closeMobileNav();">
+                <i class="fas fa-cards-blank"></i> Singles
+            </a></li>
+            <li><a href="#" class="mobile-nav-link" id="mobile-nav-decks" onclick="navigateTo('decks'); closeMobileNav();">
+                <i class="fas fa-layer-group"></i> Decks
+            </a></li>
+            <li><a href="#" class="mobile-nav-link" id="mobile-nav-account" onclick="handleAccountClick(); closeMobileNav();">
+                <i class="fas fa-user"></i> My Account
+            </a></li>
+            <li><a href="#" class="mobile-nav-link" onclick="handleWishlistClick(); closeMobileNav();">
+                <i class="fas fa-heart"></i> Wishlist
+            </a></li>
+            <li><a href="#" class="mobile-nav-link" onclick="tcgStore.openCart(); closeMobileNav();">
+                <i class="fas fa-shopping-cart"></i> Shopping Cart
+            </a></li>
+        </ul>
+    </nav>
 
     <!-- Dynamic Content Container -->
     <main id="main-content" style="width: 100%; margin: 0 auto; padding: var(--space-8) var(--space-8); min-height: 60vh;">
@@ -407,6 +446,124 @@
                 }
             }
         }
+
+        // Mobile Navigation Functions
+        function toggleMobileNav() {
+            const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
+            const mobileNavMenu = document.getElementById('mobile-nav-menu');
+            
+            if (mobileNavToggle && mobileNavMenu) {
+                const isActive = mobileNavToggle.classList.contains('active');
+                
+                if (isActive) {
+                    closeMobileNav();
+                } else {
+                    openMobileNav();
+                }
+            }
+        }
+
+        function openMobileNav() {
+            const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
+            const mobileNavMenu = document.getElementById('mobile-nav-menu');
+            
+            if (mobileNavToggle && mobileNavMenu) {
+                mobileNavToggle.classList.add('active');
+                mobileNavMenu.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            }
+        }
+
+        function closeMobileNav() {
+            const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
+            const mobileNavMenu = document.getElementById('mobile-nav-menu');
+            
+            if (mobileNavToggle && mobileNavMenu) {
+                mobileNavToggle.classList.remove('active');
+                mobileNavMenu.classList.remove('active');
+                document.body.style.overflow = ''; // Restore scrolling
+            }
+        }
+
+        // Close mobile nav when clicking outside
+        document.addEventListener('click', function(event) {
+            const mobileNavMenu = document.getElementById('mobile-nav-menu');
+            const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
+            
+            if (mobileNavMenu && mobileNavToggle) {
+                const isClickInsideNav = mobileNavMenu.contains(event.target);
+                const isClickOnToggle = mobileNavToggle.contains(event.target);
+                
+                if (!isClickInsideNav && !isClickOnToggle && mobileNavMenu.classList.contains('active')) {
+                    closeMobileNav();
+                }
+            }
+        });
+
+        // Close mobile nav on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const mobileNavMenu = document.getElementById('mobile-nav-menu');
+                if (mobileNavMenu && mobileNavMenu.classList.contains('active')) {
+                    closeMobileNav();
+                }
+            }
+        });
+
+        // Handle mobile search
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileSearchInput = document.getElementById('mobile-search-input');
+            if (mobileSearchInput && window.tcgStore) {
+                mobileSearchInput.addEventListener('input', window.tcgStore.debounce(function() {
+                    // Use the same search functionality as desktop
+                    if (window.tcgStore.handleSearchDropdown) {
+                        window.tcgStore.handleSearchDropdown();
+                    }
+                }, 300));
+                
+                mobileSearchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const query = e.target.value.trim();
+                        if (query.length >= 2) {
+                            closeMobileNav();
+                            navigateTo('singles', `?search=${encodeURIComponent(query)}`);
+                        }
+                    }
+                });
+            }
+        });
+
+        // Update mobile navigation active states
+        function updateMobileNavigation(pageName) {
+            // Remove active class from all mobile nav links
+            document.querySelectorAll('.mobile-nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // Add active class to current page
+            const activeMobileLink = document.getElementById(`mobile-nav-${pageName}`);
+            if (activeMobileLink) {
+                activeMobileLink.classList.add('active');
+            }
+        }
+
+        // Override the original navigateTo function to handle mobile nav
+        const originalNavigateTo = window.navigateTo;
+        window.navigateTo = function(page, params = '') {
+            // Close mobile nav when navigating
+            closeMobileNav();
+            
+            // Update mobile navigation
+            updateMobileNavigation(page);
+            
+            // Call original navigation function
+            if (originalNavigateTo) {
+                originalNavigateTo(page, params);
+            } else if (window.appRouter) {
+                window.appRouter.loadPage(page, true, params);
+            }
+        };
     </script>
 </body>
 </html>

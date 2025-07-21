@@ -875,6 +875,24 @@ body {
     color: var(--gray-600);
 }
 
+/* Mobile Navigation Toggle - Hidden on Desktop */
+.mobile-nav-toggle {
+    display: none;
+}
+
+.mobile-nav-menu {
+    display: none;
+}
+
+/* Desktop-only utility class */
+.desktop-only {
+    display: block;
+}
+
+.mobile-only {
+    display: none;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .header-container {
@@ -903,6 +921,24 @@ body {
     
     .filters-grid {
         grid-template-columns: 1fr;
+    }
+    
+    /* Show mobile navigation toggle on mobile */
+    .mobile-nav-toggle {
+        display: flex;
+    }
+    
+    .mobile-nav-menu {
+        display: block;
+    }
+    
+    /* Hide desktop elements on mobile */
+    .desktop-only {
+        display: none;
+    }
+    
+    .mobile-only {
+        display: block;
     }
 }
 
