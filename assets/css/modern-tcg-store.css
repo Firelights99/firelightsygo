@@ -620,12 +620,12 @@ body {
     padding: var(--space-2);
 }
 
-/* Product page specific image sizing - CLEAN AND SIMPLE */
+/* Product page specific image sizing - LARGE AND VISIBLE */
 #main-card-image,
 .product-card-image {
-    width: 280px;
+    width: 400px;
     height: auto;
-    max-width: 280px;
+    max-width: 400px;
     object-fit: contain;
     padding: 10px;
     margin: 0 auto;
@@ -635,9 +635,9 @@ body {
 /* Product image container */
 #image-container,
 .product-image-container {
-    max-width: 300px;
-    width: 300px;
-    height: 420px;
+    max-width: 420px;
+    width: 420px;
+    height: 580px;
     margin: 0 auto;
     overflow: hidden;
 }

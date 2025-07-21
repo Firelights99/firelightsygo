@@ -97,10 +97,10 @@
 }
 
 .main-card-image {
-    width: 280px;
+    width: 400px;
     height: auto;
     display: block;
-    max-width: 280px;
+    max-width: 400px;
     object-fit: contain;
     background: white;
     margin: 0 auto;
