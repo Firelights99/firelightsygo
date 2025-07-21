@@ -847,23 +847,20 @@ class ModernTCGStore {
     }
 
     generateCartItemHTML(item) {
-        // Ensure all values are properly sanitized and converted to strings
+        // Ensure safe values with null checks but keep it simple like the working version
         const price = parseFloat(item.price) || 0;
         const quantity = parseInt(item.quantity) || 1;
         const itemTotal = (price * quantity).toFixed(2);
         const hasSetInfo = item.setCode && item.rarity;
-        
-        // Ensure item name is a string, not an object
-        const itemName = String(item.name || 'Unknown Item');
-        const itemImage = String(item.image || 'https://images.ygoprodeck.com/images/cards/back.jpg');
+        const safeImage = item.image || 'https://images.ygoprodeck.com/images/cards/back.jpg';
         
         return `
             <div class="cart-item" data-item-id="${item.id}">
                 <div class="cart-item-image">
-                    <img src="${itemImage}" alt="${itemName}" style="width: 60px; height: 84px; object-fit: contain; border-radius: var(--radius-md);">
+                    <img src="${safeImage}" alt="${item.name}" style="width: 60px; height: 84px; object-fit: contain; border-radius: var(--radius-md);">
                 </div>
                 <div class="cart-item-details">
-                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1); line-height: 1.3;">${itemName}</h4>
+                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1); line-height: 1.3;">${item.name}</h4>
                     ${hasSetInfo ? `
                         <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-1);">
                             <span style="background: var(--primary-color); color: white; padding: 2px 6px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">${item.setCode}</span>
@@ -873,16 +870,9 @@ class ModernTCGStore {
                     <p style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2);">$${price.toFixed(2)} each</p>
                     <div class="cart-item-controls">
                         <div class="quantity-controls">
-                            <button class="quantity-btn" onclick="tcgStore.decreaseQuantity(${item.id})" ${item.quantity <= 1 ? 'disabled' : ''}>-</button>
-                            <input type="number" 
-                                   class="quantity-input" 
-                                   value="${item.quantity}" 
-                                   min="1" 
-                                   max="99" 
-                                   style="width: 60px; text-align: center; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); padding: 4px; font-size: 0.875rem;"
-                                   onchange="tcgStore.updateCartQuantity(${item.id}, parseInt(this.value) || 1)"
-                                   onblur="tcgStore.updateCartQuantity(${item.id}, parseInt(this.value) || 1)">
-                            <button class="quantity-btn" onclick="tcgStore.increaseQuantity(${item.id})">+</button>
+                            <button class="quantity-btn" onclick="tcgStore.updateCartQuantity(${item.id}, ${quantity - 1})">-</button>
+                            <span class="quantity-display">${quantity}</span>
+                            <button class="quantity-btn" onclick="tcgStore.updateCartQuantity(${item.id}, ${quantity + 1})">+</button>
                         </div>
                         <button class="remove-btn" onclick="tcgStore.removeFromCart(${item.id})" title="Remove from cart">
                             🗑️
