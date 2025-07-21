@@ -749,13 +749,20 @@ class ModernTCGStore {
         if (!modalContent) return;
 
         // Generate new modal content HTML
-        const newContentHTML = this.generateCartModalHTML().match(/<div class="cart-modal-content"[^>]*>([\s\S]*)<\/div>$/)[1];
+        const fullModalHTML = this.generateCartModalHTML();
+        const match = fullModalHTML.match(/<div class="cart-modal-content"[^>]*>([\s\S]*)<\/div>\s*<\/div>\s*$/);
         
-        // Replace the modal content
-        modalContent.innerHTML = newContentHTML;
-        
-        // Re-setup event listeners for the new content
-        this.setupCartModalEventListeners();
+        if (match && match[1]) {
+            // Replace the modal content
+            modalContent.innerHTML = match[1];
+            
+            // Re-setup event listeners for the new content
+            this.setupCartModalEventListeners();
+        } else {
+            // Fallback: recreate the entire modal
+            this.closeCart();
+            this.openCart();
+        }
     }
 
     addToCartWithDetails(cardName, price, image, setCode = '', rarity = '', setName = '') {
