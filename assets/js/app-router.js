@@ -800,22 +800,101 @@ class AppRouter {
                 return stats;
             }
             
-            // Make functions globally available
+            // Make ALL deck functions globally available
             window.createNewDeck = function() {
+                console.log('createNewDeck called');
                 if (window.deckBuilder) {
                     window.deckBuilder.newDeck();
                     showDeckBuilder();
+                } else {
+                    console.error('deckBuilder not available');
                 }
             };
             
             window.importDeck = function() {
+                console.log('importDeck called');
                 if (window.deckBuilder) {
                     window.deckBuilder.openLoadDeckModal();
+                } else {
+                    console.error('deckBuilder not available');
                 }
             };
             
             window.showDeckTemplates = function() {
+                console.log('showDeckTemplates called');
                 alert('Deck templates feature coming soon! This will provide starter decks for different archetypes.');
+            };
+
+            window.showMyDecks = function() {
+                console.log('showMyDecks called');
+                document.getElementById('my-decks-section').style.display = 'block';
+                document.getElementById('deck-builder-section').style.display = 'none';
+                document.getElementById('popular-decks-section').style.display = 'none';
+                
+                document.getElementById('my-decks-btn').classList.add('active');
+                document.getElementById('builder-btn').classList.remove('active');
+                document.getElementById('popular-btn').classList.remove('active');
+                
+                loadUserDecks();
+            };
+
+            window.showDeckBuilder = function() {
+                console.log('showDeckBuilder called');
+                document.getElementById('my-decks-section').style.display = 'none';
+                document.getElementById('deck-builder-section').style.display = 'block';
+                document.getElementById('popular-decks-section').style.display = 'none';
+                
+                document.getElementById('my-decks-btn').classList.remove('active');
+                document.getElementById('builder-btn').classList.add('active');
+                document.getElementById('popular-btn').classList.remove('active');
+            };
+
+            window.showPopularDecks = function() {
+                console.log('showPopularDecks called');
+                document.getElementById('my-decks-section').style.display = 'none';
+                document.getElementById('deck-builder-section').style.display = 'none';
+                document.getElementById('popular-decks-section').style.display = 'block';
+                
+                document.getElementById('my-decks-btn').classList.remove('active');
+                document.getElementById('builder-btn').classList.remove('active');
+                document.getElementById('popular-btn').classList.add('active');
+            };
+
+            window.loadUserDecks = function() {
+                console.log('loadUserDecks called');
+                const savedDecks = window.deckBuilder ? window.deckBuilder.getSavedDecks() : {};
+                const container = document.getElementById('user-decks-grid');
+                
+                if (!container) {
+                    console.error('user-decks-grid container not found');
+                    return;
+                }
+                
+                if (Object.keys(savedDecks).length === 0) {
+                    container.innerHTML = \`
+                        <div style="text-align: center; padding: var(--space-12); color: var(--gray-500);">
+                            <div style="font-size: 4rem; margin-bottom: var(--space-4);">🃏</div>
+                            <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3);">No Decks Yet</h3>
+                            <p style="margin-bottom: var(--space-6);">Create your first deck to get started!</p>
+                            <button class="primary-btn" onclick="createNewDeck()">Create New Deck</button>
+                        </div>
+                    \`;
+                    return;
+                }
+                
+                const sortedDecks = Object.entries(savedDecks).sort((a, b) => {
+                    const sortBy = document.getElementById('deck-sort')?.value || 'updated';
+                    switch (sortBy) {
+                        case 'created':
+                            return new Date(b[1].metadata.createdAt) - new Date(a[1].metadata.createdAt);
+                        case 'name':
+                            return a[1].metadata.name.localeCompare(b[1].metadata.name);
+                        default: // updated
+                            return new Date(b[1].metadata.updatedAt) - new Date(a[1].metadata.updatedAt);
+                    }
+                });
+                
+                container.innerHTML = sortedDecks.map(([id, deckData]) => generateDeckCardHTML(id, deckData)).join('');
             };
             
             function editDeck(deckId) {
