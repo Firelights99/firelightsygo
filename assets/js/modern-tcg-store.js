@@ -1009,37 +1009,9 @@ class ModernTCGStore {
             return;
         }
 
-        if (!this.currentUser) {
-            this.showToast('Please log in to proceed to checkout.', 'error');
-            this.closeCart();
-            this.openLoginModal();
-            return;
-        }
-
-        // Create order from current cart
-        const order = this.createOrder([...this.cart]);
-        
-        if (order) {
-            // Clear cart after successful order creation
-            this.cart = [];
-            this.saveCart();
-            this.updateCartBadge();
-            this.closeCart();
-            
-            // Show success message and redirect to order confirmation
-            this.showToast(`Order #${order.id} placed successfully!`, 'success', 5000);
-            
-            // Simulate order processing
-            setTimeout(() => {
-                this.updateOrderStatus(order.id, 'processing');
-                this.showToast('Your order is now being processed!', 'info');
-            }, 2000);
-            
-            // Open order history to show the new order
-            setTimeout(() => {
-                this.openOrderHistoryModal();
-            }, 3000);
-        }
+        // Close cart and open checkout modal (supports both guest and logged-in users)
+        this.closeCart();
+        this.openCheckoutModal();
     }
 
     updateCartItemDisplay(itemId, item) {
@@ -2784,6 +2756,493 @@ class ModernTCGStore {
             return '';
         }
         return String(value);
+    }
+
+    // Guest Checkout Functionality
+    openCheckoutModal() {
+        this.createCheckoutModal();
+        this.displayCheckoutModal();
+    }
+
+    createCheckoutModal() {
+        // Remove existing modal if it exists
+        const existingModal = document.getElementById('checkout-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        const modal = document.createElement('div');
+        modal.id = 'checkout-modal';
+        modal.className = 'checkout-modal';
+        modal.innerHTML = this.generateCheckoutModalHTML();
+        document.body.appendChild(modal);
+
+        // Add event listeners
+        this.setupCheckoutModalEventListeners();
+    }
+
+    generateCheckoutModalHTML() {
+        const totalItems = this.cart.reduce((sum, item) => sum + item.quantity, 0);
+        const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const shipping = subtotal >= 75 ? 0 : 9.99;
+        const tax = subtotal * 0.13; // 13% HST for Ontario
+        const finalTotal = subtotal + shipping + tax;
+
+        return `
+            <div class="checkout-modal-overlay" onclick="tcgStore.closeCheckoutModal()">
+                <div class="checkout-modal-content" onclick="event.stopPropagation()">
+                    <div class="checkout-modal-header">
+                        <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--gray-900); margin: 0;">
+                            <i class="fas fa-credit-card" style="color: var(--primary-color); margin-right: var(--space-2);"></i>
+                            Checkout
+                        </h2>
+                        <button class="checkout-close-btn" onclick="tcgStore.closeCheckoutModal()">×</button>
+                    </div>
+                    
+                    <div class="checkout-modal-body">
+                        <!-- Checkout Options -->
+                        <div class="checkout-options" style="margin-bottom: var(--space-6);">
+                            <div class="checkout-option-tabs" style="display: flex; border-bottom: 1px solid var(--gray-200); margin-bottom: var(--space-6);">
+                                <button class="checkout-tab active" id="guest-tab" onclick="tcgStore.switchCheckoutTab('guest')" style="flex: 1; padding: var(--space-4); border: none; background: none; font-weight: 600; color: var(--primary-color); border-bottom: 2px solid var(--primary-color); cursor: pointer;">
+                                    <i class="fas fa-user-clock"></i> Guest Checkout
+                                </button>
+                                <button class="checkout-tab" id="account-tab" onclick="tcgStore.switchCheckoutTab('account')" style="flex: 1; padding: var(--space-4); border: none; background: none; font-weight: 600; color: var(--gray-600); border-bottom: 2px solid transparent; cursor: pointer;">
+                                    <i class="fas fa-user"></i> ${this.currentUser ? 'My Account' : 'Sign In'}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Guest Checkout Form -->
+                        <div id="guest-checkout" class="checkout-section">
+                            <form id="guest-checkout-form" onsubmit="tcgStore.handleGuestCheckout(event)">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-bottom: var(--space-4);">
+                                    <div class="form-group">
+                                        <label for="guest-first-name">First Name *</label>
+                                        <input type="text" id="guest-first-name" name="firstName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="guest-last-name">Last Name *</label>
+                                        <input type="text" id="guest-last-name" name="lastName" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="guest-email">Email Address *</label>
+                                    <input type="email" id="guest-email" name="email" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="guest-phone">Phone Number</label>
+                                    <input type="tel" id="guest-phone" name="phone">
+                                </div>
+
+                                <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin: var(--space-6) 0 var(--space-4) 0;">Shipping Address</h3>
+                                
+                                <div class="form-group">
+                                    <label for="guest-address">Street Address *</label>
+                                    <input type="text" id="guest-address" name="address" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="guest-address2">Apartment, Suite, etc.</label>
+                                    <input type="text" id="guest-address2" name="address2">
+                                </div>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-4); margin-bottom: var(--space-4);">
+                                    <div class="form-group">
+                                        <label for="guest-city">City *</label>
+                                        <input type="text" id="guest-city" name="city" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="guest-province">Province *</label>
+                                        <select id="guest-province" name="province" required>
+                                            <option value="">Select Province</option>
+                                            <option value="AB">Alberta</option>
+                                            <option value="BC">British Columbia</option>
+                                            <option value="MB">Manitoba</option>
+                                            <option value="NB">New Brunswick</option>
+                                            <option value="NL">Newfoundland and Labrador</option>
+                                            <option value="NS">Nova Scotia</option>
+                                            <option value="ON">Ontario</option>
+                                            <option value="PE">Prince Edward Island</option>
+                                            <option value="QC">Quebec</option>
+                                            <option value="SK">Saskatchewan</option>
+                                            <option value="NT">Northwest Territories</option>
+                                            <option value="NU">Nunavut</option>
+                                            <option value="YT">Yukon</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="guest-postal">Postal Code *</label>
+                                        <input type="text" id="guest-postal" name="postalCode" required pattern="[A-Za-z][0-9][A-Za-z] [0-9][A-Za-z][0-9]" placeholder="A1A 1A1">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label style="display: flex; align-items: center; gap: var(--space-2); cursor: pointer;">
+                                        <input type="checkbox" name="createAccount" style="margin: 0;">
+                                        <span>Create an account for faster checkout next time</span>
+                                    </label>
+                                </div>
+
+                                <div class="form-group" id="password-fields" style="display: none;">
+                                    <label for="guest-password">Password (6+ characters)</label>
+                                    <input type="password" id="guest-password" name="password" minlength="6">
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Account Checkout Section -->
+                        <div id="account-checkout" class="checkout-section" style="display: none;">
+                            ${this.currentUser ? this.generateAccountCheckoutHTML() : this.generateLoginPromptHTML()}
+                        </div>
+
+                        <!-- Order Summary -->
+                        <div class="checkout-order-summary" style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-6); margin-top: var(--space-6);">
+                            <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4);">Order Summary</h3>
+                            
+                            <!-- Cart Items Preview -->
+                            <div class="checkout-items-preview" style="margin-bottom: var(--space-4); max-height: 200px; overflow-y: auto;">
+                                ${this.cart.map(item => `
+                                    <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) 0; border-bottom: 1px solid var(--gray-200);">
+                                        <img src="${item.image}" alt="${item.name}" style="width: 40px; height: 56px; object-fit: contain; border-radius: var(--radius-sm);">
+                                        <div style="flex: 1; min-width: 0;">
+                                            <div style="font-size: 0.875rem; font-weight: 600; color: var(--gray-900); margin-bottom: 2px; line-height: 1.2;">${item.name}</div>
+                                            <div style="font-size: 0.75rem; color: var(--gray-600);">Qty: ${item.quantity} × $${item.price.toFixed(2)}</div>
+                                        </div>
+                                        <div style="font-size: 0.875rem; font-weight: 600; color: var(--primary-color);">$${(item.price * item.quantity).toFixed(2)}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+
+                            <!-- Totals -->
+                            <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Subtotal (${totalItems} items):</span>
+                                    <span>$${subtotal.toFixed(2)}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Shipping:</span>
+                                    <span>${shipping === 0 ? 'FREE' : '$' + shipping.toFixed(2)}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Tax (HST):</span>
+                                    <span>$${tax.toFixed(2)}</span>
+                                </div>
+                                <hr style="margin: var(--space-2) 0; border: none; border-top: 1px solid var(--gray-300);">
+                                <div style="display: flex; justify-content: space-between; font-size: 1.125rem; font-weight: 700;">
+                                    <span>Total:</span>
+                                    <span style="color: var(--primary-color);">$${finalTotal.toFixed(2)}</span>
+                                </div>
+                                ${subtotal < 75 ? `<p style="font-size: 0.875rem; color: var(--primary-color); font-weight: 600; text-align: center; margin-top: var(--space-2);">Add $${(75 - subtotal).toFixed(2)} more for free shipping!</p>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="checkout-modal-footer">
+                        <div class="checkout-actions">
+                            <button class="secondary-btn" onclick="tcgStore.closeCheckoutModal()">Back to Cart</button>
+                            <button class="primary-btn" onclick="tcgStore.completeCheckout()" style="min-width: 200px;">
+                                <i class="fas fa-lock"></i> Complete Order - $${finalTotal.toFixed(2)}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    generateAccountCheckoutHTML() {
+        const user = this.currentUser;
+        return `
+            <div style="text-align: center; padding: var(--space-6);">
+                <div style="font-size: 3rem; margin-bottom: var(--space-4); color: var(--success-color);">✓</div>
+                <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Welcome back, ${user.firstName}!</h3>
+                <p style="color: var(--gray-600); margin-bottom: var(--space-4);">Your account information will be used for this order.</p>
+                <div style="background: white; border-radius: var(--radius-lg); padding: var(--space-4); text-align: left; border: 1px solid var(--gray-200);">
+                    <div style="margin-bottom: var(--space-2);"><strong>Email:</strong> ${user.email}</div>
+                    <div style="margin-bottom: var(--space-2);"><strong>Name:</strong> ${user.firstName} ${user.lastName}</div>
+                    ${user.phone ? `<div><strong>Phone:</strong> ${user.phone}</div>` : ''}
+                </div>
+                <p style="font-size: 0.875rem; color: var(--gray-500); margin-top: var(--space-4);">
+                    Need to update your information? <a href="#" onclick="tcgStore.closeCheckoutModal(); tcgStore.openEditProfileModal();" style="color: var(--primary-color); text-decoration: none;">Edit Profile</a>
+                </p>
+            </div>
+        `;
+    }
+
+    generateLoginPromptHTML() {
+        return `
+            <div style="text-align: center; padding: var(--space-6);">
+                <div style="font-size: 3rem; margin-bottom: var(--space-4); opacity: 0.7;">👤</div>
+                <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Sign In to Your Account</h3>
+                <p style="color: var(--gray-600); margin-bottom: var(--space-6);">Sign in for faster checkout with saved information and order history.</p>
+                <div style="display: flex; gap: var(--space-3); justify-content: center;">
+                    <button class="primary-btn" onclick="tcgStore.closeCheckoutModal(); tcgStore.openLoginModal();">
+                        Sign In
+                    </button>
+                    <button class="secondary-btn" onclick="tcgStore.closeCheckoutModal(); tcgStore.openRegisterModal();">
+                        Create Account
+                    </button>
+                </div>
+                <p style="font-size: 0.875rem; color: var(--gray-500); margin-top: var(--space-4);">
+                    Or continue with guest checkout using the Guest tab above.
+                </p>
+            </div>
+        `;
+    }
+
+    setupCheckoutModalEventListeners() {
+        // Close modal when clicking outside
+        const overlay = document.querySelector('.checkout-modal-overlay');
+        if (overlay) {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    this.closeCheckoutModal();
+                }
+            });
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('checkout-modal')) {
+                this.closeCheckoutModal();
+            }
+        });
+
+        // Handle create account checkbox
+        const createAccountCheckbox = document.querySelector('input[name="createAccount"]');
+        const passwordFields = document.getElementById('password-fields');
+        if (createAccountCheckbox && passwordFields) {
+            createAccountCheckbox.addEventListener('change', (e) => {
+                passwordFields.style.display = e.target.checked ? 'block' : 'none';
+                const passwordInput = document.getElementById('guest-password');
+                if (passwordInput) {
+                    passwordInput.required = e.target.checked;
+                }
+            });
+        }
+    }
+
+    displayCheckoutModal() {
+        const modal = document.getElementById('checkout-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    closeCheckoutModal() {
+        const modal = document.getElementById('checkout-modal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.remove();
+            document.body.style.overflow = '';
+        }
+    }
+
+    switchCheckoutTab(tab) {
+        // Update tab appearance
+        document.querySelectorAll('.checkout-tab').forEach(tabBtn => {
+            tabBtn.classList.remove('active');
+            tabBtn.style.color = 'var(--gray-600)';
+            tabBtn.style.borderBottomColor = 'transparent';
+        });
+
+        const activeTab = document.getElementById(`${tab}-tab`);
+        if (activeTab) {
+            activeTab.classList.add('active');
+            activeTab.style.color = 'var(--primary-color)';
+            activeTab.style.borderBottomColor = 'var(--primary-color)';
+        }
+
+        // Show/hide sections
+        document.getElementById('guest-checkout').style.display = tab === 'guest' ? 'block' : 'none';
+        document.getElementById('account-checkout').style.display = tab === 'account' ? 'block' : 'none';
+    }
+
+    handleGuestCheckout(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData.entries());
+        
+        // Validate required fields
+        const requiredFields = ['firstName', 'lastName', 'email', 'address', 'city', 'province', 'postalCode'];
+        for (const field of requiredFields) {
+            if (!data[field] || data[field].trim() === '') {
+                this.showToast(`Please fill in the ${field.replace(/([A-Z])/g, ' $1').toLowerCase()} field.`, 'error');
+                return;
+            }
+        }
+
+        // Validate postal code format (Canadian)
+        const postalCodeRegex = /^[A-Za-z]\d[A-Za-z] \d[A-Za-z]\d$/;
+        if (!postalCodeRegex.test(data.postalCode)) {
+            this.showToast('Please enter a valid Canadian postal code (e.g., A1A 1A1).', 'error');
+            return;
+        }
+
+        // Create guest order
+        this.completeGuestOrder(data);
+    }
+
+    completeGuestOrder(guestData) {
+        const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const shipping = subtotal >= 75 ? 0 : 9.99;
+        const tax = subtotal * 0.13;
+        const total = subtotal + shipping + tax;
+
+        // Create guest order
+        const order = {
+            id: Date.now(),
+            userId: null, // Guest order
+            guestInfo: {
+                firstName: guestData.firstName,
+                lastName: guestData.lastName,
+                email: guestData.email,
+                phone: guestData.phone || '',
+                address: {
+                    street: guestData.address,
+                    street2: guestData.address2 || '',
+                    city: guestData.city,
+                    province: guestData.province,
+                    postalCode: guestData.postalCode.toUpperCase()
+                }
+            },
+            items: this.cart.map(item => ({...item})),
+            subtotal: subtotal,
+            shipping: shipping,
+            tax: tax,
+            total: total,
+            status: 'pending',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            trackingNumber: null,
+            estimatedDelivery: this.calculateEstimatedDelivery(),
+            isGuestOrder: true
+        };
+
+        // Save order to guest orders
+        const guestOrders = JSON.parse(localStorage.getItem('tcg-guest-orders') || '[]');
+        guestOrders.push(order);
+        localStorage.setItem('tcg-guest-orders', JSON.stringify(guestOrders));
+
+        // If user wants to create account, do it now
+        if (guestData.createAccount && guestData.password) {
+            this.createAccountFromGuestOrder(guestData, order);
+        }
+
+        // Clear cart and close modal
+        this.cart = [];
+        this.saveCart();
+        this.updateCartBadge();
+        this.closeCheckoutModal();
+
+        // Show success message
+        this.showToast(`Order #${order.id} placed successfully! Check your email for confirmation.`, 'success', 5000);
+
+        // Simulate order processing
+        setTimeout(() => {
+            this.updateGuestOrderStatus(order.id, 'processing');
+            this.showToast('Your order is now being processed!', 'info');
+        }, 2000);
+    }
+
+    async createAccountFromGuestOrder(guestData, order) {
+        try {
+            if (!this.dbService) return;
+
+            const newUser = await this.dbService.createUser({
+                email: guestData.email,
+                password: guestData.password,
+                firstName: guestData.firstName,
+                lastName: guestData.lastName,
+                phone: guestData.phone || '',
+                favoriteArchetype: null
+            });
+
+            // Transfer guest order to user account
+            order.userId = newUser.id;
+            order.isGuestOrder = false;
+            
+            // Move order from guest orders to user orders
+            this.orders.push(order);
+            localStorage.setItem('tcg-orders', JSON.stringify(this.orders));
+            
+            // Remove from guest orders
+            const guestOrders = JSON.parse(localStorage.getItem('tcg-guest-orders') || '[]');
+            const updatedGuestOrders = guestOrders.filter(o => o.id !== order.id);
+            localStorage.setItem('tcg-guest-orders', JSON.stringify(updatedGuestOrders));
+
+            // Auto-login the new user
+            this.currentUser = newUser;
+            localStorage.setItem('tcg-user', JSON.stringify(newUser));
+            this.updateAccountUI();
+
+            this.showToast(`Account created successfully! Welcome, ${newUser.firstName}!`, 'success');
+
+        } catch (error) {
+            console.error('Error creating account from guest order:', error);
+            // Don't show error to user as the order was still successful
+        }
+    }
+
+    updateGuestOrderStatus(orderId, newStatus) {
+        const guestOrders = JSON.parse(localStorage.getItem('tcg-guest-orders') || '[]');
+        const order = guestOrders.find(o => o.id === orderId);
+        
+        if (order) {
+            order.status = newStatus;
+            order.updatedAt = new Date().toISOString();
+            
+            if (newStatus === 'shipped' && !order.trackingNumber) {
+                order.trackingNumber = this.generateTrackingNumber();
+            }
+            
+            localStorage.setItem('tcg-guest-orders', JSON.stringify(guestOrders));
+        }
+    }
+
+    completeCheckout() {
+        const activeTab = document.querySelector('.checkout-tab.active');
+        if (!activeTab) return;
+
+        if (activeTab.id === 'guest-tab') {
+            // Trigger guest checkout form submission
+            const form = document.getElementById('guest-checkout-form');
+            if (form) {
+                form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+            }
+        } else if (activeTab.id === 'account-tab') {
+            if (this.currentUser) {
+                // Complete order with logged-in user
+                this.completeUserOrder();
+            } else {
+                this.showToast('Please sign in to complete checkout with your account.', 'error');
+            }
+        }
+    }
+
+    completeUserOrder() {
+        // Create order from current cart for logged-in user
+        const order = this.createOrder([...this.cart]);
+        
+        if (order) {
+            // Clear cart after successful order creation
+            this.cart = [];
+            this.saveCart();
+            this.updateCartBadge();
+            this.closeCheckoutModal();
+            
+            // Show success message
+            this.showToast(`Order #${order.id} placed successfully!`, 'success', 5000);
+            
+            // Simulate order processing
+            setTimeout(() => {
+                this.updateOrderStatus(order.id, 'processing');
+                this.showToast('Your order is now being processed!', 'info');
+            }, 2000);
+        }
     }
 
     debounce(func, wait) {
