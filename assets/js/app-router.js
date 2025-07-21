@@ -406,6 +406,24 @@ class AppRouter {
             card.card_images[0].image_url : 
             'https://images.ygoprodeck.com/images/cards/back.jpg';
 
+        // Get base price from API service
+        const basePrice = window.ygoproAPI ? window.ygoproAPI.getMockPrice(card.name) : '25.99';
+        
+        // Get available sets and rarities
+        const cardSets = card.card_sets || [];
+        const hasMultipleSets = cardSets.length > 1;
+        
+        // Generate sets dropdown options
+        const setsOptions = cardSets.map((set, index) => {
+            const rarity = set.set_rarity || 'Common';
+            const setPrice = this.calculatePriceByRarity(basePrice, rarity);
+            return `<option value="${index}" data-rarity="${rarity}" data-price="${setPrice}">${set.set_name} - ${rarity}</option>`;
+        }).join('');
+
+        // Default rarity and price
+        const defaultRarity = cardSets.length > 0 ? cardSets[0].set_rarity || 'Common' : 'Common';
+        const defaultPrice = this.calculatePriceByRarity(basePrice, defaultRarity);
+
         return `
         <div style="margin-bottom: var(--space-6);">
             <nav style="display: flex; align-items: center; gap: var(--space-2); font-size: 0.875rem; color: var(--gray-600);">
@@ -432,15 +450,36 @@ class AppRouter {
                         <h1 style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-3); line-height: 1.2;">${card.name}</h1>
                         <div style="display: flex; gap: var(--space-4); margin-bottom: var(--space-4);">
                             <span style="background: var(--primary-color); color: white; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 600;">${card.type}</span>
+                            <span id="rarity-badge" style="background: var(--secondary-color); color: var(--gray-900); padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 600;">${defaultRarity}</span>
                         </div>
                     </div>
 
+                    ${hasMultipleSets ? `
+                    <div style="margin-bottom: var(--space-6);">
+                        <label style="display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);">Set & Rarity:</label>
+                        <select id="set-selector" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-size: 1rem; background: white;" onchange="updateProductPrice('${card.name}', '${image}')">
+                            ${setsOptions}
+                        </select>
+                    </div>
+                    ` : ''}
+
                     <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-6);">
-                        <span style="font-size: 2rem; font-weight: 700; color: var(--primary-color);">$25.99</span>
+                        <span id="product-price" style="font-size: 2rem; font-weight: 700; color: var(--primary-color);">$${defaultPrice}</span>
+                        <div style="margin-top: var(--space-2);">
+                            <span style="font-size: 0.875rem; color: var(--gray-600);">Price from YGOPRODeck API</span>
+                        </div>
                     </div>
 
                     <div style="margin-bottom: var(--space-6);">
-                        <button style="width: 100%; padding: var(--space-4); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; font-size: 1.125rem; cursor: pointer; transition: var(--transition-fast); text-transform: uppercase; letter-spacing: 0.05em;" onclick="addProductToCart('${card.name}', 25.99, '${image}')">
+                        <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4);">
+                            <label style="font-weight: 600; color: var(--gray-700);">Quantity:</label>
+                            <div style="display: flex; align-items: center; gap: var(--space-2);">
+                                <button onclick="changeQuantity(-1)" style="width: 32px; height: 32px; border: 1px solid var(--gray-300); background: white; border-radius: var(--radius-md); cursor: pointer; font-weight: 600;">-</button>
+                                <input type="number" id="quantity" value="1" min="1" max="99" style="width: 60px; height: 32px; text-align: center; border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                                <button onclick="changeQuantity(1)" style="width: 32px; height: 32px; border: 1px solid var(--gray-300); background: white; border-radius: var(--radius-md); cursor: pointer; font-weight: 600;">+</button>
+                            </div>
+                        </div>
+                        <button id="add-to-cart-btn" style="width: 100%; padding: var(--space-4); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; font-size: 1.125rem; cursor: pointer; transition: var(--transition-fast); text-transform: uppercase; letter-spacing: 0.05em;" onclick="addProductToCartWithDetails('${card.name}', ${defaultPrice}, '${image}', '${defaultRarity}')">
                             Add to Cart
                         </button>
                     </div>
@@ -449,10 +488,99 @@ class AppRouter {
                         <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Card Description</h3>
                         <p style="color: var(--gray-700); line-height: 1.6;">${card.desc || 'No description available.'}</p>
                     </div>
+
+                    ${cardSets.length > 0 ? `
+                    <div style="margin-top: var(--space-6); padding-top: var(--space-6); border-top: 1px solid var(--gray-200);">
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Available Sets</h3>
+                        <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+                            ${cardSets.map(set => `
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-2); background: var(--gray-50); border-radius: var(--radius-md);">
+                                    <div>
+                                        <div style="font-weight: 600; font-size: 0.875rem;">${set.set_name}</div>
+                                        <div style="font-size: 0.75rem; color: var(--gray-600);">${set.set_code || 'N/A'}</div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div style="font-weight: 600; color: var(--primary-color);">${set.set_rarity || 'Common'}</div>
+                                        <div style="font-size: 0.875rem; color: var(--gray-600);">$${this.calculatePriceByRarity(basePrice, set.set_rarity || 'Common')}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
                 </div>
             </div>
         </section>
+
+        <script>
+            // Product page functionality
+            function updateProductPrice(cardName, cardImage) {
+                const selector = document.getElementById('set-selector');
+                const priceElement = document.getElementById('product-price');
+                const rarityBadge = document.getElementById('rarity-badge');
+                const addToCartBtn = document.getElementById('add-to-cart-btn');
+                
+                if (selector && priceElement && rarityBadge) {
+                    const selectedOption = selector.options[selector.selectedIndex];
+                    const newPrice = selectedOption.dataset.price;
+                    const newRarity = selectedOption.dataset.rarity;
+                    
+                    priceElement.textContent = '$' + newPrice;
+                    rarityBadge.textContent = newRarity;
+                    
+                    // Update add to cart button
+                    if (addToCartBtn) {
+                        addToCartBtn.setAttribute('onclick', \`addProductToCartWithDetails('\${cardName}', \${newPrice}, '\${cardImage}', '\${newRarity}')\`);
+                    }
+                }
+            }
+            
+            function changeQuantity(change) {
+                const quantityInput = document.getElementById('quantity');
+                if (quantityInput) {
+                    const currentValue = parseInt(quantityInput.value) || 1;
+                    const newValue = Math.max(1, Math.min(99, currentValue + change));
+                    quantityInput.value = newValue;
+                }
+            }
+            
+            function addProductToCartWithDetails(cardName, price, image, rarity) {
+                const quantityInput = document.getElementById('quantity');
+                const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
+                
+                // Add to cart with full details
+                if (window.tcgStore && window.tcgStore.addToCart) {
+                    window.tcgStore.addToCart({
+                        name: cardName,
+                        price: parseFloat(price),
+                        image: image,
+                        rarity: rarity,
+                        quantity: quantity
+                    });
+                } else {
+                    // Fallback to simple add to cart
+                    addProductToCart(cardName, price, image);
+                }
+            }
+        </script>
         `;
+    }
+
+    calculatePriceByRarity(basePrice, rarity) {
+        const base = parseFloat(basePrice);
+        const multipliers = {
+            'Common': 1.0,
+            'Rare': 1.5,
+            'Super Rare': 2.0,
+            'Ultra Rare': 3.0,
+            'Secret Rare': 4.0,
+            'Ultimate Rare': 5.0,
+            'Ghost Rare': 6.0,
+            'Starlight Rare': 10.0
+        };
+        
+        const multiplier = multipliers[rarity] || 1.0;
+        return (base * multiplier).toFixed(2);
     }
 
     getShippingPolicyContent() {
