@@ -1,0 +1,46 @@
+{
+  "name": "harrison-website-tests",
+  "version": "1.0.0",
+  "description": "Integration and unit tests for the Harrison Website app router",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --config jest.config.js",
+    "test:watch": "jest --config jest.config.js --watch",
+    "test:coverage": "jest --config jest.config.js --coverage",
+    "test:integration": "jest --config jest.config.js --testPathPattern=integration",
+    "test:unit": "jest --config jest.config.js --testPathPattern=unit",
+    "test:ci": "jest --config jest.config.js --coverage --watchAll=false --ci"
+  },
+  "keywords": [
+    "testing",
+    "jest",
+    "javascript",
+    "spa",
+    "router"
+  ],
+  "author": "Harrison Website Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.23.0",
+    "babel-jest": "^29.7.0",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
+      ]
+    ]
+  },
+  "jest": {
+    "testEnvironment": "jsdom"
+  }
+}
