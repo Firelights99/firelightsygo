@@ -633,6 +633,26 @@ body {
     display: block !important;
 }
 
+/* Force the container div to be small too */
+#main-card-image + div,
+.product-card-image + div,
+div[style*="aspect-ratio: 3/4"] {
+    max-width: 88px !important;
+    max-height: 118px !important;
+    width: 88px !important;
+    height: 118px !important;
+    aspect-ratio: unset !important;
+}
+
+/* Target the parent container of the image */
+#main-card-image:parent,
+.product-card-image:parent,
+#main-card-image ~ *,
+.product-card-image ~ * {
+    max-width: 88px !important;
+    max-height: 118px !important;
+}
+
 .modern-card:hover .card-image {
     transform: scale(1.05);
 }
