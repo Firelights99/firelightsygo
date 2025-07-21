@@ -847,20 +847,23 @@ class ModernTCGStore {
     }
 
     generateCartItemHTML(item) {
-        // Ensure safe values with null checks but keep it simple like the working version
+        // Ensure safe values with null checks and proper string conversion
         const price = parseFloat(item.price) || 0;
         const quantity = parseInt(item.quantity) || 1;
         const itemTotal = (price * quantity).toFixed(2);
         const hasSetInfo = item.setCode && item.rarity;
-        const safeImage = item.image || 'https://images.ygoprodeck.com/images/cards/back.jpg';
+        
+        // Ensure all display values are properly converted to strings
+        const safeName = this.ensureString(item.name) || 'Unknown Item';
+        const safeImage = this.ensureString(item.image) || 'https://images.ygoprodeck.com/images/cards/back.jpg';
         
         return `
             <div class="cart-item" data-item-id="${item.id}">
                 <div class="cart-item-image">
-                    <img src="${safeImage}" alt="${item.name}" style="width: 60px; height: 84px; object-fit: contain; border-radius: var(--radius-md);">
+                    <img src="${safeImage}" alt="${safeName}" style="width: 60px; height: 84px; object-fit: contain; border-radius: var(--radius-md);">
                 </div>
                 <div class="cart-item-details">
-                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1); line-height: 1.3;">${item.name}</h4>
+                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1); line-height: 1.3;">${safeName}</h4>
                     ${hasSetInfo ? `
                         <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-1);">
                             <span style="background: var(--primary-color); color: white; padding: 2px 6px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">${item.setCode}</span>
@@ -2725,6 +2728,23 @@ class ModernTCGStore {
                 </div>
             </a>
         `;
+    }
+
+    ensureString(value) {
+        // Convert any value to a safe string, handling objects, null, undefined, etc.
+        if (value === null || value === undefined) {
+            return '';
+        }
+        if (typeof value === 'object') {
+            // If it's an object, try to extract a meaningful string
+            if (value.name) return String(value.name);
+            if (value.toString && typeof value.toString === 'function') {
+                const str = value.toString();
+                return str === '[object Object]' ? '' : str;
+            }
+            return '';
+        }
+        return String(value);
     }
 
     debounce(func, wait) {
