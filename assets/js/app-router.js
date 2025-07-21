@@ -690,14 +690,14 @@ class AppRouter {
                 if (!container) return;
                 
                 if (Object.keys(savedDecks).length === 0) {
-                    container.innerHTML = \`
+                    container.innerHTML = `
                         <div style="text-align: center; padding: var(--space-12); color: var(--gray-500);">
                             <div style="font-size: 4rem; margin-bottom: var(--space-4);">🃏</div>
                             <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3);">No Decks Yet</h3>
                             <p style="margin-bottom: var(--space-6);">Create your first deck to get started!</p>
                             <button class="primary-btn" onclick="createNewDeck()">Create New Deck</button>
                         </div>
-                    \`;
+                    `;
                     return;
                 }
                 
@@ -720,52 +720,57 @@ class AppRouter {
                 const stats = calculateDeckStats(deckData.deck);
                 const lastModified = new Date(deckData.metadata.updatedAt).toLocaleDateString();
                 
-                return \`
+                // Determine colors for deck stats
+                const mainDeckColor = stats.main.total < 40 || stats.main.total > 60 ? 'var(--error-color)' : 'var(--success-color)';
+                const extraDeckColor = stats.extra.total > 15 ? 'var(--error-color)' : 'var(--success-color)';
+                const sideDeckColor = stats.side.total > 15 ? 'var(--error-color)' : 'var(--success-color)';
+                
+                return `
                     <div class="deck-card-item" style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); border: 1px solid var(--gray-200); overflow: hidden; transition: var(--transition-fast);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-lg)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-md)'">
                         <div style="padding: var(--space-6);">
                             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--space-4);">
                                 <div>
-                                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">\${deckData.metadata.name}</h3>
-                                    <p style="color: var(--gray-600); font-size: 0.875rem;">Modified: \${lastModified}</p>
+                                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">${deckData.metadata.name}</h3>
+                                    <p style="color: var(--gray-600); font-size: 0.875rem;">Modified: ${lastModified}</p>
                                 </div>
                                 <div class="deck-actions" style="display: flex; gap: var(--space-2);">
-                                    <button onclick="editDeck('\${id}')" style="padding: var(--space-1) var(--space-2); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-sm); font-size: 0.75rem; cursor: pointer;" title="Edit Deck">✏️</button>
-                                    <button onclick="duplicateDeck('\${id}')" style="padding: var(--space-1) var(--space-2); background: var(--secondary-color); color: var(--gray-900); border: none; border-radius: var(--radius-sm); font-size: 0.75rem; cursor: pointer;" title="Duplicate">📋</button>
-                                    <button onclick="exportDeck('\${id}')" style="padding: var(--space-1) var(--space-2); background: var(--accent-color); color: var(--gray-900); border: none; border-radius: var(--radius-sm); font-size: 0.75rem; cursor: pointer;" title="Export">📤</button>
-                                    <button onclick="deleteDeckConfirm('\${id}')" style="padding: var(--space-1) var(--space-2); background: var(--error-color); color: white; border: none; border-radius: var(--radius-sm); font-size: 0.75rem; cursor: pointer;" title="Delete">🗑️</button>
+                                    <button onclick="editDeck('${id}')" style="padding: var(--space-1) var(--space-2); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-sm); font-size: 0.75rem; cursor: pointer;" title="Edit Deck">✏️</button>
+                                    <button onclick="duplicateDeck('${id}')" style="padding: var(--space-1) var(--space-2); background: var(--secondary-color); color: var(--gray-900); border: none; border-radius: var(--radius-sm); font-size: 0.75rem; cursor: pointer;" title="Duplicate">📋</button>
+                                    <button onclick="exportDeck('${id}')" style="padding: var(--space-1) var(--space-2); background: var(--accent-color); color: var(--gray-900); border: none; border-radius: var(--radius-sm); font-size: 0.75rem; cursor: pointer;" title="Export">📤</button>
+                                    <button onclick="deleteDeckConfirm('${id}')" style="padding: var(--space-1) var(--space-2); background: var(--error-color); color: white; border: none; border-radius: var(--radius-sm); font-size: 0.75rem; cursor: pointer;" title="Delete">🗑️</button>
                                 </div>
                             </div>
                             
                             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); margin-bottom: var(--space-4);">
                                 <div style="text-align: center; padding: var(--space-2); background: var(--gray-50); border-radius: var(--radius-md);">
-                                    <div style="font-size: 1.25rem; font-weight: 700; color: \${stats.main.total < 40 || stats.main.total > 60 ? 'var(--error-color)' : 'var(--success-color)'};">\${stats.main.total}</div>
+                                    <div style="font-size: 1.25rem; font-weight: 700; color: ${mainDeckColor};">${stats.main.total}</div>
                                     <div style="font-size: 0.75rem; color: var(--gray-600);">Main Deck</div>
                                 </div>
                                 <div style="text-align: center; padding: var(--space-2); background: var(--gray-50); border-radius: var(--radius-md);">
-                                    <div style="font-size: 1.25rem; font-weight: 700; color: \${stats.extra.total > 15 ? 'var(--error-color)' : 'var(--success-color)'};">\${stats.extra.total}</div>
+                                    <div style="font-size: 1.25rem; font-weight: 700; color: ${extraDeckColor};">${stats.extra.total}</div>
                                     <div style="font-size: 0.75rem; color: var(--gray-600);">Extra Deck</div>
                                 </div>
                                 <div style="text-align: center; padding: var(--space-2); background: var(--gray-50); border-radius: var(--radius-md);">
-                                    <div style="font-size: 1.25rem; font-weight: 700; color: \${stats.side.total > 15 ? 'var(--error-color)' : 'var(--success-color)'};">\${stats.side.total}</div>
+                                    <div style="font-size: 1.25rem; font-weight: 700; color: ${sideDeckColor};">${stats.side.total}</div>
                                     <div style="font-size: 0.75rem; color: var(--gray-600);">Side Deck</div>
                                 </div>
                             </div>
                             
-                            \${deckData.metadata.description ? \`
-                                <p style="color: var(--gray-600); font-size: 0.875rem; line-height: 1.4; margin-bottom: var(--space-4);">\${deckData.metadata.description}</p>
-                            \` : ''}
+                            ${deckData.metadata.description ? `
+                                <p style="color: var(--gray-600); font-size: 0.875rem; line-height: 1.4; margin-bottom: var(--space-4);">${deckData.metadata.description}</p>
+                            ` : ''}
                             
                             <div style="display: flex; gap: var(--space-3);">
-                                <button onclick="editDeck('\${id}')" style="flex: 1; padding: var(--space-3); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
+                                <button onclick="editDeck('${id}')" style="flex: 1; padding: var(--space-3); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
                                     View/Edit Deck
                                 </button>
-                                <button onclick="testDeck('\${id}')" style="flex: 1; padding: var(--space-3); background: var(--gray-100); color: var(--gray-700); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
+                                <button onclick="testDeck('${id}')" style="flex: 1; padding: var(--space-3); background: var(--gray-100); color: var(--gray-700); border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
                                     Test Deck
                                 </button>
                             </div>
                         </div>
                     </div>
-                \`;
+                `;
             }
             
             function calculateDeckStats(deck) {
