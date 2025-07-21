@@ -1806,6 +1806,174 @@ input[type="number"] {
     }
 }
 
+/* Confirmation Modal */
+.confirmation-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: var(--z-modal);
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+}
+
+.confirmation-modal.active {
+    opacity: 1;
+}
+
+.confirmation-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+    box-sizing: border-box;
+}
+
+.confirmation-modal-content {
+    position: relative;
+    background: white;
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-2xl);
+    width: 100%;
+    max-width: 450px;
+    padding: var(--space-8);
+    text-align: center;
+    transform: scale(0.9) translateY(20px);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.confirmation-modal.active .confirmation-modal-content {
+    transform: scale(1) translateY(0);
+}
+
+.confirmation-modal-header {
+    margin-bottom: var(--space-6);
+}
+
+.confirmation-icon {
+    margin-bottom: var(--space-4);
+    animation: confirmationIconPulse 2s ease-in-out infinite;
+}
+
+@keyframes confirmationIconPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.confirmation-modal-actions {
+    display: flex;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+}
+
+.danger-btn {
+    background: var(--error-color);
+    color: white;
+    border: none;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.875rem;
+}
+
+.danger-btn:hover {
+    background: #b91c1c;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.danger-btn:active {
+    transform: translateY(0);
+}
+
+/* Cart Item Animations */
+@keyframes cartItemShake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-2px);
+    }
+    75% {
+        transform: translateX(2px);
+    }
+}
+
+@keyframes cartItemSlideOut {
+    0% {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: translateX(50%) scale(0.9);
+        opacity: 0.5;
+    }
+    100% {
+        transform: translateX(100%) scale(0.8);
+        opacity: 0;
+    }
+}
+
+/* Enhanced Cart Item Hover Effects */
+.cart-item {
+    position: relative;
+    overflow: hidden;
+}
+
+.cart-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.1), transparent);
+    transition: left 0.6s ease;
+    z-index: 1;
+}
+
+.cart-item:hover::before {
+    left: 100%;
+}
+
+/* Mobile Confirmation Modal */
+@media (max-width: 768px) {
+    .confirmation-modal-content {
+        max-width: 95vw;
+        padding: var(--space-6);
+        margin: var(--space-4);
+    }
+    
+    .confirmation-modal-actions {
+        flex-direction: column;
+    }
+    
+    .confirmation-icon i {
+        font-size: 2.5rem !important;
+    }
+}
+
 /* Set/Rarity Selector Animations */
 .set-option {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

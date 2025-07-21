@@ -1091,19 +1091,104 @@ class ModernTCGStore {
             return;
         }
         
-        // Confirm before clearing
-        if (confirm('Are you sure you want to remove all items from your cart?')) {
+        // Show custom confirmation modal
+        this.showClearCartConfirmation();
+    }
+
+    showClearCartConfirmation() {
+        const modal = document.createElement('div');
+        modal.id = 'clear-cart-confirmation';
+        modal.className = 'confirmation-modal';
+        modal.innerHTML = `
+            <div class="confirmation-modal-overlay" onclick="tcgStore.closeClearCartConfirmation()">
+                <div class="confirmation-modal-content" onclick="event.stopPropagation()">
+                    <div class="confirmation-modal-header">
+                        <div class="confirmation-icon">
+                            <i class="fas fa-exclamation-triangle" style="color: var(--warning-color); font-size: 3rem;"></i>
+                        </div>
+                        <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin: var(--space-4) 0 var(--space-2) 0; text-align: center;">
+                            Clear Shopping Cart?
+                        </h3>
+                        <p style="color: var(--gray-600); text-align: center; margin-bottom: var(--space-6); line-height: 1.5;">
+                            This will remove all ${this.cart.length} item${this.cart.length !== 1 ? 's' : ''} from your cart. This action cannot be undone.
+                        </p>
+                    </div>
+                    
+                    <div class="confirmation-modal-actions">
+                        <button class="secondary-btn" onclick="tcgStore.closeClearCartConfirmation()" style="flex: 1;">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button class="danger-btn" onclick="tcgStore.confirmClearCart()" style="flex: 1;">
+                            <i class="fas fa-trash"></i> Clear Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        
+        // Add animation
+        setTimeout(() => {
+            modal.classList.add('active');
+        }, 10);
+    }
+
+    closeClearCartConfirmation() {
+        const modal = document.getElementById('clear-cart-confirmation');
+        if (modal) {
+            modal.classList.remove('active');
+            setTimeout(() => {
+                modal.remove();
+                document.body.style.overflow = '';
+            }, 300);
+        }
+    }
+
+    confirmClearCart() {
+        this.closeClearCartConfirmation();
+        this.animatedClearCart();
+    }
+
+    animatedClearCart() {
+        const cartItems = document.querySelectorAll('.cart-item');
+        const totalItems = cartItems.length;
+        
+        if (totalItems === 0) {
+            this.showToast('Cart is already empty!', 'info');
+            return;
+        }
+
+        // Animate each item out with staggered timing
+        cartItems.forEach((item, index) => {
+            setTimeout(() => {
+                item.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                item.style.transform = 'translateX(100%) scale(0.8)';
+                item.style.opacity = '0';
+                
+                // Add a subtle shake animation before sliding out
+                item.style.animation = 'cartItemShake 0.2s ease-in-out, cartItemSlideOut 0.4s ease-in-out 0.2s forwards';
+            }, index * 100); // Stagger each item by 100ms
+        });
+
+        // Clear the cart data after all animations complete
+        setTimeout(() => {
             this.cart = [];
             this.saveCart();
             this.updateCartBadge();
-            this.showToast('Cart cleared!', 'info');
             
-            // Update cart modal if it's open
+            // Update cart modal with empty state
             const cartModal = document.getElementById('cart-modal');
             if (cartModal && cartModal.style.display !== 'none') {
                 this.updateCartModalContent();
             }
-        }
+            
+            // Show success message with confetti effect
+            this.showToast('🎉 Cart cleared successfully!', 'success');
+            
+        }, (totalItems * 100) + 600); // Wait for all animations plus buffer
     }
 
     // Account System Methods
