@@ -262,6 +262,9 @@ class AdminSystem {
                         <button class="admin-btn btn-success" onclick="adminSystem.updateOrderStatus(${order.id})">
                             Update
                         </button>
+                        <button class="admin-btn btn-danger" onclick="adminSystem.deleteOrder(${order.id})" title="Delete Order">
+                            Delete
+                        </button>
                     </div>
                 </div>
             </div>
@@ -552,6 +555,73 @@ class AdminSystem {
             this.loadAllData();
             this.updateDashboard();
             this.showToast(`Order #${orderId} status updated to ${newStatus}`, 'success');
+        } else {
+            this.showToast('Order not found', 'error');
+        }
+    }
+
+    deleteOrder(orderId) {
+        const order = this.orders.find(o => o.id === orderId);
+        if (!order) {
+            this.showToast('Order not found', 'error');
+            return;
+        }
+
+        const customerName = order.guestInfo ? 
+            `${order.guestInfo.firstName} ${order.guestInfo.lastName}` : 
+            `Customer #${order.userId}`;
+
+        const modalContent = `
+            <div style="max-width: 500px; text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: var(--space-4); color: var(--error-color);">⚠️</div>
+                <h4 style="margin-bottom: var(--space-4); color: var(--error-color);">Delete Order #${orderId}?</h4>
+                <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-4); text-align: left;">
+                    <p style="margin: 0; font-size: 0.875rem; color: var(--gray-700);"><strong>Customer:</strong> ${customerName}</p>
+                    <p style="margin: 0; font-size: 0.875rem; color: var(--gray-700);"><strong>Total:</strong> $${(order.total || 0).toFixed(2)}</p>
+                    <p style="margin: 0; font-size: 0.875rem; color: var(--gray-700);"><strong>Status:</strong> ${order.status}</p>
+                    <p style="margin: 0; font-size: 0.875rem; color: var(--gray-700);"><strong>Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>
+                </div>
+                <p style="color: var(--error-color); font-weight: 600; margin-bottom: var(--space-6);">
+                    This action cannot be undone. The order will be permanently deleted from the system.
+                </p>
+                <div style="display: flex; gap: var(--space-3); justify-content: center;">
+                    <button class="admin-btn btn-secondary" onclick="adminSystem.closeModal()">Cancel</button>
+                    <button class="admin-btn btn-danger" onclick="adminSystem.confirmDeleteOrder(${orderId})">
+                        <i class="fas fa-trash"></i> Delete Order
+                    </button>
+                </div>
+            </div>
+        `;
+
+        this.showModal('Delete Order', modalContent);
+    }
+
+    confirmDeleteOrder(orderId) {
+        let deleted = false;
+        
+        // Delete from user orders
+        const userOrders = JSON.parse(localStorage.getItem('tcg-orders') || '[]');
+        const userOrderIndex = userOrders.findIndex(o => o.id === orderId);
+        if (userOrderIndex !== -1) {
+            userOrders.splice(userOrderIndex, 1);
+            localStorage.setItem('tcg-orders', JSON.stringify(userOrders));
+            deleted = true;
+        }
+
+        // Delete from guest orders
+        const guestOrders = JSON.parse(localStorage.getItem('tcg-guest-orders') || '[]');
+        const guestOrderIndex = guestOrders.findIndex(o => o.id === orderId);
+        if (guestOrderIndex !== -1) {
+            guestOrders.splice(guestOrderIndex, 1);
+            localStorage.setItem('tcg-guest-orders', JSON.stringify(guestOrders));
+            deleted = true;
+        }
+
+        if (deleted) {
+            this.closeModal();
+            this.loadAllData();
+            this.updateDashboard();
+            this.showToast(`Order #${orderId} deleted successfully`, 'success');
         } else {
             this.showToast('Order not found', 'error');
         }
