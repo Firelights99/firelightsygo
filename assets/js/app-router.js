@@ -1073,8 +1073,9 @@ function createNewDeck() {
 }
 
 // Global product page functions
-function selectSet(setCode, rarity, price, setName) {
+function selectSet(setCode, rarity, price, setName, clickedElement) {
     console.log('selectSet called with:', { setCode, rarity, price, setName });
+    console.log('Event object:', event);
     
     // Update all set options to remove selected state
     document.querySelectorAll('.set-option').forEach(option => {
@@ -1084,45 +1085,86 @@ function selectSet(setCode, rarity, price, setName) {
         option.style.color = 'var(--gray-900)';
     });
     
+    // Find the clicked set option - try multiple approaches
+    let selectedOption = null;
+    if (event && event.target) {
+        selectedOption = event.target.closest('.set-option');
+        console.log('Found selected option via event.target.closest:', selectedOption);
+    }
+    
+    // Fallback: find by set code if event approach fails
+    if (!selectedOption) {
+        selectedOption = document.querySelector(`[onclick*="${setCode}"]`);
+        console.log('Found selected option via querySelector:', selectedOption);
+    }
+    
     // Add selected state to clicked option
-    event.target.closest('.set-option').classList.add('selected');
-    const selectedOption = event.target.closest('.set-option');
-    selectedOption.style.border = '2px solid var(--primary-color)';
-    selectedOption.style.background = 'var(--primary-color)';
-    selectedOption.style.color = 'white';
+    if (selectedOption) {
+        selectedOption.classList.add('selected');
+        selectedOption.style.border = '2px solid var(--primary-color)';
+        selectedOption.style.background = 'var(--primary-color)';
+        selectedOption.style.color = 'white';
+        console.log('Applied selected styles to option');
+    } else {
+        console.error('Could not find selected option element!');
+    }
     
     // Update price and rarity displays with animations
     const priceElement = document.getElementById('product-price');
     const rarityBadge = document.getElementById('rarity-badge');
     const addToCartBtn = document.getElementById('add-to-cart-btn');
     
-    console.log('Found elements:', { priceElement: !!priceElement, rarityBadge: !!rarityBadge, addToCartBtn: !!addToCartBtn });
+    console.log('Found elements:', { 
+        priceElement: !!priceElement, 
+        rarityBadge: !!rarityBadge, 
+        addToCartBtn: !!addToCartBtn 
+    });
     
     // Animate price update
     if (priceElement) {
+        console.log('Updating price from', priceElement.textContent, 'to $' + price);
         priceElement.classList.add('price-update');
         priceElement.textContent = '$' + price;
         setTimeout(() => {
             priceElement.classList.remove('price-update');
         }, 500);
+    } else {
+        console.error('Price element not found!');
     }
     
     // Animate rarity badge update
     if (rarityBadge) {
+        console.log('Current rarity badge:', {
+            textContent: rarityBadge.textContent,
+            backgroundColor: rarityBadge.style.backgroundColor,
+            id: rarityBadge.id
+        });
         console.log('Updating rarity badge from', rarityBadge.textContent, 'to', rarity);
+        
         rarityBadge.classList.add('rarity-badge-update');
         rarityBadge.textContent = rarity;
         
         // Update rarity badge color
         const rarityColor = getRarityColor(rarity);
         console.log('Setting rarity color to:', rarityColor);
-        rarityBadge.style.background = rarityColor;
+        rarityBadge.style.backgroundColor = rarityColor;
+        
+        // Force a style recalculation
+        rarityBadge.offsetHeight;
+        
+        console.log('After update:', {
+            textContent: rarityBadge.textContent,
+            backgroundColor: rarityBadge.style.backgroundColor
+        });
         
         setTimeout(() => {
             rarityBadge.classList.remove('rarity-badge-update');
         }, 400);
     } else {
-        console.error('Rarity badge element not found!');
+        console.error('Rarity badge element not found! Looking for element with id "rarity-badge"');
+        console.log('Available elements with "rarity" in id:', 
+            Array.from(document.querySelectorAll('[id*="rarity"]')).map(el => ({ id: el.id, element: el }))
+        );
     }
     
     // Update add to cart button with new details
@@ -1130,6 +1172,9 @@ function selectSet(setCode, rarity, price, setName) {
         const cardName = document.querySelector('h1').textContent;
         const cardImage = document.getElementById('main-card-image').src;
         addToCartBtn.setAttribute('onclick', `addProductToCartWithDetails('${cardName}', ${price}, '${cardImage}', '${rarity}')`);
+        console.log('Updated add to cart button with new rarity:', rarity);
+    } else {
+        console.error('Add to cart button not found!');
     }
 }
 
