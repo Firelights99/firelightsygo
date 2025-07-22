@@ -41,17 +41,17 @@ class AppRouter {
             'shipping-policy': {
                 title: 'Shipping Policy | Firelight Duel Academy',
                 description: 'Learn about our shipping rates, delivery times, and policies for Canada and USA.',
-                template: 'pages/shipping-policy.html'
+                template: 'templates/shipping-policy.html'
             },
             'return-policy': {
                 title: 'Return Policy | Firelight Duel Academy',
                 description: 'Understand our return and refund policies for Yu-Gi-Oh! cards and merchandise.',
-                template: 'pages/return-policy.html'
+                template: 'templates/return-policy.html'
             },
             'faq': {
                 title: 'FAQ | Firelight Duel Academy',
                 description: 'Frequently asked questions about ordering, shipping, cards, and our services.',
-                template: 'pages/faq.html'
+                template: 'templates/faq.html'
             }
         };
 
@@ -912,6 +912,92 @@ class AppRouter {
                 Fast, reliable shipping across Canada and the USA with competitive rates and tracking
             </p>
         </section>
+
+        <section style="max-width: 800px; margin: 0 auto;">
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200); margin-bottom: var(--space-8);">
+                <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-6); display: flex; align-items: center; gap: var(--space-2);">
+                    <i class="fas fa-shipping-fast" style="color: var(--primary-color);"></i>
+                    Shipping Rates & Times
+                </h2>
+                
+                <div style="display: grid; gap: var(--space-6);">
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-6);">
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--primary-color); margin-bottom: var(--space-3);">🇨🇦 Canada Shipping</h3>
+                        <div style="display: grid; gap: var(--space-3);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-2) 0; border-bottom: 1px solid var(--gray-100);">
+                                <span style="font-weight: 500;">Standard Shipping (5-7 business days)</span>
+                                <span style="font-weight: 600; color: var(--success-color);">FREE on orders $75+</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-2) 0; border-bottom: 1px solid var(--gray-100);">
+                                <span style="font-weight: 500;">Express Shipping (2-3 business days)</span>
+                                <span style="font-weight: 600;">$12.99</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-2) 0;">
+                                <span style="font-weight: 500;">Overnight Shipping (1 business day)</span>
+                                <span style="font-weight: 600;">$24.99</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-6);">
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--primary-color); margin-bottom: var(--space-3);">🇺🇸 USA Shipping</h3>
+                        <div style="display: grid; gap: var(--space-3);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-2) 0; border-bottom: 1px solid var(--gray-100);">
+                                <span style="font-weight: 500;">Standard Shipping (7-10 business days)</span>
+                                <span style="font-weight: 600; color: var(--success-color);">FREE on orders $100+</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-2) 0; border-bottom: 1px solid var(--gray-100);">
+                                <span style="font-weight: 500;">Express Shipping (3-5 business days)</span>
+                                <span style="font-weight: 600;">$19.99</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-2) 0;">
+                                <span style="font-weight: 500;">Priority Shipping (1-2 business days)</span>
+                                <span style="font-weight: 600;">$34.99</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200); margin-bottom: var(--space-8);">
+                <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-6); display: flex; align-items: center; gap: var(--space-2);">
+                    <i class="fas fa-info-circle" style="color: var(--info-color);"></i>
+                    Important Information
+                </h2>
+                
+                <div style="display: grid; gap: var(--space-4);">
+                    <div>
+                        <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">📦 Order Processing</h3>
+                        <p style="color: var(--gray-700); line-height: 1.6;">Orders are processed Monday through Friday, 9 AM to 5 PM EST. Orders placed after 2 PM EST will be processed the next business day.</p>
+                    </div>
+                    
+                    <div>
+                        <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">📍 Tracking Information</h3>
+                        <p style="color: var(--gray-700); line-height: 1.6;">All orders include tracking information. You'll receive an email with your tracking number once your order ships.</p>
+                    </div>
+                    
+                    <div>
+                        <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">🏪 Local Pickup</h3>
+                        <p style="color: var(--gray-700); line-height: 1.6;">Free local pickup available at both our Toronto locations. Orders ready for pickup within 2-4 hours during business hours.</p>
+                    </div>
+                    
+                    <div>
+                        <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">💳 Payment & Shipping</h3>
+                        <p style="color: var(--gray-700); line-height: 1.6;">All prices are in Canadian dollars (CAD). Shipping costs are calculated at checkout based on your location and selected shipping method.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: var(--warning-color); background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border-radius: var(--radius-xl); padding: var(--space-6); border-left: 4px solid var(--warning-color);">
+                <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3); display: flex; align-items: center; gap: var(--space-2);">
+                    <i class="fas fa-exclamation-triangle" style="color: var(--warning-color);"></i>
+                    Holiday & Weather Delays
+                </h3>
+                <p style="color: var(--gray-700); line-height: 1.6; margin: 0;">
+                    Shipping times may be extended during holidays, severe weather, or other circumstances beyond our control. We'll notify you of any significant delays.
+                </p>
+            </div>
+        </section>
         `;
     }
 
@@ -924,6 +1010,141 @@ class AppRouter {
             <p style="font-size: 1.125rem; color: var(--gray-600); max-width: 600px; margin: 0 auto;">
                 Your satisfaction is our priority. Learn about our flexible return and refund policies.
             </p>
+        </section>
+
+        <section style="max-width: 800px; margin: 0 auto;">
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200); margin-bottom: var(--space-8);">
+                <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-6); display: flex; align-items: center; gap: var(--space-2);">
+                    <i class="fas fa-undo-alt" style="color: var(--primary-color);"></i>
+                    Return Guidelines
+                </h2>
+                
+                <div style="display: grid; gap: var(--space-6);">
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-6);">
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--success-color); margin-bottom: var(--space-3);">✅ Returnable Items</h3>
+                        <div style="display: grid; gap: var(--space-3);">
+                            <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) 0;">
+                                <i class="fas fa-check-circle" style="color: var(--success-color);"></i>
+                                <span>Unopened booster packs and sealed products</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) 0;">
+                                <i class="fas fa-check-circle" style="color: var(--success-color);"></i>
+                                <span>Single cards in original condition (Near Mint/Lightly Played)</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) 0;">
+                                <i class="fas fa-check-circle" style="color: var(--success-color);"></i>
+                                <span>Accessories and supplies in original packaging</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) 0;">
+                                <i class="fas fa-check-circle" style="color: var(--success-color);"></i>
+                                <span>Items returned within 30 days of purchase</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-6);">
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--error-color); margin-bottom: var(--space-3);">❌ Non-Returnable Items</h3>
+                        <div style="display: grid; gap: var(--space-3);">
+                            <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) 0;">
+                                <i class="fas fa-times-circle" style="color: var(--error-color);"></i>
+                                <span>Opened booster packs or boxes</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) 0;">
+                                <i class="fas fa-times-circle" style="color: var(--error-color);"></i>
+                                <span>Cards in Moderately Played or worse condition</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) 0;">
+                                <i class="fas fa-times-circle" style="color: var(--error-color);"></i>
+                                <span>Custom or altered cards</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) 0;">
+                                <i class="fas fa-times-circle" style="color: var(--error-color);"></i>
+                                <span>Items returned after 30 days</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200); margin-bottom: var(--space-8);">
+                <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-6); display: flex; align-items: center; gap: var(--space-2);">
+                    <i class="fas fa-clipboard-list" style="color: var(--info-color);"></i>
+                    Return Process
+                </h2>
+                
+                <div style="display: grid; gap: var(--space-4);">
+                    <div style="display: flex; gap: var(--space-4); align-items: flex-start;">
+                        <div style="background: var(--primary-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">1</div>
+                        <div>
+                            <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Contact Us</h3>
+                            <p style="color: var(--gray-700); line-height: 1.6;">Email us at <a href="mailto:returns@firelightduelacademy.com" style="color: var(--primary-color);">returns@firelightduelacademy.com</a> with your order number and reason for return.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: var(--space-4); align-items: flex-start;">
+                        <div style="background: var(--primary-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">2</div>
+                        <div>
+                            <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Get Authorization</h3>
+                            <p style="color: var(--gray-700); line-height: 1.6;">We'll provide you with a Return Merchandise Authorization (RMA) number and return instructions.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: var(--space-4); align-items: flex-start;">
+                        <div style="background: var(--primary-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">3</div>
+                        <div>
+                            <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Ship Items Back</h3>
+                            <p style="color: var(--gray-700); line-height: 1.6;">Package items securely and ship to our return address. Include the RMA number on the package.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: var(--space-4); align-items: flex-start;">
+                        <div style="background: var(--primary-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">4</div>
+                        <div>
+                            <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Receive Refund</h3>
+                            <p style="color: var(--gray-700); line-height: 1.6;">Once we receive and inspect your return, we'll process your refund within 3-5 business days.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200); margin-bottom: var(--space-8);">
+                <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-6); display: flex; align-items: center; gap: var(--space-2);">
+                    <i class="fas fa-dollar-sign" style="color: var(--warning-color);"></i>
+                    Refund Information
+                </h2>
+                
+                <div style="display: grid; gap: var(--space-4);">
+                    <div>
+                        <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">💳 Refund Methods</h3>
+                        <p style="color: var(--gray-700); line-height: 1.6;">Refunds will be issued to the original payment method. Credit card refunds may take 5-10 business days to appear on your statement.</p>
+                    </div>
+                    
+                    <div>
+                        <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">🚚 Return Shipping</h3>
+                        <p style="color: var(--gray-700); line-height: 1.6;">Customers are responsible for return shipping costs unless the item was defective or we made an error. We recommend using a trackable shipping method.</p>
+                    </div>
+                    
+                    <div>
+                        <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">🏪 Store Credit Option</h3>
+                        <p style="color: var(--gray-700); line-height: 1.6;">Choose store credit for a 10% bonus on your return value! Store credit never expires and can be used on any future purchase.</p>
+                    </div>
+                    
+                    <div>
+                        <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">🔄 Exchanges</h3>
+                        <p style="color: var(--gray-700); line-height: 1.6;">We offer exchanges for defective items or if we sent the wrong product. Contact us to arrange an exchange.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border-radius: var(--radius-xl); padding: var(--space-6); border-left: 4px solid var(--info-color);">
+                <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3); display: flex; align-items: center; gap: var(--space-2);">
+                    <i class="fas fa-info-circle" style="color: var(--info-color);"></i>
+                    Need Help?
+                </h3>
+                <p style="color: var(--gray-700); line-height: 1.6; margin: 0;">
+                    Have questions about returns? Contact our customer service team at <a href="mailto:support@firelightduelacademy.com" style="color: var(--primary-color);">support@firelightduelacademy.com</a> or call <a href="tel:647-555-DUEL" style="color: var(--primary-color);">(647) 555-DUEL</a>. We're here to help!
+                </p>
+            </div>
         </section>
         `;
     }
