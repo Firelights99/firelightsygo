@@ -1074,6 +1074,8 @@ function createNewDeck() {
 
 // Global product page functions
 function selectSet(setCode, rarity, price, setName) {
+    console.log('selectSet called with:', { setCode, rarity, price, setName });
+    
     // Update all set options to remove selected state
     document.querySelectorAll('.set-option').forEach(option => {
         option.classList.remove('selected');
@@ -1094,6 +1096,8 @@ function selectSet(setCode, rarity, price, setName) {
     const rarityBadge = document.getElementById('rarity-badge');
     const addToCartBtn = document.getElementById('add-to-cart-btn');
     
+    console.log('Found elements:', { priceElement: !!priceElement, rarityBadge: !!rarityBadge, addToCartBtn: !!addToCartBtn });
+    
     // Animate price update
     if (priceElement) {
         priceElement.classList.add('price-update');
@@ -1105,16 +1109,20 @@ function selectSet(setCode, rarity, price, setName) {
     
     // Animate rarity badge update
     if (rarityBadge) {
+        console.log('Updating rarity badge from', rarityBadge.textContent, 'to', rarity);
         rarityBadge.classList.add('rarity-badge-update');
         rarityBadge.textContent = rarity;
         
         // Update rarity badge color
         const rarityColor = getRarityColor(rarity);
+        console.log('Setting rarity color to:', rarityColor);
         rarityBadge.style.background = rarityColor;
         
         setTimeout(() => {
             rarityBadge.classList.remove('rarity-badge-update');
         }, 400);
+    } else {
+        console.error('Rarity badge element not found!');
     }
     
     // Update add to cart button with new details
