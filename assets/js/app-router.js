@@ -1335,40 +1335,38 @@ function createNewDeck() {
 
 // Global deck management functions
 function importDeck() {
-    // Create a file input for importing deck files
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.ydk,.json';
-    input.onchange = function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const content = e.target.result;
-                    if (file.name.endsWith('.ydk')) {
-                        // Parse YDK format
-                        if (window.deckBuilder) {
-                            window.deckBuilder.importYDK(content);
-                            showDeckBuilder();
+    if (window.deckBuilder) {
+        window.deckBuilder.openLoadDeckModal();
+    } else {
+        // Fallback to basic file input if deck builder is not available
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.ydk,.json';
+        input.onchange = function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const content = e.target.result;
+                        if (file.name.endsWith('.ydk')) {
+                            console.log('YDK file imported:', file.name);
+                            alert('YDK import functionality will be available when deck builder is loaded.');
+                        } else if (file.name.endsWith('.json')) {
+                            const deckData = JSON.parse(content);
+                            console.log('JSON deck imported:', deckData);
+                            alert('JSON import functionality will be available when deck builder is loaded.');
                         }
-                    } else if (file.name.endsWith('.json')) {
-                        // Parse JSON format
-                        const deckData = JSON.parse(content);
-                        if (window.deckBuilder) {
-                            window.deckBuilder.importDeck(deckData);
-                            showDeckBuilder();
-                        }
+                    } catch (error) {
+                        console.error('Error importing deck:', error);
+                        alert('Error importing deck file. Please check the file format.');
                     }
-                } catch (error) {
-                    console.error('Error importing deck:', error);
-                    alert('Error importing deck file. Please check the file format.');
-                }
-            };
-            reader.readAsText(file);
-        }
-    };
-    input.click();
+                };
+                reader.readAsText(file);
+            }
+        };
+        input.click();
+    }
 }
 
 function showDeckTemplates() {
