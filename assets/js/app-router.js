@@ -606,6 +606,18 @@ class AppRouter {
         const cardSets = card.card_sets || [];
         const hasMultipleSets = cardSets.length > 1;
         
+        // Debug logging for set detection
+        console.log('🔍 CARD SETS DEBUG:', {
+            cardName: card.name,
+            totalSets: cardSets.length,
+            hasMultipleSets: hasMultipleSets,
+            sets: cardSets.map(set => ({
+                name: set.set_name,
+                code: set.set_code,
+                rarity: set.set_rarity
+            }))
+        });
+        
         // Default rarity and price
         const defaultRarity = cardSets.length > 0 ? cardSets[0].set_rarity || 'Common' : 'Common';
         const defaultPrice = this.calculateRealPriceByRarity(realPrice, defaultRarity);
@@ -653,14 +665,42 @@ class AppRouter {
                         </div>
                     </div>
 
-                    ${hasMultipleSets ? `
+                    ${cardSets.length > 0 ? `
                     <div style="margin-bottom: var(--space-6);">
-                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4);">Available Sets & Rarities</h3>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4);">
+                            ${hasMultipleSets ? 'Available Sets & Rarities' : 'Set Information (Click to Test Rarity Badge)'}
+                        </h3>
                         <div id="set-selector" style="display: grid; gap: var(--space-3);">
                             ${this.generateSetSelectorHTML(cardSets, cardSets[0])}
                         </div>
+                        ${!hasMultipleSets ? `
+                            <p style="font-size: 0.875rem; color: var(--gray-600); margin-top: var(--space-2); font-style: italic;">
+                                💡 This card has only one set, but you can click it to test the rarity badge animation!
+                            </p>
+                        ` : ''}
                     </div>
-                    ` : ''}
+                    ` : `
+                    <div style="margin-bottom: var(--space-6);">
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4);">Test Rarity Badge</h3>
+                        <div id="set-selector" style="display: grid; gap: var(--space-3);">
+                            <div class="set-option" style="border: 2px solid var(--gray-300); border-radius: var(--radius-lg); padding: var(--space-4); cursor: pointer; transition: var(--transition-fast); background: white; color: var(--gray-900);" onclick="selectSet('TEST-001', 'Ultra Rare', '15.99', 'Test Set')">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="font-weight: 600; margin-bottom: var(--space-1);">Test Set (No Sets Available)</div>
+                                        <div style="font-size: 0.875rem; opacity: 0.8;">TEST-001</div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div style="background: #F59E0B; color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: 0.75rem; font-weight: 600; margin-bottom: var(--space-1);">Ultra Rare</div>
+                                        <div style="font-size: 1.125rem; font-weight: 700;">$15.99</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.875rem; color: var(--gray-600); margin-top: var(--space-2); font-style: italic;">
+                            💡 Click the test set above to test the rarity badge animation functionality!
+                        </p>
+                    </div>
+                    `}
 
                     <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-6);">
                         <span id="product-price" style="font-size: 2rem; font-weight: 700; color: var(--primary-color);">$${defaultPrice}</span>
