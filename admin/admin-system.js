@@ -1,0 +1,1138 @@
+/**
+ * Admin System JavaScript
+ * Comprehensive admin dashboard for store management
+ */
+
+class AdminSystem {
+    constructor() {
+        this.currentAdmin = null;
+        this.orders = [];
+        this.customers = [];
+        this.inventory = [];
+        this.analytics = {};
+        
+        this.init();
+    }
+
+    init() {
+        // Check admin authentication
+        this.checkAdminAuth();
+        
+        // Load all data
+        this.loadAllData();
+        
+        // Update dashboard
+        this.updateDashboard();
+        
+        // Set up periodic refresh
+        setInterval(() => {
+            this.loadAllData();
+            this.updateDashboard();
+        }, 30000); // Refresh every 30 seconds
+    }
+
+    checkAdminAuth() {
+        const adminData = localStorage.getItem('tcg-admin');
+        if (!adminData) {
+            this.redirectToLogin();
+            return;
+        }
+
+        try {
+            this.currentAdmin = JSON.parse(adminData);
+            if (!this.currentAdmin.isAdmin || !this.currentAdmin.isActive) {
+                this.redirectToLogin();
+                return;
+            }
+        } catch (error) {
+            console.error('Invalid admin data:', error);
+            this.redirectToLogin();
+        }
+    }
+
+    redirectToLogin() {
+        window.location.href = 'admin-login.html';
+    }
+
+    loadAllData() {
+        // Load orders (both user and guest orders)
+        const userOrders = JSON.parse(localStorage.getItem('tcg-orders') || '[]');
+        const guestOrders = JSON.parse(localStorage.getItem('tcg-guest-orders') || '[]');
+        this.orders = [...userOrders, ...guestOrders].sort((a, b) => 
+            new Date(b.createdAt) - new Date(a.createdAt)
+        );
+
+        // Load customers
+        const users = JSON.parse(localStorage.getItem('tcg-users') || '{}');
+        this.customers = Object.values(users).filter(user => !user.isAdmin);
+
+        // Load inventory (mock data for now, can be extended)
+        this.loadInventoryData();
+
+        // Calculate analytics
+        this.calculateAnalytics();
+    }
+
+    loadInventoryData() {
+        // Load existing inventory or create sample data
+        let inventory = JSON.parse(localStorage.getItem('tcg-inventory') || '[]');
+        
+        if (inventory.length === 0) {
+            // Create sample inventory data
+            inventory = [
+                {
+                    id: 1,
+                    name: 'Snake-Eye Ash',
+                    price: 45.99,
+                    quantity: 12,
+                    category: 'Monster',
+                    rarity: 'Ultra Rare',
+                    set: 'FIRE',
+                    lowStockThreshold: 5,
+                    image: 'https://images.ygoprodeck.com/images/cards/back.jpg'
+                },
+                {
+                    id: 2,
+                    name: 'Kashtira Fenrir',
+                    price: 32.50,
+                    quantity: 8,
+                    category: 'Monster',
+                    rarity: 'Secret Rare',
+                    set: 'PHHY',
+                    lowStockThreshold: 5,
+                    image: 'https://images.ygoprodeck.com/images/cards/back.jpg'
+                },
+                {
+                    id: 3,
+                    name: 'Ash Blossom & Joyous Spring',
+                    price: 28.75,
+                    quantity: 25,
+                    category: 'Monster',
+                    rarity: 'Ultra Rare',
+                    set: 'MAGO',
+                    lowStockThreshold: 10,
+                    image: 'https://images.ygoprodeck.com/images/cards/back.jpg'
+                },
+                {
+                    id: 4,
+                    name: 'Infinite Impermanence',
+                    price: 22.99,
+                    quantity: 3,
+                    category: 'Trap',
+                    rarity: 'Secret Rare',
+                    set: 'FLOD',
+                    lowStockThreshold: 5,
+                    image: 'https://images.ygoprodeck.com/images/cards/back.jpg'
+                },
+                {
+                    id: 5,
+                    name: 'Nibiru, the Primal Being',
+                    price: 12.50,
+                    quantity: 15,
+                    category: 'Monster',
+                    rarity: 'Super Rare',
+                    set: 'TN19',
+                    lowStockThreshold: 8,
+                    image: 'https://images.ygoprodeck.com/images/cards/back.jpg'
+                }
+            ];
+            
+            localStorage.setItem('tcg-inventory', JSON.stringify(inventory));
+        }
+        
+        this.inventory = inventory;
+    }
+
+    calculateAnalytics() {
+        const totalOrders = this.orders.length;
+        const totalRevenue = this.orders.reduce((sum, order) => sum + (order.total || 0), 0);
+        const pendingOrders = this.orders.filter(order => order.status === 'pending').length;
+        const totalCustomers = this.customers.length;
+
+        // Calculate monthly revenue
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+        const monthlyRevenue = this.orders
+            .filter(order => {
+                const orderDate = new Date(order.createdAt);
+                return orderDate.getMonth() === currentMonth && orderDate.getFullYear() === currentYear;
+            })
+            .reduce((sum, order) => sum + (order.total || 0), 0);
+
+        // Top selling cards
+        const cardSales = {};
+        this.orders.forEach(order => {
+            if (order.items) {
+                order.items.forEach(item => {
+                    if (cardSales[item.name]) {
+                        cardSales[item.name] += item.quantity;
+                    } else {
+                        cardSales[item.name] = item.quantity;
+                    }
+                });
+            }
+        });
+
+        const topCards = Object.entries(cardSales)
+            .sort(([,a], [,b]) => b - a)
+            .slice(0, 10)
+            .map(([name, quantity]) => ({ name, quantity }));
+
+        this.analytics = {
+            totalOrders,
+            totalRevenue,
+            pendingOrders,
+            totalCustomers,
+            monthlyRevenue,
+            topCards
+        };
+    }
+
+    updateDashboard() {
+        // Update statistics cards
+        document.getElementById('total-orders').textContent = this.analytics.totalOrders;
+        document.getElementById('total-revenue').textContent = `$${this.analytics.totalRevenue.toFixed(2)}`;
+        document.getElementById('pending-orders').textContent = this.analytics.pendingOrders;
+        document.getElementById('total-customers').textContent = this.analytics.totalCustomers;
+
+        // Update content based on current tab
+        const activeTab = document.querySelector('.admin-tab.active');
+        if (activeTab) {
+            const tabName = activeTab.textContent.trim().toLowerCase();
+            if (tabName.includes('orders')) {
+                this.updateOrdersTab();
+            } else if (tabName.includes('inventory')) {
+                this.updateInventoryTab();
+            } else if (tabName.includes('customers')) {
+                this.updateCustomersTab();
+            } else if (tabName.includes('analytics')) {
+                this.updateAnalyticsTab();
+            }
+        }
+    }
+
+    updateOrdersTab() {
+        // Update pending orders
+        const pendingOrders = this.orders.filter(order => order.status === 'pending');
+        this.renderOrdersList(pendingOrders, 'pending-orders-list');
+
+        // Update processing orders
+        const processingOrders = this.orders.filter(order => order.status === 'processing');
+        this.renderOrdersList(processingOrders, 'processing-orders-list');
+
+        // Update all orders
+        this.renderOrdersList(this.orders, 'all-orders-list', true);
+    }
+
+    renderOrdersList(orders, containerId, showAll = false) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        if (orders.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: var(--gray-500); padding: var(--space-4);">No orders found</p>';
+            return;
+        }
+
+        const ordersToShow = showAll ? orders : orders.slice(0, 5);
+        
+        container.innerHTML = ordersToShow.map(order => this.generateOrderHTML(order)).join('');
+    }
+
+    generateOrderHTML(order) {
+        const orderDate = new Date(order.createdAt).toLocaleDateString();
+        const customerName = order.guestInfo ? 
+            `${order.guestInfo.firstName} ${order.guestInfo.lastName}` : 
+            `Customer #${order.userId}`;
+        const customerEmail = order.guestInfo ? order.guestInfo.email : 'N/A';
+        const itemCount = order.items ? order.items.reduce((sum, item) => sum + item.quantity, 0) : 0;
+
+        return `
+            <div class="order-item">
+                <div class="order-info">
+                    <h4>Order #${order.id}</h4>
+                    <p><strong>${customerName}</strong> - ${customerEmail}</p>
+                    <p>${itemCount} items • ${orderDate} • $${(order.total || 0).toFixed(2)}</p>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: var(--space-2); align-items: flex-end;">
+                    <span class="order-status status-${order.status}">${order.status}</span>
+                    <div style="display: flex; gap: var(--space-2);">
+                        <button class="admin-btn btn-primary" onclick="adminSystem.viewOrderDetails(${order.id})">
+                            View
+                        </button>
+                        <button class="admin-btn btn-success" onclick="adminSystem.updateOrderStatus(${order.id})">
+                            Update
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    updateInventoryTab() {
+        const container = document.getElementById('inventory-list');
+        if (!container) return;
+
+        if (this.inventory.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: var(--gray-500); padding: var(--space-4);">No inventory items found</p>';
+            return;
+        }
+
+        container.innerHTML = this.inventory.map(item => this.generateInventoryHTML(item)).join('');
+    }
+
+    generateInventoryHTML(item) {
+        const isLowStock = item.quantity <= item.lowStockThreshold;
+        const stockStatus = isLowStock ? 'Low Stock' : 'In Stock';
+        const stockColor = isLowStock ? 'var(--error-color)' : 'var(--success-color)';
+
+        return `
+            <div class="inventory-item">
+                <div class="inventory-info">
+                    <h4>${item.name}</h4>
+                    <p>${item.category} • ${item.rarity} • ${item.set}</p>
+                    <p style="color: ${stockColor}; font-weight: 600;">${stockStatus} (${item.quantity} available)</p>
+                </div>
+                <div class="inventory-controls">
+                    <span style="font-size: 0.875rem; color: var(--gray-600);">Price:</span>
+                    <input type="number" class="price-input" value="${item.price}" 
+                           onchange="adminSystem.updateItemPrice(${item.id}, this.value)" step="0.01" min="0">
+                    <span style="font-size: 0.875rem; color: var(--gray-600);">Qty:</span>
+                    <input type="number" class="quantity-input" value="${item.quantity}" 
+                           onchange="adminSystem.updateItemQuantity(${item.id}, this.value)" min="0">
+                    <button class="admin-btn btn-secondary" onclick="adminSystem.editInventoryItem(${item.id})">
+                        Edit
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    updateCustomersTab() {
+        const container = document.getElementById('customers-list');
+        if (!container) return;
+
+        if (this.customers.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: var(--gray-500); padding: var(--space-4);">No customers found</p>';
+            return;
+        }
+
+        container.innerHTML = this.customers.map(customer => this.generateCustomerHTML(customer)).join('');
+    }
+
+    generateCustomerHTML(customer) {
+        const joinDate = new Date(customer.createdAt).toLocaleDateString();
+        const customerOrders = this.orders.filter(order => order.userId === customer.id);
+        const totalSpent = customerOrders.reduce((sum, order) => sum + (order.total || 0), 0);
+
+        return `
+            <div class="order-item">
+                <div class="order-info">
+                    <h4>${customer.firstName} ${customer.lastName}</h4>
+                    <p><strong>Email:</strong> ${customer.email}</p>
+                    <p><strong>Phone:</strong> ${customer.phone || 'N/A'}</p>
+                    <p>Joined: ${joinDate} • ${customerOrders.length} orders • $${totalSpent.toFixed(2)} spent</p>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: var(--space-2); align-items: flex-end;">
+                    <span class="order-status ${customer.isActive ? 'status-delivered' : 'status-pending'}">
+                        ${customer.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                    <div style="display: flex; gap: var(--space-2);">
+                        <button class="admin-btn btn-primary" onclick="adminSystem.viewCustomerDetails('${customer.id}')">
+                            View
+                        </button>
+                        <button class="admin-btn btn-secondary" onclick="adminSystem.toggleCustomerStatus('${customer.id}')">
+                            ${customer.isActive ? 'Deactivate' : 'Activate'}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    updateAnalyticsTab() {
+        // Update sales chart (simple text-based for now)
+        const salesChart = document.getElementById('sales-chart');
+        if (salesChart) {
+            salesChart.innerHTML = `
+                <div style="text-align: center; padding: var(--space-6);">
+                    <h4 style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color); margin-bottom: var(--space-4);">
+                        $${this.analytics.monthlyRevenue.toFixed(2)}
+                    </h4>
+                    <p style="color: var(--gray-600);">Revenue This Month</p>
+                    <div style="margin-top: var(--space-4); padding: var(--space-4); background: var(--gray-50); border-radius: var(--radius-lg);">
+                        <p style="font-size: 0.875rem; color: var(--gray-600); margin: 0;">
+                            <strong>Total Orders:</strong> ${this.analytics.totalOrders}<br>
+                            <strong>Average Order Value:</strong> $${this.analytics.totalOrders > 0 ? (this.analytics.totalRevenue / this.analytics.totalOrders).toFixed(2) : '0.00'}
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Update top cards list
+        const topCardsList = document.getElementById('top-cards-list');
+        if (topCardsList) {
+            if (this.analytics.topCards.length === 0) {
+                topCardsList.innerHTML = '<p style="text-align: center; color: var(--gray-500); padding: var(--space-4);">No sales data available</p>';
+            } else {
+                topCardsList.innerHTML = this.analytics.topCards.map((card, index) => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-2); border-bottom: 1px solid var(--gray-200);">
+                        <div>
+                            <span style="font-weight: 600; color: var(--primary-color); margin-right: var(--space-2);">#${index + 1}</span>
+                            <span style="font-size: 0.875rem;">${card.name}</span>
+                        </div>
+                        <span style="font-weight: 600; color: var(--success-color);">${card.quantity} sold</span>
+                    </div>
+                `).join('');
+            }
+        }
+    }
+
+    // Order Management Functions
+    viewOrderDetails(orderId) {
+        const order = this.orders.find(o => o.id === orderId);
+        if (!order) return;
+
+        this.showModal('Order Details', this.generateOrderDetailsHTML(order));
+    }
+
+    generateOrderDetailsHTML(order) {
+        const orderDate = new Date(order.createdAt).toLocaleDateString();
+        const customerInfo = order.guestInfo ? order.guestInfo : { firstName: 'Customer', lastName: `#${order.userId}`, email: 'N/A' };
+        
+        return `
+            <div style="max-width: 600px;">
+                <div style="margin-bottom: var(--space-4); padding: var(--space-4); background: var(--gray-50); border-radius: var(--radius-lg);">
+                    <h4 style="margin: 0 0 var(--space-2) 0;">Order #${order.id}</h4>
+                    <p style="margin: 0; color: var(--gray-600);">Placed on ${orderDate}</p>
+                    <p style="margin: var(--space-2) 0 0 0;"><strong>Status:</strong> <span class="order-status status-${order.status}">${order.status}</span></p>
+                </div>
+
+                <div style="margin-bottom: var(--space-4);">
+                    <h5 style="margin: 0 0 var(--space-2) 0;">Customer Information</h5>
+                    <p style="margin: 0;"><strong>Name:</strong> ${customerInfo.firstName} ${customerInfo.lastName}</p>
+                    <p style="margin: 0;"><strong>Email:</strong> ${customerInfo.email}</p>
+                    ${customerInfo.phone ? `<p style="margin: 0;"><strong>Phone:</strong> ${customerInfo.phone}</p>` : ''}
+                    ${customerInfo.address ? `
+                        <p style="margin: var(--space-2) 0 0 0;"><strong>Shipping Address:</strong><br>
+                        ${customerInfo.address.street}<br>
+                        ${customerInfo.address.street2 ? customerInfo.address.street2 + '<br>' : ''}
+                        ${customerInfo.address.city}, ${customerInfo.address.province} ${customerInfo.address.postalCode}</p>
+                    ` : ''}
+                </div>
+
+                <div style="margin-bottom: var(--space-4);">
+                    <h5 style="margin: 0 0 var(--space-2) 0;">Order Items</h5>
+                    ${order.items ? order.items.map(item => `
+                        <div style="display: flex; justify-content: space-between; padding: var(--space-2); border-bottom: 1px solid var(--gray-200);">
+                            <div>
+                                <strong>${item.name}</strong><br>
+                                <small>Qty: ${item.quantity} × $${item.price.toFixed(2)}</small>
+                            </div>
+                            <div style="font-weight: 600;">$${(item.price * item.quantity).toFixed(2)}</div>
+                        </div>
+                    `).join('') : '<p>No items found</p>'}
+                </div>
+
+                <div style="padding: var(--space-4); background: var(--gray-50); border-radius: var(--radius-lg);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-1);">
+                        <span>Subtotal:</span>
+                        <span>$${(order.subtotal || 0).toFixed(2)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-1);">
+                        <span>Shipping:</span>
+                        <span>${(order.shipping || 0) === 0 ? 'FREE' : '$' + (order.shipping || 0).toFixed(2)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+                        <span>Tax:</span>
+                        <span>$${(order.tax || 0).toFixed(2)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.125rem; border-top: 1px solid var(--gray-300); padding-top: var(--space-2);">
+                        <span>Total:</span>
+                        <span style="color: var(--primary-color);">$${(order.total || 0).toFixed(2)}</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: var(--space-4); display: flex; gap: var(--space-3); justify-content: center;">
+                    <button class="admin-btn btn-success" onclick="adminSystem.updateOrderStatus(${order.id})">
+                        Update Status
+                    </button>
+                    ${order.status === 'shipped' && order.trackingNumber ? `
+                        <button class="admin-btn btn-primary" onclick="adminSystem.editTrackingNumber(${order.id})">
+                            Edit Tracking
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    updateOrderStatus(orderId) {
+        const order = this.orders.find(o => o.id === orderId);
+        if (!order) return;
+
+        const statusOptions = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+        const currentIndex = statusOptions.indexOf(order.status);
+        
+        const modalContent = `
+            <div style="text-align: center;">
+                <h4 style="margin-bottom: var(--space-4);">Update Order #${orderId} Status</h4>
+                <div style="margin-bottom: var(--space-4);">
+                    <label style="display: block; margin-bottom: var(--space-2); font-weight: 600;">Current Status: ${order.status}</label>
+                    <select id="new-status" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                        ${statusOptions.map(status => `
+                            <option value="${status}" ${status === order.status ? 'selected' : ''}>${status.charAt(0).toUpperCase() + status.slice(1)}</option>
+                        `).join('')}
+                    </select>
+                </div>
+                <div id="tracking-section" style="display: ${order.status === 'shipped' || document.getElementById('new-status')?.value === 'shipped' ? 'block' : 'none'}; margin-bottom: var(--space-4);">
+                    <label style="display: block; margin-bottom: var(--space-2); font-weight: 600;">Tracking Number:</label>
+                    <input type="text" id="tracking-number" value="${order.trackingNumber || ''}" 
+                           style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md);" 
+                           placeholder="Enter tracking number">
+                </div>
+                <div style="display: flex; gap: var(--space-3); justify-content: center;">
+                    <button class="admin-btn btn-secondary" onclick="adminSystem.closeModal()">Cancel</button>
+                    <button class="admin-btn btn-success" onclick="adminSystem.confirmStatusUpdate(${orderId})">Update</button>
+                </div>
+            </div>
+        `;
+
+        this.showModal('Update Order Status', modalContent);
+
+        // Add event listener for status change
+        setTimeout(() => {
+            const statusSelect = document.getElementById('new-status');
+            const trackingSection = document.getElementById('tracking-section');
+            if (statusSelect && trackingSection) {
+                statusSelect.addEventListener('change', (e) => {
+                    trackingSection.style.display = e.target.value === 'shipped' ? 'block' : 'none';
+                });
+            }
+        }, 100);
+    }
+
+    confirmStatusUpdate(orderId) {
+        const newStatus = document.getElementById('new-status')?.value;
+        const trackingNumber = document.getElementById('tracking-number')?.value;
+        
+        if (!newStatus) return;
+
+        // Update order in both possible locations
+        let updated = false;
+        
+        // Update in user orders
+        const userOrders = JSON.parse(localStorage.getItem('tcg-orders') || '[]');
+        const userOrderIndex = userOrders.findIndex(o => o.id === orderId);
+        if (userOrderIndex !== -1) {
+            userOrders[userOrderIndex].status = newStatus;
+            userOrders[userOrderIndex].updatedAt = new Date().toISOString();
+            if (newStatus === 'shipped' && trackingNumber) {
+                userOrders[userOrderIndex].trackingNumber = trackingNumber;
+            }
+            localStorage.setItem('tcg-orders', JSON.stringify(userOrders));
+            updated = true;
+        }
+
+        // Update in guest orders
+        const guestOrders = JSON.parse(localStorage.getItem('tcg-guest-orders') || '[]');
+        const guestOrderIndex = guestOrders.findIndex(o => o.id === orderId);
+        if (guestOrderIndex !== -1) {
+            guestOrders[guestOrderIndex].status = newStatus;
+            guestOrders[guestOrderIndex].updatedAt = new Date().toISOString();
+            if (newStatus === 'shipped' && trackingNumber) {
+                guestOrders[guestOrderIndex].trackingNumber = trackingNumber;
+            }
+            localStorage.setItem('tcg-guest-orders', JSON.stringify(guestOrders));
+            updated = true;
+        }
+
+        if (updated) {
+            this.closeModal();
+            this.loadAllData();
+            this.updateDashboard();
+            this.showToast(`Order #${orderId} status updated to ${newStatus}`, 'success');
+        } else {
+            this.showToast('Order not found', 'error');
+        }
+    }
+
+    // Inventory Management Functions
+    updateItemPrice(itemId, newPrice) {
+        const item = this.inventory.find(i => i.id === itemId);
+        if (!item) return;
+
+        const price = parseFloat(newPrice);
+        if (isNaN(price) || price < 0) {
+            this.showToast('Invalid price', 'error');
+            return;
+        }
+
+        item.price = price;
+        localStorage.setItem('tcg-inventory', JSON.stringify(this.inventory));
+        this.showToast(`Price updated for ${item.name}`, 'success');
+    }
+
+    updateItemQuantity(itemId, newQuantity) {
+        const item = this.inventory.find(i => i.id === itemId);
+        if (!item) return;
+
+        const quantity = parseInt(newQuantity);
+        if (isNaN(quantity) || quantity < 0) {
+            this.showToast('Invalid quantity', 'error');
+            return;
+        }
+
+        item.quantity = quantity;
+        localStorage.setItem('tcg-inventory', JSON.stringify(this.inventory));
+        this.showToast(`Quantity updated for ${item.name}`, 'success');
+        
+        // Refresh inventory display to update stock status
+        this.updateInventoryTab();
+    }
+
+    addNewCard() {
+        const modalContent = `
+            <div style="max-width: 500px;">
+                <h4 style="margin-bottom: var(--space-4); text-align: center;">Add New Card</h4>
+                <form id="add-card-form" onsubmit="adminSystem.submitNewCard(event)">
+                    <div style="margin-bottom: var(--space-3);">
+                        <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Card Name *</label>
+                        <input type="text" id="card-name" required style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-3);">
+                        <div>
+                            <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Price *</label>
+                            <input type="number" id="card-price" required step="0.01" min="0" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Quantity *</label>
+                            <input type="number" id="card-quantity" required min="0" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-3);">
+                        <div>
+                            <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Category</label>
+                            <select id="card-category" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                                <option value="Monster">Monster</option>
+                                <option value="Spell">Spell</option>
+                                <option value="Trap">Trap</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Rarity</label>
+                            <select id="card-rarity" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                                <option value="Common">Common</option>
+                                <option value="Rare">Rare</option>
+                                <option value="Super Rare">Super Rare</option>
+                                <option value="Ultra Rare">Ultra Rare</option>
+                                <option value="Secret Rare">Secret Rare</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: var(--space-3);">
+                        <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Set Code</label>
+                        <input type="text" id="card-set" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);" placeholder="e.g., LOB, MRD">
+                    </div>
+                    <div style="margin-bottom: var(--space-4);">
+                        <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Low Stock Threshold</label>
+                        <input type="number" id="card-threshold" value="5" min="0" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                    </div>
+                    <div style="display: flex; gap: var(--space-3); justify-content: center;">
+                        <button type="button" class="admin-btn btn-secondary" onclick="adminSystem.closeModal()">Cancel</button>
+                        <button type="submit" class="admin-btn btn-primary">Add Card</button>
+                    </div>
+                </form>
+            </div>
+        `;
+
+        this.showModal('Add New Card', modalContent);
+    }
+
+    submitNewCard(event) {
+        event.preventDefault();
+        
+        const name = document.getElementById('card-name').value;
+        const price = parseFloat(document.getElementById('card-price').value);
+        const quantity = parseInt(document.getElementById('card-quantity').value);
+        const category = document.getElementById('card-category').value;
+        const rarity = document.getElementById('card-rarity').value;
+        const set = document.getElementById('card-set').value;
+        const threshold = parseInt(document.getElementById('card-threshold').value);
+
+        if (!name || isNaN(price) || isNaN(quantity) || isNaN(threshold)) {
+            this.showToast('Please fill in all required fields correctly', 'error');
+            return;
+        }
+
+        const newCard = {
+            id: Date.now(),
+            name,
+            price,
+            quantity,
+            category,
+            rarity,
+            set,
+            lowStockThreshold: threshold,
+            image: 'https://images.ygoprodeck.com/images/cards/back.jpg'
+        };
+
+        this.inventory.push(newCard);
+        localStorage.setItem('tcg-inventory', JSON.stringify(this.inventory));
+        
+        this.closeModal();
+        this.updateInventoryTab();
+        this.showToast(`${name} added to inventory`, 'success');
+    }
+
+    editInventoryItem(itemId) {
+        const item = this.inventory.find(i => i.id === itemId);
+        if (!item) return;
+
+        const modalContent = `
+            <div style="max-width: 500px;">
+                <h4 style="margin-bottom: var(--space-4); text-align: center;">Edit ${item.name}</h4>
+                <form id="edit-card-form" onsubmit="adminSystem.submitEditCard(event, ${itemId})">
+                    <div style="margin-bottom: var(--space-3);">
+                        <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Card Name *</label>
+                        <input type="text" id="edit-card-name" value="${item.name}" required style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-3);">
+                        <div>
+                            <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Price *</label>
+                            <input type="number" id="edit-card-price" value="${item.price}" required step="0.01" min="0" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Quantity *</label>
+                            <input type="number" id="edit-card-quantity" value="${item.quantity}" required min="0" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-3);">
+                        <div>
+                            <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Category</label>
+                            <select id="edit-card-category" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                                <option value="Monster" ${item.category === 'Monster' ? 'selected' : ''}>Monster</option>
+                                <option value="Spell" ${item.category === 'Spell' ? 'selected' : ''}>Spell</option>
+                                <option value="Trap" ${item.category === 'Trap' ? 'selected' : ''}>Trap</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Rarity</label>
+                            <select id="edit-card-rarity" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                                <option value="Common" ${item.rarity === 'Common' ? 'selected' : ''}>Common</option>
+                                <option value="Rare" ${item.rarity === 'Rare' ? 'selected' : ''}>Rare</option>
+                                <option value="Super Rare" ${item.rarity === 'Super Rare' ? 'selected' : ''}>Super Rare</option>
+                                <option value="Ultra Rare" ${item.rarity === 'Ultra Rare' ? 'selected' : ''}>Ultra Rare</option>
+                                <option value="Secret Rare" ${item.rarity === 'Secret Rare' ? 'selected' : ''}>Secret Rare</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: var(--space-3);">
+                        <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Set Code</label>
+                        <input type="text" id="edit-card-set" value="${item.set}" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                    </div>
+                    <div style="margin-bottom: var(--space-4);">
+                        <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Low Stock Threshold</label>
+                        <input type="number" id="edit-card-threshold" value="${item.lowStockThreshold}" min="0" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                    </div>
+                    <div style="display: flex; gap: var(--space-3); justify-content: center;">
+                        <button type="button" class="admin-btn btn-danger" onclick="adminSystem.deleteInventoryItem(${itemId})">Delete</button>
+                        <button type="button" class="admin-btn btn-secondary" onclick="adminSystem.closeModal()">Cancel</button>
+                        <button type="submit" class="admin-btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        `;
+
+        this.showModal('Edit Card', modalContent);
+    }
+
+    submitEditCard(event, itemId) {
+        event.preventDefault();
+        
+        const item = this.inventory.find(i => i.id === itemId);
+        if (!item) return;
+
+        const name = document.getElementById('edit-card-name').value;
+        const price = parseFloat(document.getElementById('edit-card-price').value);
+        const quantity = parseInt(document.getElementById('edit-card-quantity').value);
+        const category = document.getElementById('edit-card-category').value;
+        const rarity = document.getElementById('edit-card-rarity').value;
+        const set = document.getElementById('edit-card-set').value;
+        const threshold = parseInt(document.getElementById('edit-card-threshold').value);
+
+        if (!name || isNaN(price) || isNaN(quantity) || isNaN(threshold)) {
+            this.showToast('Please fill in all required fields correctly', 'error');
+            return;
+        }
+
+        item.name = name;
+        item.price = price;
+        item.quantity = quantity;
+        item.category = category;
+        item.rarity = rarity;
+        item.set = set;
+        item.lowStockThreshold = threshold;
+
+        localStorage.setItem('tcg-inventory', JSON.stringify(this.inventory));
+        
+        this.closeModal();
+        this.updateInventoryTab();
+        this.showToast(`${name} updated successfully`, 'success');
+    }
+
+    deleteInventoryItem(itemId) {
+        const item = this.inventory.find(i => i.id === itemId);
+        if (!item) return;
+
+        if (confirm(`Are you sure you want to delete ${item.name} from inventory?`)) {
+            this.inventory = this.inventory.filter(i => i.id !== itemId);
+            localStorage.setItem('tcg-inventory', JSON.stringify(this.inventory));
+            
+            this.closeModal();
+            this.updateInventoryTab();
+            this.showToast(`${item.name} deleted from inventory`, 'success');
+        }
+    }
+
+    bulkUpdatePrices() {
+        const modalContent = `
+            <div style="max-width: 400px; text-align: center;">
+                <h4 style="margin-bottom: var(--space-4);">Bulk Update Prices</h4>
+                <p style="margin-bottom: var(--space-4); color: var(--gray-600);">Apply a percentage change to all inventory prices</p>
+                <div style="margin-bottom: var(--space-4);">
+                    <label style="display: block; margin-bottom: var(--space-2); font-weight: 600;">Price Change (%)</label>
+                    <input type="number" id="price-change" step="0.1" placeholder="e.g., 10 for +10%, -5 for -5%" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); text-align: center;">
+                </div>
+                <div style="display: flex; gap: var(--space-3); justify-content: center;">
+                    <button class="admin-btn btn-secondary" onclick="adminSystem.closeModal()">Cancel</button>
+                    <button class="admin-btn btn-primary" onclick="adminSystem.confirmBulkPriceUpdate()">Update Prices</button>
+                </div>
+            </div>
+        `;
+
+        this.showModal('Bulk Price Update', modalContent);
+    }
+
+    confirmBulkPriceUpdate() {
+        const changePercent = parseFloat(document.getElementById('price-change').value);
+        
+        if (isNaN(changePercent)) {
+            this.showToast('Please enter a valid percentage', 'error');
+            return;
+        }
+
+        const multiplier = 1 + (changePercent / 100);
+        let updatedCount = 0;
+
+        this.inventory.forEach(item => {
+            const newPrice = item.price * multiplier;
+            if (newPrice > 0) {
+                item.price = Math.round(newPrice * 100) / 100; // Round to 2 decimal places
+                updatedCount++;
+            }
+        });
+
+        localStorage.setItem('tcg-inventory', JSON.stringify(this.inventory));
+        
+        this.closeModal();
+        this.updateInventoryTab();
+        this.showToast(`${updatedCount} prices updated by ${changePercent}%`, 'success');
+    }
+
+    // Customer Management Functions
+    viewCustomerDetails(customerId) {
+        const customer = this.customers.find(c => c.id === customerId);
+        if (!customer) return;
+
+        const customerOrders = this.orders.filter(order => order.userId === customerId);
+        const totalSpent = customerOrders.reduce((sum, order) => sum + (order.total || 0), 0);
+
+        const modalContent = `
+            <div style="max-width: 600px;">
+                <div style="margin-bottom: var(--space-4); padding: var(--space-4); background: var(--gray-50); border-radius: var(--radius-lg);">
+                    <h4 style="margin: 0 0 var(--space-2) 0;">${customer.firstName} ${customer.lastName}</h4>
+                    <p style="margin: 0; color: var(--gray-600);">Customer since ${new Date(customer.createdAt).toLocaleDateString()}</p>
+                </div>
+
+                <div style="margin-bottom: var(--space-4);">
+                    <h5 style="margin: 0 0 var(--space-2) 0;">Contact Information</h5>
+                    <p style="margin: 0;"><strong>Email:</strong> ${customer.email}</p>
+                    <p style="margin: 0;"><strong>Phone:</strong> ${customer.phone || 'N/A'}</p>
+                    <p style="margin: 0;"><strong>Status:</strong> ${customer.isActive ? 'Active' : 'Inactive'}</p>
+                    ${customer.favoriteArchetype ? `<p style="margin: 0;"><strong>Favorite Archetype:</strong> ${customer.favoriteArchetype}</p>` : ''}
+                </div>
+
+                <div style="margin-bottom: var(--space-4);">
+                    <h5 style="margin: 0 0 var(--space-2) 0;">Order Statistics</h5>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); text-align: center;">
+                        <div style="padding: var(--space-3); background: var(--gray-50); border-radius: var(--radius-md);">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color);">${customerOrders.length}</div>
+                            <div style="font-size: 0.875rem; color: var(--gray-600);">Total Orders</div>
+                        </div>
+                        <div style="padding: var(--space-3); background: var(--gray-50); border-radius: var(--radius-md);">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--success-color);">$${totalSpent.toFixed(2)}</div>
+                            <div style="font-size: 0.875rem; color: var(--gray-600);">Total Spent</div>
+                        </div>
+                        <div style="padding: var(--space-3); background: var(--gray-50); border-radius: var(--radius-md);">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--info-color);">$${customerOrders.length > 0 ? (totalSpent / customerOrders.length).toFixed(2) : '0.00'}</div>
+                            <div style="font-size: 0.875rem; color: var(--gray-600);">Avg Order</div>
+                        </div>
+                    </div>
+                </div>
+
+                ${customerOrders.length > 0 ? `
+                    <div style="margin-bottom: var(--space-4);">
+                        <h5 style="margin: 0 0 var(--space-2) 0;">Recent Orders</h5>
+                        ${customerOrders.slice(0, 5).map(order => `
+                            <div style="display: flex; justify-content: space-between; padding: var(--space-2); border-bottom: 1px solid var(--gray-200);">
+                                <div>
+                                    <strong>Order #${order.id}</strong><br>
+                                    <small>${new Date(order.createdAt).toLocaleDateString()}</small>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 600;">$${(order.total || 0).toFixed(2)}</div>
+                                    <div class="order-status status-${order.status}" style="font-size: 0.75rem;">${order.status}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+
+                <div style="display: flex; gap: var(--space-3); justify-content: center;">
+                    <button class="admin-btn btn-secondary" onclick="adminSystem.closeModal()">Close</button>
+                    <button class="admin-btn ${customer.isActive ? 'btn-warning' : 'btn-success'}" onclick="adminSystem.toggleCustomerStatus('${customerId}')">
+                        ${customer.isActive ? 'Deactivate' : 'Activate'}
+                    </button>
+                </div>
+            </div>
+        `;
+
+        this.showModal('Customer Details', modalContent);
+    }
+
+    toggleCustomerStatus(customerId) {
+        const users = JSON.parse(localStorage.getItem('tcg-users') || '{}');
+        const customer = Object.values(users).find(u => u.id === customerId);
+        
+        if (!customer) {
+            this.showToast('Customer not found', 'error');
+            return;
+        }
+
+        customer.isActive = !customer.isActive;
+        users[customer.email] = customer;
+        localStorage.setItem('tcg-users', JSON.stringify(users));
+
+        this.loadAllData();
+        this.updateDashboard();
+        this.closeModal();
+        
+        const status = customer.isActive ? 'activated' : 'deactivated';
+        this.showToast(`Customer ${customer.firstName} ${customer.lastName} ${status}`, 'success');
+    }
+
+    // Search Functions
+    searchOrders() {
+        const query = document.getElementById('order-search').value.toLowerCase();
+        const filteredOrders = this.orders.filter(order => {
+            const customerName = order.guestInfo ? 
+                `${order.guestInfo.firstName} ${order.guestInfo.lastName}`.toLowerCase() : 
+                `customer #${order.userId}`.toLowerCase();
+            const customerEmail = order.guestInfo ? order.guestInfo.email.toLowerCase() : '';
+            
+            return order.id.toString().includes(query) ||
+                   customerName.includes(query) ||
+                   customerEmail.includes(query);
+        });
+
+        this.renderOrdersList(filteredOrders, 'all-orders-list', true);
+    }
+
+    searchInventory() {
+        const query = document.getElementById('inventory-search').value.toLowerCase();
+        const filteredInventory = this.inventory.filter(item => 
+            item.name.toLowerCase().includes(query) ||
+            item.category.toLowerCase().includes(query) ||
+            item.set.toLowerCase().includes(query)
+        );
+
+        const container = document.getElementById('inventory-list');
+        if (container) {
+            container.innerHTML = filteredInventory.map(item => this.generateInventoryHTML(item)).join('');
+        }
+    }
+
+    searchCustomers() {
+        const query = document.getElementById('customer-search').value.toLowerCase();
+        const filteredCustomers = this.customers.filter(customer => 
+            `${customer.firstName} ${customer.lastName}`.toLowerCase().includes(query) ||
+            customer.email.toLowerCase().includes(query)
+        );
+
+        const container = document.getElementById('customers-list');
+        if (container) {
+            container.innerHTML = filteredCustomers.map(customer => this.generateCustomerHTML(customer)).join('');
+        }
+    }
+
+    // Modal Functions
+    showModal(title, content) {
+        const modalContainer = document.getElementById('modal-container');
+        modalContainer.innerHTML = `
+            <div class="admin-modal-overlay" onclick="adminSystem.closeModal()">
+                <div class="admin-modal-content" onclick="event.stopPropagation()">
+                    <div class="admin-modal-header">
+                        <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700;">${title}</h3>
+                        <button onclick="adminSystem.closeModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500);">×</button>
+                    </div>
+                    <div class="admin-modal-body">
+                        ${content}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Add modal styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .admin-modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+                padding: var(--space-4);
+            }
+            
+            .admin-modal-content {
+                background: white;
+                border-radius: var(--radius-xl);
+                box-shadow: var(--shadow-2xl);
+                max-width: 90vw;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+            
+            .admin-modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: var(--space-4);
+                border-bottom: 1px solid var(--gray-200);
+            }
+            
+            .admin-modal-body {
+                padding: var(--space-4);
+            }
+        `;
+        document.head.appendChild(style);
+
+        modalContainer.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    closeModal() {
+        const modalContainer = document.getElementById('modal-container');
+        modalContainer.innerHTML = '';
+        modalContainer.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `admin-toast toast-${type}`;
+        toast.textContent = message;
+        
+        const style = `
+            position: fixed;
+            top: var(--space-4);
+            right: var(--space-4);
+            background: ${type === 'success' ? 'var(--success-color)' : 
+                        type === 'error' ? 'var(--error-color)' : 
+                        type === 'warning' ? 'var(--warning-color)' : 'var(--info-color)'};
+            color: white;
+            padding: var(--space-3) var(--space-4);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            z-index: 1001;
+            font-weight: 600;
+            animation: slideInRight 0.3s ease-out;
+        `;
+        
+        toast.setAttribute('style', style);
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.animation = 'slideOutRight 0.3s ease-out forwards';
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }, 3000);
+    }
+}
+
+// Global Functions
+function switchTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.admin-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
+
+    // Update tab content
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    document.getElementById(`${tabName}-tab`).classList.add('active');
+
+    // Update content
+    adminSystem.updateDashboard();
+}
+
+function adminLogout() {
+    if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('tcg-admin');
+        window.location.href = 'admin-login.html';
+    }
+}
+
+// Initialize admin system
+let adminSystem;
+document.addEventListener('DOMContentLoaded', () => {
+    adminSystem = new AdminSystem();
+});
+
+// Add CSS animations
+const animationStyle = document.createElement('style');
+animationStyle.textContent = `
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOutRight {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(animationStyle);

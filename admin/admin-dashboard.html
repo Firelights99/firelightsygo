@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Firelight Duel Academy</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/modern-tcg-store.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-6);
+        }
+        
+        .admin-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: var(--space-6);
+            border-radius: var(--radius-xl);
+            margin-bottom: var(--space-8);
+            text-align: center;
+        }
+        
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+        
+        .stat-card {
+            background: white;
+            padding: var(--space-6);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-200);
+            text-align: center;
+        }
+        
+        .stat-icon {
+            font-size: 3rem;
+            margin-bottom: var(--space-3);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: var(--space-2);
+        }
+        
+        .stat-label {
+            color: var(--gray-600);
+            font-weight: 600;
+        }
+        
+        .admin-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: var(--space-8);
+        }
+        
+        .admin-section {
+            background: white;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+        }
+        
+        .section-header {
+            background: var(--gray-50);
+            padding: var(--space-4);
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+        
+        .section-header h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 0;
+        }
+        
+        .section-content {
+            padding: var(--space-6);
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-3);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-3);
+        }
+        
+        .order-info h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin: 0 0 var(--space-1) 0;
+        }
+        
+        .order-info p {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            margin: 0;
+        }
+        
+        .order-status {
+            padding: var(--space-1) var(--space-3);
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-pending {
+            background: var(--warning-color);
+            color: white;
+        }
+        
+        .status-processing {
+            background: var(--info-color);
+            color: white;
+        }
+        
+        .status-shipped {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .status-delivered {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .admin-btn {
+            padding: var(--space-2) var(--space-4);
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            font-size: 0.875rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+        
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--error-color);
+            color: white;
+        }
+        
+        .admin-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .inventory-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-3);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-3);
+        }
+        
+        .inventory-info h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin: 0 0 var(--space-1) 0;
+        }
+        
+        .inventory-info p {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            margin: 0;
+        }
+        
+        .inventory-controls {
+            display: flex;
+            gap: var(--space-2);
+            align-items: center;
+        }
+        
+        .quantity-input {
+            width: 60px;
+            padding: var(--space-1);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            text-align: center;
+            font-size: 0.875rem;
+        }
+        
+        .price-input {
+            width: 80px;
+            padding: var(--space-1);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            text-align: center;
+            font-size: 0.875rem;
+        }
+        
+        .admin-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: var(--space-6);
+        }
+        
+        .admin-tab {
+            padding: var(--space-3) var(--space-6);
+            border: none;
+            background: none;
+            font-weight: 600;
+            color: var(--gray-600);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: var(--transition-fast);
+        }
+        
+        .admin-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .search-bar {
+            margin-bottom: var(--space-4);
+        }
+        
+        .search-bar input {
+            width: 100%;
+            padding: var(--space-3);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+        }
+        
+        .logout-btn {
+            position: absolute;
+            top: var(--space-4);
+            right: var(--space-4);
+            background: var(--error-color);
+            color: white;
+            border: none;
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        
+        .logout-btn:hover {
+            background: var(--error-dark);
+        }
+        
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: var(--space-4);
+            }
+            
+            .admin-sections {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="logout-btn" onclick="adminLogout()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+    </button>
+
+    <div class="admin-container">
+        <!-- Admin Header -->
+        <div class="admin-header">
+            <h1 style="font-size: 2.5rem; font-weight: 700; margin: 0 0 var(--space-2) 0;">
+                <i class="fas fa-shield-alt"></i> Admin Dashboard
+            </h1>
+            <p style="font-size: 1.125rem; opacity: 0.9; margin: 0;">
+                Firelight Duel Academy Store Management
+            </p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="admin-stats">
+            <div class="stat-card">
+                <div class="stat-icon" style="color: var(--primary-color);">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="stat-value" id="total-orders">0</div>
+                <div class="stat-label">Total Orders</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon" style="color: var(--success-color);">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-value" id="total-revenue">$0.00</div>
+                <div class="stat-label">Total Revenue</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon" style="color: var(--warning-color);">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-value" id="pending-orders">0</div>
+                <div class="stat-label">Pending Orders</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon" style="color: var(--info-color);">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-value" id="total-customers">0</div>
+                <div class="stat-label">Total Customers</div>
+            </div>
+        </div>
+
+        <!-- Admin Tabs -->
+        <div class="admin-tabs">
+            <button class="admin-tab active" onclick="switchTab('orders')">
+                <i class="fas fa-shopping-cart"></i> Orders
+            </button>
+            <button class="admin-tab" onclick="switchTab('inventory')">
+                <i class="fas fa-boxes"></i> Inventory
+            </button>
+            <button class="admin-tab" onclick="switchTab('customers')">
+                <i class="fas fa-users"></i> Customers
+            </button>
+            <button class="admin-tab" onclick="switchTab('analytics')">
+                <i class="fas fa-chart-bar"></i> Analytics
+            </button>
+        </div>
+
+        <!-- Orders Tab -->
+        <div id="orders-tab" class="tab-content active">
+            <div class="admin-sections">
+                <div class="admin-section">
+                    <div class="section-header">
+                        <i class="fas fa-clock" style="color: var(--warning-color);"></i>
+                        <h3>Pending Orders</h3>
+                    </div>
+                    <div class="section-content">
+                        <div id="pending-orders-list">
+                            <!-- Pending orders will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="admin-section">
+                    <div class="section-header">
+                        <i class="fas fa-cog" style="color: var(--info-color);"></i>
+                        <h3>Processing Orders</h3>
+                    </div>
+                    <div class="section-content">
+                        <div id="processing-orders-list">
+                            <!-- Processing orders will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="admin-section" style="margin-top: var(--space-8);">
+                <div class="section-header">
+                    <i class="fas fa-list" style="color: var(--primary-color);"></i>
+                    <h3>All Orders</h3>
+                </div>
+                <div class="section-content">
+                    <div class="search-bar">
+                        <input type="text" id="order-search" placeholder="Search orders by ID, customer name, or email..." onkeyup="searchOrders()">
+                    </div>
+                    <div id="all-orders-list">
+                        <!-- All orders will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Tab -->
+        <div id="inventory-tab" class="tab-content">
+            <div class="admin-section">
+                <div class="section-header">
+                    <i class="fas fa-boxes" style="color: var(--primary-color);"></i>
+                    <h3>Inventory Management</h3>
+                </div>
+                <div class="section-content">
+                    <div class="search-bar">
+                        <input type="text" id="inventory-search" placeholder="Search cards by name..." onkeyup="searchInventory()">
+                    </div>
+                    <div style="margin-bottom: var(--space-4);">
+                        <button class="admin-btn btn-primary" onclick="addNewCard()">
+                            <i class="fas fa-plus"></i> Add New Card
+                        </button>
+                        <button class="admin-btn btn-secondary" onclick="bulkUpdatePrices()">
+                            <i class="fas fa-sync"></i> Bulk Update Prices
+                        </button>
+                    </div>
+                    <div id="inventory-list">
+                        <!-- Inventory items will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customers Tab -->
+        <div id="customers-tab" class="tab-content">
+            <div class="admin-section">
+                <div class="section-header">
+                    <i class="fas fa-users" style="color: var(--primary-color);"></i>
+                    <h3>Customer Management</h3>
+                </div>
+                <div class="section-content">
+                    <div class="search-bar">
+                        <input type="text" id="customer-search" placeholder="Search customers by name or email..." onkeyup="searchCustomers()">
+                    </div>
+                    <div id="customers-list">
+                        <!-- Customers will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics-tab" class="tab-content">
+            <div class="admin-sections">
+                <div class="admin-section">
+                    <div class="section-header">
+                        <i class="fas fa-chart-line" style="color: var(--success-color);"></i>
+                        <h3>Sales Analytics</h3>
+                    </div>
+                    <div class="section-content">
+                        <div id="sales-chart">
+                            <!-- Sales chart will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="admin-section">
+                    <div class="section-header">
+                        <i class="fas fa-star" style="color: var(--warning-color);"></i>
+                        <h3>Top Selling Cards</h3>
+                    </div>
+                    <div class="section-content">
+                        <div id="top-cards-list">
+                            <!-- Top selling cards will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals will be inserted here -->
+    <div id="modal-container"></div>
+
+    <script src="../assets/js/modern-tcg-store.js"></script>
+    <script src="admin-system.js"></script>
+</body>
+</html>
