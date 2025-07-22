@@ -1203,17 +1203,67 @@ function getRarityColor(rarity) {
 
 // Smooth JavaScript animation for rarity badge updates
 function animateRarityBadgeUpdate(rarityBadge, newRarity, newColor) {
-    console.log('Starting rarity badge animation:', { newRarity, newColor });
+    console.log('🎬 Starting rarity badge animation:', { newRarity, newColor });
     
-    // Store original values
+    // Store original values and log them
     const originalText = rarityBadge.textContent;
     const originalColor = window.getComputedStyle(rarityBadge).backgroundColor;
+    const originalStyleAttr = rarityBadge.getAttribute('style');
     
-    // Create animation timeline
-    const animationDuration = 600; // Total animation duration in ms
-    const scalePhase = 200; // Scale animation phase
-    const colorPhase = 300; // Color transition phase
-    const textPhase = 100; // Text change phase
+    console.log('📊 BEFORE ANIMATION:', {
+        originalText: originalText,
+        originalColor: originalColor,
+        originalStyleAttr: originalStyleAttr,
+        element: rarityBadge
+    });
+    
+    // IMMEDIATE TEXT UPDATE - Test if text changes work
+    console.log('📝 STEP 1: Updating text from "' + originalText + '" to "' + newRarity + '"');
+    rarityBadge.textContent = newRarity;
+    console.log('📝 Text after update:', rarityBadge.textContent);
+    console.log('📝 Text update successful:', rarityBadge.textContent === newRarity);
+    
+    // IMMEDIATE COLOR UPDATE - Test if color changes work
+    console.log('🎨 STEP 2: Updating color to:', newColor);
+    
+    // Method 1: Direct style property
+    rarityBadge.style.backgroundColor = newColor;
+    console.log('🎨 Method 1 - Direct style.backgroundColor:', rarityBadge.style.backgroundColor);
+    
+    // Method 2: setProperty with important
+    rarityBadge.style.setProperty('background-color', newColor, 'important');
+    console.log('🎨 Method 2 - setProperty important:', rarityBadge.style.backgroundColor);
+    
+    // Method 3: Completely replace style attribute
+    const newStyleAttr = `background: ${newColor} !important; background-color: ${newColor} !important; color: white; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.3);`;
+    rarityBadge.setAttribute('style', newStyleAttr);
+    console.log('🎨 Method 3 - Complete style replacement:', rarityBadge.getAttribute('style'));
+    
+    // Method 4: Force reflow and check computed style
+    rarityBadge.offsetHeight; // Force reflow
+    const computedAfterUpdate = window.getComputedStyle(rarityBadge).backgroundColor;
+    console.log('🎨 Method 4 - Computed style after reflow:', computedAfterUpdate);
+    
+    // Method 5: Try CSS custom property approach
+    rarityBadge.style.setProperty('--rarity-color', newColor);
+    rarityBadge.style.background = 'var(--rarity-color)';
+    console.log('🎨 Method 5 - CSS custom property approach');
+    
+    // Check if ANY method worked
+    const finalComputedColor = window.getComputedStyle(rarityBadge).backgroundColor;
+    console.log('🎨 FINAL COLOR CHECK:', {
+        expectedColor: newColor,
+        finalComputedColor: finalComputedColor,
+        styleAttribute: rarityBadge.getAttribute('style'),
+        directStyleBg: rarityBadge.style.backgroundColor,
+        colorUpdateWorked: finalComputedColor !== originalColor
+    });
+    
+    // Create animation timeline (simplified for testing)
+    const animationDuration = 600;
+    const scalePhase = 200;
+    const colorPhase = 300;
+    const textPhase = 100;
     
     // Phase 1: Scale down and fade out slightly
     rarityBadge.style.transition = `transform ${scalePhase}ms cubic-bezier(0.4, 0, 0.2, 1), opacity ${scalePhase}ms ease-out`;
@@ -1221,17 +1271,9 @@ function animateRarityBadgeUpdate(rarityBadge, newRarity, newColor) {
     rarityBadge.style.opacity = '0.7';
     
     setTimeout(() => {
-        // Phase 2: Change text and start color transition
-        rarityBadge.textContent = newRarity;
-        
-        // Force style override with multiple approaches
-        rarityBadge.style.setProperty('background', newColor, 'important');
+        // Phase 2: Ensure color is still applied
         rarityBadge.style.setProperty('background-color', newColor, 'important');
-        
-        // Also update style attribute directly
-        const currentStyle = rarityBadge.getAttribute('style') || '';
-        const cleanedStyle = currentStyle.replace(/background[^;]*;?/g, '').replace(/background-color[^;]*;?/g, '');
-        rarityBadge.setAttribute('style', cleanedStyle + `background: ${newColor} !important; background-color: ${newColor} !important;`);
+        rarityBadge.style.setProperty('background', newColor, 'important');
         
         // Add a subtle glow effect during transition
         rarityBadge.style.boxShadow = `0 0 20px ${newColor}40, 0 4px 12px rgba(0,0,0,0.15)`;
@@ -1248,16 +1290,21 @@ function animateRarityBadgeUpdate(rarityBadge, newRarity, newColor) {
             rarityBadge.style.boxShadow = '0 1px 2px rgba(0,0,0,0.3)';
             
             setTimeout(() => {
-                // Clean up transition styles
+                // Clean up transition styles but keep color
                 rarityBadge.style.transition = '';
-                console.log('Rarity badge animation completed');
+                rarityBadge.style.setProperty('background-color', newColor, 'important');
                 
-                // Log final state
-                console.log('Final rarity badge state:', {
+                console.log('🎬 Rarity badge animation completed');
+                
+                // Final comprehensive state check
+                console.log('📊 FINAL STATE CHECK:', {
                     textContent: rarityBadge.textContent,
+                    textCorrect: rarityBadge.textContent === newRarity,
                     backgroundColor: rarityBadge.style.backgroundColor,
                     computedStyle: window.getComputedStyle(rarityBadge).backgroundColor,
-                    styleAttribute: rarityBadge.getAttribute('style')
+                    styleAttribute: rarityBadge.getAttribute('style'),
+                    colorCorrect: window.getComputedStyle(rarityBadge).backgroundColor !== originalColor,
+                    element: rarityBadge
                 });
             }, textPhase);
         }, colorPhase);
