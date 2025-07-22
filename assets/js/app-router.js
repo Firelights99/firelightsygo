@@ -1136,6 +1136,7 @@ window.selectSet = function(setCode, rarity, price, setName, clickedElement) {
     
     // Animate rarity badge update with smooth JavaScript animations
     if (rarityBadge) {
+        console.log('✅ Found rarity badge element!');
         console.log('Current rarity badge:', {
             textContent: rarityBadge.textContent,
             backgroundColor: rarityBadge.style.backgroundColor,
@@ -1150,10 +1151,27 @@ window.selectSet = function(setCode, rarity, price, setName, clickedElement) {
         animateRarityBadgeUpdate(rarityBadge, rarity, rarityColor);
         
     } else {
-        console.error('Rarity badge element not found! Looking for element with id "rarity-badge"');
+        console.error('❌ Rarity badge element not found! Looking for element with id "rarity-badge"');
         console.log('Available elements with "rarity" in id:', 
             Array.from(document.querySelectorAll('[id*="rarity"]')).map(el => ({ id: el.id, element: el }))
         );
+        console.log('All elements with id attribute:', 
+            Array.from(document.querySelectorAll('[id]')).map(el => el.id)
+        );
+        
+        // Try to find the element with a small delay in case of timing issues
+        console.log('🔄 Retrying element detection in 100ms...');
+        setTimeout(() => {
+            const delayedRarityBadge = document.getElementById('rarity-badge');
+            if (delayedRarityBadge) {
+                console.log('✅ Found rarity badge on retry!');
+                const rarityColor = getRarityColor(rarity);
+                animateRarityBadgeUpdate(delayedRarityBadge, rarity, rarityColor);
+            } else {
+                console.error('❌ Still cannot find rarity badge element after retry');
+                console.log('DOM content at retry:', document.body.innerHTML.includes('rarity-badge'));
+            }
+        }, 100);
     }
     
     // Update add to cart button with new details
