@@ -225,10 +225,34 @@
     </div>
 
     <!-- Keyboard Shortcuts Help -->
-    <div class="shortcuts-help">
+    <div class="shortcuts-help" style="display: none;">
         <strong>Shortcuts:</strong><br>
         Ctrl+S: Save | Ctrl+O: Load | Ctrl+N: New | Ctrl+Z: Undo
     </div>
+    
+    <style>
+        /* Show shortcuts only on desktop */
+        @media (min-width: 768px) {
+            .shortcuts-help {
+                display: block !important;
+                background: var(--gray-100);
+                padding: var(--space-3);
+                border-radius: var(--radius-md);
+                font-size: 0.875rem;
+                color: var(--gray-600);
+                text-align: center;
+                margin-top: var(--space-4);
+                border: 1px solid var(--gray-200);
+            }
+        }
+        
+        /* Hide shortcuts on mobile and tablet */
+        @media (max-width: 767px) {
+            .shortcuts-help {
+                display: none !important;
+            }
+        }
+    </style>
 </section>
 
 <!-- Deck Templates Section (includes Popular Decks) -->
