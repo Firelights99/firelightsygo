@@ -699,38 +699,18 @@ class AppRouter {
         return '0.00';
     }
 
-    async generateSetSelectorHTML(sets, selectedSet, cardData = null) {
+    generateSetSelectorHTML(sets, selectedSet) {
         if (!sets || sets.length === 0) {
             return '<p style="color: var(--gray-600); font-style: italic;">No set information available</p>';
         }
 
-        // Process sets to get real pricing for each
-        const processedSets = await Promise.all(sets.map(async set => {
-            let realPrice = '0.00';
-            
-            // Try to get real price for this specific set/rarity combination
-            if (cardData && window.yugiohPricingService) {
-                try {
-                    const priceData = await window.yugiohPricingService.getSetSpecificPrice(
-                        cardData, 
-                        set.set_code, 
-                        set.set_rarity || 'Common'
-                    );
-                    if (priceData && priceData.price > 0) {
-                        realPrice = priceData.price.toFixed(2);
-                    }
-                } catch (error) {
-                    console.warn(`Could not get price for ${set.set_code}:`, error);
-                }
-            }
-            
-            return {
-                set_name: set.set_name,
-                set_code: set.set_code,
-                rarity: set.set_rarity || 'Common',
-                rarity_code: set.set_rarity_code,
-                price: realPrice
-            };
+        // Process sets with simple pricing (show $0.00 if no real price available)
+        const processedSets = sets.map(set => ({
+            set_name: set.set_name,
+            set_code: set.set_code,
+            rarity: set.set_rarity || 'Common',
+            rarity_code: set.set_rarity_code,
+            price: '0.00' // Default to $0.00, will be updated with real pricing if available
         }));
 
         return processedSets.map(set => {
@@ -756,9 +736,7 @@ class AppRouter {
                             <div style="background: ${rarityColor}; color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: 0.75rem; font-weight: 600; margin-bottom: var(--space-1);">
                                 ${set.rarity}
                             </div>
-                            <div style="font-size: 1.125rem; font-weight: 700;">
-                                ${set.price === '0.00' ? 'Price N/A' : '$' + set.price}
-                            </div>
+                            <div style="font-size: 1.125rem; font-weight: 700;">$${set.price}</div>
                         </div>
                     </div>
                 </div>
