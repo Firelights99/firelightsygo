@@ -1257,18 +1257,41 @@ class AppRouter {
     }
 
     loadUserDecks() {
-        const savedDecks = window.deckBuilder ? window.deckBuilder.getSavedDecks() : {};
         const container = document.getElementById('user-decks-grid');
-        
         if (!container) return;
+        
+        // Check if user is logged in
+        const currentUser = window.tcgStore ? window.tcgStore.currentUser : null;
+        
+        if (!currentUser) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: var(--space-12); color: var(--gray-500);">
+                    <div style="font-size: 4rem; margin-bottom: var(--space-4);">🔐</div>
+                    <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3);">Sign In Required</h3>
+                    <p style="margin-bottom: var(--space-6);">Sign in to save and manage your decks online. You can still build decks and export them as YDK files without an account.</p>
+                    <div style="display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap;">
+                        <button class="primary-btn" onclick="tcgStore.openLoginModal()" style="padding: var(--space-3) var(--space-6);">
+                            Sign In
+                        </button>
+                        <button class="secondary-btn" onclick="createNewDeck()" style="padding: var(--space-3) var(--space-6);">
+                            Build Deck (No Save)
+                        </button>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+        
+        // User is logged in, load their saved decks
+        const savedDecks = window.deckBuilder ? window.deckBuilder.getSavedDecks() : {};
         
         if (Object.keys(savedDecks).length === 0) {
             container.innerHTML = `
                 <div style="text-align: center; padding: var(--space-12); color: var(--gray-500);">
                     <div style="font-size: 4rem; margin-bottom: var(--space-4);">🃏</div>
-                    <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3);">No Decks Yet</h3>
-                    <p style="margin-bottom: var(--space-6);">Create your first deck to get started!</p>
-                    <button class="primary-btn" onclick="createNewDeck()">Create New Deck</button>
+                    <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3);">No Saved Decks</h3>
+                    <p style="margin-bottom: var(--space-6);">Welcome ${currentUser.firstName}! Create your first deck to get started.</p>
+                    <button class="primary-btn" onclick="createNewDeck()" style="padding: var(--space-3) var(--space-6);">Create New Deck</button>
                 </div>
             `;
         } else {
@@ -1335,6 +1358,9 @@ function createNewDeck() {
     if (window.deckBuilder) {
         window.deckBuilder.newDeck();
         showDeckBuilder();
+    } else {
+        // Show message about deck builder availability
+        alert('Deck builder is loading. Please try again in a moment.');
     }
 }
 
@@ -1669,6 +1695,62 @@ function previewDeckTemplate(templateId) {
     console.log('Previewing deck template:', templateId);
     // Show a modal or detailed view of the deck template
     alert(`Preview for deck template ${templateId} - Feature coming soon!`);
+}
+
+// Export current deck as YDK file
+function exportCurrentDeck() {
+    // Check if deck builder is available and has a current deck
+    if (window.deckBuilder && typeof window.deckBuilder.downloadYDK === 'function') {
+        window.deckBuilder.downloadYDK();
+    } else if (window.deckBuilder && window.deckBuilder.currentDeck) {
+        // Fallback: create YDK export manually
+        const deck = window.deckBuilder.currentDeck;
+        const deckName = window.deckBuilder.deckMetadata?.name || 'Untitled Deck';
+        
+        // Create YDK format content
+        let ydkContent = `#created by Firelight Duel Academy\n#main\n`;
+        
+        // Add main deck cards
+        if (deck.main && deck.main.length > 0) {
+            deck.main.forEach(card => {
+                ydkContent += `${card.id}\n`;
+            });
+        }
+        
+        ydkContent += `#extra\n`;
+        
+        // Add extra deck cards
+        if (deck.extra && deck.extra.length > 0) {
+            deck.extra.forEach(card => {
+                ydkContent += `${card.id}\n`;
+            });
+        }
+        
+        ydkContent += `!side\n`;
+        
+        // Add side deck cards
+        if (deck.side && deck.side.length > 0) {
+            deck.side.forEach(card => {
+                ydkContent += `${card.id}\n`;
+            });
+        }
+        
+        // Create and download file
+        const blob = new Blob([ydkContent], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${deckName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.ydk`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        alert(`Exported "${deckName}" as YDK file!`);
+    } else {
+        // No deck to export
+        alert('No deck to export. Please build a deck first or load an existing deck.');
+    }
 }
 
 // Global product page functions - Make sure it's accessible globally
