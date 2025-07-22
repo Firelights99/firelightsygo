@@ -1074,8 +1074,9 @@ function createNewDeck() {
 
 // Global product page functions
 function selectSet(setCode, rarity, price, setName, clickedElement) {
-    console.log('selectSet called with:', { setCode, rarity, price, setName });
-    console.log('Event object:', event);
+    console.log('🎯 selectSet called with:', { setCode, rarity, price, setName });
+    console.log('🎯 Event object:', event);
+    console.log('🎯 Function is working!');
     
     // Update all set options to remove selected state
     document.querySelectorAll('.set-option').forEach(option => {
