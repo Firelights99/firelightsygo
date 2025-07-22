@@ -476,6 +476,15 @@ class ModernTCGStore {
         const safeImage = String(card.image || '').replace(/'/g, "\\'");
         const safeId = String(card.id || '');
 
+        // Get card sets and rarity information
+        const cardSets = card.sets || [];
+        const hasMultipleSets = cardSets.length > 1;
+        const defaultRarity = cardSets.length > 0 ? (cardSets[0].set_rarity || 'Common') : 'Common';
+        const rarityColor = this.getRarityColor(defaultRarity);
+
+        // Generate unique ID for this card element
+        const cardElementId = `card-${safeId}-${Date.now()}`;
+
         cardDiv.innerHTML = `
             <div class="card-image-container">
                 <img src="${safeImage}" alt="${safeName}" class="card-image" loading="lazy">
@@ -483,15 +492,29 @@ class ModernTCGStore {
             </div>
             <div class="card-info">
                 <h3 class="card-name">${safeName}</h3>
-                <p class="card-type">${card.type}</p>
+                <div class="card-type-rarity">
+                    <span class="card-type-badge" style="background: ${this.getCardTypeColor(card.type)}; color: white; padding: 2px 6px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600; margin-right: var(--space-2);">${card.type}</span>
+                    <span class="rarity-badge" id="rarity-badge-${cardElementId}" style="background: ${rarityColor}; color: white; padding: 2px 6px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">${defaultRarity}</span>
+                </div>
+                ${hasMultipleSets ? `
+                    <div class="set-selector-mini" style="margin: var(--space-2) 0;">
+                        <select class="set-selector-dropdown" onchange="tcgStore.updateCardRarityFromSet(this, '${cardElementId}', '${safeName}', '${safeImage}')" style="width: 100%; padding: 4px 6px; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 0.75rem; background: white;">
+                            ${cardSets.map((set, index) => `
+                                <option value="${set.set_code || ''}" data-rarity="${set.set_rarity || 'Common'}" data-price="${this.calculateSetPrice(card.price, set.set_rarity)}" ${index === 0 ? 'selected' : ''}>
+                                    ${set.set_name || set.set_code || 'Unknown Set'} (${set.set_rarity || 'Common'})
+                                </option>
+                            `).join('')}
+                        </select>
+                    </div>
+                ` : ''}
                 <div class="price-section">
-                    <span class="card-price">$${card.price}</span>
+                    <span class="card-price" id="card-price-${cardElementId}">$${card.price}</span>
                     <span class="price-trend ${card.priceChange.direction}">
                         ${priceChangeSymbol} ${priceChangeText}
                     </span>
                 </div>
                 <div class="card-actions">
-                    <button class="add-to-cart-btn" onclick="event.stopPropagation(); tcgStore.addToCart('${safeName}', ${safePrice}, '${safeImage}')">
+                    <button class="add-to-cart-btn" id="add-to-cart-${cardElementId}" onclick="event.stopPropagation(); tcgStore.addToCartFromCard('${cardElementId}', '${safeName}', ${safePrice}, '${safeImage}', '${defaultRarity}')">
                         Add to Cart
                     </button>
                     <button class="wishlist-toggle-btn" onclick="event.stopPropagation(); tcgStore.toggleWishlist('${safeName}', ${safePrice}, '${safeImage}', '${safeId}')" title="${wishlistTitle}">
@@ -3775,6 +3798,114 @@ class ModernTCGStore {
                 }
             }
         }
+    }
+
+    // Helper functions for rarity badge functionality on singles page
+    getRarityColor(rarity) {
+        // YGOPRODeck-style rarity colors
+        const rarityColors = {
+            'Common': '#374151',
+            'Rare': '#3B82F6', 
+            'Super Rare': '#10B981',
+            'Ultra Rare': '#F59E0B',
+            'Secret Rare': '#8B5CF6',
+            'Ultimate Rare': '#DC2626',
+            'Ghost Rare': '#6B7280',
+            'Starlight Rare': '#EC4899',
+            'Short Print': '#6B7280'
+        };
+        return rarityColors[rarity] || '#374151';
+    }
+
+    getCardTypeColor(cardType) {
+        // YGOPRODeck-style card type colors
+        if (cardType.includes('Effect Monster')) return '#FF8B00';
+        if (cardType.includes('Normal Monster')) return '#FFC649';
+        if (cardType.includes('Fusion Monster')) return '#A086B7';
+        if (cardType.includes('Synchro Monster')) return '#CCCCCC';
+        if (cardType.includes('Xyz Monster')) return '#000000';
+        if (cardType.includes('Link Monster')) return '#00008B';
+        if (cardType.includes('Ritual Monster')) return '#9DB5CC';
+        if (cardType.includes('Pendulum')) return '#008080';
+        if (cardType.includes('Spell')) return '#1D9E74';
+        if (cardType.includes('Trap')) return '#BC5A84';
+        if (cardType.includes('Monster')) return '#FF8B00'; // Default monster
+        return '#6B7280'; // Default
+    }
+
+    calculateSetPrice(basePrice, rarity) {
+        // Simple price calculation based on rarity
+        const base = parseFloat(basePrice) || 0;
+        if (base <= 0) return '0.00';
+        
+        // Rarity multipliers (simplified)
+        const multipliers = {
+            'Common': 1.0,
+            'Rare': 1.2,
+            'Super Rare': 1.5,
+            'Ultra Rare': 2.0,
+            'Secret Rare': 3.0,
+            'Ultimate Rare': 4.0,
+            'Ghost Rare': 5.0,
+            'Starlight Rare': 10.0
+        };
+        
+        const multiplier = multipliers[rarity] || 1.0;
+        return (base * multiplier).toFixed(2);
+    }
+
+    updateCardRarityFromSet(selectElement, cardElementId, cardName, cardImage) {
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+        const newRarity = selectedOption.getAttribute('data-rarity') || 'Common';
+        const newPrice = selectedOption.getAttribute('data-price') || '0.00';
+        
+        // Update rarity badge
+        const rarityBadge = document.getElementById(`rarity-badge-${cardElementId}`);
+        if (rarityBadge) {
+            const rarityColor = this.getRarityColor(newRarity);
+            
+            // Animate the rarity badge update
+            rarityBadge.style.transition = 'all 0.3s ease-out';
+            rarityBadge.style.transform = 'scale(0.8)';
+            rarityBadge.style.opacity = '0.7';
+            
+            setTimeout(() => {
+                rarityBadge.textContent = newRarity;
+                rarityBadge.style.backgroundColor = rarityColor;
+                rarityBadge.style.transform = 'scale(1.1)';
+                rarityBadge.style.opacity = '1';
+                
+                setTimeout(() => {
+                    rarityBadge.style.transform = 'scale(1)';
+                }, 200);
+            }, 150);
+        }
+        
+        // Update price
+        const priceElement = document.getElementById(`card-price-${cardElementId}`);
+        if (priceElement) {
+            priceElement.style.transition = 'color 0.3s ease-out';
+            priceElement.textContent = `$${newPrice}`;
+        }
+        
+        // Update add to cart button
+        const addToCartBtn = document.getElementById(`add-to-cart-${cardElementId}`);
+        if (addToCartBtn) {
+            const setCode = selectedOption.value;
+            const setName = selectedOption.textContent.split(' (')[0]; // Extract set name
+            addToCartBtn.setAttribute('onclick', 
+                `event.stopPropagation(); tcgStore.addToCartFromCard('${cardElementId}', '${cardName}', ${newPrice}, '${cardImage}', '${newRarity}', '${setCode}', '${setName}')`
+            );
+        }
+        
+        console.log(`✅ Rarity badge updated: ${newRarity} (${rarityColor}) - $${newPrice}`);
+    }
+
+    addToCartFromCard(cardElementId, cardName, price, image, rarity, setCode = '', setName = '') {
+        // Add to cart with set and rarity details
+        this.addToCartWithDetails(cardName, price, image, setCode, rarity, setName);
+        
+        console.log(`Added to cart: ${cardName} (${setCode} - ${rarity}) - $${price}`);
     }
 }
 
