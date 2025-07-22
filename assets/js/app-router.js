@@ -2051,6 +2051,82 @@ window.testClick = function() {
     alert('JavaScript is working! Click test successful!');
 };
 
+// FAQ Toggle Function with Animation
+window.toggleFAQ = function(button) {
+    const faqItem = button.parentElement;
+    const answer = faqItem.querySelector('div[style*="display: none"], div[style*="display: block"]');
+    const icon = button.querySelector('span:last-child');
+    const isExpanded = button.getAttribute('aria-expanded') === 'true';
+    
+    if (!answer) return;
+    
+    if (isExpanded) {
+        // Collapse
+        button.setAttribute('aria-expanded', 'false');
+        icon.textContent = '+';
+        icon.style.transform = 'rotate(0deg)';
+        
+        // Animate collapse
+        answer.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+        answer.style.opacity = '1';
+        
+        // Force reflow
+        answer.offsetHeight;
+        
+        answer.style.maxHeight = '0px';
+        answer.style.opacity = '0';
+        answer.style.paddingTop = '0px';
+        answer.style.paddingBottom = '0px';
+        
+        setTimeout(() => {
+            answer.style.display = 'none';
+            answer.style.transition = '';
+            answer.style.maxHeight = '';
+            answer.style.opacity = '';
+            answer.style.paddingTop = '';
+            answer.style.paddingBottom = '';
+        }, 300);
+        
+    } else {
+        // Expand
+        button.setAttribute('aria-expanded', 'true');
+        icon.textContent = '−';
+        icon.style.transform = 'rotate(180deg)';
+        
+        // Prepare for animation
+        answer.style.display = 'block';
+        answer.style.maxHeight = '0px';
+        answer.style.opacity = '0';
+        answer.style.paddingTop = '0px';
+        answer.style.paddingBottom = '0px';
+        answer.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        
+        // Force reflow
+        answer.offsetHeight;
+        
+        // Animate expand
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+        answer.style.opacity = '1';
+        answer.style.paddingTop = 'var(--space-4)';
+        answer.style.paddingBottom = 'var(--space-4)';
+        
+        // Clean up after animation
+        setTimeout(() => {
+            answer.style.transition = '';
+            answer.style.maxHeight = '';
+            answer.style.paddingTop = '';
+            answer.style.paddingBottom = '';
+        }, 300);
+    }
+    
+    // Add visual feedback to button
+    button.style.transform = 'scale(0.98)';
+    setTimeout(() => {
+        button.style.transform = '';
+    }, 150);
+};
+
 // Initialize router when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.appRouter = new AppRouter();
@@ -2061,6 +2137,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('🔧 getRarityColor exists:', typeof getRarityColor);
     console.log('🔧 animateRarityBadgeUpdate exists:', typeof animateRarityBadgeUpdate);
     console.log('🔧 window.testClick exists:', typeof window.testClick);
+    console.log('🔧 window.toggleFAQ exists:', typeof window.toggleFAQ);
     
     // Add a manual test function
     window.testRarityBadge = function() {
@@ -2076,4 +2153,5 @@ document.addEventListener('DOMContentLoaded', () => {
     
     console.log('🔧 Manual test function added: window.testRarityBadge()');
     console.log('🔧 Basic click test function added: window.testClick()');
+    console.log('🔧 FAQ toggle function added: window.toggleFAQ()');
 });
