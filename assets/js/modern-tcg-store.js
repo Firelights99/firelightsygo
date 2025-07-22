@@ -528,16 +528,26 @@ class ModernTCGStore {
     }
 
     navigateToProduct(card) {
-        // Use the SPA router instead of direct navigation
-        if (window.appRouter) {
-            window.appRouter.loadPage('product', true, `?id=${card.id}`);
-        } else if (window.navigateTo) {
-            // Use global navigation function
-            window.navigateTo('product', `?id=${card.id}`);
+        // Ensure we have a valid card object with an ID
+        if (!card || (!card.id && !card.name)) {
+            console.error('Invalid card data for navigation:', card);
+            return;
+        }
+        
+        // Use card ID if available, otherwise use card name as fallback
+        const cardIdentifier = card.id || card.name;
+        
+        // Use the global navigation function which is more reliable
+        if (typeof navigateTo === 'function') {
+            navigateTo('product', `?id=${cardIdentifier}`);
+        } else if (window.navigateTo && typeof window.navigateTo === 'function') {
+            window.navigateTo('product', `?id=${cardIdentifier}`);
+        } else if (window.appRouter && typeof window.appRouter.loadPage === 'function') {
+            window.appRouter.loadPage('product', true, `?id=${cardIdentifier}`);
         } else {
-            // Fallback to direct navigation if router not available
-            const productUrl = `pages/product.html?id=${card.id}`;
-            window.location.href = productUrl;
+            // Final fallback - direct navigation
+            console.warn('No navigation method available, using direct navigation');
+            window.location.href = `#page=product&id=${cardIdentifier}`;
         }
     }
 
