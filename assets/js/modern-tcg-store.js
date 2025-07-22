@@ -1550,7 +1550,32 @@ class ModernTCGStore {
 
             this.closeAccountModal();
             this.updateAccountUI();
-            this.showToast(`Welcome back, ${user.firstName}!`, 'success');
+
+            // Check if user is admin and redirect to admin dashboard
+            if (user.isAdmin && user.isActive) {
+                // Store admin session for admin dashboard
+                const adminSession = {
+                    id: user.id,
+                    email: user.email,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    isAdmin: true,
+                    isActive: true,
+                    permissions: user.permissions || ['orders', 'inventory', 'customers', 'analytics'],
+                    loginTime: new Date().toISOString()
+                };
+                
+                localStorage.setItem('tcg-admin', JSON.stringify(adminSession));
+                
+                this.showToast(`Welcome back, Admin ${user.firstName}!`, 'success');
+                
+                // Redirect to admin dashboard
+                setTimeout(() => {
+                    window.location.href = 'admin/admin-dashboard.html';
+                }, 1500);
+            } else {
+                this.showToast(`Welcome back, ${user.firstName}!`, 'success');
+            }
 
         } catch (error) {
             console.error('Login error:', error);
