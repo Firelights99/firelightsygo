@@ -637,6 +637,32 @@ body {
     }
 }
 
+/* FAQ Animations */
+.faq-button {
+    transition: all 0.2s ease;
+}
+
+.faq-button:hover {
+    background: #f0f0f0 !important;
+}
+
+.faq-button span:last-child {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-answer {
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-answer.expanding {
+    display: block !important;
+}
+
+.faq-answer.collapsing {
+    display: block !important;
+}
+
 @media (max-width: 480px) {
     .site-title {
         font-size: 16px;

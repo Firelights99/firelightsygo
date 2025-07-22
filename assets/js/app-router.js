@@ -2053,27 +2053,44 @@ window.testClick = function() {
 
 // FAQ Toggle Function with Animation
 window.toggleFAQ = function(button) {
+    console.log('🔧 toggleFAQ called!', button);
+    
     const faqItem = button.parentElement;
-    const answer = faqItem.querySelector('div[style*="display: none"], div[style*="display: block"]');
+    const answer = faqItem.querySelector('div[style*="display"], div:last-child');
     const icon = button.querySelector('span:last-child');
     const isExpanded = button.getAttribute('aria-expanded') === 'true';
     
-    if (!answer) return;
+    console.log('🔧 FAQ elements:', { faqItem, answer, icon, isExpanded });
+    
+    if (!answer) {
+        console.error('❌ No answer element found!');
+        return;
+    }
+    
+    // Add CSS classes for styling
+    button.classList.add('faq-button');
+    answer.classList.add('faq-answer');
     
     if (isExpanded) {
         // Collapse
+        console.log('🔽 Collapsing FAQ');
         button.setAttribute('aria-expanded', 'false');
         icon.textContent = '+';
         icon.style.transform = 'rotate(0deg)';
         
-        // Animate collapse
-        answer.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-        answer.style.maxHeight = answer.scrollHeight + 'px';
+        // Add collapsing class
+        answer.classList.add('collapsing');
+        answer.classList.remove('expanding');
+        
+        // Get current height for animation
+        const currentHeight = answer.scrollHeight;
+        answer.style.maxHeight = currentHeight + 'px';
         answer.style.opacity = '1';
         
         // Force reflow
         answer.offsetHeight;
         
+        // Animate to collapsed state
         answer.style.maxHeight = '0px';
         answer.style.opacity = '0';
         answer.style.paddingTop = '0px';
@@ -2081,7 +2098,8 @@ window.toggleFAQ = function(button) {
         
         setTimeout(() => {
             answer.style.display = 'none';
-            answer.style.transition = '';
+            answer.classList.remove('collapsing');
+            // Reset styles
             answer.style.maxHeight = '';
             answer.style.opacity = '';
             answer.style.paddingTop = '';
@@ -2090,9 +2108,14 @@ window.toggleFAQ = function(button) {
         
     } else {
         // Expand
+        console.log('🔼 Expanding FAQ');
         button.setAttribute('aria-expanded', 'true');
         icon.textContent = '−';
         icon.style.transform = 'rotate(180deg)';
+        
+        // Add expanding class
+        answer.classList.add('expanding');
+        answer.classList.remove('collapsing');
         
         // Prepare for animation
         answer.style.display = 'block';
@@ -2100,20 +2123,23 @@ window.toggleFAQ = function(button) {
         answer.style.opacity = '0';
         answer.style.paddingTop = '0px';
         answer.style.paddingBottom = '0px';
-        answer.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
         
         // Force reflow
         answer.offsetHeight;
         
-        // Animate expand
-        answer.style.maxHeight = answer.scrollHeight + 'px';
+        // Get target height
+        const targetHeight = answer.scrollHeight;
+        console.log('🔧 Target height:', targetHeight);
+        
+        // Animate to expanded state
+        answer.style.maxHeight = targetHeight + 'px';
         answer.style.opacity = '1';
         answer.style.paddingTop = 'var(--space-4)';
         answer.style.paddingBottom = 'var(--space-4)';
         
         // Clean up after animation
         setTimeout(() => {
-            answer.style.transition = '';
+            answer.classList.remove('expanding');
             answer.style.maxHeight = '';
             answer.style.paddingTop = '';
             answer.style.paddingBottom = '';
@@ -2125,6 +2151,8 @@ window.toggleFAQ = function(button) {
     setTimeout(() => {
         button.style.transform = '';
     }, 150);
+    
+    console.log('✅ FAQ toggle completed');
 };
 
 // Initialize router when DOM is loaded
