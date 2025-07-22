@@ -689,35 +689,48 @@ class AppRouter {
         `;
     }
 
-    calculatePriceByRarity(basePrice, rarity) {
-        const base = parseFloat(basePrice);
-        const multipliers = {
-            'Common': 1.0,
-            'Rare': 1.5,
-            'Super Rare': 2.0,
-            'Ultra Rare': 3.0,
-            'Secret Rare': 4.0,
-            'Ultimate Rare': 5.0,
-            'Ghost Rare': 6.0,
-            'Starlight Rare': 10.0
-        };
+    async calculatePriceByRarity(basePrice, rarity, cardData = null) {
+        // If we have real price data, use it
+        if (basePrice && parseFloat(basePrice) > 0) {
+            return parseFloat(basePrice).toFixed(2);
+        }
         
-        const multiplier = multipliers[rarity] || 1.0;
-        return (base * multiplier).toFixed(2);
+        // If no real price available, return 0.00
+        return '0.00';
     }
 
-    generateSetSelectorHTML(sets, selectedSet) {
+    async generateSetSelectorHTML(sets, selectedSet, cardData = null) {
         if (!sets || sets.length === 0) {
             return '<p style="color: var(--gray-600); font-style: italic;">No set information available</p>';
         }
 
-        // Process sets to add pricing
-        const processedSets = sets.map(set => ({
-            set_name: set.set_name,
-            set_code: set.set_code,
-            rarity: set.set_rarity || 'Common',
-            rarity_code: set.set_rarity_code,
-            price: this.calculatePriceByRarity('25.99', set.set_rarity || 'Common')
+        // Process sets to get real pricing for each
+        const processedSets = await Promise.all(sets.map(async set => {
+            let realPrice = '0.00';
+            
+            // Try to get real price for this specific set/rarity combination
+            if (cardData && window.yugiohPricingService) {
+                try {
+                    const priceData = await window.yugiohPricingService.getSetSpecificPrice(
+                        cardData, 
+                        set.set_code, 
+                        set.set_rarity || 'Common'
+                    );
+                    if (priceData && priceData.price > 0) {
+                        realPrice = priceData.price.toFixed(2);
+                    }
+                } catch (error) {
+                    console.warn(`Could not get price for ${set.set_code}:`, error);
+                }
+            }
+            
+            return {
+                set_name: set.set_name,
+                set_code: set.set_code,
+                rarity: set.set_rarity || 'Common',
+                rarity_code: set.set_rarity_code,
+                price: realPrice
+            };
         }));
 
         return processedSets.map(set => {
@@ -743,7 +756,9 @@ class AppRouter {
                             <div style="background: ${rarityColor}; color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: 0.75rem; font-weight: 600; margin-bottom: var(--space-1);">
                                 ${set.rarity}
                             </div>
-                            <div style="font-size: 1.125rem; font-weight: 700;">$${set.price}</div>
+                            <div style="font-size: 1.125rem; font-weight: 700;">
+                                ${set.price === '0.00' ? 'Price N/A' : '$' + set.price}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -860,36 +875,13 @@ class AppRouter {
     calculateRealPriceByRarity(basePrice, rarity) {
         const base = parseFloat(basePrice);
         if (isNaN(base) || base <= 0) {
-            // If we don't have a valid base price, use realistic rarity pricing
-            const rarityBasePrices = {
-                'Common': 0.25,
-                'Rare': 1.50,
-                'Super Rare': 4.00,
-                'Ultra Rare': 8.00,
-                'Secret Rare': 15.00,
-                'Ultimate Rare': 25.00,
-                'Ghost Rare': 40.00,
-                'Starlight Rare': 100.00,
-                'Short Print': 2.50
-            };
-            return (rarityBasePrices[rarity] || 1.00).toFixed(2);
+            // If we don't have a valid base price, return 0.00 instead of mock pricing
+            console.warn(`No real price available for rarity: ${rarity}`);
+            return '0.00';
         }
         
-        // Use realistic multipliers based on actual market data
-        const multipliers = {
-            'Common': 0.5,
-            'Rare': 1.0,
-            'Super Rare': 2.0,
-            'Ultra Rare': 4.0,
-            'Secret Rare': 8.0,
-            'Ultimate Rare': 12.0,
-            'Ghost Rare': 20.0,
-            'Starlight Rare': 40.0,
-            'Short Print': 1.5
-        };
-        
-        const multiplier = multipliers[rarity] || 1.0;
-        return Math.max(0.25, base * multiplier).toFixed(2);
+        // If we have real price data, return it as-is (no multipliers needed)
+        return base.toFixed(2);
     }
 
     getShippingPolicyContent() {
