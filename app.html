@@ -632,16 +632,16 @@
             initializeNavigation();
         }
 
-        // Singles page search functions
-        function performCardSearch() {
+        // Singles page search functions - Make them globally available
+        window.performCardSearch = function() {
             if (window.tcgStore && typeof window.tcgStore.performAdvancedSearch === 'function') {
                 window.tcgStore.performAdvancedSearch();
             } else {
                 console.warn('Advanced search function not available');
             }
-        }
+        };
 
-        function toggleAdvancedFilters() {
+        window.toggleAdvancedFilters = function() {
             const filtersPanel = document.getElementById('advanced-filters');
             const chevron = document.getElementById('filter-chevron');
             
@@ -650,9 +650,9 @@
                 filtersPanel.style.display = isVisible ? 'none' : 'block';
                 chevron.className = isVisible ? 'fas fa-chevron-down' : 'fas fa-chevron-up';
             }
-        }
+        };
 
-        function clearAllFilters() {
+        window.clearAllFilters = function() {
             // Clear all filter inputs
             const filterInputs = document.querySelectorAll('#advanced-filters select, #advanced-filters input');
             filterInputs.forEach(input => {
@@ -670,23 +670,44 @@
             }
             
             // Perform search to show all cards
-            performCardSearch();
-        }
+            window.performCardSearch();
+        };
 
-        function searchByCategory(category) {
+        window.searchByCategory = function(category) {
             if (window.tcgStore && typeof window.tcgStore.searchByCategory === 'function') {
                 window.tcgStore.searchByCategory(category);
             } else {
                 console.warn('Category search function not available');
             }
-        }
+        };
 
-        function loadMoreCards() {
+        window.loadMoreCards = function() {
             if (window.tcgStore && typeof window.tcgStore.loadMoreCards === 'function') {
                 window.tcgStore.loadMoreCards();
             } else {
                 console.warn('Load more function not available');
             }
+        };
+
+        // Also create regular function declarations for backward compatibility
+        function performCardSearch() {
+            window.performCardSearch();
+        }
+
+        function toggleAdvancedFilters() {
+            window.toggleAdvancedFilters();
+        }
+
+        function clearAllFilters() {
+            window.clearAllFilters();
+        }
+
+        function searchByCategory(category) {
+            window.searchByCategory(category);
+        }
+
+        function loadMoreCards() {
+            window.loadMoreCards();
         }
     </script>
 </body>
