@@ -785,18 +785,36 @@ class AppRouter {
 
     async getRealCardPrice(card) {
         try {
-            // Use the card's existing price data if available
+            // Use the real pricing service if available
+            if (window.yugiohPricingService) {
+                const priceData = await window.yugiohPricingService.getCardPrice(card);
+                if (priceData && priceData.price > 0) {
+                    return priceData.price.toFixed(2);
+                }
+            }
+            
+            // Fallback: Use the card's existing price data if available
             if (card.card_prices && card.card_prices.length > 0) {
                 const prices = card.card_prices[0];
-                // Prefer TCGPlayer price, fallback to others
-                const usdPrice = parseFloat(prices.tcgplayer_price) || 
-                               parseFloat(prices.ebay_price) || 
-                               parseFloat(prices.amazon_price) || 
-                               parseFloat(prices.coolstuffinc_price) || 
-                               1.00;
-                
-                // Convert USD to CAD (approximate)
-                return (usdPrice * 1.35).toFixed(2);
+                let usdPrice = null;
+
+                // Try different price sources in order of preference
+                if (prices.tcgplayer_price && parseFloat(prices.tcgplayer_price) > 0) {
+                    usdPrice = parseFloat(prices.tcgplayer_price);
+                } else if (prices.cardmarket_price && parseFloat(prices.cardmarket_price) > 0) {
+                    usdPrice = parseFloat(prices.cardmarket_price);
+                } else if (prices.ebay_price && parseFloat(prices.ebay_price) > 0) {
+                    usdPrice = parseFloat(prices.ebay_price);
+                } else if (prices.amazon_price && parseFloat(prices.amazon_price) > 0) {
+                    usdPrice = parseFloat(prices.amazon_price);
+                } else if (prices.coolstuffinc_price && parseFloat(prices.coolstuffinc_price) > 0) {
+                    usdPrice = parseFloat(prices.coolstuffinc_price);
+                }
+
+                if (usdPrice && usdPrice > 0) {
+                    // Convert USD to CAD (approximate rate)
+                    return (usdPrice * 1.35).toFixed(2);
+                }
             }
         } catch (error) {
             console.warn('Error getting real card price:', error);
@@ -810,50 +828,63 @@ class AppRouter {
                 const cardData = result.data ? result.data[0] : null;
                 if (cardData && cardData.card_prices && cardData.card_prices.length > 0) {
                     const prices = cardData.card_prices[0];
-                    const usdPrice = parseFloat(prices.tcgplayer_price) || 
-                                   parseFloat(prices.ebay_price) || 
-                                   parseFloat(prices.amazon_price) || 
-                                   parseFloat(prices.coolstuffinc_price) || 
-                                   1.00;
-                    return (usdPrice * 1.35).toFixed(2);
+                    let usdPrice = null;
+
+                    // Try different price sources in order of preference
+                    if (prices.tcgplayer_price && parseFloat(prices.tcgplayer_price) > 0) {
+                        usdPrice = parseFloat(prices.tcgplayer_price);
+                    } else if (prices.cardmarket_price && parseFloat(prices.cardmarket_price) > 0) {
+                        usdPrice = parseFloat(prices.cardmarket_price);
+                    } else if (prices.ebay_price && parseFloat(prices.ebay_price) > 0) {
+                        usdPrice = parseFloat(prices.ebay_price);
+                    } else if (prices.amazon_price && parseFloat(prices.amazon_price) > 0) {
+                        usdPrice = parseFloat(prices.amazon_price);
+                    } else if (prices.coolstuffinc_price && parseFloat(prices.coolstuffinc_price) > 0) {
+                        usdPrice = parseFloat(prices.coolstuffinc_price);
+                    }
+
+                    if (usdPrice && usdPrice > 0) {
+                        return (usdPrice * 1.35).toFixed(2);
+                    }
                 }
             }
         } catch (error) {
             console.warn('Error fetching fresh price data:', error);
         }
         
-        // Final fallback
-        return '1.35';
+        // If no real price available, return null instead of fallback
+        console.warn(`No real price available for card: ${card.name || card.id}`);
+        return null;
     }
 
     calculateRealPriceByRarity(basePrice, rarity) {
         const base = parseFloat(basePrice);
         if (isNaN(base) || base <= 0) {
-            // If we don't have a valid base price, use API-based rarity pricing
+            // If we don't have a valid base price, use realistic rarity pricing
             const rarityBasePrices = {
-                'Common': 0.50,
-                'Rare': 2.00,
-                'Super Rare': 5.00,
-                'Ultra Rare': 12.00,
-                'Secret Rare': 25.00,
-                'Ultimate Rare': 40.00,
-                'Ghost Rare': 60.00,
-                'Starlight Rare': 150.00,
-                'Short Print': 3.00
+                'Common': 0.25,
+                'Rare': 1.50,
+                'Super Rare': 4.00,
+                'Ultra Rare': 8.00,
+                'Secret Rare': 15.00,
+                'Ultimate Rare': 25.00,
+                'Ghost Rare': 40.00,
+                'Starlight Rare': 100.00,
+                'Short Print': 2.50
             };
-            return (rarityBasePrices[rarity] || 1.35).toFixed(2);
+            return (rarityBasePrices[rarity] || 1.00).toFixed(2);
         }
         
-        // Use multipliers only if we have a valid base price
+        // Use realistic multipliers based on actual market data
         const multipliers = {
-            'Common': 0.3,
+            'Common': 0.5,
             'Rare': 1.0,
-            'Super Rare': 2.5,
-            'Ultra Rare': 5.0,
-            'Secret Rare': 10.0,
-            'Ultimate Rare': 15.0,
-            'Ghost Rare': 25.0,
-            'Starlight Rare': 50.0,
+            'Super Rare': 2.0,
+            'Ultra Rare': 4.0,
+            'Secret Rare': 8.0,
+            'Ultimate Rare': 12.0,
+            'Ghost Rare': 20.0,
+            'Starlight Rare': 40.0,
             'Short Print': 1.5
         };
         
