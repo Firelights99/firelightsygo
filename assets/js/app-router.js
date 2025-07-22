@@ -1388,4 +1388,24 @@ function showToastNotification(options) {
 // Initialize router when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.appRouter = new AppRouter();
+    
+    // Test function accessibility
+    console.log('🔧 App router loaded, testing selectSet function...');
+    console.log('🔧 window.selectSet exists:', typeof window.selectSet);
+    console.log('🔧 getRarityColor exists:', typeof getRarityColor);
+    console.log('🔧 animateRarityBadgeUpdate exists:', typeof animateRarityBadgeUpdate);
+    
+    // Add a manual test function
+    window.testRarityBadge = function() {
+        console.log('🧪 Manual test function called');
+        const rarityBadge = document.getElementById('rarity-badge');
+        if (rarityBadge) {
+            console.log('🧪 Found rarity badge, testing animation...');
+            animateRarityBadgeUpdate(rarityBadge, 'Ultra Rare', '#F59E0B');
+        } else {
+            console.log('🧪 Rarity badge not found on this page');
+        }
+    };
+    
+    console.log('🔧 Manual test function added: window.testRarityBadge()');
 });
