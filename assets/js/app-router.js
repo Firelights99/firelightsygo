@@ -1385,21 +1385,143 @@ function refreshDeckList() {
     loadUserDecks();
 }
 
-function searchCards() {
-    if (window.deckBuilder && typeof window.deckBuilder.searchCards === 'function') {
-        const query = document.getElementById('card-search')?.value || '';
-        const typeFilter = document.getElementById('type-filter')?.value || '';
-        const raceFilter = document.getElementById('race-filter')?.value || '';
-        const attributeFilter = document.getElementById('attribute-filter')?.value || '';
-        const levelFilter = document.getElementById('level-filter')?.value || '';
+async function searchCards() {
+    const query = document.getElementById('card-search')?.value || '';
+    const typeFilter = document.getElementById('type-filter')?.value || '';
+    const raceFilter = document.getElementById('race-filter')?.value || '';
+    const attributeFilter = document.getElementById('attribute-filter')?.value || '';
+    const levelFilter = document.getElementById('level-filter')?.value || '';
+    
+    const searchResults = document.getElementById('search-results');
+    if (!searchResults) return;
+    
+    // If no search query and no filters, show default message
+    if (!query && !typeFilter && !raceFilter && !attributeFilter && !levelFilter) {
+        searchResults.innerHTML = `
+            <div style="text-align: center; padding: var(--space-8); color: var(--gray-500);">
+                <div style="font-size: 2rem; margin-bottom: var(--space-2);">🔍</div>
+                <p>Search for cards to add to your deck</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Show loading state
+    searchResults.innerHTML = `
+        <div style="text-align: center; padding: var(--space-8); color: var(--gray-500);">
+            <div class="loading-spinner" style="margin: 0 auto var(--space-4) auto;"></div>
+            <p>Searching cards...</p>
+        </div>
+    `;
+    
+    try {
+        // Build API URL with filters
+        let apiUrl = 'https://db.ygoprodeck.com/api/v7/cardinfo.php?';
+        const params = new URLSearchParams();
         
-        window.deckBuilder.searchCards({
-            query,
-            type: typeFilter,
-            race: raceFilter,
-            attribute: attributeFilter,
-            level: levelFilter
+        if (query) {
+            params.append('fname', query);
+        }
+        
+        if (typeFilter) {
+            params.append('type', typeFilter);
+        }
+        
+        if (raceFilter) {
+            params.append('race', raceFilter);
+        }
+        
+        if (attributeFilter) {
+            params.append('attribute', attributeFilter);
+        }
+        
+        if (levelFilter) {
+            params.append('level', levelFilter);
+        }
+        
+        // Limit results to prevent overwhelming the UI
+        params.append('num', '50');
+        params.append('offset', '0');
+        
+        const response = await fetch(apiUrl + params.toString());
+        
+        if (!response.ok) {
+            throw new Error(`API request failed: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        const cards = data.data || [];
+        
+        if (cards.length === 0) {
+            searchResults.innerHTML = `
+                <div style="text-align: center; padding: var(--space-8); color: var(--gray-500);">
+                    <div style="font-size: 2rem; margin-bottom: var(--space-2);">❌</div>
+                    <p>No cards found matching your search criteria</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Render search results
+        const resultsHTML = cards.map(card => {
+            const image = card.card_images && card.card_images.length > 0 ? 
+                card.card_images[0].image_url_small || card.card_images[0].image_url : 
+                'https://images.ygoprodeck.com/images/cards/back.jpg';
+            
+            const cardType = card.type || 'Unknown';
+            const cardRace = card.race || '';
+            const cardAttribute = card.attribute || '';
+            const cardLevel = card.level || '';
+            
+            let statsText = '';
+            if (card.atk !== undefined && card.def !== undefined) {
+                statsText = `ATK/${card.atk} DEF/${card.def}`;
+            } else if (card.atk !== undefined) {
+                statsText = `ATK/${card.atk}`;
+            }
+            
+            return `
+                <div class="search-result-card" onclick="addCardToDeck('${card.id}', '${card.name.replace(/'/g, "\\'")}', '${image}', '${cardType}')">
+                    <img src="${image}" alt="${card.name}" class="search-result-image" loading="lazy">
+                    <div class="search-result-info">
+                        <div class="search-result-name">${card.name}</div>
+                        <div class="search-result-type">${cardType}${cardRace ? ` / ${cardRace}` : ''}${cardAttribute ? ` / ${cardAttribute}` : ''}</div>
+                        ${statsText ? `<div class="search-result-stats">${statsText}</div>` : ''}
+                        ${cardLevel ? `<div class="search-result-stats">Level ${cardLevel}</div>` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        searchResults.innerHTML = resultsHTML;
+        
+    } catch (error) {
+        console.error('Error searching cards:', error);
+        searchResults.innerHTML = `
+            <div style="text-align: center; padding: var(--space-8); color: var(--error-color);">
+                <div style="font-size: 2rem; margin-bottom: var(--space-2);">⚠️</div>
+                <p>Error searching cards. Please try again.</p>
+                <p style="font-size: 0.875rem; margin-top: var(--space-2);">${error.message}</p>
+            </div>
+        `;
+    }
+}
+
+// Function to add card to deck (placeholder for now)
+function addCardToDeck(cardId, cardName, cardImage, cardType) {
+    console.log('Adding card to deck:', { cardId, cardName, cardImage, cardType });
+    
+    // If deck builder is available, use it
+    if (window.deckBuilder && typeof window.deckBuilder.addCard === 'function') {
+        window.deckBuilder.addCard({
+            id: cardId,
+            name: cardName,
+            image: cardImage,
+            type: cardType
         });
+    } else {
+        // Show a notification that the card would be added
+        alert(`Would add "${cardName}" to deck (deck builder not fully loaded)`);
     }
 }
 
