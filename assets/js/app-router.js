@@ -1333,6 +1333,219 @@ function createNewDeck() {
     }
 }
 
+// Global deck management functions
+function importDeck() {
+    // Create a file input for importing deck files
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.ydk,.json';
+    input.onchange = function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const content = e.target.result;
+                    if (file.name.endsWith('.ydk')) {
+                        // Parse YDK format
+                        if (window.deckBuilder) {
+                            window.deckBuilder.importYDK(content);
+                            showDeckBuilder();
+                        }
+                    } else if (file.name.endsWith('.json')) {
+                        // Parse JSON format
+                        const deckData = JSON.parse(content);
+                        if (window.deckBuilder) {
+                            window.deckBuilder.importDeck(deckData);
+                            showDeckBuilder();
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error importing deck:', error);
+                    alert('Error importing deck file. Please check the file format.');
+                }
+            };
+            reader.readAsText(file);
+        }
+    };
+    input.click();
+}
+
+function showDeckTemplates() {
+    showPopularDecks();
+}
+
+function sortDecks() {
+    const sortBy = document.getElementById('deck-sort')?.value || 'updated';
+    if (window.deckBuilder && typeof window.deckBuilder.sortDecks === 'function') {
+        window.deckBuilder.sortDecks(sortBy);
+    }
+    loadUserDecks();
+}
+
+function refreshDeckList() {
+    loadUserDecks();
+}
+
+function searchCards() {
+    if (window.deckBuilder && typeof window.deckBuilder.searchCards === 'function') {
+        const query = document.getElementById('card-search')?.value || '';
+        const typeFilter = document.getElementById('type-filter')?.value || '';
+        const raceFilter = document.getElementById('race-filter')?.value || '';
+        const attributeFilter = document.getElementById('attribute-filter')?.value || '';
+        const levelFilter = document.getElementById('level-filter')?.value || '';
+        
+        window.deckBuilder.searchCards({
+            query,
+            type: typeFilter,
+            race: raceFilter,
+            attribute: attributeFilter,
+            level: levelFilter
+        });
+    }
+}
+
+function showTemplateCategory(category) {
+    // Remove active class from all template buttons
+    document.querySelectorAll('#popular-decks-section .filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Add active class to clicked button
+    const activeBtn = document.getElementById(`${category === 'all' ? 'all-templates' : category}-btn`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+    }
+    
+    // Load templates for the selected category
+    loadDeckTemplates(category);
+}
+
+function loadDeckTemplates(category = 'all') {
+    const container = document.getElementById('templates-container');
+    if (!container) return;
+    
+    // Show loading state
+    container.innerHTML = `
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Loading ${category} deck templates...</p>
+        </div>
+    `;
+    
+    // Simulate loading deck templates (replace with actual API call)
+    setTimeout(() => {
+        const templates = getDeckTemplatesByCategory(category);
+        renderDeckTemplates(templates, container);
+    }, 1000);
+}
+
+function getDeckTemplatesByCategory(category) {
+    // Mock deck templates - replace with actual data source
+    const allTemplates = [
+        {
+            id: 1,
+            name: 'Blue-Eyes White Dragon',
+            category: 'casual',
+            description: 'Classic Blue-Eyes deck with modern support',
+            mainDeckCount: 40,
+            extraDeckCount: 15,
+            price: 89.99,
+            popularity: 85
+        },
+        {
+            id: 2,
+            name: 'Tearlaments',
+            category: 'meta',
+            description: 'Current meta fusion deck',
+            mainDeckCount: 40,
+            extraDeckCount: 15,
+            price: 299.99,
+            popularity: 95
+        },
+        {
+            id: 3,
+            name: 'Salamangreat',
+            category: 'tier2',
+            description: 'Consistent link-based strategy',
+            mainDeckCount: 40,
+            extraDeckCount: 15,
+            price: 149.99,
+            popularity: 78
+        }
+    ];
+    
+    if (category === 'all') {
+        return allTemplates;
+    }
+    return allTemplates.filter(template => template.category === category);
+}
+
+function renderDeckTemplates(templates, container) {
+    if (templates.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: var(--space-12); color: var(--gray-500);">
+                <div style="font-size: 4rem; margin-bottom: var(--space-4);">📋</div>
+                <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3);">No Templates Found</h3>
+                <p>No deck templates available for this category.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const templatesHTML = templates.map(template => `
+        <div class="deck-template-card" style="background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-4); transition: var(--transition-fast); cursor: pointer;" onclick="loadDeckTemplate(${template.id})">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-3);">
+                <div>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">${template.name}</h3>
+                    <p style="color: var(--gray-600); font-size: 0.875rem; line-height: 1.5;">${template.description}</p>
+                </div>
+                <span style="background: var(--primary-color); color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 600; text-transform: uppercase;">${template.category}</span>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                <div style="display: flex; gap: var(--space-4); font-size: 0.875rem; color: var(--gray-600);">
+                    <span>Main: ${template.mainDeckCount}</span>
+                    <span>Extra: ${template.extraDeckCount}</span>
+                    <span>Popularity: ${template.popularity}%</span>
+                </div>
+                <div style="font-size: 1.125rem; font-weight: 700; color: var(--primary-color);">$${template.price}</div>
+            </div>
+            
+            <div style="display: flex; gap: var(--space-3);">
+                <button class="primary-btn" onclick="event.stopPropagation(); loadDeckTemplate(${template.id})" style="flex: 1; padding: var(--space-2) var(--space-4); font-size: 0.875rem;">
+                    Load Template
+                </button>
+                <button class="secondary-btn" onclick="event.stopPropagation(); previewDeckTemplate(${template.id})" style="padding: var(--space-2) var(--space-4); font-size: 0.875rem;">
+                    Preview
+                </button>
+            </div>
+        </div>
+    `).join('');
+    
+    container.innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: var(--space-6);">
+            ${templatesHTML}
+        </div>
+    `;
+}
+
+function loadDeckTemplate(templateId) {
+    console.log('Loading deck template:', templateId);
+    if (window.deckBuilder && typeof window.deckBuilder.loadTemplate === 'function') {
+        window.deckBuilder.loadTemplate(templateId);
+        showDeckBuilder();
+    } else {
+        alert('Deck builder not available. Please try again.');
+    }
+}
+
+function previewDeckTemplate(templateId) {
+    console.log('Previewing deck template:', templateId);
+    // Show a modal or detailed view of the deck template
+    alert(`Preview for deck template ${templateId} - Feature coming soon!`);
+}
+
 // Global product page functions - Make sure it's accessible globally
 window.selectSet = function(setCode, rarity, price, setName, clickedElement) {
     console.log('🎯 selectSet called with:', { setCode, rarity, price, setName });
