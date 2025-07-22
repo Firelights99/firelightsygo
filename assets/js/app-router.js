@@ -333,15 +333,208 @@ class AppRouter {
             `;
         }
 
+        // Get user orders and wishlist
+        const userOrders = window.tcgStore.getUserOrders ? window.tcgStore.getUserOrders() : [];
+        const userWishlist = currentUser.wishlist || [];
+        const storeCreditBalance = window.tcgStore.dbService ? window.tcgStore.dbService.getStoreCreditBalance(currentUser.id) : 0;
+
         return `
-        <section style="text-align: center; margin-bottom: var(--space-12);">
+        <section style="margin-bottom: var(--space-12);">
             <div style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); border-radius: var(--radius-2xl); color: white; padding: var(--space-12); margin-bottom: var(--space-8);">
-                <h1 style="font-size: 3rem; font-weight: 700; margin-bottom: var(--space-4);">
-                    Welcome back, ${currentUser.firstName}!
-                </h1>
-                <p style="font-size: 1.125rem; opacity: 0.9;">
-                    Member since ${new Date(currentUser.createdAt).toLocaleDateString()}
-                </p>
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-4);">
+                    <div>
+                        <h1 style="font-size: 3rem; font-weight: 700; margin-bottom: var(--space-2);">
+                            Welcome back, ${currentUser.firstName}!
+                        </h1>
+                        <p style="font-size: 1.125rem; opacity: 0.9; margin-bottom: var(--space-2);">
+                            ${currentUser.isAdmin ? '👑 Administrator Account' : '🎯 Member Account'}
+                        </p>
+                        <p style="font-size: 1rem; opacity: 0.8;">
+                            Member since ${new Date(currentUser.createdAt).toLocaleDateString()}
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: var(--space-3); flex-wrap: wrap;">
+                        ${currentUser.isAdmin ? `
+                            <button class="secondary-btn" onclick="window.open('admin/admin-dashboard.html', '_blank')" style="background: var(--secondary-color); color: var(--gray-900); border: none; padding: var(--space-3) var(--space-6); border-radius: var(--radius-lg); font-weight: 600; cursor: pointer; transition: var(--transition-fast);">
+                                <i class="fas fa-cog"></i> Admin Dashboard
+                            </button>
+                        ` : ''}
+                        <button class="secondary-btn" onclick="tcgStore.openEditProfileModal()" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: var(--space-3) var(--space-6); border-radius: var(--radius-lg); font-weight: 600; cursor: pointer; transition: var(--transition-fast);">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </button>
+                        <button class="secondary-btn" onclick="tcgStore.logout()" style="background: rgba(220,38,38,0.8); color: white; border: 1px solid rgba(220,38,38,0.5); padding: var(--space-3) var(--space-6); border-radius: var(--radius-lg); font-weight: 600; cursor: pointer; transition: var(--transition-fast);">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-8); margin-bottom: var(--space-12);">
+            <!-- Account Overview -->
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+                <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-6); display: flex; align-items: center; gap: var(--space-2);">
+                    <i class="fas fa-user-circle" style="color: var(--primary-color);"></i>
+                    Account Information
+                </h2>
+                <div style="space-y: var(--space-4);">
+                    <div style="margin-bottom: var(--space-4);">
+                        <label style="font-size: 0.875rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em;">Full Name</label>
+                        <p style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin: var(--space-1) 0 0 0;">${currentUser.firstName} ${currentUser.lastName}</p>
+                    </div>
+                    <div style="margin-bottom: var(--space-4);">
+                        <label style="font-size: 0.875rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em;">Email Address</label>
+                        <p style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin: var(--space-1) 0 0 0;">${currentUser.email}</p>
+                    </div>
+                    ${currentUser.phone ? `
+                        <div style="margin-bottom: var(--space-4);">
+                            <label style="font-size: 0.875rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em;">Phone Number</label>
+                            <p style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin: var(--space-1) 0 0 0;">${currentUser.phone}</p>
+                        </div>
+                    ` : ''}
+                    ${currentUser.favoriteArchetype ? `
+                        <div style="margin-bottom: var(--space-4);">
+                            <label style="font-size: 0.875rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em;">Favorite Archetype</label>
+                            <p style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin: var(--space-1) 0 0 0;">${currentUser.favoriteArchetype}</p>
+                        </div>
+                    ` : ''}
+                    <div style="margin-bottom: var(--space-4);">
+                        <label style="font-size: 0.875rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em;">Account Status</label>
+                        <p style="font-size: 1.125rem; font-weight: 600; color: var(--success-color); margin: var(--space-1) 0 0 0;">
+                            <i class="fas fa-check-circle"></i> Active ${currentUser.isAdmin ? '(Administrator)' : '(Member)'}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Store Credit -->
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+                <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-6); display: flex; align-items: center; gap: var(--space-2);">
+                    <i class="fas fa-coins" style="color: var(--warning-color);"></i>
+                    Store Credit
+                </h2>
+                <div style="text-align: center; padding: var(--space-6);">
+                    <div style="font-size: 3rem; font-weight: 700; color: var(--primary-color); margin-bottom: var(--space-2);">
+                        $${storeCreditBalance.toFixed(2)}
+                    </div>
+                    <p style="color: var(--gray-600); margin-bottom: var(--space-4);">Available Balance</p>
+                    <p style="font-size: 0.875rem; color: var(--gray-500); line-height: 1.5;">
+                        Store credit can be used at checkout and is earned through returns and special promotions.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-8); margin-bottom: var(--space-12);">
+            <!-- Recent Orders -->
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6);">
+                    <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); display: flex; align-items: center; gap: var(--space-2); margin: 0;">
+                        <i class="fas fa-shopping-bag" style="color: var(--info-color);"></i>
+                        Recent Orders
+                    </h2>
+                    <button class="secondary-btn" onclick="tcgStore.openOrderHistoryModal()" style="padding: var(--space-2) var(--space-4); font-size: 0.875rem;">
+                        View All
+                    </button>
+                </div>
+                ${userOrders.length === 0 ? `
+                    <div style="text-align: center; padding: var(--space-8); color: var(--gray-500);">
+                        <div style="font-size: 3rem; margin-bottom: var(--space-4); opacity: 0.5;">📦</div>
+                        <p style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-2);">No Orders Yet</p>
+                        <p style="margin-bottom: var(--space-4);">Start shopping to see your orders here!</p>
+                        <button class="primary-btn" onclick="navigateTo('singles')" style="padding: var(--space-3) var(--space-6);">
+                            Browse Singles
+                        </button>
+                    </div>
+                ` : `
+                    <div style="space-y: var(--space-4);">
+                        ${userOrders.slice(0, 3).map(order => `
+                            <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-3);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-2);">
+                                    <span style="font-weight: 600; color: var(--gray-900);">Order #${order.id}</span>
+                                    <span style="background: var(--info-color); color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600; text-transform: uppercase;">
+                                        ${order.status}
+                                    </span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: var(--gray-600); font-size: 0.875rem;">
+                                        ${new Date(order.createdAt).toLocaleDateString()}
+                                    </span>
+                                    <span style="font-weight: 700; color: var(--primary-color);">
+                                        $${order.total.toFixed(2)}
+                                    </span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `}
+            </div>
+
+            <!-- Wishlist -->
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6);">
+                    <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); display: flex; align-items: center; gap: var(--space-2); margin: 0;">
+                        <i class="fas fa-heart" style="color: var(--error-color);"></i>
+                        Wishlist
+                    </h2>
+                    <button class="secondary-btn" onclick="tcgStore.openWishlistModal()" style="padding: var(--space-2) var(--space-4); font-size: 0.875rem;">
+                        View All
+                    </button>
+                </div>
+                ${userWishlist.length === 0 ? `
+                    <div style="text-align: center; padding: var(--space-8); color: var(--gray-500);">
+                        <div style="font-size: 3rem; margin-bottom: var(--space-4); opacity: 0.5;">💝</div>
+                        <p style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-2);">No Wishlist Items</p>
+                        <p style="margin-bottom: var(--space-4);">Save cards you want to purchase later!</p>
+                        <button class="primary-btn" onclick="navigateTo('singles')" style="padding: var(--space-3) var(--space-6);">
+                            Browse Singles
+                        </button>
+                    </div>
+                ` : `
+                    <div style="space-y: var(--space-4);">
+                        ${userWishlist.slice(0, 3).map(item => `
+                            <div style="display: flex; align-items: center; gap: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-3); margin-bottom: var(--space-3);">
+                                <img src="${item.image}" alt="${item.name}" style="width: 40px; height: 56px; object-fit: contain; border-radius: var(--radius-sm);">
+                                <div style="flex: 1; min-width: 0;">
+                                    <div style="font-weight: 600; color: var(--gray-900); font-size: 0.875rem; margin-bottom: var(--space-1); line-height: 1.2;">${item.name}</div>
+                                    <div style="font-weight: 700; color: var(--primary-color); font-size: 0.875rem;">$${item.price.toFixed(2)}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                        ${userWishlist.length > 3 ? `
+                            <p style="text-align: center; color: var(--gray-600); font-size: 0.875rem; margin-top: var(--space-3);">
+                                +${userWishlist.length - 3} more items
+                            </p>
+                        ` : ''}
+                    </div>
+                `}
+            </div>
+        </section>
+
+        <section style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+            <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-6); display: flex; align-items: center; gap: var(--space-2);">
+                <i class="fas fa-cogs" style="color: var(--gray-600);"></i>
+                Quick Actions
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4);">
+                <button class="secondary-btn" onclick="tcgStore.openEditProfileModal()" style="padding: var(--space-4); text-align: center; display: flex; flex-direction: column; align-items: center; gap: var(--space-2);">
+                    <i class="fas fa-user-edit" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+                    <span>Edit Profile</span>
+                </button>
+                <button class="secondary-btn" onclick="tcgStore.openOrderHistoryModal()" style="padding: var(--space-4); text-align: center; display: flex; flex-direction: column; align-items: center; gap: var(--space-2);">
+                    <i class="fas fa-history" style="font-size: 1.5rem; color: var(--info-color);"></i>
+                    <span>Order History</span>
+                </button>
+                <button class="secondary-btn" onclick="tcgStore.openWishlistModal()" style="padding: var(--space-4); text-align: center; display: flex; flex-direction: column; align-items: center; gap: var(--space-2);">
+                    <i class="fas fa-heart" style="font-size: 1.5rem; color: var(--error-color);"></i>
+                    <span>Manage Wishlist</span>
+                </button>
+                ${currentUser.isAdmin ? `
+                    <button class="secondary-btn" onclick="window.open('admin/admin-dashboard.html', '_blank')" style="padding: var(--space-4); text-align: center; display: flex; flex-direction: column; align-items: center; gap: var(--space-2); background: var(--primary-color); color: white;">
+                        <i class="fas fa-shield-alt" style="font-size: 1.5rem;"></i>
+                        <span>Admin Dashboard</span>
+                    </button>
+                ` : ''}
             </div>
         </section>
         `;

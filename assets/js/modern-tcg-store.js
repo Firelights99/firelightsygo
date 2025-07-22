@@ -1584,14 +1584,34 @@ class ModernTCGStore {
     }
 
     logout() {
+        // Clear current user
         this.currentUser = null;
         localStorage.removeItem('tcg-user');
+        
+        // Clear admin session if it exists
+        localStorage.removeItem('tcg-admin');
+        
+        // Update UI
         this.updateAccountUI();
-        this.showToast('You have been logged out.', 'info');
+        this.showToast('You have been logged out successfully.', 'info');
+        
+        // Track logout event
+        if (this.dbService) {
+            this.dbService.trackEvent('user_logout', {
+                timestamp: new Date().toISOString()
+            });
+        }
         
         // Redirect to home if on account page
         if (window.location.hash.includes('account')) {
-            navigateTo('home');
+            if (typeof navigateTo === 'function') {
+                navigateTo('home');
+            } else if (window.appRouter) {
+                window.appRouter.loadPage('home', true);
+            } else {
+                window.location.hash = '#';
+                window.location.reload();
+            }
         }
     }
 
