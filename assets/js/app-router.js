@@ -1490,6 +1490,12 @@ function showToastNotification(options) {
     }, 4000);
 }
 
+// Simple test function to verify JavaScript is working
+window.testClick = function() {
+    console.log('🚨 BASIC CLICK TEST WORKING! JavaScript is loaded and functional!');
+    alert('JavaScript is working! Click test successful!');
+};
+
 // Initialize router when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.appRouter = new AppRouter();
@@ -1499,6 +1505,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('🔧 window.selectSet exists:', typeof window.selectSet);
     console.log('🔧 getRarityColor exists:', typeof getRarityColor);
     console.log('🔧 animateRarityBadgeUpdate exists:', typeof animateRarityBadgeUpdate);
+    console.log('🔧 window.testClick exists:', typeof window.testClick);
     
     // Add a manual test function
     window.testRarityBadge = function() {
@@ -1513,4 +1520,5 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     console.log('🔧 Manual test function added: window.testRarityBadge()');
+    console.log('🔧 Basic click test function added: window.testClick()');
 });
