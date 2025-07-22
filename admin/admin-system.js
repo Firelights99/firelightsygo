@@ -69,6 +69,9 @@ class AdminSystem {
         // Load inventory (mock data for now, can be extended)
         this.loadInventoryData();
 
+        // Load buylist data
+        this.loadBuylistData();
+
         // Calculate analytics
         this.calculateAnalytics();
     }
@@ -141,6 +144,84 @@ class AdminSystem {
         }
         
         this.inventory = inventory;
+    }
+
+    loadBuylistData() {
+        // Load existing buylist or create sample data
+        let buylist = JSON.parse(localStorage.getItem('tcg-buylist') || '[]');
+        
+        if (buylist.length === 0) {
+            // Create sample buylist data
+            buylist = [
+                {
+                    id: 1,
+                    name: 'Blue-Eyes White Dragon',
+                    game: 'yugioh',
+                    cashPrice: 15.00,
+                    creditPrice: 18.75,
+                    category: 'Monster',
+                    rarity: 'Ultra Rare',
+                    set: 'LOB',
+                    status: 'active',
+                    maxQuantity: 4,
+                    currentStock: 0,
+                    image: 'https://images.ygoprodeck.com/images/cards/back.jpg',
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: 2,
+                    name: 'Ash Blossom & Joyous Spring',
+                    game: 'yugioh',
+                    cashPrice: 22.00,
+                    creditPrice: 27.50,
+                    category: 'Monster',
+                    rarity: 'Ultra Rare',
+                    set: 'MAGO',
+                    status: 'active',
+                    maxQuantity: 4,
+                    currentStock: 2,
+                    image: 'https://images.ygoprodeck.com/images/cards/back.jpg',
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: 3,
+                    name: 'Lightning Bolt',
+                    game: 'magic',
+                    cashPrice: 8.50,
+                    creditPrice: 10.63,
+                    category: 'Instant',
+                    rarity: 'Common',
+                    set: 'LEA',
+                    status: 'active',
+                    maxQuantity: 4,
+                    currentStock: 1,
+                    image: 'https://images.ygoprodeck.com/images/cards/back.jpg',
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: 4,
+                    name: 'Charizard',
+                    game: 'pokemon',
+                    cashPrice: 45.00,
+                    creditPrice: 56.25,
+                    category: 'Pokemon',
+                    rarity: 'Holo Rare',
+                    set: 'Base Set',
+                    status: 'out-of-stock',
+                    maxQuantity: 2,
+                    currentStock: 2,
+                    image: 'https://images.ygoprodeck.com/images/cards/back.jpg',
+                    createdAt: new Date().toISOString()
+                }
+            ];
+            
+            localStorage.setItem('tcg-buylist', JSON.stringify(buylist));
+        }
+        
+        this.buylist = buylist;
+        
+        // Load buylist submissions
+        this.buylistSubmissions = JSON.parse(localStorage.getItem('tcg-buylist-submissions') || '[]');
     }
 
     calculateAnalytics() {
@@ -1174,10 +1255,461 @@ function adminLogout() {
     }
 }
 
+// Buylist Management Functions
+function searchBuylist() {
+    const query = document.getElementById('buylist-search').value.toLowerCase();
+    const gameFilter = document.getElementById('game-filter').value;
+    const statusFilter = document.getElementById('status-filter').value;
+    
+    let filteredBuylist = adminSystem.buylist.filter(item => {
+        const matchesQuery = item.name.toLowerCase().includes(query) ||
+                           item.category.toLowerCase().includes(query) ||
+                           item.set.toLowerCase().includes(query);
+        const matchesGame = !gameFilter || item.game === gameFilter;
+        const matchesStatus = !statusFilter || item.status === statusFilter;
+        
+        return matchesQuery && matchesGame && matchesStatus;
+    });
+    
+    renderBuylistItems(filteredBuylist);
+}
+
+function renderBuylistItems(items = null) {
+    const container = document.getElementById('buylist-items');
+    if (!container) return;
+    
+    const buylistItems = items || adminSystem.buylist;
+    
+    if (buylistItems.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: var(--gray-500); padding: var(--space-4);">No buylist items found</p>';
+        return;
+    }
+    
+    container.innerHTML = buylistItems.map(item => generateBuylistItemHTML(item)).join('');
+}
+
+function generateBuylistItemHTML(item) {
+    const statusColor = {
+        'active': 'var(--success-color)',
+        'inactive': 'var(--gray-500)',
+        'out-of-stock': 'var(--error-color)'
+    }[item.status] || 'var(--gray-500)';
+    
+    const gameIcon = {
+        'yugioh': '🃏',
+        'magic': '🔮',
+        'pokemon': '⚡',
+        'lorcana': '✨',
+        'onepiece': '🏴‍☠️'
+    }[item.game] || '🎮';
+    
+    return `
+        <div class="inventory-item" style="border-left: 4px solid ${statusColor};">
+            <div class="inventory-info">
+                <h4>${gameIcon} ${item.name}</h4>
+                <p>${item.category} • ${item.rarity} • ${item.set}</p>
+                <p style="color: ${statusColor}; font-weight: 600; text-transform: capitalize;">${item.status.replace('-', ' ')} (${item.currentStock}/${item.maxQuantity})</p>
+            </div>
+            <div class="inventory-controls">
+                <div style="display: flex; flex-direction: column; gap: var(--space-1); margin-right: var(--space-3);">
+                    <span style="font-size: 0.75rem; color: var(--gray-600);">Cash:</span>
+                    <input type="number" class="price-input" value="${item.cashPrice}" 
+                           onchange="updateBuylistPrice(${item.id}, 'cash', this.value)" step="0.01" min="0">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: var(--space-1); margin-right: var(--space-3);">
+                    <span style="font-size: 0.75rem; color: var(--gray-600);">Credit:</span>
+                    <input type="number" class="price-input" value="${item.creditPrice}" 
+                           onchange="updateBuylistPrice(${item.id}, 'credit', this.value)" step="0.01" min="0">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: var(--space-1); margin-right: var(--space-3);">
+                    <span style="font-size: 0.75rem; color: var(--gray-600);">Max Qty:</span>
+                    <input type="number" class="quantity-input" value="${item.maxQuantity}" 
+                           onchange="updateBuylistMaxQuantity(${item.id}, this.value)" min="0">
+                </div>
+                <button class="admin-btn btn-secondary" onclick="editBuylistItem(${item.id})">
+                    Edit
+                </button>
+                <button class="admin-btn ${item.status === 'active' ? 'btn-warning' : 'btn-success'}" 
+                        onclick="toggleBuylistStatus(${item.id})">
+                    ${item.status === 'active' ? 'Deactivate' : 'Activate'}
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function addToBuylist() {
+    const modalContent = `
+        <div style="max-width: 500px;">
+            <h4 style="margin-bottom: var(--space-4); text-align: center;">Add Card to Buylist</h4>
+            <form id="add-buylist-form" onsubmit="submitNewBuylistItem(event)">
+                <div style="margin-bottom: var(--space-3);">
+                    <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Card Name *</label>
+                    <input type="text" id="buylist-card-name" required style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                </div>
+                <div style="margin-bottom: var(--space-3);">
+                    <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Game *</label>
+                    <select id="buylist-game" required style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                        <option value="">Select Game</option>
+                        <option value="yugioh">Yu-Gi-Oh!</option>
+                        <option value="magic">Magic: The Gathering</option>
+                        <option value="pokemon">Pokemon</option>
+                        <option value="lorcana">Lorcana</option>
+                        <option value="onepiece">One Piece</option>
+                    </select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-3);">
+                    <div>
+                        <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Cash Price *</label>
+                        <input type="number" id="buylist-cash-price" required step="0.01" min="0" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Credit Price *</label>
+                        <input type="number" id="buylist-credit-price" required step="0.01" min="0" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-3);">
+                    <div>
+                        <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Category</label>
+                        <input type="text" id="buylist-category" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);" placeholder="e.g., Monster, Spell">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Rarity</label>
+                        <input type="text" id="buylist-rarity" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);" placeholder="e.g., Ultra Rare">
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-4);">
+                    <div>
+                        <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Set Code</label>
+                        <input type="text" id="buylist-set" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);" placeholder="e.g., LOB, MRD">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Max Quantity</label>
+                        <input type="number" id="buylist-max-qty" value="4" min="1" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                    </div>
+                </div>
+                <div style="display: flex; gap: var(--space-3); justify-content: center;">
+                    <button type="button" class="admin-btn btn-secondary" onclick="adminSystem.closeModal()">Cancel</button>
+                    <button type="submit" class="admin-btn btn-primary">Add to Buylist</button>
+                </div>
+            </form>
+        </div>
+    `;
+
+    adminSystem.showModal('Add to Buylist', modalContent);
+}
+
+function submitNewBuylistItem(event) {
+    event.preventDefault();
+    
+    const name = document.getElementById('buylist-card-name').value;
+    const game = document.getElementById('buylist-game').value;
+    const cashPrice = parseFloat(document.getElementById('buylist-cash-price').value);
+    const creditPrice = parseFloat(document.getElementById('buylist-credit-price').value);
+    const category = document.getElementById('buylist-category').value || 'Unknown';
+    const rarity = document.getElementById('buylist-rarity').value || 'Common';
+    const set = document.getElementById('buylist-set').value || 'Unknown';
+    const maxQuantity = parseInt(document.getElementById('buylist-max-qty').value);
+
+    if (!name || !game || isNaN(cashPrice) || isNaN(creditPrice) || isNaN(maxQuantity)) {
+        adminSystem.showToast('Please fill in all required fields correctly', 'error');
+        return;
+    }
+
+    const newItem = {
+        id: Date.now(),
+        name,
+        game,
+        cashPrice,
+        creditPrice,
+        category,
+        rarity,
+        set,
+        status: 'active',
+        maxQuantity,
+        currentStock: 0,
+        image: 'https://images.ygoprodeck.com/images/cards/back.jpg',
+        createdAt: new Date().toISOString()
+    };
+
+    adminSystem.buylist.push(newItem);
+    localStorage.setItem('tcg-buylist', JSON.stringify(adminSystem.buylist));
+    
+    adminSystem.closeModal();
+    renderBuylistItems();
+    adminSystem.showToast(`${name} added to buylist`, 'success');
+}
+
+function updateBuylistPrice(itemId, priceType, newPrice) {
+    const item = adminSystem.buylist.find(i => i.id === itemId);
+    if (!item) return;
+
+    const price = parseFloat(newPrice);
+    if (isNaN(price) || price < 0) {
+        adminSystem.showToast('Invalid price', 'error');
+        return;
+    }
+
+    if (priceType === 'cash') {
+        item.cashPrice = price;
+    } else if (priceType === 'credit') {
+        item.creditPrice = price;
+    }
+
+    localStorage.setItem('tcg-buylist', JSON.stringify(adminSystem.buylist));
+    adminSystem.showToast(`${priceType} price updated for ${item.name}`, 'success');
+}
+
+function updateBuylistMaxQuantity(itemId, newQuantity) {
+    const item = adminSystem.buylist.find(i => i.id === itemId);
+    if (!item) return;
+
+    const quantity = parseInt(newQuantity);
+    if (isNaN(quantity) || quantity < 0) {
+        adminSystem.showToast('Invalid quantity', 'error');
+        return;
+    }
+
+    item.maxQuantity = quantity;
+    localStorage.setItem('tcg-buylist', JSON.stringify(adminSystem.buylist));
+    adminSystem.showToast(`Max quantity updated for ${item.name}`, 'success');
+}
+
+function editBuylistItem(itemId) {
+    const item = adminSystem.buylist.find(i => i.id === itemId);
+    if (!item) return;
+
+    const modalContent = `
+        <div style="max-width: 500px;">
+            <h4 style="margin-bottom: var(--space-4); text-align: center;">Edit ${item.name}</h4>
+            <form id="edit-buylist-form" onsubmit="submitEditBuylistItem(event, ${itemId})">
+                <div style="margin-bottom: var(--space-3);">
+                    <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Card Name *</label>
+                    <input type="text" id="edit-buylist-name" value="${item.name}" required style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                </div>
+                <div style="margin-bottom: var(--space-3);">
+                    <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Game *</label>
+                    <select id="edit-buylist-game" required style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                        <option value="yugioh" ${item.game === 'yugioh' ? 'selected' : ''}>Yu-Gi-Oh!</option>
+                        <option value="magic" ${item.game === 'magic' ? 'selected' : ''}>Magic: The Gathering</option>
+                        <option value="pokemon" ${item.game === 'pokemon' ? 'selected' : ''}>Pokemon</option>
+                        <option value="lorcana" ${item.game === 'lorcana' ? 'selected' : ''}>Lorcana</option>
+                        <option value="onepiece" ${item.game === 'onepiece' ? 'selected' : ''}>One Piece</option>
+                    </select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-3);">
+                    <div>
+                        <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Cash Price *</label>
+                        <input type="number" id="edit-buylist-cash" value="${item.cashPrice}" required step="0.01" min="0" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Credit Price *</label>
+                        <input type="number" id="edit-buylist-credit" value="${item.creditPrice}" required step="0.01" min="0" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-3);">
+                    <div>
+                        <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Category</label>
+                        <input type="text" id="edit-buylist-category" value="${item.category}" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Rarity</label>
+                        <input type="text" id="edit-buylist-rarity" value="${item.rarity}" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-4);">
+                    <div>
+                        <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Set Code</label>
+                        <input type="text" id="edit-buylist-set" value="${item.set}" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Max Quantity</label>
+                        <input type="number" id="edit-buylist-max" value="${item.maxQuantity}" min="1" style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                    </div>
+                </div>
+                <div style="display: flex; gap: var(--space-3); justify-content: center;">
+                    <button type="button" class="admin-btn btn-danger" onclick="deleteBuylistItem(${itemId})">Delete</button>
+                    <button type="button" class="admin-btn btn-secondary" onclick="adminSystem.closeModal()">Cancel</button>
+                    <button type="submit" class="admin-btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    `;
+
+    adminSystem.showModal('Edit Buylist Item', modalContent);
+}
+
+function submitEditBuylistItem(event, itemId) {
+    event.preventDefault();
+    
+    const item = adminSystem.buylist.find(i => i.id === itemId);
+    if (!item) return;
+
+    const name = document.getElementById('edit-buylist-name').value;
+    const game = document.getElementById('edit-buylist-game').value;
+    const cashPrice = parseFloat(document.getElementById('edit-buylist-cash').value);
+    const creditPrice = parseFloat(document.getElementById('edit-buylist-credit').value);
+    const category = document.getElementById('edit-buylist-category').value;
+    const rarity = document.getElementById('edit-buylist-rarity').value;
+    const set = document.getElementById('edit-buylist-set').value;
+    const maxQuantity = parseInt(document.getElementById('edit-buylist-max').value);
+
+    if (!name || !game || isNaN(cashPrice) || isNaN(creditPrice) || isNaN(maxQuantity)) {
+        adminSystem.showToast('Please fill in all required fields correctly', 'error');
+        return;
+    }
+
+    item.name = name;
+    item.game = game;
+    item.cashPrice = cashPrice;
+    item.creditPrice = creditPrice;
+    item.category = category;
+    item.rarity = rarity;
+    item.set = set;
+    item.maxQuantity = maxQuantity;
+
+    localStorage.setItem('tcg-buylist', JSON.stringify(adminSystem.buylist));
+    
+    adminSystem.closeModal();
+    renderBuylistItems();
+    adminSystem.showToast(`${name} updated successfully`, 'success');
+}
+
+function toggleBuylistStatus(itemId) {
+    const item = adminSystem.buylist.find(i => i.id === itemId);
+    if (!item) return;
+
+    item.status = item.status === 'active' ? 'inactive' : 'active';
+    localStorage.setItem('tcg-buylist', JSON.stringify(adminSystem.buylist));
+    
+    renderBuylistItems();
+    adminSystem.showToast(`${item.name} ${item.status === 'active' ? 'activated' : 'deactivated'}`, 'success');
+}
+
+function deleteBuylistItem(itemId) {
+    const item = adminSystem.buylist.find(i => i.id === itemId);
+    if (!item) return;
+
+    if (confirm(`Are you sure you want to delete ${item.name} from the buylist?`)) {
+        adminSystem.buylist = adminSystem.buylist.filter(i => i.id !== itemId);
+        localStorage.setItem('tcg-buylist', JSON.stringify(adminSystem.buylist));
+        
+        adminSystem.closeModal();
+        renderBuylistItems();
+        adminSystem.showToast(`${item.name} deleted from buylist`, 'success');
+    }
+}
+
+function filterBuylistByGame() {
+    searchBuylist();
+}
+
+function filterBuylistByStatus() {
+    searchBuylist();
+}
+
+function bulkUpdateBuylistPrices() {
+    const modalContent = `
+        <div style="max-width: 400px; text-align: center;">
+            <h4 style="margin-bottom: var(--space-4);">Bulk Update Buylist Prices</h4>
+            <p style="margin-bottom: var(--space-4); color: var(--gray-600);">Apply a percentage change to all buylist prices</p>
+            <div style="margin-bottom: var(--space-4);">
+                <label style="display: block; margin-bottom: var(--space-2); font-weight: 600;">Price Change (%)</label>
+                <input type="number" id="buylist-price-change" step="0.1" placeholder="e.g., 10 for +10%, -5 for -5%" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); text-align: center;">
+            </div>
+            <div style="margin-bottom: var(--space-4);">
+                <label style="display: block; margin-bottom: var(--space-2); font-weight: 600;">Apply to:</label>
+                <div style="display: flex; gap: var(--space-2); justify-content: center;">
+                    <label style="display: flex; align-items: center; gap: var(--space-1);">
+                        <input type="checkbox" id="update-cash" checked> Cash Prices
+                    </label>
+                    <label style="display: flex; align-items: center; gap: var(--space-1);">
+                        <input type="checkbox" id="update-credit" checked> Credit Prices
+                    </label>
+                </div>
+            </div>
+            <div style="display: flex; gap: var(--space-3); justify-content: center;">
+                <button class="admin-btn btn-secondary" onclick="adminSystem.closeModal()">Cancel</button>
+                <button class="admin-btn btn-primary" onclick="confirmBulkBuylistPriceUpdate()">Update Prices</button>
+            </div>
+        </div>
+    `;
+
+    adminSystem.showModal('Bulk Buylist Price Update', modalContent);
+}
+
+function confirmBulkBuylistPriceUpdate() {
+    const changePercent = parseFloat(document.getElementById('buylist-price-change').value);
+    const updateCash = document.getElementById('update-cash').checked;
+    const updateCredit = document.getElementById('update-credit').checked;
+    
+    if (isNaN(changePercent)) {
+        adminSystem.showToast('Please enter a valid percentage', 'error');
+        return;
+    }
+
+    if (!updateCash && !updateCredit) {
+        adminSystem.showToast('Please select at least one price type to update', 'error');
+        return;
+    }
+
+    const multiplier = 1 + (changePercent / 100);
+    let updatedCount = 0;
+
+    adminSystem.buylist.forEach(item => {
+        if (updateCash) {
+            const newCashPrice = item.cashPrice * multiplier;
+            if (newCashPrice > 0) {
+                item.cashPrice = Math.round(newCashPrice * 100) / 100;
+                updatedCount++;
+            }
+        }
+        if (updateCredit) {
+            const newCreditPrice = item.creditPrice * multiplier;
+            if (newCreditPrice > 0) {
+                item.creditPrice = Math.round(newCreditPrice * 100) / 100;
+                if (!updateCash) updatedCount++;
+            }
+        }
+    });
+
+    localStorage.setItem('tcg-buylist', JSON.stringify(adminSystem.buylist));
+    
+    adminSystem.closeModal();
+    renderBuylistItems();
+    adminSystem.showToast(`${updatedCount} buylist prices updated by ${changePercent}%`, 'success');
+}
+
+function importBuylistFromAPI() {
+    adminSystem.showToast('API import feature coming soon!', 'info');
+}
+
+function exportBuylist() {
+    const buylistData = JSON.stringify(adminSystem.buylist, null, 2);
+    const blob = new Blob([buylistData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `buylist-export-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    adminSystem.showToast('Buylist exported successfully', 'success');
+}
+
 // Initialize admin system
 let adminSystem;
 document.addEventListener('DOMContentLoaded', () => {
     adminSystem = new AdminSystem();
+    
+    // Load buylist items when buylist tab is active
+    setTimeout(() => {
+        if (document.getElementById('buylist-items')) {
+            renderBuylistItems();
+        }
+    }, 1000);
 });
 
 // Add CSS animations

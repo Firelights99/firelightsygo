@@ -362,6 +362,9 @@
             <button class="admin-tab" onclick="switchTab('inventory')">
                 <i class="fas fa-boxes"></i> Inventory
             </button>
+            <button class="admin-tab" onclick="switchTab('buylist')">
+                <i class="fas fa-money-bill-wave"></i> Buylist
+            </button>
             <button class="admin-tab" onclick="switchTab('customers')">
                 <i class="fas fa-users"></i> Customers
             </button>
@@ -435,6 +438,70 @@
                     </div>
                     <div id="inventory-list">
                         <!-- Inventory items will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buylist Tab -->
+        <div id="buylist-tab" class="tab-content">
+            <div class="admin-sections">
+                <div class="admin-section">
+                    <div class="section-header">
+                        <i class="fas fa-money-bill-wave" style="color: var(--success-color);"></i>
+                        <h3>Buylist Management</h3>
+                    </div>
+                    <div class="section-content">
+                        <div class="search-bar">
+                            <input type="text" id="buylist-search" placeholder="Search cards in buylist..." onkeyup="searchBuylist()">
+                        </div>
+                        <div style="margin-bottom: var(--space-4); display: flex; gap: var(--space-3); flex-wrap: wrap;">
+                            <button class="admin-btn btn-primary" onclick="addToBuylist()">
+                                <i class="fas fa-plus"></i> Add Card to Buylist
+                            </button>
+                            <button class="admin-btn btn-secondary" onclick="bulkUpdateBuylistPrices()">
+                                <i class="fas fa-sync"></i> Bulk Update Prices
+                            </button>
+                            <button class="admin-btn btn-warning" onclick="importBuylistFromAPI()">
+                                <i class="fas fa-download"></i> Import from API
+                            </button>
+                            <button class="admin-btn btn-success" onclick="exportBuylist()">
+                                <i class="fas fa-file-export"></i> Export Buylist
+                            </button>
+                        </div>
+                        <div style="margin-bottom: var(--space-4); display: flex; gap: var(--space-3); align-items: center;">
+                            <label style="font-weight: 600; color: var(--gray-700);">Filter by Game:</label>
+                            <select id="game-filter" onchange="filterBuylistByGame()" style="padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                                <option value="">All Games</option>
+                                <option value="yugioh">Yu-Gi-Oh!</option>
+                                <option value="magic">Magic: The Gathering</option>
+                                <option value="pokemon">Pokemon</option>
+                                <option value="lorcana">Lorcana</option>
+                                <option value="onepiece">One Piece</option>
+                            </select>
+                            <label style="font-weight: 600; color: var(--gray-700);">Status:</label>
+                            <select id="status-filter" onchange="filterBuylistByStatus()" style="padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="out-of-stock">Out of Stock</option>
+                            </select>
+                        </div>
+                        <div id="buylist-items">
+                            <!-- Buylist items will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="admin-section">
+                    <div class="section-header">
+                        <i class="fas fa-inbox" style="color: var(--info-color);"></i>
+                        <h3>Buylist Submissions</h3>
+                    </div>
+                    <div class="section-content">
+                        <div id="buylist-submissions">
+                            <!-- Buylist submissions will be loaded here -->
+                        </div>
                     </div>
                 </div>
             </div>
