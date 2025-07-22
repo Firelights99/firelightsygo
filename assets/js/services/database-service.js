@@ -58,6 +58,9 @@ class DatabaseService {
 
         // Initialize membership plans
         this.initializeMembershipPlans();
+        
+        // Initialize admin user
+        this.initializeAdminUser();
     }
 
     initializeMembershipPlans() {
@@ -86,6 +89,47 @@ class DatabaseService {
                 }
             ];
             localStorage.setItem('tcg-membership-plans', JSON.stringify(defaultPlans));
+        }
+    }
+
+    initializeAdminUser() {
+        const users = JSON.parse(localStorage.getItem(this.storageKeys.users) || '{}');
+        const adminEmail = 'admin@firelightygo.com';
+        
+        // Create admin user if it doesn't exist
+        if (!users[adminEmail]) {
+            const adminUser = {
+                id: 'admin-001',
+                username: 'admin',
+                email: adminEmail,
+                passwordHash: this.hashPassword('admin123'),
+                firstName: 'Admin',
+                lastName: 'User',
+                phone: '',
+                dateOfBirth: null,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                isActive: true,
+                emailVerified: true,
+                isAdmin: true,
+                profileImage: null,
+                favoriteArchetype: null,
+                addresses: [],
+                orders: [],
+                wishlist: [],
+                storeCredit: {
+                    balance: 0.00,
+                    lifetimeEarned: 0.00,
+                    lifetimeSpent: 0.00
+                },
+                permissions: ['orders', 'inventory', 'customers', 'analytics']
+            };
+
+            users[adminEmail] = adminUser;
+            localStorage.setItem(this.storageKeys.users, JSON.stringify(users));
+            
+            // Initialize admin's store credit
+            this.initializeStoreCredit(adminUser.id);
         }
     }
 

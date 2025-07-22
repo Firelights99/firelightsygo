@@ -763,6 +763,8 @@ body {
     justify-content: center;
     padding: var(--space-20);
     gap: var(--space-4);
+    width: 100%;
+    text-align: center;
 }
 
 .loading-spinner {

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Admin Account</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+            display: block;
+            width: 100%;
+        }
+        button:hover {
+            background: #b91c1c;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Account Reset Tool</h1>
+        
+        <div class="info">
+            <h3>Admin Credentials:</h3>
+            <p><strong>Email:</strong> admin@firelightygo.com</p>
+            <p><strong>Password:</strong> admin123</p>
+        </div>
+
+        <button onclick="clearAllData()">1. Clear All localStorage Data</button>
+        <button onclick="createAdminAccount()">2. Create Admin Account</button>
+        <button onclick="testLogin()">3. Test Admin Login</button>
+        <button onclick="showStorageData()">4. Show Current Storage Data</button>
+        
+        <div id="output"></div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const output = document.getElementById('output');
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = message;
+            output.appendChild(div);
+        }
+
+        function clearAllData() {
+            try {
+                // Clear all TCG-related localStorage
+                const keys = Object.keys(localStorage);
+                const tcgKeys = keys.filter(key => key.startsWith('tcg-'));
+                
+                tcgKeys.forEach(key => {
+                    localStorage.removeItem(key);
+                });
+                
+                log(`✅ Cleared ${tcgKeys.length} localStorage items: ${tcgKeys.join(', ')}`, 'success');
+            } catch (error) {
+                log(`❌ Error clearing data: ${error.message}`, 'error');
+            }
+        }
+
+        function hashPassword(password) {
+            let hash = 0;
+            for (let i = 0; i < password.length; i++) {
+                const char = password.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return hash.toString();
+        }
+
+        function createAdminAccount() {
+            try {
+                const users = {};
+                const adminEmail = 'admin@firelightygo.com';
+                const adminPassword = 'admin123';
+                
+                const adminUser = {
+                    id: 'admin-001',
+                    username: 'admin',
+                    email: adminEmail,
+                    passwordHash: hashPassword(adminPassword),
+                    firstName: 'Admin',
+                    lastName: 'User',
+                    phone: '',
+                    dateOfBirth: null,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    isActive: true,
+                    emailVerified: true,
+                    isAdmin: true,
+                    profileImage: null,
+                    favoriteArchetype: null,
+                    addresses: [],
+                    orders: [],
+                    wishlist: [],
+                    storeCredit: {
+                        balance: 0.00,
+                        lifetimeEarned: 0.00,
+                        lifetimeSpent: 0.00
+                    },
+                    permissions: ['orders', 'inventory', 'customers', 'analytics']
+                };
+
+                users[adminEmail] = adminUser;
+                localStorage.setItem('tcg-users', JSON.stringify(users));
+                
+                // Also create for the admin system
+                localStorage.setItem('tcg-admin', JSON.stringify({
+                    id: adminUser.id,
+                    email: adminUser.email,
+                    firstName: adminUser.firstName,
+                    lastName: adminUser.lastName,
+                    isAdmin: true,
+                    isActive: true,
+                    permissions: adminUser.permissions,
+                    loginTime: new Date().toISOString()
+                }));
+
+                // Initialize store credit for admin
+                const storeCredits = {};
+                storeCredits[adminUser.id] = {
+                    userId: adminUser.id,
+                    balance: 0.00,
+                    lifetimeEarned: 0.00,
+                    lifetimeSpent: 0.00,
+                    lastUpdated: new Date().toISOString()
+                };
+                localStorage.setItem('tcg-store-credits', JSON.stringify(storeCredits));
+
+                // Initialize default settings
+                const settings = {
+                    initialized: true,
+                    siteName: 'Firelight Duel Academy',
+                    currency: 'CAD',
+                    taxRate: 0.13,
+                    freeShippingThreshold: 75.00,
+                    storeCreditBonus: 0.10,
+                    buylistEnabled: true,
+                    priceUpdateFrequency: 24,
+                    defaultMarkup: 0.15,
+                    businessHours: {
+                        sunday: '12:00 PM - 1:00 PM',
+                        monday: 'Closed',
+                        tuesday: 'Closed',
+                        wednesday: 'Closed',
+                        thursday: 'Closed',
+                        friday: 'Closed',
+                        saturday: 'Closed'
+                    }
+                };
+                localStorage.setItem('tcg-settings', JSON.stringify(settings));
+
+                // Create a test regular user as well
+                const testUser = {
+                    id: Date.now(),
+                    username: 'testuser',
+                    email: 'test@example.com',
+                    passwordHash: hashPassword('test123'),
+                    firstName: 'Test',
+                    lastName: 'User',
+                    phone: '',
+                    dateOfBirth: null,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    isActive: true,
+                    emailVerified: false,
+                    isAdmin: false,
+                    profileImage: null,
+                    favoriteArchetype: null,
+                    addresses: [],
+                    orders: [],
+                    wishlist: [],
+                    storeCredit: {
+                        balance: 0.00,
+                        lifetimeEarned: 0.00,
+                        lifetimeSpent: 0.00
+                    }
+                };
+                users['test@example.com'] = testUser;
+                localStorage.setItem('tcg-users', JSON.stringify(users));
+
+                log(`✅ Admin and test accounts created successfully!<br>
+                     <strong>Admin Account:</strong><br>
+                     Email: ${adminEmail}<br>
+                     Password: ${adminPassword}<br>
+                     Password Hash: ${adminUser.passwordHash}<br><br>
+                     <strong>Test User Account:</strong><br>
+                     Email: test@example.com<br>
+                     Password: test123<br>
+                     Password Hash: ${testUser.passwordHash}`, 'success');
+            } catch (error) {
+                log(`❌ Error creating admin account: ${error.message}`, 'error');
+            }
+        }
+
+        function testLogin() {
+            try {
+                const users = JSON.parse(localStorage.getItem('tcg-users') || '{}');
+                const adminEmail = 'admin@firelightygo.com';
+                const adminPassword = 'admin123';
+                
+                const user = users[adminEmail];
+                if (!user) {
+                    log('❌ Admin user not found in storage', 'error');
+                    return;
+                }
+
+                const expectedHash = hashPassword(adminPassword);
+                const storedHash = user.passwordHash;
+                
+                if (expectedHash === storedHash) {
+                    log(`✅ Login test successful!<br>
+                         User found: ${user.email}<br>
+                         Is Admin: ${user.isAdmin}<br>
+                         Is Active: ${user.isActive}<br>
+                         Password hash matches: ✅`, 'success');
+                } else {
+                    log(`❌ Password hash mismatch!<br>
+                         Expected: ${expectedHash}<br>
+                         Stored: ${storedHash}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Error testing login: ${error.message}`, 'error');
+            }
+        }
+
+        function showStorageData() {
+            try {
+                const users = localStorage.getItem('tcg-users');
+                const admin = localStorage.getItem('tcg-admin');
+                
+                log(`<h4>Current Storage Data:</h4>
+                     <strong>tcg-users:</strong><br>
+                     <pre>${users || 'Not found'}</pre>
+                     <strong>tcg-admin:</strong><br>
+                     <pre>${admin || 'Not found'}</pre>`, 'info');
+            } catch (error) {
+                log(`❌ Error showing storage data: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-run on page load
+        window.onload = function() {
+            log('🔧 Admin Reset Tool Loaded. Follow the steps in order:', 'info');
+        };
+    </script>
+</body>
+</html>
