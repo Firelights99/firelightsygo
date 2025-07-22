@@ -3351,6 +3351,390 @@ class ModernTCGStore {
             timeout = setTimeout(later, wait);
         };
     }
+
+    // Advanced search functionality for singles page
+    async performAdvancedSearch() {
+        const searchInput = document.getElementById('card-search-input');
+        const resultsTitle = document.getElementById('results-title');
+        const resultsCount = document.getElementById('results-count');
+        const cardsGrid = document.getElementById('cards-grid');
+        
+        if (!cardsGrid) return;
+
+        // Get search parameters
+        const searchQuery = searchInput ? searchInput.value.trim() : '';
+        const filters = this.getAdvancedFilters();
+        
+        // Show loading
+        this.showLoading(cardsGrid);
+        
+        // Update results title
+        if (resultsTitle) {
+            resultsTitle.textContent = searchQuery ? `Search Results for "${searchQuery}"` : 'All Cards';
+        }
+
+        try {
+            let searchResults = [];
+            
+            if (searchQuery.length >= 2) {
+                // Perform text search
+                searchResults = await this.searchCards(searchQuery);
+            } else {
+                // Get all cards if no search query
+                searchResults = await this.getAllCards();
+            }
+
+            // Apply filters
+            const filteredResults = this.applyAdvancedFilters(searchResults, filters);
+            
+            // Format cards for display
+            this.currentCards = await Promise.all(filteredResults.map(card => this.formatCardForDisplay(card)));
+            this.filteredCards = [...this.currentCards];
+            this.currentPage = 1;
+            
+            // Update results count
+            if (resultsCount) {
+                resultsCount.textContent = `${this.filteredCards.length} cards found`;
+            }
+            
+            // Display results
+            this.displayCards(cardsGrid);
+            this.setupPagination();
+            
+        } catch (error) {
+            console.error('Advanced search error:', error);
+            this.showError(cardsGrid, 'Search failed. Please try again.');
+            
+            if (resultsCount) {
+                resultsCount.textContent = 'Search failed';
+            }
+        }
+    }
+
+    getAdvancedFilters() {
+        return {
+            type: document.getElementById('type-filter')?.value || '',
+            race: document.getElementById('race-filter')?.value || '',
+            attribute: document.getElementById('attribute-filter')?.value || '',
+            level: document.getElementById('level-filter')?.value || '',
+            linkval: document.getElementById('linkval-filter')?.value || '',
+            atk: document.getElementById('atk-filter')?.value || '',
+            def: document.getElementById('def-filter')?.value || '',
+            archetype: document.getElementById('archetype-filter')?.value || '',
+            banlist: document.getElementById('banlist-filter')?.value || '',
+            cardset: document.getElementById('cardset-filter')?.value || '',
+            sort: document.getElementById('sort-filter')?.value || 'name',
+            limit: parseInt(document.getElementById('limit-filter')?.value) || 20,
+            misc: document.getElementById('misc-filter')?.checked || false
+        };
+    }
+
+    applyAdvancedFilters(cards, filters) {
+        let filtered = [...cards];
+
+        // Filter by type
+        if (filters.type) {
+            filtered = filtered.filter(card => 
+                card.type && card.type.toLowerCase().includes(filters.type.toLowerCase())
+            );
+        }
+
+        // Filter by race
+        if (filters.race) {
+            filtered = filtered.filter(card => 
+                card.race && card.race.toLowerCase() === filters.race.toLowerCase()
+            );
+        }
+
+        // Filter by attribute
+        if (filters.attribute) {
+            filtered = filtered.filter(card => 
+                card.attribute && card.attribute.toLowerCase() === filters.attribute.toLowerCase()
+            );
+        }
+
+        // Filter by level
+        if (filters.level) {
+            const targetLevel = parseInt(filters.level);
+            filtered = filtered.filter(card => 
+                card.level === targetLevel
+            );
+        }
+
+        // Filter by link value
+        if (filters.linkval) {
+            const targetLink = parseInt(filters.linkval);
+            filtered = filtered.filter(card => 
+                card.linkval === targetLink
+            );
+        }
+
+        // Filter by ATK range
+        if (filters.atk) {
+            filtered = this.filterByStatRange(filtered, 'atk', filters.atk);
+        }
+
+        // Filter by DEF range
+        if (filters.def) {
+            filtered = this.filterByStatRange(filtered, 'def', filters.def);
+        }
+
+        // Filter by archetype
+        if (filters.archetype) {
+            filtered = filtered.filter(card => 
+                card.archetype && card.archetype.toLowerCase().includes(filters.archetype.toLowerCase())
+            );
+        }
+
+        // Filter by card set
+        if (filters.cardset) {
+            filtered = filtered.filter(card => 
+                card.card_sets && card.card_sets.some(set => 
+                    set.set_code && set.set_code.toLowerCase().includes(filters.cardset.toLowerCase())
+                )
+            );
+        }
+
+        // Filter by price availability
+        if (filters.misc) {
+            filtered = filtered.filter(card => 
+                card.card_prices && card.card_prices.length > 0
+            );
+        }
+
+        // Sort results
+        filtered = this.sortCards(filtered, filters.sort);
+
+        // Limit results
+        return filtered.slice(0, filters.limit);
+    }
+
+    filterByStatRange(cards, stat, range) {
+        return cards.filter(card => {
+            const value = card[stat];
+            if (value === null || value === undefined) return false;
+            
+            switch (range) {
+                case '0-999':
+                    return value >= 0 && value <= 999;
+                case '1000-1999':
+                    return value >= 1000 && value <= 1999;
+                case '2000-2499':
+                    return value >= 2000 && value <= 2499;
+                case '2500-2999':
+                    return value >= 2500 && value <= 2999;
+                case '3000+':
+                    return value >= 3000;
+                default:
+                    return true;
+            }
+        });
+    }
+
+    sortCards(cards, sortBy) {
+        return cards.sort((a, b) => {
+            switch (sortBy) {
+                case 'name':
+                    return a.name.localeCompare(b.name);
+                case 'name-desc':
+                    return b.name.localeCompare(a.name);
+                case 'level':
+                    return (a.level || 0) - (b.level || 0);
+                case 'level-desc':
+                    return (b.level || 0) - (a.level || 0);
+                case 'atk':
+                    return (a.atk || 0) - (b.atk || 0);
+                case 'atk-desc':
+                    return (b.atk || 0) - (a.atk || 0);
+                case 'def':
+                    return (a.def || 0) - (b.def || 0);
+                case 'def-desc':
+                    return (b.def || 0) - (a.def || 0);
+                default:
+                    return a.name.localeCompare(b.name);
+            }
+        });
+    }
+
+    async getAllCards() {
+        const cacheKey = 'all_cards';
+        const cached = this.cache.get(cacheKey);
+        
+        if (cached && Date.now() - cached.timestamp < this.cacheExpiry) {
+            return cached.data;
+        }
+
+        try {
+            // Get a variety of cards from different archetypes
+            const archetypes = ['Blue-Eyes', 'Dark Magician', 'Elemental HERO', 'Blackwing', 'Sky Striker'];
+            let allCards = [];
+            
+            for (const archetype of archetypes) {
+                try {
+                    const cards = await this.getCardsByArchetype(archetype);
+                    allCards = allCards.concat(cards.slice(0, 10)); // Limit per archetype
+                } catch (error) {
+                    console.warn(`Failed to fetch ${archetype} cards:`, error);
+                }
+            }
+            
+            // Add some meta cards
+            const metaCards = await this.getMetaCards();
+            allCards = allCards.concat(metaCards);
+            
+            // Remove duplicates
+            const uniqueCards = allCards.filter((card, index, self) => 
+                index === self.findIndex(c => c.id === card.id)
+            );
+            
+            this.cache.set(cacheKey, {
+                data: uniqueCards,
+                timestamp: Date.now()
+            });
+            
+            return uniqueCards;
+        } catch (error) {
+            console.error('Error fetching all cards:', error);
+            return [];
+        }
+    }
+
+    async searchByCategory(category) {
+        const cardsGrid = document.getElementById('cards-grid');
+        const resultsTitle = document.getElementById('results-title');
+        const resultsCount = document.getElementById('results-count');
+        
+        if (!cardsGrid) return;
+
+        this.showLoading(cardsGrid);
+
+        try {
+            let cards = [];
+            let categoryName = '';
+
+            switch (category) {
+                case 'meta':
+                    cards = await this.getMetaCards();
+                    categoryName = 'Meta Cards';
+                    break;
+                case 'hand-traps':
+                    cards = await this.getHandTrapCards();
+                    categoryName = 'Hand Traps';
+                    break;
+                case 'boss-monsters':
+                    cards = await this.getBossMonsters();
+                    categoryName = 'Boss Monsters';
+                    break;
+                case 'classic':
+                    cards = await this.getClassicCards();
+                    categoryName = 'Classic Cards';
+                    break;
+                default:
+                    cards = await this.getMetaCards();
+                    categoryName = 'Featured Cards';
+            }
+
+            this.currentCards = await Promise.all(cards.map(card => this.formatCardForDisplay(card)));
+            this.filteredCards = [...this.currentCards];
+            this.currentPage = 1;
+
+            if (resultsTitle) {
+                resultsTitle.textContent = categoryName;
+            }
+
+            if (resultsCount) {
+                resultsCount.textContent = `${this.filteredCards.length} cards found`;
+            }
+
+            this.displayCards(cardsGrid);
+            this.setupPagination();
+
+        } catch (error) {
+            console.error('Category search error:', error);
+            this.showError(cardsGrid, 'Failed to load category. Please try again.');
+        }
+    }
+
+    async getBossMonsters() {
+        const bossMonsterNames = [
+            'Blue-Eyes Ultimate Dragon',
+            'Red-Eyes Black Dragon',
+            'Exodia the Forbidden One',
+            'Dark Magician',
+            'Elemental HERO Sparkman',
+            'Stardust Dragon',
+            'Number 39: Utopia',
+            'Firewall Dragon'
+        ];
+
+        const cards = [];
+        for (const name of bossMonsterNames) {
+            try {
+                const card = await this.getCardByName(name);
+                if (card) cards.push(card);
+            } catch (error) {
+                console.warn(`Could not fetch ${name}`);
+            }
+        }
+
+        return cards;
+    }
+
+    async getClassicCards() {
+        const classicCardNames = [
+            'Blue-Eyes White Dragon',
+            'Dark Magician',
+            'Red-Eyes Black Dragon',
+            'Exodia the Forbidden One',
+            'Mirror Force',
+            'Mystical Space Typhoon',
+            'Pot of Greed',
+            'Raigeki'
+        ];
+
+        const cards = [];
+        for (const name of classicCardNames) {
+            try {
+                const card = await this.getCardByName(name);
+                if (card) cards.push(card);
+            } catch (error) {
+                console.warn(`Could not fetch ${name}`);
+            }
+        }
+
+        return cards;
+    }
+
+    loadMoreCards() {
+        // Increase the current page and display more cards
+        const totalPages = Math.ceil(this.filteredCards.length / this.cardsPerPage);
+        
+        if (this.currentPage < totalPages) {
+            this.currentPage++;
+            const container = document.querySelector('.modern-card-grid, #meta-cards-grid, #cards-grid');
+            if (container) {
+                // Append new cards instead of replacing
+                const startIndex = (this.currentPage - 1) * this.cardsPerPage;
+                const endIndex = startIndex + this.cardsPerPage;
+                const newCards = this.filteredCards.slice(startIndex, endIndex);
+                
+                newCards.forEach((card, index) => {
+                    const cardElement = this.createModernCardElement(card);
+                    cardElement.style.animationDelay = `${index * 50}ms`;
+                    cardElement.classList.add('fade-in-up');
+                    container.appendChild(cardElement);
+                });
+                
+                // Update load more button visibility
+                const loadMoreContainer = document.getElementById('load-more-container');
+                if (loadMoreContainer) {
+                    if (this.currentPage >= totalPages) {
+                        loadMoreContainer.style.display = 'none';
+                    }
+                }
+            }
+        }
+    }
 }
 
 // Initialize the store when DOM is loaded
