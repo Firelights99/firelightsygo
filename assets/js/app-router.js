@@ -1144,17 +1144,28 @@ function selectSet(setCode, rarity, price, setName, clickedElement) {
         rarityBadge.classList.add('rarity-badge-update');
         rarityBadge.textContent = rarity;
         
-        // Update rarity badge color
+        // Update rarity badge color with !important to override inline styles
         const rarityColor = getRarityColor(rarity);
         console.log('Setting rarity color to:', rarityColor);
-        rarityBadge.style.backgroundColor = rarityColor;
+        
+        // Use setProperty with !important to override inline styles
+        rarityBadge.style.setProperty('background', rarityColor, 'important');
+        rarityBadge.style.setProperty('background-color', rarityColor, 'important');
+        
+        // Also update the style attribute directly to ensure it takes effect
+        const currentStyle = rarityBadge.getAttribute('style') || '';
+        const updatedStyle = currentStyle.replace(/background[^;]*;?/g, '').replace(/background-color[^;]*;?/g, '') + 
+                           `background: ${rarityColor} !important; background-color: ${rarityColor} !important;`;
+        rarityBadge.setAttribute('style', updatedStyle);
         
         // Force a style recalculation
         rarityBadge.offsetHeight;
         
         console.log('After update:', {
             textContent: rarityBadge.textContent,
-            backgroundColor: rarityBadge.style.backgroundColor
+            backgroundColor: rarityBadge.style.backgroundColor,
+            computedStyle: window.getComputedStyle(rarityBadge).backgroundColor,
+            styleAttribute: rarityBadge.getAttribute('style')
         });
         
         setTimeout(() => {
