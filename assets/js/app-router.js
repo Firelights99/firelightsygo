@@ -52,6 +52,11 @@ class AppRouter {
                 title: 'FAQ | Firelight Duel Academy',
                 description: 'Frequently asked questions about ordering, shipping, cards, and our services.',
                 template: 'templates/faq.html'
+            },
+            'buylist': {
+                title: 'Sell Your Cards | Firelight Duel Academy - Buylist',
+                description: 'Turn your collection into cash or store credit. We buy Yu-Gi-Oh!, Magic, Pokemon, and more!',
+                template: 'templates/buylist.html'
             }
         };
 

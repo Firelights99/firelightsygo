@@ -1,0 +1,618 @@
+<!-- Page Header -->
+<section style="text-align: center; margin-bottom: var(--space-8);">
+    <h1 style="font-size: 3rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
+        Sell Your Cards
+    </h1>
+    <p style="font-size: 1.125rem; color: var(--gray-600); max-width: 900px; margin: 0 auto;">
+        Turn your collection into cash or store credit. We buy Yu-Gi-Oh!, Magic, Pokemon, and more!
+    </p>
+</section>
+
+<!-- Game Selection -->
+<section style="margin-bottom: var(--space-12);">
+    <div style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+        <h2 style="font-size: 2rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-6); text-align: center;">
+            Which cards do you want to sell?
+        </h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-8);">
+            <div class="game-category-card" onclick="selectGameCategory('yugioh')" style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); border-radius: var(--radius-lg); padding: var(--space-6); text-align: center; cursor: pointer; transition: var(--transition-fast); color: white;">
+                <div style="font-size: 2.5rem; margin-bottom: var(--space-3);">🃏</div>
+                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: var(--space-2);">Yu-Gi-Oh!</h3>
+                <p style="font-size: 0.875rem; opacity: 0.9;">Singles & Sealed Products</p>
+            </div>
+            
+            <div class="game-category-card" onclick="selectGameCategory('magic')" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); border-radius: var(--radius-lg); padding: var(--space-6); text-align: center; cursor: pointer; transition: var(--transition-fast); color: white;">
+                <div style="font-size: 2.5rem; margin-bottom: var(--space-3);">🔮</div>
+                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: var(--space-2);">Magic: The Gathering</h3>
+                <p style="font-size: 0.875rem; opacity: 0.9;">Singles & Sealed Products</p>
+            </div>
+            
+            <div class="game-category-card" onclick="selectGameCategory('pokemon')" style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); border-radius: var(--radius-lg); padding: var(--space-6); text-align: center; cursor: pointer; transition: var(--transition-fast); color: white;">
+                <div style="font-size: 2.5rem; margin-bottom: var(--space-3);">⚡</div>
+                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: var(--space-2);">Pokemon</h3>
+                <p style="font-size: 0.875rem; opacity: 0.9;">Singles & Sealed Products</p>
+            </div>
+            
+            <div class="game-category-card" onclick="selectGameCategory('lorcana')" style="background: linear-gradient(135deg, #06B6D4 0%, #0891B2 100%); border-radius: var(--radius-lg); padding: var(--space-6); text-align: center; cursor: pointer; transition: var(--transition-fast); color: white;">
+                <div style="font-size: 2.5rem; margin-bottom: var(--space-3);">✨</div>
+                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: var(--space-2);">Lorcana</h3>
+                <p style="font-size: 0.875rem; opacity: 0.9;">Singles & Sealed Products</p>
+            </div>
+            
+            <div class="game-category-card" onclick="selectGameCategory('onepiece')" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); border-radius: var(--radius-lg); padding: var(--space-6); text-align: center; cursor: pointer; transition: var(--transition-fast); color: white;">
+                <div style="font-size: 2.5rem; margin-bottom: var(--space-3);">🏴‍☠️</div>
+                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: var(--space-2);">One Piece</h3>
+                <p style="font-size: 0.875rem; opacity: 0.9;">Singles & Sealed Products</p>
+            </div>
+            
+            <div class="game-category-card" onclick="selectGameCategory('bulk')" style="background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%); border-radius: var(--radius-lg); padding: var(--space-6); text-align: center; cursor: pointer; transition: var(--transition-fast); color: white;">
+                <div style="font-size: 2.5rem; margin-bottom: var(--space-3);">📦</div>
+                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: var(--space-2);">Bulk Submission</h3>
+                <p style="font-size: 0.875rem; opacity: 0.9;">Large Collections</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Card Search Section -->
+<section id="card-search-section" style="display: none; margin-bottom: var(--space-12);">
+    <div style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+        <div style="display: flex; justify-content: between; align-items: center; margin-bottom: var(--space-6);">
+            <h2 id="selected-game-title" style="font-size: 2rem; font-weight: 700; color: var(--gray-900);">Yu-Gi-Oh! Buylist</h2>
+            <button onclick="goBackToGameSelection()" style="background: var(--gray-100); color: var(--gray-700); border: 1px solid var(--gray-300); padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); cursor: pointer; font-weight: 600;">
+                ← Back to Games
+            </button>
+        </div>
+        
+        <!-- Search Filters -->
+        <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-6);">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-4);">
+                <div>
+                    <label style="display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);">Card Name</label>
+                    <input type="text" id="buylist-search" placeholder="Search for cards..." style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md);" onkeyup="searchBuylistCards()">
+                </div>
+                <div>
+                    <label style="display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);">Set</label>
+                    <select id="set-filter" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md);" onchange="searchBuylistCards()">
+                        <option value="">All Sets</option>
+                        <option value="POTE">Power of the Elements</option>
+                        <option value="MAMA">Magnificent Mavens</option>
+                        <option value="PHHY">Photon Hypernova</option>
+                        <option value="DAMA">Dawn of Majesty</option>
+                        <option value="BODE">Burst of Destiny</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);">Rarity</label>
+                    <select id="rarity-filter" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md);" onchange="searchBuylistCards()">
+                        <option value="">All Rarities</option>
+                        <option value="Common">Common</option>
+                        <option value="Rare">Rare</option>
+                        <option value="Super Rare">Super Rare</option>
+                        <option value="Ultra Rare">Ultra Rare</option>
+                        <option value="Secret Rare">Secret Rare</option>
+                        <option value="Ghost Rare">Ghost Rare</option>
+                        <option value="Starlight Rare">Starlight Rare</option>
+                    </select>
+                </div>
+                <div style="display: flex; align-items: end;">
+                    <button onclick="searchBuylistCards()" style="width: 100%; padding: var(--space-3); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
+                        Search Cards
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Search Results -->
+        <div id="buylist-results">
+            <div style="text-align: center; padding: var(--space-12); color: var(--gray-500);">
+                <div style="font-size: 3rem; margin-bottom: var(--space-4);">🔍</div>
+                <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3);">Search for Cards</h3>
+                <p>Enter a card name or use the filters above to find cards we're buying</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Buylist Cart -->
+<section id="buylist-cart-section" style="position: fixed; bottom: var(--space-4); right: var(--space-4); z-index: 1000; display: none;">
+    <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-2xl); border: 1px solid var(--gray-200); min-width: 300px; max-width: 400px;">
+        <div style="background: var(--primary-color); color: white; padding: var(--space-4); border-radius: var(--radius-xl) var(--radius-xl) 0 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="font-size: 1.25rem; font-weight: 600; margin: 0;">Buylist Cart</h3>
+                <button onclick="toggleBuylistCart()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">×</button>
+            </div>
+        </div>
+        
+        <div style="padding: var(--space-4); max-height: 400px; overflow-y: auto;">
+            <div id="buylist-cart-items">
+                <!-- Cart items will be populated here -->
+            </div>
+            
+            <div style="border-top: 1px solid var(--gray-200); padding-top: var(--space-4); margin-top: var(--space-4);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+                    <span style="font-weight: 600;">Total Items:</span>
+                    <span id="cart-item-count">0</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+                    <span style="font-weight: 600;">Cash Value:</span>
+                    <span id="cart-cash-total" style="color: var(--success-color); font-weight: 700;">$0.00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-4);">
+                    <span style="font-weight: 600;">Credit Value:</span>
+                    <span id="cart-credit-total" style="color: var(--primary-color); font-weight: 700;">$0.00</span>
+                </div>
+                
+                <button onclick="submitBuylist()" style="width: 100%; padding: var(--space-3); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; margin-bottom: var(--space-2);">
+                    Submit Buylist
+                </button>
+                <button onclick="clearBuylistCart()" style="width: 100%; padding: var(--space-2); background: var(--gray-100); color: var(--gray-700); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
+                    Clear Cart
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Information Section -->
+<section style="margin-bottom: var(--space-12);">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-6);">
+        <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+            <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4);">
+                <div style="background: var(--primary-color); color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">📋</div>
+                <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin: 0;">Buylist Guide</h3>
+            </div>
+            <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-4);">
+                Learn how to sell your cards to us, including condition requirements, shipping instructions, and payment options.
+            </p>
+            <button onclick="showBuylistGuide()" style="background: var(--primary-color); color: white; border: none; padding: var(--space-3) var(--space-6); border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
+                View Guide
+            </button>
+        </div>
+        
+        <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+            <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4);">
+                <div style="background: var(--info-color); color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">🔍</div>
+                <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin: 0;">Condition Guide</h3>
+            </div>
+            <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-4);">
+                Understand our card condition standards to ensure accurate pricing and smooth transactions.
+            </p>
+            <button onclick="showConditionGuide()" style="background: var(--info-color); color: white; border: none; padding: var(--space-3) var(--space-6); border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
+                View Conditions
+            </button>
+        </div>
+        
+        <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+            <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4);">
+                <div style="background: var(--success-color); color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">💰</div>
+                <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin: 0;">Payment Options</h3>
+            </div>
+            <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-4);">
+                Choose between cash payment or store credit (with 25% bonus value) for your cards.
+            </p>
+            <div style="display: flex; gap: var(--space-2);">
+                <span style="background: var(--success-color); color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: 0.75rem; font-weight: 600;">Cash</span>
+                <span style="background: var(--primary-color); color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: 0.75rem; font-weight: 600;">Store Credit +25%</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.game-category-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.buylist-card {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    margin-bottom: var(--space-3);
+    transition: var(--transition-fast);
+}
+
+.buylist-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-md);
+}
+
+.condition-selector {
+    display: flex;
+    gap: var(--space-2);
+    margin: var(--space-2) 0;
+}
+
+.condition-btn {
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--gray-300);
+    background: white;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.condition-btn:hover {
+    background: var(--gray-50);
+}
+
+.condition-btn.selected {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: var(--space-2) 0;
+}
+
+.quantity-btn {
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--gray-300);
+    background: white;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+.quantity-input {
+    width: 50px;
+    text-align: center;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+    padding: var(--space-1);
+}
+</style>
+
+<script>
+let selectedGame = '';
+let buylistCart = [];
+
+function selectGameCategory(game) {
+    selectedGame = game;
+    document.getElementById('card-search-section').style.display = 'block';
+    
+    const titles = {
+        'yugioh': 'Yu-Gi-Oh! Buylist',
+        'magic': 'Magic: The Gathering Buylist',
+        'pokemon': 'Pokemon Buylist',
+        'lorcana': 'Lorcana Buylist',
+        'onepiece': 'One Piece Buylist',
+        'bulk': 'Bulk Submission'
+    };
+    
+    document.getElementById('selected-game-title').textContent = titles[game] || 'Buylist';
+    
+    // Scroll to search section
+    document.getElementById('card-search-section').scrollIntoView({ behavior: 'smooth' });
+    
+    // Load initial results
+    searchBuylistCards();
+}
+
+function goBackToGameSelection() {
+    document.getElementById('card-search-section').style.display = 'none';
+    selectedGame = '';
+}
+
+async function searchBuylistCards() {
+    if (!selectedGame) return;
+    
+    const query = document.getElementById('buylist-search')?.value || '';
+    const setFilter = document.getElementById('set-filter')?.value || '';
+    const rarityFilter = document.getElementById('rarity-filter')?.value || '';
+    
+    const resultsContainer = document.getElementById('buylist-results');
+    
+    // Show loading state
+    resultsContainer.innerHTML = `
+        <div style="text-align: center; padding: var(--space-8); color: var(--gray-500);">
+            <div class="loading-spinner" style="margin: 0 auto var(--space-4) auto;"></div>
+            <p>Searching buylist...</p>
+        </div>
+    `;
+    
+    try {
+        // For Yu-Gi-Oh, use the YGOPRODeck API
+        if (selectedGame === 'yugioh') {
+            let apiUrl = 'https://db.ygoprodeck.com/api/v7/cardinfo.php?';
+            const params = new URLSearchParams();
+            
+            if (query) {
+                params.append('fname', query);
+            }
+            
+            if (rarityFilter) {
+                params.append('rarity', rarityFilter);
+            }
+            
+            params.append('num', '20');
+            params.append('offset', '0');
+            
+            const response = await fetch(apiUrl + params.toString());
+            
+            if (!response.ok) {
+                throw new Error(`API request failed: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            const cards = data.data || [];
+            
+            renderBuylistResults(cards);
+        } else {
+            // For other games, show placeholder results
+            renderPlaceholderResults(selectedGame);
+        }
+        
+    } catch (error) {
+        console.error('Error searching buylist:', error);
+        resultsContainer.innerHTML = `
+            <div style="text-align: center; padding: var(--space-8); color: var(--error-color);">
+                <div style="font-size: 2rem; margin-bottom: var(--space-2);">⚠️</div>
+                <p>Error loading buylist. Please try again.</p>
+            </div>
+        `;
+    }
+}
+
+function renderBuylistResults(cards) {
+    const resultsContainer = document.getElementById('buylist-results');
+    
+    if (cards.length === 0) {
+        resultsContainer.innerHTML = `
+            <div style="text-align: center; padding: var(--space-8); color: var(--gray-500);">
+                <div style="font-size: 2rem; margin-bottom: var(--space-2);">❌</div>
+                <p>No cards found in our buylist matching your search</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const resultsHTML = cards.map(card => {
+        const image = card.card_images && card.card_images.length > 0 ? 
+            card.card_images[0].image_url_small || card.card_images[0].image_url : 
+            'https://images.ygoprodeck.com/images/cards/back.jpg';
+        
+        // Calculate buylist prices (typically 40-60% of market value)
+        const cashPrice = (Math.random() * 15 + 2).toFixed(2);
+        const creditPrice = (parseFloat(cashPrice) * 1.25).toFixed(2);
+        
+        return `
+            <div class="buylist-card">
+                <div style="display: flex; gap: var(--space-4); align-items: flex-start;">
+                    <img src="${image}" alt="${card.name}" style="width: 60px; height: 84px; object-fit: contain; border-radius: var(--radius-sm); flex-shrink: 0;">
+                    
+                    <div style="flex: 1; min-width: 0;">
+                        <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2); line-height: 1.3;">${card.name}</h4>
+                        <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2);">
+                            <span style="background: var(--gray-100); color: var(--gray-700); padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: 0.75rem;">${card.type}</span>
+                            ${card.card_sets && card.card_sets.length > 0 ? `<span style="background: var(--primary-color); color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: 0.75rem;">${card.card_sets[0].set_rarity || 'Common'}</span>` : ''}
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
+                            <div>
+                                <div style="font-size: 0.875rem; color: var(--gray-600);">Cash: <span style="font-weight: 600; color: var(--success-color);">$${cashPrice}</span></div>
+                                <div style="font-size: 0.875rem; color: var(--gray-600);">Credit: <span style="font-weight: 600; color: var(--primary-color);">$${creditPrice}</span></div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 0.75rem; color: var(--gray-600); margin-bottom: var(--space-1);">Condition:</div>
+                                <div class="condition-selector">
+                                    <button class="condition-btn selected" onclick="selectCondition(this, '${card.id}', 'NM')">NM</button>
+                                    <button class="condition-btn" onclick="selectCondition(this, '${card.id}', 'LP')">LP</button>
+                                    <button class="condition-btn" onclick="selectCondition(this, '${card.id}', 'MP')">MP</button>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div style="font-size: 0.75rem; color: var(--gray-600); margin-bottom: var(--space-1);">Quantity:</div>
+                                <div class="quantity-selector">
+                                    <button class="quantity-btn" onclick="changeQuantity('${card.id}', -1)">-</button>
+                                    <input type="number" class="quantity-input" id="qty-${card.id}" value="1" min="1" max="99">
+                                    <button class="quantity-btn" onclick="changeQuantity('${card.id}', 1)">+</button>
+                                </div>
+                            </div>
+                            
+                            <button onclick="addToBuylistCart('${card.id}', '${card.name.replace(/'/g, "\\'")}', '${image}', ${cashPrice}, ${creditPrice})" style="background: var(--primary-color); color: white; border: none; padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    resultsContainer.innerHTML = resultsHTML;
+}
+
+function renderPlaceholderResults(game) {
+    const resultsContainer = document.getElementById('buylist-results');
+    
+    const gameNames = {
+        'magic': 'Magic: The Gathering',
+        'pokemon': 'Pokemon',
+        'lorcana': 'Lorcana',
+        'onepiece': 'One Piece'
+    };
+    
+    resultsContainer.innerHTML = `
+        <div style="text-align: center; padding: var(--space-12); color: var(--gray-500);">
+            <div style="font-size: 3rem; margin-bottom: var(--space-4);">🚧</div>
+            <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3);">${gameNames[game]} Buylist Coming Soon</h3>
+            <p>We're working on adding ${gameNames[game]} to our buylist system. Check back soon!</p>
+            <p style="margin-top: var(--space-4);">For now, you can contact us directly about selling your ${gameNames[game]} cards.</p>
+        </div>
+    `;
+}
+
+function selectCondition(button, cardId, condition) {
+    // Remove selected class from all condition buttons for this card
+    const conditionButtons = button.parentElement.querySelectorAll('.condition-btn');
+    conditionButtons.forEach(btn => btn.classList.remove('selected'));
+    
+    // Add selected class to clicked button
+    button.classList.add('selected');
+}
+
+function changeQuantity(cardId, change) {
+    const quantityInput = document.getElementById(`qty-${cardId}`);
+    if (quantityInput) {
+        const currentValue = parseInt(quantityInput.value) || 1;
+        const newValue = Math.max(1, Math.min(99, currentValue + change));
+        quantityInput.value = newValue;
+    }
+}
+
+function addToBuylistCart(cardId, cardName, image, cashPrice, creditPrice) {
+    const quantityInput = document.getElementById(`qty-${cardId}`);
+    const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
+    
+    // Get selected condition
+    const conditionButtons = document.querySelectorAll(`[onclick*="${cardId}"][onclick*="selectCondition"]`);
+    let selectedCondition = 'NM';
+    conditionButtons.forEach(btn => {
+        if (btn.classList.contains('selected')) {
+            selectedCondition = btn.textContent;
+        }
+    });
+    
+    // Add to cart
+    const cartItem = {
+        id: cardId,
+        name: cardName,
+        image: image,
+        cashPrice: parseFloat(cashPrice),
+        creditPrice: parseFloat(creditPrice),
+        quantity: quantity,
+        condition: selectedCondition
+    };
+    
+    // Check if item already exists in cart
+    const existingItemIndex = buylistCart.findIndex(item => 
+        item.id === cardId && item.condition === selectedCondition
+    );
+    
+    if (existingItemIndex >= 0) {
+        buylistCart[existingItemIndex].quantity += quantity;
+    } else {
+        buylistCart.push(cartItem);
+    }
+    
+    updateBuylistCart();
+    showBuylistCart();
+    
+    // Show success message
+    alert(`Added ${quantity}x ${cardName} (${selectedCondition}) to buylist cart!`);
+}
+
+function updateBuylistCart() {
+    const cartItemsContainer = document.getElementById('buylist-cart-items');
+    const itemCountElement = document.getElementById('cart-item-count');
+    const cashTotalElement = document.getElementById('cart-cash-total');
+    const creditTotalElement = document.getElementById('cart-credit-total');
+    
+    if (buylistCart.length === 0) {
+        cartItemsContainer.innerHTML = `
+            <div style="text-align: center; padding: var(--space-4); color: var(--gray-500);">
+                <p>Your buylist cart is empty</p>
+            </div>
+        `;
+        itemCountElement.textContent = '0';
+        cashTotalElement.textContent = '$0.00';
+        creditTotalElement.textContent = '$0.00';
+        return;
+    }
+    
+    let totalItems = 0;
+    let totalCash = 0;
+    let totalCredit = 0;
+    
+    const cartHTML = buylistCart.map(item => {
+        totalItems += item.quantity;
+        totalCash += item.cashPrice * item.quantity;
+        totalCredit += item.creditPrice * item.quantity;
+        
+        return `
+            <div style="display: flex; gap: var(--space-2); align-items: center; padding: var(--space-2); border: 1px solid var(--gray-200); border-radius: var(--radius-md); margin-bottom: var(--space-2);">
+                <img src="${item.image}" alt="${item.name}" style="width: 30px; height: 42px; object-fit: contain; border-radius: var(--radius-sm);">
+                <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 0.75rem; font-weight: 600; color: var(--gray-900); line-height: 1.2; margin-bottom: var(--space-1);">${item.name}</div>
+                    <div style="font-size: 0.625rem; color: var(--gray-600);">${item.condition} • Qty: ${item.quantity}</div>
+                    <div style="font-size: 0.625rem; color: var(--success-color);">Cash: $${(item.cashPrice * item.quantity).toFixed(2)} | Credit: $${(item.creditPrice * item.quantity).toFixed(2)}</div>
+                </div>
+                <button onclick="removeFromBuylistCart('${item.id}', '${item.condition}')" style="background: var(--error-color); color: white; border: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; font-size: 0.75rem;">×</button>
+            </div>
+        `;
+    }).join('');
+    
+    cartItemsContainer.innerHTML = cartHTML;
+    itemCountElement.textContent = totalItems.toString();
+    cashTotalElement.textContent = `$${totalCash.toFixed(2)}`;
+    creditTotalElement.textContent = `$${totalCredit.toFixed(2)}`;
+}
+
+function removeFromBuylistCart(cardId, condition) {
+    buylistCart = buylistCart.filter(item => !(item.id === cardId && item.condition === condition));
+    updateBuylistCart();
+    
+    if (buylistCart.length === 0) {
+        hideBuylistCart();
+    }
+}
+
+function showBuylistCart() {
+    document.getElementById('buylist-cart-section').style.display = 'block';
+}
+
+function hideBuylistCart() {
+    document.getElementById('buylist-cart-section').style.display = 'none';
+}
+
+function toggleBuylistCart() {
+    const cartSection = document.getElementById('buylist-cart-section');
+    if (cartSection.style.display === 'none') {
+        showBuylistCart();
+    } else {
+        hideBuylistCart();
+    }
+}
+
+function clearBuylistCart() {
+    if (confirm('Are you sure you want to clear your buylist cart?')) {
+        buylistCart = [];
+        updateBuylistCart();
+        hideBuylistCart();
+    }
+}
+
+function submitBuylist() {
+    if (buylistCart.length === 0) {
+        alert('Your buylist cart is empty. Add some cards first!');
+        return;
+    }
+    
+    alert('Buylist submission feature coming soon! For now, please contact us directly with your list.');
+}
+
+function showBuylistGuide() {
+    alert('Buylist Guide:\n\n1. Search for cards you want to sell\n2. Select condition and quantity\n3. Add to your buylist cart\n4. Submit your list for review\n5. Ship your cards to us\n6. Get paid via cash or store credit\n\nDetailed guide coming soon!');
+}
+
+function showConditionGuide() {
+    alert('Card Condition Guide:\n\nNM (Near Mint): Like new, minimal wear\nLP (Lightly Played): Minor wear, still tournament legal\nMP (Moderately Played): Noticeable wear but still playable\n\nDetailed condition guide with images coming soon!');
+}
+</script>
