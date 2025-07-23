@@ -106,6 +106,9 @@ class AppRouter {
             this.updateMetadata(pageName);
             this.updateNavigation(pageName);
 
+            // Scroll to top of page after content is loaded
+            this.scrollToTop();
+
             // Update URL
             if (pushState) {
                 const url = pageName === 'home' ? '#' : `#page=${pageName}${params}`;
@@ -1227,6 +1230,21 @@ class AppRouter {
         const activeLink = document.getElementById(`nav-${pageName}`);
         if (activeLink) {
             activeLink.classList.add('active');
+        }
+    }
+
+    scrollToTop() {
+        // Smooth scroll to top of page
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'smooth'
+        });
+        
+        // Also ensure the main content area is scrolled to top
+        const mainContent = document.getElementById('main-content');
+        if (mainContent) {
+            mainContent.scrollTop = 0;
         }
     }
 
