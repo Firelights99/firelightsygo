@@ -304,9 +304,14 @@
     </style>
 </head>
 <body>
-    <button class="logout-btn" onclick="adminLogout()">
-        <i class="fas fa-sign-out-alt"></i> Logout
-    </button>
+    <div style="position: absolute; top: var(--space-4); right: var(--space-4); display: flex; gap: var(--space-2);">
+        <button class="return-website-btn" onclick="returnToWebsite()" style="background: var(--primary-color); color: white; border: none; padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);">
+            <i class="fas fa-home"></i> Return to Website
+        </button>
+        <button class="logout-btn" onclick="adminLogout()" style="background: var(--error-color); color: white; border: none; padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
 
     <div class="admin-container">
         <!-- Admin Header -->

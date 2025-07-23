@@ -677,6 +677,12 @@ class ModernTCGStore {
     }
 
     addToCart(cardName, price, image) {
+        // Check if user is admin and block purchase
+        if (this.isAdminAccount()) {
+            this.showToast('Admin accounts cannot make purchases. Please use a regular customer account.', 'error', 4000);
+            return;
+        }
+
         // Ensure price is a valid number, default to 0 if null/undefined
         const validPrice = parseFloat(price) || 0;
         const existingItem = this.cart.find(item => item.name === cardName);
@@ -4093,6 +4099,28 @@ class ModernTCGStore {
         this.addToCartWithDetails(cardName, price, image, setCode, rarity, setName);
         
         console.log(`Added to cart: ${cardName} (${setCode} - ${rarity}) - $${price}`);
+    }
+
+    // Check if current user is an admin account
+    isAdminAccount() {
+        // Check if there's an admin session
+        const adminSession = localStorage.getItem('tcg-admin');
+        if (adminSession) {
+            try {
+                const admin = JSON.parse(adminSession);
+                return admin.isAdmin && admin.isActive;
+            } catch (error) {
+                console.error('Error parsing admin session:', error);
+                return false;
+            }
+        }
+
+        // Check if current user is marked as admin
+        if (this.currentUser && this.currentUser.isAdmin) {
+            return true;
+        }
+
+        return false;
     }
 }
 
