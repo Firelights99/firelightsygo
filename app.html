@@ -145,6 +145,14 @@
 
                 <!-- Action Section -->
                 <div class="action-section">
+                    <!-- Currency Toggle -->
+                    <div class="currency-toggle" style="display: flex; align-items: center; gap: var(--space-2); margin-right: var(--space-4);">
+                        <span style="font-size: 0.875rem; color: var(--gray-600); font-weight: 500;">Currency:</span>
+                        <button id="currency-toggle-btn" onclick="toggleCurrency()" style="background: var(--gray-100); border: 1px solid var(--gray-300); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3); font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; color: var(--gray-900);">
+                            CAD
+                        </button>
+                    </div>
+                    
                     <button class="action-btn" onclick="handleWishlistClick()">
                         <i class="fas fa-heart"></i> <span>Wishlist</span>
                         <span class="wishlist-badge" style="display: none;">0</span>
@@ -775,6 +783,142 @@
         function loadMoreCards() {
             window.loadMoreCards();
         }
+
+        // Currency Toggle Functionality
+        let currentCurrency = 'CAD';
+        const exchangeRate = 0.74; // CAD to USD conversion rate (approximate)
+
+        function toggleCurrency() {
+            const toggleBtn = document.getElementById('currency-toggle-btn');
+            
+            if (currentCurrency === 'CAD') {
+                currentCurrency = 'USD';
+                toggleBtn.textContent = 'USD';
+                toggleBtn.style.background = 'var(--primary-color)';
+                toggleBtn.style.color = 'white';
+                toggleBtn.style.borderColor = 'var(--primary-color)';
+            } else {
+                currentCurrency = 'CAD';
+                toggleBtn.textContent = 'CAD';
+                toggleBtn.style.background = 'var(--gray-100)';
+                toggleBtn.style.color = 'var(--gray-900)';
+                toggleBtn.style.borderColor = 'var(--gray-300)';
+            }
+            
+            // Save currency preference
+            localStorage.setItem('tcg-currency', currentCurrency);
+            
+            // Update all prices on the page
+            updateAllPrices();
+            
+            // Update shipping text in header
+            updateShippingText();
+        }
+
+        function convertPrice(price, fromCurrency, toCurrency) {
+            if (fromCurrency === toCurrency) return price;
+            
+            if (fromCurrency === 'CAD' && toCurrency === 'USD') {
+                return price * exchangeRate;
+            } else if (fromCurrency === 'USD' && toCurrency === 'CAD') {
+                return price / exchangeRate;
+            }
+            
+            return price;
+        }
+
+        function formatPrice(price, currency = currentCurrency) {
+            const symbol = currency === 'USD' ? '$' : '$';
+            const formattedPrice = parseFloat(price).toFixed(2);
+            return `${symbol}${formattedPrice} ${currency}`;
+        }
+
+        function updateAllPrices() {
+            // Update all price elements on the page
+            const priceElements = document.querySelectorAll('[data-price]');
+            priceElements.forEach(element => {
+                const originalPrice = parseFloat(element.dataset.price);
+                const originalCurrency = element.dataset.currency || 'CAD';
+                const convertedPrice = convertPrice(originalPrice, originalCurrency, currentCurrency);
+                
+                // Update the text content
+                if (element.textContent.includes('$')) {
+                    element.textContent = formatPrice(convertedPrice);
+                }
+            });
+            
+            // Update cart prices if cart is open
+            if (window.tcgStore && typeof window.tcgStore.updateCartPrices === 'function') {
+                window.tcgStore.updateCartPrices(currentCurrency);
+            }
+            
+            // Update buylist prices if on buylist page
+            updateBuylistPrices();
+        }
+
+        function updateBuylistPrices() {
+            // Update buylist cart totals
+            const cashTotal = document.getElementById('buylist-cash-total');
+            const creditTotal = document.getElementById('buylist-credit-total');
+            
+            if (cashTotal && creditTotal) {
+                const cashValue = parseFloat(cashTotal.textContent.replace(/[^0-9.]/g, ''));
+                const creditValue = parseFloat(creditTotal.textContent.replace(/[^0-9.]/g, ''));
+                
+                if (!isNaN(cashValue) && !isNaN(creditValue)) {
+                    const convertedCash = convertPrice(cashValue, 'CAD', currentCurrency);
+                    const convertedCredit = convertPrice(creditValue, 'CAD', currentCurrency);
+                    
+                    cashTotal.textContent = formatPrice(convertedCash);
+                    creditTotal.textContent = formatPrice(convertedCredit);
+                }
+            }
+            
+            // Update individual buylist item prices
+            const buylistItems = document.querySelectorAll('#current-buylist-items [style*="font-weight: 600"]');
+            buylistItems.forEach(item => {
+                if (item.textContent.includes('$')) {
+                    const price = parseFloat(item.textContent.replace(/[^0-9.]/g, ''));
+                    if (!isNaN(price)) {
+                        const convertedPrice = convertPrice(price, 'CAD', currentCurrency);
+                        item.textContent = formatPrice(convertedPrice);
+                    }
+                }
+            });
+        }
+
+        function updateShippingText() {
+            const shippingText = document.querySelector('.header-top-right span');
+            if (shippingText) {
+                const threshold = currentCurrency === 'USD' ? '75' : '100';
+                shippingText.innerHTML = `<i class="fas fa-shipping-fast"></i> Free Shipping on Orders $${threshold}+ ${currentCurrency}`;
+            }
+        }
+
+        // Initialize currency on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved currency preference
+            const savedCurrency = localStorage.getItem('tcg-currency');
+            if (savedCurrency && savedCurrency !== currentCurrency) {
+                currentCurrency = savedCurrency;
+                const toggleBtn = document.getElementById('currency-toggle-btn');
+                if (toggleBtn) {
+                    toggleBtn.textContent = currentCurrency;
+                    if (currentCurrency === 'USD') {
+                        toggleBtn.style.background = 'var(--primary-color)';
+                        toggleBtn.style.color = 'white';
+                        toggleBtn.style.borderColor = 'var(--primary-color)';
+                    }
+                }
+                updateShippingText();
+            }
+        });
+
+        // Make currency functions globally available
+        window.toggleCurrency = toggleCurrency;
+        window.convertPrice = convertPrice;
+        window.formatPrice = formatPrice;
+        window.getCurrentCurrency = function() { return currentCurrency; };
     </script>
 </body>
 </html>
