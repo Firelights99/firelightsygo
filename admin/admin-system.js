@@ -352,6 +352,10 @@ class AdminSystem {
         const processingOrders = this.orders.filter(order => order.status === 'processing');
         this.renderOrdersList(processingOrders.slice(0, 5), 'processing-orders-list');
 
+        // Update completed orders (limited display)
+        const completedOrders = this.orders.filter(order => order.status === 'delivered');
+        this.renderOrdersList(completedOrders.slice(0, 5), 'completed-orders-list');
+
         // Update all orders with pagination
         this.renderPaginatedOrders();
     }
@@ -1424,8 +1428,139 @@ class AdminSystem {
             .admin-modal-body {
                 padding: var(--space-4);
             }
+
+            /* Store-style modal */
+            .store-modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+                padding: var(--space-4);
+            }
+            
+            .store-modal-content {
+                background: white;
+                border-radius: var(--radius-xl);
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                max-width: 90vw;
+                max-height: 90vh;
+                overflow-y: auto;
+                animation: modalSlideIn 0.3s ease-out;
+            }
+            
+            .store-modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: var(--space-6) var(--space-6) 0 var(--space-6);
+            }
+            
+            .store-modal-body {
+                padding: var(--space-6);
+            }
+
+            @keyframes modalSlideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-20px) scale(0.95);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+
+            /* Button styles matching main store */
+            .primary-btn {
+                background: var(--primary-color);
+                color: white;
+                border: none;
+                padding: var(--space-3) var(--space-4);
+                border-radius: var(--radius-md);
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: inline-flex;
+                align-items: center;
+                gap: var(--space-2);
+                font-size: 0.875rem;
+            }
+
+            .primary-btn:hover {
+                background: var(--primary-dark);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+
+            .secondary-btn {
+                background: var(--gray-200);
+                color: var(--gray-700);
+                border: none;
+                padding: var(--space-3) var(--space-4);
+                border-radius: var(--radius-md);
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: inline-flex;
+                align-items: center;
+                gap: var(--space-2);
+                font-size: 0.875rem;
+            }
+
+            .secondary-btn:hover {
+                background: var(--gray-300);
+                transform: translateY(-1px);
+            }
+
+            .danger-btn {
+                background: var(--error-color);
+                color: white;
+                border: none;
+                padding: var(--space-3) var(--space-4);
+                border-radius: var(--radius-md);
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: inline-flex;
+                align-items: center;
+                gap: var(--space-2);
+                font-size: 0.875rem;
+            }
+
+            .danger-btn:hover {
+                background: var(--error-dark);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+            }
         `;
         document.head.appendChild(style);
+
+        modalContainer.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Store-style modal (matching main website)
+    showStoreStyleModal(title, content) {
+        const modalContainer = document.getElementById('modal-container');
+        modalContainer.innerHTML = `
+            <div class="store-modal-overlay" onclick="adminSystem.closeStoreStyleModal()">
+                <div class="store-modal-content" onclick="event.stopPropagation()">
+                    <div class="store-modal-header">
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin: 0;">${title}</h2>
+                        <button onclick="adminSystem.closeStoreStyleModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500); padding: var(--space-2);">×</button>
+                    </div>
+                    <div class="store-modal-body">
+                        ${content}
+                    </div>
+                </div>
+            </div>
+        `;
 
         modalContainer.style.display = 'block';
         document.body.style.overflow = 'hidden';
@@ -1436,6 +1571,38 @@ class AdminSystem {
         modalContainer.innerHTML = '';
         modalContainer.style.display = 'none';
         document.body.style.overflow = '';
+    }
+
+    closeStoreStyleModal() {
+        const modalContainer = document.getElementById('modal-container');
+        modalContainer.innerHTML = '';
+        modalContainer.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    // Enhanced delete with animation
+    deleteOrderWithAnimation(orderId) {
+        const orderElement = document.querySelector(`[data-order-id="${orderId}"]`);
+        if (orderElement) {
+            // Add delete animation
+            orderElement.style.transition = 'all 0.3s ease-out';
+            orderElement.style.transform = 'translateX(100%)';
+            orderElement.style.opacity = '0';
+            orderElement.style.height = '0';
+            orderElement.style.padding = '0';
+            orderElement.style.margin = '0';
+            orderElement.style.overflow = 'hidden';
+            
+            // Remove from DOM after animation
+            setTimeout(() => {
+                if (orderElement.parentNode) {
+                    orderElement.parentNode.removeChild(orderElement);
+                }
+            }, 300);
+        }
+        
+        // Actually delete the order
+        this.confirmDeleteOrder(orderId);
     }
 
     showToast(message, type = 'info') {
@@ -1493,11 +1660,9 @@ function switchTab(tabName) {
 
 // Make returnToWebsite available globally
 window.returnToWebsite = function() {
-    const modalContent = `
-        <div style="max-width: 450px; text-align: center;">
-            <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--primary-color);">
-                🏠
-            </div>
+    adminSystem.showStoreStyleModal('Return to Website', `
+        <div style="text-align: center; padding: var(--space-6);">
+            <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--primary-color);">🏠</div>
             <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-3);">
                 Return to Main Website?
             </h3>
@@ -1513,26 +1678,22 @@ window.returnToWebsite = function() {
             </div>
             
             <div style="display: flex; gap: var(--space-3); justify-content: center;">
-                <button class="admin-btn btn-secondary" onclick="adminSystem.closeModal()" style="min-width: 120px;">
+                <button class="secondary-btn" onclick="adminSystem.closeStoreStyleModal()" style="min-width: 120px;">
                     <i class="fas fa-times"></i> Cancel
                 </button>
-                <button class="admin-btn btn-primary" onclick="confirmReturnToWebsite()" style="min-width: 120px;">
+                <button class="primary-btn" onclick="confirmReturnToWebsite()" style="min-width: 120px;">
                     <i class="fas fa-home"></i> Go to Website
                 </button>
             </div>
         </div>
-    `;
-
-    adminSystem.showModal('Return to Website', modalContent);
+    `);
 };
 
 // Make adminLogout available globally
 window.adminLogout = function() {
-    const modalContent = `
-        <div style="max-width: 450px; text-align: center;">
-            <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--warning-color);">
-                🚪
-            </div>
+    adminSystem.showStoreStyleModal('Admin Logout', `
+        <div style="text-align: center; padding: var(--space-6);">
+            <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--warning-color);">🚪</div>
             <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-3);">
                 Sign Out of Admin Dashboard?
             </h3>
@@ -1548,17 +1709,15 @@ window.adminLogout = function() {
             </div>
             
             <div style="display: flex; gap: var(--space-3); justify-content: center;">
-                <button class="admin-btn btn-secondary" onclick="adminSystem.closeModal()" style="min-width: 120px;">
+                <button class="secondary-btn" onclick="adminSystem.closeStoreStyleModal()" style="min-width: 120px;">
                     <i class="fas fa-times"></i> Cancel
                 </button>
-                <button class="admin-btn btn-danger" onclick="confirmAdminLogout()" style="min-width: 120px;">
+                <button class="danger-btn" onclick="confirmAdminLogout()" style="min-width: 120px;">
                     <i class="fas fa-sign-out-alt"></i> Sign Out
                 </button>
             </div>
         </div>
-    `;
-
-    adminSystem.showModal('Admin Logout', modalContent);
+    `);
 };
 
 // Make confirmReturnToWebsite available globally

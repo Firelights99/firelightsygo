@@ -391,11 +391,49 @@
 
         <!-- Orders Tab -->
         <div id="orders-tab" class="tab-content active">
+            <!-- Order Status Explanation -->
+            <div class="admin-section" style="margin-bottom: var(--space-6);">
+                <div class="section-header">
+                    <i class="fas fa-info-circle" style="color: var(--primary-color);"></i>
+                    <h3>Order Status Guide</h3>
+                </div>
+                <div class="section-content">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4);">
+                        <div style="text-align: center; padding: var(--space-3); background: var(--gray-50); border-radius: var(--radius-lg);">
+                            <div style="font-size: 2rem; margin-bottom: var(--space-2);">⏳</div>
+                            <h4 style="color: var(--warning-color); margin-bottom: var(--space-1);">Pending</h4>
+                            <p style="font-size: 0.875rem; color: var(--gray-600); margin: 0;">Payment received, awaiting fulfillment</p>
+                        </div>
+                        <div style="text-align: center; padding: var(--space-3); background: var(--gray-50); border-radius: var(--radius-lg);">
+                            <div style="font-size: 2rem; margin-bottom: var(--space-2);">⚙️</div>
+                            <h4 style="color: var(--info-color); margin-bottom: var(--space-1);">Processing</h4>
+                            <p style="font-size: 0.875rem; color: var(--gray-600); margin: 0;">Order being prepared and packaged</p>
+                        </div>
+                        <div style="text-align: center; padding: var(--space-3); background: var(--gray-50); border-radius: var(--radius-lg);">
+                            <div style="font-size: 2rem; margin-bottom: var(--space-2);">🚚</div>
+                            <h4 style="color: var(--primary-color); margin-bottom: var(--space-1);">Shipped</h4>
+                            <p style="font-size: 0.875rem; color: var(--gray-600); margin: 0;">Package sent to customer with tracking</p>
+                        </div>
+                        <div style="text-align: center; padding: var(--space-3); background: var(--gray-50); border-radius: var(--radius-lg);">
+                            <div style="font-size: 2rem; margin-bottom: var(--space-2);">✅</div>
+                            <h4 style="color: var(--success-color); margin-bottom: var(--space-1);">Delivered</h4>
+                            <p style="font-size: 0.875rem; color: var(--gray-600); margin: 0;">Order successfully completed</p>
+                        </div>
+                        <div style="text-align: center; padding: var(--space-3); background: var(--gray-50); border-radius: var(--radius-lg);">
+                            <div style="font-size: 2rem; margin-bottom: var(--space-2);">❌</div>
+                            <h4 style="color: var(--error-color); margin-bottom: var(--space-1);">Cancelled</h4>
+                            <p style="font-size: 0.875rem; color: var(--gray-600); margin: 0;">Order cancelled or refunded</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="admin-sections">
                 <div class="admin-section">
                     <div class="section-header">
                         <i class="fas fa-clock" style="color: var(--warning-color);"></i>
                         <h3>Pending Orders</h3>
+                        <span style="font-size: 0.875rem; color: var(--gray-600);">(Payment received, awaiting fulfillment)</span>
                     </div>
                     <div class="section-content">
                         <div id="pending-orders-list">
@@ -408,10 +446,24 @@
                     <div class="section-header">
                         <i class="fas fa-cog" style="color: var(--info-color);"></i>
                         <h3>Processing Orders</h3>
+                        <span style="font-size: 0.875rem; color: var(--gray-600);">(Being prepared and packaged)</span>
                     </div>
                     <div class="section-content">
                         <div id="processing-orders-list">
                             <!-- Processing orders will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-section">
+                    <div class="section-header">
+                        <i class="fas fa-check-circle" style="color: var(--success-color);"></i>
+                        <h3>Completed Orders</h3>
+                        <span style="font-size: 0.875rem; color: var(--gray-600);">(Delivered successfully)</span>
+                    </div>
+                    <div class="section-content">
+                        <div id="completed-orders-list">
+                            <!-- Completed orders will be loaded here -->
                         </div>
                     </div>
                 </div>
