@@ -39,6 +39,13 @@
                     <!-- <a href="#" class="header-top-link" onclick="navigateTo('events')"><i class="fas fa-trophy"></i> Tournaments</a> -->
                 </div>
                 <div class="header-top-right">
+                    <!-- Currency Toggle -->
+                    <div class="currency-toggle" style="display: inline-flex; align-items: center; gap: var(--space-2); margin-right: var(--space-4);">
+                        <span style="font-size: 0.875rem; color: white; font-weight: 500;">Currency:</span>
+                        <button id="currency-toggle-btn" onclick="toggleCurrency()" style="background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3); font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; color: white;">
+                            CAD
+                        </button>
+                    </div>
                     <span><i class="fas fa-shipping-fast"></i> Free Shipping on Orders $100+ CAD</span>
                 </div>
             </div>
@@ -145,14 +152,6 @@
 
                 <!-- Action Section -->
                 <div class="action-section">
-                    <!-- Currency Toggle -->
-                    <div class="currency-toggle" style="display: flex; align-items: center; gap: var(--space-2); margin-right: var(--space-4);">
-                        <span style="font-size: 0.875rem; color: var(--gray-600); font-weight: 500;">Currency:</span>
-                        <button id="currency-toggle-btn" onclick="toggleCurrency()" style="background: var(--gray-100); border: 1px solid var(--gray-300); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3); font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; color: var(--gray-900);">
-                            CAD
-                        </button>
-                    </div>
-                    
                     <button class="action-btn" onclick="handleWishlistClick()">
                         <i class="fas fa-heart"></i> <span>Wishlist</span>
                         <span class="wishlist-badge" style="display: none;">0</span>
@@ -800,9 +799,9 @@
             } else {
                 currentCurrency = 'CAD';
                 toggleBtn.textContent = 'CAD';
-                toggleBtn.style.background = 'var(--gray-100)';
-                toggleBtn.style.color = 'var(--gray-900)';
-                toggleBtn.style.borderColor = 'var(--gray-300)';
+                toggleBtn.style.background = 'rgba(255, 255, 255, 0.2)';
+                toggleBtn.style.color = 'white';
+                toggleBtn.style.borderColor = 'rgba(255, 255, 255, 0.3)';
             }
             
             // Save currency preference
