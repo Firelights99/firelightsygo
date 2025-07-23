@@ -887,7 +887,7 @@
         }
 
         function updateShippingText() {
-            const shippingText = document.querySelector('.header-top-right span');
+            const shippingText = document.querySelector('.header-top-right span:last-child');
             if (shippingText) {
                 const threshold = currentCurrency === 'USD' ? '75' : '100';
                 shippingText.innerHTML = `<i class="fas fa-shipping-fast"></i> Free Shipping on Orders $${threshold}+ ${currentCurrency}`;
