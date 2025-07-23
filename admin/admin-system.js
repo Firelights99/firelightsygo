@@ -510,10 +510,10 @@ class AdminSystem {
                     ${order.items ? order.items.map(item => `
                         <div style="display: flex; justify-content: space-between; padding: var(--space-2); border-bottom: 1px solid var(--gray-200);">
                             <div>
-                                <strong>${item.name}</strong><br>
-                                <small>Qty: ${item.quantity} × $${item.price.toFixed(2)}</small>
+                                <strong>${item.name || 'Unknown Item'}</strong><br>
+                                <small>Qty: ${item.quantity || 0} × $${(item.price || 0).toFixed(2)}</small>
                             </div>
-                            <div style="font-weight: 600;">$${(item.price * item.quantity).toFixed(2)}</div>
+                            <div style="font-weight: 600;">$${((item.price || 0) * (item.quantity || 0)).toFixed(2)}</div>
                         </div>
                     `).join('') : '<p>No items found</p>'}
                 </div>
