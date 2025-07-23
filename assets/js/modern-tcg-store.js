@@ -3261,60 +3261,38 @@ class ModernTCGStore {
         const tax = subtotal * 0.13;
         const total = subtotal + shipping + tax;
 
-        // Create guest order
-        const order = {
-            id: Date.now(),
-            userId: null, // Guest order
-            guestInfo: {
-                firstName: guestData.firstName,
-                lastName: guestData.lastName,
-                email: guestData.email,
-                phone: guestData.phone || '',
-                address: {
-                    street: guestData.address,
-                    street2: guestData.address2 || '',
-                    city: guestData.city,
-                    province: guestData.province,
-                    postalCode: guestData.postalCode.toUpperCase()
-                }
-            },
-            items: this.cart.map(item => ({...item})),
-            subtotal: subtotal,
-            shipping: shipping,
-            tax: tax,
-            total: total,
-            status: 'pending',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            trackingNumber: null,
-            estimatedDelivery: this.calculateEstimatedDelivery(),
-            isGuestOrder: true
-        };
-
-        // Save order to guest orders
-        const guestOrders = JSON.parse(localStorage.getItem('tcg-guest-orders') || '[]');
-        guestOrders.push(order);
-        localStorage.setItem('tcg-guest-orders', JSON.stringify(guestOrders));
-
-        // If user wants to create account, do it now
-        if (guestData.createAccount && guestData.password) {
-            this.createAccountFromGuestOrder(guestData, order);
+        // Show payment processing modal instead of immediately creating order
+        this.showPaymentProcessingModal(guestData, total);
+    }
+    completeUserOrder() {
+        // Create order from current cart for logged-in user
+        const order = this.createOrder([...this.cart]);
+        
+        if (order) {
+            // Clear cart after successful order creation
+            this.cart = [];
+            this.saveCart();
+            this.updateCartBadge();
+            this.closeCheckoutModal();
+            
+            // Show success message
+            this.showToast(`Order #${order.id} placed successfully!`, 'success', 5000);
+            
+            // Simulate order processing
+            setTimeout(() => {
+                this.updateOrderStatus(order.id, 'processing');
+                this.showToast('Your order is now being processed!', 'info');
+            }, 2000);
         }
+    }
+    completeUserOrder() {
+        const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const shipping = subtotal >= 75 ? 0 : 9.99;
+        const tax = subtotal * 0.13;
+        const total = subtotal + shipping + tax;
 
-        // Clear cart and close modal
-        this.cart = [];
-        this.saveCart();
-        this.updateCartBadge();
-        this.closeCheckoutModal();
-
-        // Show success message
-        this.showToast(`Order #${order.id} placed successfully! Check your email for confirmation.`, 'success', 5000);
-
-        // Simulate order processing
-        setTimeout(() => {
-            this.updateGuestOrderStatus(order.id, 'processing');
-            this.showToast('Your order is now being processed!', 'info');
-        }, 2000);
+        // Show payment processing modal instead of immediately creating order
+        this.showPaymentProcessingModal(null, total);
     }
 
     async createAccountFromGuestOrder(guestData, order) {
@@ -3369,6 +3347,205 @@ class ModernTCGStore {
             }
             
             localStorage.setItem('tcg-guest-orders', JSON.stringify(guestOrders));
+        }
+    }
+
+    showPaymentProcessingModal(guestData, total) {
+        // Close checkout modal first
+        this.closeCheckoutModal();
+        
+        // Create payment processing modal
+        const modal = document.createElement('div');
+        modal.id = 'payment-processing-modal';
+        modal.className = 'payment-processing-modal';
+        modal.innerHTML = `
+            <div class="payment-modal-overlay">
+                <div class="payment-modal-content" style="max-width: 500px; text-align: center; padding: var(--space-8);">
+                    <div class="payment-processing-header">
+                        <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--primary-color);">💳</div>
+                        <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
+                            Processing Payment
+                        </h2>
+                        <p style="color: var(--gray-600); margin-bottom: var(--space-6);">
+                            Please wait while we securely process your payment of $${total.toFixed(2)}...
+                        </p>
+                    </div>
+                    
+                    <div class="payment-progress" style="margin-bottom: var(--space-6);">
+                        <div class="progress-bar" style="width: 100%; height: 8px; background: var(--gray-200); border-radius: var(--radius-full); overflow: hidden;">
+                            <div class="progress-fill" style="height: 100%; background: var(--primary-color); width: 0%; transition: width 0.5s ease-out; border-radius: var(--radius-full);"></div>
+                        </div>
+                        <div class="progress-text" style="margin-top: var(--space-3); font-size: 0.875rem; color: var(--gray-600);">
+                            Initializing payment...
+                        </div>
+                    </div>
+                    
+                    <div class="payment-security" style="display: flex; align-items: center; justify-content: center; gap: var(--space-2); color: var(--gray-500); font-size: 0.875rem;">
+                        <i class="fas fa-lock"></i>
+                        <span>Your payment information is secure and encrypted</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        
+        // Simulate payment processing steps
+        this.simulatePaymentProcessing(guestData, total);
+    }
+
+    simulatePaymentProcessing(guestData, total) {
+        const progressFill = document.querySelector('.progress-fill');
+        const progressText = document.querySelector('.progress-text');
+        
+        const steps = [
+            { progress: 20, text: 'Validating payment information...', delay: 1000 },
+            { progress: 40, text: 'Contacting payment processor...', delay: 1500 },
+            { progress: 60, text: 'Authorizing transaction...', delay: 1200 },
+            { progress: 80, text: 'Confirming payment...', delay: 1000 },
+            { progress: 100, text: 'Payment successful!', delay: 800 }
+        ];
+        
+        let currentStep = 0;
+        
+        const processStep = () => {
+            if (currentStep >= steps.length) {
+                // Payment successful - now create the order
+                setTimeout(() => {
+                    this.finalizeOrder(guestData, total);
+                }, 500);
+                return;
+            }
+            
+            const step = steps[currentStep];
+            
+            if (progressFill) {
+                progressFill.style.width = `${step.progress}%`;
+            }
+            
+            if (progressText) {
+                progressText.textContent = step.text;
+                
+                // Change color to green for success
+                if (step.progress === 100) {
+                    progressText.style.color = 'var(--success-color)';
+                    progressText.style.fontWeight = '600';
+                }
+            }
+            
+            currentStep++;
+            setTimeout(processStep, step.delay);
+        };
+        
+        // Start processing after a brief delay
+        setTimeout(processStep, 500);
+    }
+
+    finalizeOrder(guestData, total) {
+        // Close payment processing modal
+        const paymentModal = document.getElementById('payment-processing-modal');
+        if (paymentModal) {
+            paymentModal.remove();
+            document.body.style.overflow = '';
+        }
+        
+        // Now create the actual order since payment was "successful"
+        if (guestData) {
+            // Create guest order
+            this.createGuestOrderAfterPayment(guestData, total);
+        } else {
+            // Create user order
+            this.createUserOrderAfterPayment(total);
+        }
+    }
+
+    createGuestOrderAfterPayment(guestData, total) {
+        const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const shipping = subtotal >= 75 ? 0 : 9.99;
+        const tax = subtotal * 0.13;
+
+        // Create guest order
+        const order = {
+            id: Date.now(),
+            userId: null, // Guest order
+            guestInfo: {
+                firstName: guestData.firstName,
+                lastName: guestData.lastName,
+                email: guestData.email,
+                phone: guestData.phone || '',
+                address: {
+                    street: guestData.address,
+                    street2: guestData.address2 || '',
+                    city: guestData.city,
+                    province: guestData.province,
+                    postalCode: guestData.postalCode.toUpperCase()
+                }
+            },
+            items: this.cart.map(item => ({...item})),
+            subtotal: subtotal,
+            shipping: shipping,
+            tax: tax,
+            total: total,
+            status: 'pending',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            trackingNumber: null,
+            estimatedDelivery: this.calculateEstimatedDelivery(),
+            isGuestOrder: true,
+            paymentProcessed: true // Mark that payment was processed
+        };
+
+        // Save order to guest orders
+        const guestOrders = JSON.parse(localStorage.getItem('tcg-guest-orders') || '[]');
+        guestOrders.push(order);
+        localStorage.setItem('tcg-guest-orders', JSON.stringify(guestOrders));
+
+        // If user wants to create account, do it now
+        if (guestData.createAccount && guestData.password) {
+            this.createAccountFromGuestOrder(guestData, order);
+        }
+
+        // Clear cart and show success
+        this.cart = [];
+        this.saveCart();
+        this.updateCartBadge();
+
+        // Show success message
+        this.showToast(`Order #${order.id} placed successfully! Check your email for confirmation.`, 'success', 5000);
+
+        // Simulate order processing
+        setTimeout(() => {
+            this.updateGuestOrderStatus(order.id, 'processing');
+            this.showToast('Your order is now being processed!', 'info');
+        }, 2000);
+    }
+
+    createUserOrderAfterPayment(total) {
+        // Create order from current cart for logged-in user
+        const order = this.createOrder([...this.cart]);
+        
+        if (order) {
+            // Mark that payment was processed
+            order.paymentProcessed = true;
+            
+            // Update the order in storage
+            localStorage.setItem('tcg-orders', JSON.stringify(this.orders));
+            
+            // Clear cart after successful order creation
+            this.cart = [];
+            this.saveCart();
+            this.updateCartBadge();
+            
+            // Show success message
+            this.showToast(`Order #${order.id} placed successfully!`, 'success', 5000);
+            
+            // Simulate order processing
+            setTimeout(() => {
+                this.updateOrderStatus(order.id, 'processing');
+                this.showToast('Your order is now being processed!', 'info');
+            }, 2000);
         }
     }
 
