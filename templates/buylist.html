@@ -174,10 +174,13 @@
             <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-4);">
                 Choose between cash payment or store credit (with 25% bonus value) for your cards.
             </p>
-            <div style="display: flex; gap: var(--space-2);">
+            <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-4);">
                 <span style="background: var(--success-color); color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: 0.75rem; font-weight: 600;">Cash</span>
                 <span style="background: var(--primary-color); color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: 0.75rem; font-weight: 600;">Store Credit +25%</span>
             </div>
+            <button onclick="showPaymentDetails()" style="background: var(--success-color); color: white; border: none; padding: var(--space-3) var(--space-6); border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
+                View Details
+            </button>
         </div>
     </div>
 </section>
@@ -801,10 +804,269 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function showBuylistGuide() {
-    alert('Buylist Guide:\n\n1. Search for cards you want to sell\n2. Select condition and quantity\n3. Add to your buylist cart\n4. Submit your list for review\n5. Ship your cards to us\n6. Get paid via cash or store credit\n\nDetailed guide coming soon!');
+    const modalHTML = `
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: var(--space-4);" onclick="closeBuylistGuideModal()">
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-width: 700px; width: 100%; animation: modalSlideIn 0.3s ease-out;" onclick="event.stopPropagation()">
+                <div style="padding: var(--space-6) var(--space-6) 0 var(--space-6);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin: 0;">📋 Buylist Guide</h2>
+                        <button onclick="closeBuylistGuideModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500); padding: var(--space-2);">×</button>
+                    </div>
+                </div>
+                
+                <div style="padding: 0 var(--space-6) var(--space-6) var(--space-6);">
+                    <div style="margin-bottom: var(--space-6);">
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4);">How to Sell Your Cards</h3>
+                        
+                        <div style="display: grid; gap: var(--space-4);">
+                            <div style="display: flex; gap: var(--space-4); align-items: flex-start;">
+                                <div style="background: var(--primary-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">1</div>
+                                <div>
+                                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">Search for Cards</h4>
+                                    <p style="color: var(--gray-700); line-height: 1.5; margin: 0; font-size: 0.875rem;">Use our search tool to find cards we're currently buying. Filter by game, set, or rarity.</p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: var(--space-4); align-items: flex-start;">
+                                <div style="background: var(--primary-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">2</div>
+                                <div>
+                                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">Select Condition & Quantity</h4>
+                                    <p style="color: var(--gray-700); line-height: 1.5; margin: 0; font-size: 0.875rem;">Choose the condition of your cards (NM, LP, MP) and specify how many you want to sell.</p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: var(--space-4); align-items: flex-start;">
+                                <div style="background: var(--primary-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">3</div>
+                                <div>
+                                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">Add to Buylist Cart</h4>
+                                    <p style="color: var(--gray-700); line-height: 1.5; margin: 0; font-size: 0.875rem;">Build your buylist cart with all the cards you want to sell. See real-time cash and credit values.</p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: var(--space-4); align-items: flex-start;">
+                                <div style="background: var(--primary-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">4</div>
+                                <div>
+                                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">Submit Your List</h4>
+                                    <p style="color: var(--gray-700); line-height: 1.5; margin: 0; font-size: 0.875rem;">Submit your buylist for review. You'll need to be logged in to track your submission.</p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: var(--space-4); align-items: flex-start;">
+                                <div style="background: var(--primary-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">5</div>
+                                <div>
+                                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">Ship Your Cards</h4>
+                                    <p style="color: var(--gray-700); line-height: 1.5; margin: 0; font-size: 0.875rem;">We'll email you shipping instructions and a prepaid label. Package your cards securely.</p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: var(--space-4); align-items: flex-start;">
+                                <div style="background: var(--primary-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">6</div>
+                                <div>
+                                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">Get Paid</h4>
+                                    <p style="color: var(--gray-700); line-height: 1.5; margin: 0; font-size: 0.875rem;">Once we receive and verify your cards, we'll process payment within 3-5 business days.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: var(--info-color); color: white; border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                        <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: var(--space-2);">💡 Pro Tips</h4>
+                        <ul style="margin: 0; padding-left: var(--space-4); font-size: 0.875rem; line-height: 1.5;">
+                            <li>Store credit offers 25% bonus value over cash payments</li>
+                            <li>Cards must match the condition you selected</li>
+                            <li>We provide free shipping labels for orders over $50</li>
+                            <li>Track your submission status in your account dashboard</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button onclick="closeBuylistGuideModal()" style="background: var(--primary-color); color: white; border: none; padding: var(--space-3) var(--space-6); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
+                            Got It!
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    document.body.style.overflow = 'hidden';
 }
 
 function showConditionGuide() {
-    alert('Card Condition Guide:\n\nNM (Near Mint): Like new, minimal wear\nLP (Lightly Played): Minor wear, still tournament legal\nMP (Moderately Played): Noticeable wear but still playable\n\nDetailed condition guide with images coming soon!');
+    const modalHTML = `
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: var(--space-4);" onclick="closeConditionGuideModal()">
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-width: 600px; width: 100%; animation: modalSlideIn 0.3s ease-out;" onclick="event.stopPropagation()">
+                <div style="padding: var(--space-6) var(--space-6) 0 var(--space-6);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin: 0;">🔍 Card Condition Guide</h2>
+                        <button onclick="closeConditionGuideModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500); padding: var(--space-2);">×</button>
+                    </div>
+                </div>
+                
+                <div style="padding: 0 var(--space-6) var(--space-6) var(--space-6);">
+                    <div style="margin-bottom: var(--space-6);">
+                        <p style="color: var(--gray-600); line-height: 1.5; margin-bottom: var(--space-6);">
+                            Understanding card conditions is crucial for accurate buylist pricing. Here's our grading system:
+                        </p>
+                        
+                        <div style="display: grid; gap: var(--space-4);">
+                            <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-4); border-left: 4px solid var(--success-color);">
+                                <h4 style="font-size: 1.125rem; font-weight: 600; color: var(--success-color); margin-bottom: var(--space-2);">Near Mint (NM)</h4>
+                                <p style="color: var(--gray-700); line-height: 1.5; margin: 0; font-size: 0.875rem;">
+                                    Cards appear fresh from the pack with minimal to no visible wear. Sharp corners, clean edges, and no scratches or marks. May have very minor printing imperfections.
+                                </p>
+                                <div style="margin-top: var(--space-2); font-size: 0.75rem; color: var(--success-color); font-weight: 600;">
+                                    ✓ Highest buylist value
+                                </div>
+                            </div>
+                            
+                            <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-4); border-left: 4px solid var(--warning-color);">
+                                <h4 style="font-size: 1.125rem; font-weight: 600; color: var(--warning-color); margin-bottom: var(--space-2);">Lightly Played (LP)</h4>
+                                <p style="color: var(--gray-700); line-height: 1.5; margin: 0; font-size: 0.875rem;">
+                                    Minor wear visible on close inspection. Slight edge wear, minor corner wear, or light scratches. Still tournament legal and attractive for play.
+                                </p>
+                                <div style="margin-top: var(--space-2); font-size: 0.75rem; color: var(--warning-color); font-weight: 600;">
+                                    ≈ 80-90% of NM value
+                                </div>
+                            </div>
+                            
+                            <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-4); border-left: 4px solid var(--error-color);">
+                                <h4 style="font-size: 1.125rem; font-weight: 600; color: var(--error-color); margin-bottom: var(--space-2);">Moderately Played (MP)</h4>
+                                <p style="color: var(--gray-700); line-height: 1.5; margin: 0; font-size: 0.875rem;">
+                                    Noticeable wear but still playable. Moderate edge wear, corner wear, or surface scratches. Card text and artwork remain clearly visible.
+                                </p>
+                                <div style="margin-top: var(--space-2); font-size: 0.75rem; color: var(--error-color); font-weight: 600;">
+                                    ≈ 60-70% of NM value
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                        <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">⚠️ Important Notes</h4>
+                        <ul style="margin: 0; padding-left: var(--space-4); font-size: 0.875rem; line-height: 1.5; color: var(--gray-700);">
+                            <li>We do not accept Heavily Played or Damaged cards</li>
+                            <li>Foil cards may show different wear patterns</li>
+                            <li>When in doubt, select a lower condition grade</li>
+                            <li>We reserve the right to adjust grades upon inspection</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button onclick="closeConditionGuideModal()" style="background: var(--primary-color); color: white; border: none; padding: var(--space-3) var(--space-6); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
+                            Understood
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    document.body.style.overflow = 'hidden';
+}
+
+function showPaymentDetails() {
+    const modalHTML = `
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: var(--space-4);" onclick="closePaymentDetailsModal()">
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-width: 600px; width: 100%; animation: modalSlideIn 0.3s ease-out;" onclick="event.stopPropagation()">
+                <div style="padding: var(--space-6) var(--space-6) 0 var(--space-6);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin: 0;">💰 Payment Options</h2>
+                        <button onclick="closePaymentDetailsModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500); padding: var(--space-2);">×</button>
+                    </div>
+                </div>
+                
+                <div style="padding: 0 var(--space-6) var(--space-6) var(--space-6);">
+                    <div style="margin-bottom: var(--space-6);">
+                        <p style="color: var(--gray-600); line-height: 1.5; margin-bottom: var(--space-6);">
+                            Choose how you'd like to be paid for your cards. We offer two convenient options:
+                        </p>
+                        
+                        <div style="display: grid; gap: var(--space-4);">
+                            <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-6); border-left: 4px solid var(--success-color);">
+                                <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3);">
+                                    <div style="background: var(--success-color); color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">💵</div>
+                                    <h4 style="font-size: 1.25rem; font-weight: 600; color: var(--success-color); margin: 0;">Cash Payment</h4>
+                                </div>
+                                <p style="color: var(--gray-700); line-height: 1.5; margin-bottom: var(--space-3); font-size: 0.875rem;">
+                                    Receive the full cash value of your cards via PayPal, e-transfer, or check. Fast and straightforward payment.
+                                </p>
+                                <div style="background: var(--gray-50); border-radius: var(--radius-md); padding: var(--space-3);">
+                                    <h5 style="font-size: 0.875rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Payment Methods:</h5>
+                                    <ul style="margin: 0; padding-left: var(--space-4); font-size: 0.75rem; line-height: 1.4; color: var(--gray-600);">
+                                        <li>PayPal (instant)</li>
+                                        <li>E-transfer (1-2 business days)</li>
+                                        <li>Check by mail (5-7 business days)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-6); border-left: 4px solid var(--primary-color); position: relative;">
+                                <div style="position: absolute; top: -8px; right: var(--space-4); background: var(--primary-color); color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: 0.75rem; font-weight: 600;">BONUS!</div>
+                                <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3);">
+                                    <div style="background: var(--primary-color); color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">🏪</div>
+                                    <h4 style="font-size: 1.25rem; font-weight: 600; color: var(--primary-color); margin: 0;">Store Credit (+25%)</h4>
+                                </div>
+                                <p style="color: var(--gray-700); line-height: 1.5; margin-bottom: var(--space-3); font-size: 0.875rem;">
+                                    Get 25% bonus value when you choose store credit! Perfect for building new decks or expanding your collection.
+                                </p>
+                                <div style="background: var(--primary-color); background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border-radius: var(--radius-md); padding: var(--space-3);">
+                                    <h5 style="font-size: 0.875rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Store Credit Benefits:</h5>
+                                    <ul style="margin: 0; padding-left: var(--space-4); font-size: 0.75rem; line-height: 1.4; color: var(--gray-600);">
+                                        <li>25% bonus value on all buylist orders</li>
+                                        <li>Never expires - use anytime</li>
+                                        <li>Can be used on any products in our store</li>
+                                        <li>Stackable with sales and promotions</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: var(--warning-color); background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                        <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">💡 Example</h4>
+                        <p style="color: var(--gray-700); line-height: 1.5; margin: 0; font-size: 0.875rem;">
+                            If your cards are worth $100 in cash, you'll receive <strong>$125 in store credit</strong> - that's an extra $25 to spend on new cards!
+                        </p>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button onclick="closePaymentDetailsModal()" style="background: var(--primary-color); color: white; border: none; padding: var(--space-3) var(--space-6); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
+                            Got It!
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    document.body.style.overflow = 'hidden';
+}
+
+function closeBuylistGuideModal() {
+    const modal = document.querySelector('[style*="position: fixed"][style*="z-index: 2000"]');
+    if (modal) {
+        modal.remove();
+        document.body.style.overflow = '';
+    }
+}
+
+function closeConditionGuideModal() {
+    const modal = document.querySelector('[style*="position: fixed"][style*="z-index: 2000"]');
+    if (modal) {
+        modal.remove();
+        document.body.style.overflow = '';
+    }
+}
+
+function closePaymentDetailsModal() {
+    const modal = document.querySelector('[style*="position: fixed"][style*="z-index: 2000"]');
+    if (modal) {
+        modal.remove();
+        document.body.style.overflow = '';
+    }
 }
 </script>
