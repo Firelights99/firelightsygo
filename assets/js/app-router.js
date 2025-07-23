@@ -18,6 +18,11 @@ class AppRouter {
                 description: 'Browse our extensive collection of Yu-Gi-Oh! single cards. Find meta cards, staples, and rare collectibles.',
                 template: 'templates/singles.html'
             },
+            'sealed': {
+                title: 'Sealed Products | Firelight Duel Academy - Booster Packs & Boxes',
+                description: 'Shop Yu-Gi-Oh! sealed products including booster packs, boxes, tins, and special sets. Latest releases and classic sets available.',
+                template: 'templates/sealed.html'
+            },
             'decks': {
                 title: 'Popular Decks | Firelight Duel Academy - Yu-Gi-Oh! Deck Lists',
                 description: 'Explore popular Yu-Gi-Oh! deck lists and strategies. Find meta decks, budget builds, and competitive tournament lists.',
