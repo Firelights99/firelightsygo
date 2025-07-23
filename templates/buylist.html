@@ -504,6 +504,9 @@ function addToBuylistCart(cardId, cardName, image, cashPrice, creditPrice) {
 }
 
 function updateBuylistCart() {
+    // Save to localStorage
+    localStorage.setItem('tcg-buylist-cart', JSON.stringify(buylistCart));
+    
     // Update current buylist section
     const currentBuylistSection = document.getElementById('current-buylist-section');
     const currentBuylistItems = document.getElementById('current-buylist-items');
@@ -513,6 +516,7 @@ function updateBuylistCart() {
     
     if (buylistCart.length === 0) {
         currentBuylistSection.style.display = 'none';
+        localStorage.removeItem('tcg-buylist-cart');
         return;
     }
     
@@ -818,14 +822,42 @@ function proceedToBuylistCheckout() {
 
 // Check for pending buylist on page load (after user logs in)
 document.addEventListener('DOMContentLoaded', function() {
+    // Load existing buylist cart from localStorage
+    const existingBuylist = localStorage.getItem('tcg-buylist-cart');
+    if (existingBuylist) {
+        try {
+            buylistCart = JSON.parse(existingBuylist);
+            if (buylistCart.length > 0) {
+                updateBuylistCart();
+            }
+        } catch (error) {
+            console.error('Error loading buylist cart:', error);
+        }
+    }
+    
+    // Check for pending buylist (after user logs in)
     const pendingBuylist = localStorage.getItem('tcg-pending-buylist');
     if (pendingBuylist) {
         try {
-            buylistCart = JSON.parse(pendingBuylist);
+            const pendingItems = JSON.parse(pendingBuylist);
             localStorage.removeItem('tcg-pending-buylist');
-            if (buylistCart.length > 0) {
+            if (pendingItems.length > 0) {
+                // Merge with existing buylist
+                pendingItems.forEach(pendingItem => {
+                    const existingItemIndex = buylistCart.findIndex(item => 
+                        item.id === pendingItem.id && item.condition === pendingItem.condition
+                    );
+                    
+                    if (existingItemIndex >= 0) {
+                        buylistCart[existingItemIndex].quantity += pendingItem.quantity;
+                    } else {
+                        buylistCart.push(pendingItem);
+                    }
+                });
+                
+                // Save merged buylist
+                localStorage.setItem('tcg-buylist-cart', JSON.stringify(buylistCart));
                 updateBuylistCart();
-                showBuylistCart();
                 alert('Your buylist cart has been restored. You can now submit your order!');
             }
         } catch (error) {

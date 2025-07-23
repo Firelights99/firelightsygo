@@ -168,8 +168,8 @@
                                     </select>
                                 </div>
                             </div>
-                            <button id="add-to-cart-btn" style="width: 100%; padding: var(--space-4); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; font-size: 1.125rem; cursor: pointer; transition: var(--transition-fast); text-transform: uppercase; letter-spacing: 0.05em;" onclick="addCurrentCardToCart()">
-                                Add to Cart
+                            <button id="add-to-buylist-btn" style="width: 100%; padding: var(--space-4); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; font-size: 1.125rem; cursor: pointer; transition: var(--transition-fast); text-transform: uppercase; letter-spacing: 0.05em;" onclick="addCurrentCardToBuylist()">
+                                Add to Buylist
                             </button>
                         </div>
 
@@ -546,6 +546,66 @@
             for (let i = 0; i < quantity; i++) {
                 tcgStore.addToCart(currentCard.name, price.toFixed(2), currentCard.image);
             }
+        }
+
+        function addCurrentCardToBuylist() {
+            if (!currentCard) return;
+            
+            const quantity = parseInt(document.getElementById('quantity').value) || 1;
+            const condition = document.getElementById('condition').value;
+            
+            // Calculate buylist price (typically 40-60% of market value)
+            let buylistPrice = parseFloat(currentCard.price) * 0.5; // 50% of market price
+            
+            const conditionMultipliers = {
+                'near_mint': 1.0,
+                'lightly_played': 0.9,
+                'moderately_played': 0.8,
+                'heavily_played': 0.65,
+                'damaged': 0.5
+            };
+            
+            buylistPrice *= conditionMultipliers[condition] || 1.0;
+            
+            // Calculate cash and credit prices
+            const cashPrice = buylistPrice.toFixed(2);
+            const creditPrice = (buylistPrice * 1.25).toFixed(2); // 25% bonus for store credit
+            
+            // Get or create buylist cart
+            let buylistCart = JSON.parse(localStorage.getItem('tcg-buylist-cart') || '[]');
+            
+            // Create buylist item
+            const buylistItem = {
+                id: currentCard.id,
+                name: currentCard.name,
+                image: currentCard.image,
+                cashPrice: parseFloat(cashPrice),
+                creditPrice: parseFloat(creditPrice),
+                quantity: quantity,
+                condition: condition,
+                type: currentCard.type,
+                rarity: currentCard.rarity
+            };
+            
+            // Check if item already exists in buylist
+            const existingItemIndex = buylistCart.findIndex(item => 
+                item.id === currentCard.id && item.condition === condition
+            );
+            
+            if (existingItemIndex >= 0) {
+                buylistCart[existingItemIndex].quantity += quantity;
+            } else {
+                buylistCart.push(buylistItem);
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('tcg-buylist-cart', JSON.stringify(buylistCart));
+            
+            // Show success message
+            alert(`Added ${quantity}x ${currentCard.name} (${condition.replace('_', ' ')}) to buylist!\nCash: $${cashPrice} | Credit: $${creditPrice}`);
+            
+            // Navigate to buylist page to show the updated cart
+            window.location.href = '../app.html#page=buylist';
         }
 
         function setupSearchDropdown() {
