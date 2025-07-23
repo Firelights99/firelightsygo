@@ -551,6 +551,89 @@ class ModernTCGStore {
         }
     }
 
+    navigateToProductFromSearch(cardId, cardName) {
+        // Method specifically for search dropdown navigation
+        console.log('Navigating to product from search:', cardId, cardName);
+        
+        // Use card ID if available, otherwise use card name as fallback
+        const cardIdentifier = cardId || cardName;
+        
+        if (!cardIdentifier) {
+            console.error('No valid card identifier provided for navigation');
+            return;
+        }
+        
+        // Hide the search dropdown first
+        this.hideSearchDropdown();
+        
+        // Use a more robust navigation approach with retries
+        this.performNavigation('product', `?id=${encodeURIComponent(cardIdentifier)}`);
+    }
+
+    performNavigation(page, params = '') {
+        // Robust navigation method with multiple fallbacks and retries
+        console.log('Performing navigation to:', page, params);
+        
+        // Method 1: Try global navigateTo function
+        if (typeof navigateTo === 'function') {
+            console.log('Using global navigateTo function');
+            navigateTo(page, params);
+            return;
+        }
+        
+        // Method 2: Try window.navigateTo
+        if (window.navigateTo && typeof window.navigateTo === 'function') {
+            console.log('Using window.navigateTo function');
+            window.navigateTo(page, params);
+            return;
+        }
+        
+        // Method 3: Try appRouter directly
+        if (window.appRouter && typeof window.appRouter.loadPage === 'function') {
+            console.log('Using window.appRouter.loadPage');
+            window.appRouter.loadPage(page, true, params);
+            return;
+        }
+        
+        // Method 4: Wait for appRouter to be available (with timeout)
+        console.log('Navigation methods not immediately available, waiting for appRouter...');
+        let retryCount = 0;
+        const maxRetries = 10;
+        const retryInterval = 100; // 100ms
+        
+        const retryNavigation = () => {
+            retryCount++;
+            
+            if (window.appRouter && typeof window.appRouter.loadPage === 'function') {
+                console.log(`AppRouter available on retry ${retryCount}, navigating...`);
+                window.appRouter.loadPage(page, true, params);
+                return;
+            }
+            
+            if (typeof navigateTo === 'function') {
+                console.log(`Global navigateTo available on retry ${retryCount}, navigating...`);
+                navigateTo(page, params);
+                return;
+            }
+            
+            if (retryCount < maxRetries) {
+                setTimeout(retryNavigation, retryInterval);
+            } else {
+                // Final fallback - direct hash navigation
+                console.warn('All navigation methods failed, using direct hash navigation');
+                const url = page === 'home' ? '#' : `#page=${page}${params}`;
+                window.location.hash = url;
+                
+                // Force page reload if hash doesn't change
+                if (window.location.hash === url) {
+                    window.location.reload();
+                }
+            }
+        };
+        
+        setTimeout(retryNavigation, retryInterval);
+    }
+
     showLoading(container) {
         if (!container) return;
         
@@ -2904,11 +2987,15 @@ class ModernTCGStore {
     }
 
     generateSearchResultHTML(card) {
+        // Ensure we have a valid card object with proper escaping
+        const safeName = String(card.name || '').replace(/'/g, "\\'").replace(/"/g, '\\"');
+        const safeId = String(card.id || '');
+        
         return `
-            <a href="#" class="search-result-item" onclick="tcgStore.hideSearchDropdown(); tcgStore.navigateToProduct(${JSON.stringify(card).replace(/"/g, '&quot;')})">
-                <img src="${card.imageSmall}" alt="${card.name}" class="search-result-image" loading="lazy">
+            <a href="#" class="search-result-item" onclick="event.preventDefault(); tcgStore.hideSearchDropdown(); tcgStore.navigateToProductFromSearch('${safeId}', '${safeName}')">
+                <img src="${card.imageSmall}" alt="${safeName}" class="search-result-image" loading="lazy">
                 <div class="search-result-info">
-                    <div class="search-result-name">${card.name}</div>
+                    <div class="search-result-name">${safeName}</div>
                     <div class="search-result-type">${card.type}</div>
                     <div class="search-result-price">$${card.price}</div>
                 </div>
