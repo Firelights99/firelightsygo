@@ -11,6 +11,57 @@ class AdminSystem {
         this.inventory = [];
         this.analytics = {};
         
+        // Pagination settings
+        this.pagination = {
+            orders: {
+                currentPage: 1,
+                itemsPerPage: 10,
+                totalItems: 0,
+                totalPages: 0
+            },
+            customers: {
+                currentPage: 1,
+                itemsPerPage: 15,
+                totalItems: 0,
+                totalPages: 0
+            },
+            inventory: {
+                currentPage: 1,
+                itemsPerPage: 20,
+                totalItems: 0,
+                totalPages: 0
+            },
+            buylist: {
+                currentPage: 1,
+                itemsPerPage: 20,
+                totalItems: 0,
+                totalPages: 0
+            }
+        };
+        
+        // Filters and search
+        this.filters = {
+            orders: {
+                status: '',
+                dateRange: '',
+                searchQuery: ''
+            },
+            customers: {
+                status: '',
+                searchQuery: ''
+            },
+            inventory: {
+                category: '',
+                lowStock: false,
+                searchQuery: ''
+            },
+            buylist: {
+                game: '',
+                status: '',
+                searchQuery: ''
+            }
+        };
+        
         this.init();
     }
 
@@ -293,16 +344,16 @@ class AdminSystem {
     }
 
     updateOrdersTab() {
-        // Update pending orders
+        // Update pending orders (limited display)
         const pendingOrders = this.orders.filter(order => order.status === 'pending');
-        this.renderOrdersList(pendingOrders, 'pending-orders-list');
+        this.renderOrdersList(pendingOrders.slice(0, 5), 'pending-orders-list');
 
-        // Update processing orders
+        // Update processing orders (limited display)
         const processingOrders = this.orders.filter(order => order.status === 'processing');
-        this.renderOrdersList(processingOrders, 'processing-orders-list');
+        this.renderOrdersList(processingOrders.slice(0, 5), 'processing-orders-list');
 
-        // Update all orders
-        this.renderOrdersList(this.orders, 'all-orders-list', true);
+        // Update all orders with pagination
+        this.renderPaginatedOrders();
     }
 
     renderOrdersList(orders, containerId, showAll = false) {
@@ -317,6 +368,198 @@ class AdminSystem {
         const ordersToShow = showAll ? orders : orders.slice(0, 5);
         
         container.innerHTML = ordersToShow.map(order => this.generateOrderHTML(order)).join('');
+    }
+
+    renderPaginatedOrders() {
+        const container = document.getElementById('all-orders-list');
+        if (!container) return;
+
+        // Apply filters
+        let filteredOrders = this.applyOrderFilters(this.orders);
+        
+        // Update pagination info
+        this.pagination.orders.totalItems = filteredOrders.length;
+        this.pagination.orders.totalPages = Math.ceil(filteredOrders.length / this.pagination.orders.itemsPerPage);
+        
+        // Ensure current page is valid
+        if (this.pagination.orders.currentPage > this.pagination.orders.totalPages) {
+            this.pagination.orders.currentPage = Math.max(1, this.pagination.orders.totalPages);
+        }
+
+        // Get orders for current page
+        const startIndex = (this.pagination.orders.currentPage - 1) * this.pagination.orders.itemsPerPage;
+        const endIndex = startIndex + this.pagination.orders.itemsPerPage;
+        const pageOrders = filteredOrders.slice(startIndex, endIndex);
+
+        // Show loading state
+        container.innerHTML = '<div style="text-align: center; padding: var(--space-4); color: var(--gray-500);">Loading orders...</div>';
+
+        // Simulate loading delay for better UX
+        setTimeout(() => {
+            if (pageOrders.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--gray-500); padding: var(--space-4);">No orders found</p>';
+            } else {
+                container.innerHTML = pageOrders.map(order => this.generateOrderHTML(order)).join('');
+            }
+            
+            // Update pagination controls
+            this.updatePaginationControls('orders');
+        }, 200);
+    }
+
+    applyOrderFilters(orders) {
+        let filtered = [...orders];
+        
+        // Apply status filter
+        if (this.filters.orders.status) {
+            filtered = filtered.filter(order => order.status === this.filters.orders.status);
+        }
+        
+        // Apply search filter
+        if (this.filters.orders.searchQuery) {
+            const query = this.filters.orders.searchQuery.toLowerCase();
+            filtered = filtered.filter(order => {
+                const customerName = order.guestInfo ? 
+                    `${order.guestInfo.firstName} ${order.guestInfo.lastName}`.toLowerCase() : 
+                    `customer #${order.userId}`.toLowerCase();
+                const customerEmail = order.guestInfo ? order.guestInfo.email.toLowerCase() : '';
+                
+                return order.id.toString().includes(query) ||
+                       customerName.includes(query) ||
+                       customerEmail.includes(query);
+            });
+        }
+        
+        // Apply date range filter
+        if (this.filters.orders.dateRange) {
+            const now = new Date();
+            let startDate;
+            
+            switch (this.filters.orders.dateRange) {
+                case 'today':
+                    startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    break;
+                case 'week':
+                    startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    break;
+                case 'month':
+                    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                    break;
+                case 'year':
+                    startDate = new Date(now.getFullYear(), 0, 1);
+                    break;
+                default:
+                    startDate = null;
+            }
+            
+            if (startDate) {
+                filtered = filtered.filter(order => new Date(order.createdAt) >= startDate);
+            }
+        }
+        
+        return filtered;
+    }
+
+    updatePaginationControls(type) {
+        const pagination = this.pagination[type];
+        const container = document.getElementById(`${type}-pagination`);
+        
+        if (!container || pagination.totalPages <= 1) {
+            if (container) container.style.display = 'none';
+            return;
+        }
+        
+        container.style.display = 'flex';
+        container.innerHTML = `
+            <div style="display: flex; align-items: center; gap: var(--space-2); justify-content: space-between; width: 100%; padding: var(--space-3); background: var(--gray-50); border-radius: var(--radius-lg); margin-top: var(--space-4);">
+                <div style="display: flex; align-items: center; gap: var(--space-2);">
+                    <button class="admin-btn btn-secondary" 
+                            onclick="adminSystem.changePage('${type}', ${pagination.currentPage - 1})"
+                            ${pagination.currentPage <= 1 ? 'disabled' : ''}>
+                        ← Previous
+                    </button>
+                    <span style="font-size: 0.875rem; color: var(--gray-600);">
+                        Page ${pagination.currentPage} of ${pagination.totalPages}
+                    </span>
+                    <button class="admin-btn btn-secondary" 
+                            onclick="adminSystem.changePage('${type}', ${pagination.currentPage + 1})"
+                            ${pagination.currentPage >= pagination.totalPages ? 'disabled' : ''}>
+                        Next →
+                    </button>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: var(--space-2);">
+                    <span style="font-size: 0.875rem; color: var(--gray-600);">Items per page:</span>
+                    <select onchange="adminSystem.changeItemsPerPage('${type}', this.value)" 
+                            style="padding: var(--space-1) var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 0.875rem;">
+                        <option value="5" ${pagination.itemsPerPage === 5 ? 'selected' : ''}>5</option>
+                        <option value="10" ${pagination.itemsPerPage === 10 ? 'selected' : ''}>10</option>
+                        <option value="20" ${pagination.itemsPerPage === 20 ? 'selected' : ''}>20</option>
+                        <option value="50" ${pagination.itemsPerPage === 50 ? 'selected' : ''}>50</option>
+                    </select>
+                </div>
+                
+                <div style="font-size: 0.875rem; color: var(--gray-600);">
+                    Showing ${((pagination.currentPage - 1) * pagination.itemsPerPage) + 1}-${Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} of ${pagination.totalItems} items
+                </div>
+            </div>
+        `;
+    }
+
+    changePage(type, newPage) {
+        const pagination = this.pagination[type];
+        
+        if (newPage < 1 || newPage > pagination.totalPages) return;
+        
+        pagination.currentPage = newPage;
+        
+        // Re-render the appropriate content
+        if (type === 'orders') {
+            this.renderPaginatedOrders();
+        } else if (type === 'customers') {
+            this.renderPaginatedCustomers();
+        } else if (type === 'inventory') {
+            this.renderPaginatedInventory();
+        } else if (type === 'buylist') {
+            this.renderPaginatedBuylist();
+        }
+    }
+
+    changeItemsPerPage(type, newItemsPerPage) {
+        const pagination = this.pagination[type];
+        pagination.itemsPerPage = parseInt(newItemsPerPage);
+        pagination.currentPage = 1; // Reset to first page
+        
+        // Re-render the appropriate content
+        if (type === 'orders') {
+            this.renderPaginatedOrders();
+        } else if (type === 'customers') {
+            this.renderPaginatedCustomers();
+        } else if (type === 'inventory') {
+            this.renderPaginatedInventory();
+        } else if (type === 'buylist') {
+            this.renderPaginatedBuylist();
+        }
+    }
+
+    // Enhanced search with real-time filtering
+    searchOrders() {
+        const query = document.getElementById('order-search')?.value || '';
+        this.filters.orders.searchQuery = query;
+        this.pagination.orders.currentPage = 1; // Reset to first page
+        this.renderPaginatedOrders();
+    }
+
+    filterOrdersByStatus(status) {
+        this.filters.orders.status = status;
+        this.pagination.orders.currentPage = 1; // Reset to first page
+        this.renderPaginatedOrders();
+    }
+
+    filterOrdersByDateRange(dateRange) {
+        this.filters.orders.dateRange = dateRange;
+        this.pagination.orders.currentPage = 1; // Reset to first page
+        this.renderPaginatedOrders();
     }
 
     generateOrderHTML(order) {
