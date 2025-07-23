@@ -304,13 +304,17 @@
     </style>
 </head>
 <body>
-    <div style="position: absolute; top: var(--space-4); right: var(--space-4); display: flex; gap: var(--space-2);">
-        <button class="return-website-btn" onclick="returnToWebsite()" style="background: var(--primary-color); color: white; border: none; padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);">
-            <i class="fas fa-home"></i> Return to Website
-        </button>
-        <button class="logout-btn" onclick="adminLogout()" style="background: var(--error-color); color: white; border: none; padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast);">
-            <i class="fas fa-sign-out-alt"></i> Logout
-        </button>
+    <div class="admin-header-actions" style="position: absolute; top: var(--space-4); right: var(--space-4);">
+        <div style="display: flex; flex-direction: column; gap: var(--space-2); align-items: flex-end;">
+            <button class="return-website-btn" onclick="returnToWebsite()" style="background: var(--gray-600); color: white; border: none; padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: var(--space-1);">
+                <i class="fas fa-external-link-alt" style="font-size: 0.75rem;"></i>
+                <span>Website</span>
+            </button>
+            <button class="logout-btn" onclick="adminLogout()" style="background: var(--error-color); color: white; border: none; padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: var(--space-2);">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
     </div>
 
     <div class="admin-container">

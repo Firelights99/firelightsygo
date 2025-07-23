@@ -1532,9 +1532,15 @@ function confirmAdminLogout() {
     // Show a brief "signing out" message
     adminSystem.showToast('Signing out...', 'info', 1500);
     
-    // Clear admin session and redirect after a short delay
+    // Clear both admin and user sessions completely
     setTimeout(() => {
         localStorage.removeItem('tcg-admin');
+        localStorage.removeItem('tcg-user');
+        
+        // Also clear any other session-related data
+        localStorage.removeItem('tcg-cart');
+        
+        // Redirect to admin login
         window.location.href = 'admin-login.html';
     }, 1000);
 }
