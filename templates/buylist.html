@@ -97,40 +97,39 @@
     </div>
 </section>
 
-<!-- Buylist Cart -->
-<section id="buylist-cart-section" style="position: fixed; bottom: var(--space-4); right: var(--space-4); z-index: 1000; display: none;">
-    <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-2xl); border: 1px solid var(--gray-200); min-width: 300px; max-width: 400px;">
-        <div style="background: var(--primary-color); color: white; padding: var(--space-4); border-radius: var(--radius-xl) var(--radius-xl) 0 0;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="font-size: 1.25rem; font-weight: 600; margin: 0;">Buylist Cart</h3>
-                <button onclick="toggleBuylistCart()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">×</button>
-            </div>
+<!-- Current Buylist Section -->
+<section id="current-buylist-section" style="display: none; margin-bottom: var(--space-12);">
+    <div style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6);">
+            <h2 style="font-size: 2rem; font-weight: 700; color: var(--gray-900); margin: 0;">Current Buylist</h2>
+            <button onclick="clearBuylistCart()" style="background: var(--error-color); color: white; border: none; padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
+                Clear All
+            </button>
         </div>
         
-        <div style="padding: var(--space-4); max-height: 400px; overflow-y: auto;">
-            <div id="buylist-cart-items">
-                <!-- Cart items will be populated here -->
+        <div id="current-buylist-items">
+            <!-- Buylist items will be populated here -->
+        </div>
+        
+        <div style="border-top: 1px solid var(--gray-200); padding-top: var(--space-6); margin-top: var(--space-6);">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
+                <div style="text-align: center; padding: var(--space-4); background: var(--gray-50); border-radius: var(--radius-lg);">
+                    <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-1);">Total Items</div>
+                    <div id="buylist-item-count" style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900);">0</div>
+                </div>
+                <div style="text-align: center; padding: var(--space-4); background: linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%); border-radius: var(--radius-lg);">
+                    <div style="font-size: 0.875rem; color: var(--success-color); margin-bottom: var(--space-1);">Cash Value</div>
+                    <div id="buylist-cash-total" style="font-size: 1.5rem; font-weight: 700; color: var(--success-color);">$0.00</div>
+                </div>
+                <div style="text-align: center; padding: var(--space-4); background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border-radius: var(--radius-lg);">
+                    <div style="font-size: 0.875rem; color: var(--primary-color); margin-bottom: var(--space-1);">Credit Value (+25%)</div>
+                    <div id="buylist-credit-total" style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color);">$0.00</div>
+                </div>
             </div>
             
-            <div style="border-top: 1px solid var(--gray-200); padding-top: var(--space-4); margin-top: var(--space-4);">
-                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
-                    <span style="font-weight: 600;">Total Items:</span>
-                    <span id="cart-item-count">0</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
-                    <span style="font-weight: 600;">Cash Value:</span>
-                    <span id="cart-cash-total" style="color: var(--success-color); font-weight: 700;">$0.00</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-4);">
-                    <span style="font-weight: 600;">Credit Value:</span>
-                    <span id="cart-credit-total" style="color: var(--primary-color); font-weight: 700;">$0.00</span>
-                </div>
-                
-                <button onclick="submitBuylist()" style="width: 100%; padding: var(--space-3); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; margin-bottom: var(--space-2);">
-                    Submit Buylist
-                </button>
-                <button onclick="clearBuylistCart()" style="width: 100%; padding: var(--space-2); background: var(--gray-100); color: var(--gray-700); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
-                    Clear Cart
+            <div style="text-align: center;">
+                <button onclick="proceedToBuylistCheckout()" style="background: var(--primary-color); color: white; border: none; padding: var(--space-4) var(--space-8); border-radius: var(--radius-lg); font-weight: 600; cursor: pointer; font-size: 1.125rem; transition: all 0.2s ease;">
+                    Proceed to Checkout
                 </button>
             </div>
         </div>
@@ -412,7 +411,7 @@ function renderBuylistResults(cards) {
                             </div>
                             
                             <button onclick="addToBuylistCart('${card.id}', '${card.name.replace(/'/g, "\\'")}', '${image}', ${cashPrice}, ${creditPrice})" style="background: var(--primary-color); color: white; border: none; padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
-                                Add to Cart
+                                Add to Buylist
                             </button>
                         </div>
                     </div>
@@ -505,49 +504,53 @@ function addToBuylistCart(cardId, cardName, image, cashPrice, creditPrice) {
 }
 
 function updateBuylistCart() {
-    const cartItemsContainer = document.getElementById('buylist-cart-items');
-    const itemCountElement = document.getElementById('cart-item-count');
-    const cashTotalElement = document.getElementById('cart-cash-total');
-    const creditTotalElement = document.getElementById('cart-credit-total');
+    // Update current buylist section
+    const currentBuylistSection = document.getElementById('current-buylist-section');
+    const currentBuylistItems = document.getElementById('current-buylist-items');
+    const buylistItemCount = document.getElementById('buylist-item-count');
+    const buylistCashTotal = document.getElementById('buylist-cash-total');
+    const buylistCreditTotal = document.getElementById('buylist-credit-total');
     
     if (buylistCart.length === 0) {
-        cartItemsContainer.innerHTML = `
-            <div style="text-align: center; padding: var(--space-4); color: var(--gray-500);">
-                <p>Your buylist cart is empty</p>
-            </div>
-        `;
-        itemCountElement.textContent = '0';
-        cashTotalElement.textContent = '$0.00';
-        creditTotalElement.textContent = '$0.00';
+        currentBuylistSection.style.display = 'none';
         return;
     }
+    
+    // Show current buylist section
+    currentBuylistSection.style.display = 'block';
     
     let totalItems = 0;
     let totalCash = 0;
     let totalCredit = 0;
     
-    const cartHTML = buylistCart.map(item => {
+    const buylistHTML = buylistCart.map(item => {
         totalItems += item.quantity;
         totalCash += item.cashPrice * item.quantity;
         totalCredit += item.creditPrice * item.quantity;
         
         return `
-            <div style="display: flex; gap: var(--space-2); align-items: center; padding: var(--space-2); border: 1px solid var(--gray-200); border-radius: var(--radius-md); margin-bottom: var(--space-2);">
-                <img src="${item.image}" alt="${item.name}" style="width: 30px; height: 42px; object-fit: contain; border-radius: var(--radius-sm);">
+            <div style="display: flex; gap: var(--space-4); align-items: center; padding: var(--space-4); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); margin-bottom: var(--space-3); background: white;">
+                <img src="${item.image}" alt="${item.name}" style="width: 60px; height: 84px; object-fit: contain; border-radius: var(--radius-sm); flex-shrink: 0;">
                 <div style="flex: 1; min-width: 0;">
-                    <div style="font-size: 0.75rem; font-weight: 600; color: var(--gray-900); line-height: 1.2; margin-bottom: var(--space-1);">${item.name}</div>
-                    <div style="font-size: 0.625rem; color: var(--gray-600);">${item.condition} • Qty: ${item.quantity}</div>
-                    <div style="font-size: 0.625rem; color: var(--success-color);">Cash: $${(item.cashPrice * item.quantity).toFixed(2)} | Credit: $${(item.creditPrice * item.quantity).toFixed(2)}</div>
+                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2); line-height: 1.3;">${item.name}</h4>
+                    <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2);">
+                        <span style="background: var(--gray-100); color: var(--gray-700); padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: 0.75rem;">${item.condition}</span>
+                        <span style="background: var(--primary-color); color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: 0.75rem;">Qty: ${item.quantity}</span>
+                    </div>
+                    <div style="display: flex; gap: var(--space-4);">
+                        <div style="font-size: 0.875rem; color: var(--gray-600);">Cash: <span style="font-weight: 600; color: var(--success-color);">$${(item.cashPrice * item.quantity).toFixed(2)}</span></div>
+                        <div style="font-size: 0.875rem; color: var(--gray-600);">Credit: <span style="font-weight: 600; color: var(--primary-color);">$${(item.creditPrice * item.quantity).toFixed(2)}</span></div>
+                    </div>
                 </div>
-                <button onclick="removeFromBuylistCart('${item.id}', '${item.condition}')" style="background: var(--error-color); color: white; border: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; font-size: 0.75rem;">×</button>
+                <button onclick="removeFromBuylistCart('${item.id}', '${item.condition}')" style="background: var(--error-color); color: white; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center;">×</button>
             </div>
         `;
     }).join('');
     
-    cartItemsContainer.innerHTML = cartHTML;
-    itemCountElement.textContent = totalItems.toString();
-    cashTotalElement.textContent = `$${totalCash.toFixed(2)}`;
-    creditTotalElement.textContent = `$${totalCredit.toFixed(2)}`;
+    currentBuylistItems.innerHTML = buylistHTML;
+    buylistItemCount.textContent = totalItems.toString();
+    buylistCashTotal.textContent = `$${totalCash.toFixed(2)}`;
+    buylistCreditTotal.textContent = `$${totalCredit.toFixed(2)}`;
 }
 
 function removeFromBuylistCart(cardId, condition) {
@@ -783,6 +786,34 @@ function closeSuccessModal() {
         modal.remove();
         document.body.style.overflow = '';
     }
+}
+
+function proceedToBuylistCheckout() {
+    if (buylistCart.length === 0) {
+        alert('Your buylist is empty. Add some cards first!');
+        return;
+    }
+    
+    // Check if user is logged in
+    const currentUser = JSON.parse(localStorage.getItem('tcg-user') || 'null');
+    
+    if (!currentUser) {
+        // Show login required modal
+        showLoginRequiredModal();
+        return;
+    }
+    
+    // Check if user is an admin (admins cannot use buylist)
+    if (currentUser.isAdmin) {
+        alert('Admin accounts cannot submit buylist orders. Please use a regular customer account.');
+        return;
+    }
+    
+    // Save buylist to localStorage for checkout page
+    localStorage.setItem('tcg-buylist-checkout', JSON.stringify(buylistCart));
+    
+    // Navigate to buylist checkout page
+    window.location.hash = '#page=buylist-checkout';
 }
 
 // Check for pending buylist on page load (after user logs in)

@@ -57,6 +57,11 @@ class AppRouter {
                 title: 'Sell Your Cards | Firelight Duel Academy - Buylist',
                 description: 'Turn your collection into cash or store credit. We buy Yu-Gi-Oh!, Magic, Pokemon, and more!',
                 template: 'templates/buylist.html'
+            },
+            'buylist-checkout': {
+                title: 'Buylist Checkout | Firelight Duel Academy',
+                description: 'Review your buylist and select your payment method.',
+                template: 'templates/buylist-checkout.html'
             }
         };
 

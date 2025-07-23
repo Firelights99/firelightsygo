@@ -1,0 +1,365 @@
+<!-- Page Header -->
+<section style="text-align: center; margin-bottom: var(--space-8);">
+    <h1 style="font-size: 3rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
+        Buylist Checkout
+    </h1>
+    <p style="font-size: 1.125rem; color: var(--gray-600); max-width: 600px; margin: 0 auto;">
+        Review your buylist and select your preferred payment method
+    </p>
+</section>
+
+<!-- Checkout Content -->
+<section style="display: grid; grid-template-columns: 1fr 400px; gap: var(--space-8); margin-bottom: var(--space-12);">
+    <!-- Order Review -->
+    <div style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+        <h2 style="font-size: 2rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-6);">
+            Review Your Cards
+        </h2>
+        
+        <div id="checkout-items">
+            <!-- Items will be populated here -->
+        </div>
+    </div>
+    
+    <!-- Payment Selection -->
+    <div style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-6);">
+            Payment Method
+        </h2>
+        
+        <div style="margin-bottom: var(--space-6);">
+            <div class="payment-option" id="cash-option" onclick="selectPaymentMethod('cash')" style="border: 2px solid var(--gray-300); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-4); cursor: pointer; transition: var(--transition-fast);">
+                <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3);">
+                    <div style="background: var(--success-color); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">💵</div>
+                    <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin: 0;">Cash Payment</h3>
+                </div>
+                <p style="color: var(--gray-600); font-size: 0.875rem; line-height: 1.5; margin: 0;">
+                    Receive payment via PayPal, e-transfer, or check
+                </p>
+                <div style="margin-top: var(--space-3); font-size: 1.25rem; font-weight: 700; color: var(--success-color);">
+                    $<span id="cash-total">0.00</span>
+                </div>
+            </div>
+            
+            <div class="payment-option" id="credit-option" onclick="selectPaymentMethod('credit')" style="border: 2px solid var(--primary-color); border-radius: var(--radius-lg); padding: var(--space-4); cursor: pointer; transition: var(--transition-fast); background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); position: relative;">
+                <div style="position: absolute; top: -8px; right: var(--space-4); background: var(--primary-color); color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: 0.75rem; font-weight: 600;">+25% BONUS</div>
+                <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3);">
+                    <div style="background: var(--primary-color); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">🏪</div>
+                    <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin: 0;">Store Credit</h3>
+                </div>
+                <p style="color: var(--gray-600); font-size: 0.875rem; line-height: 1.5; margin: 0;">
+                    Get 25% bonus value to spend in our store
+                </p>
+                <div style="margin-top: var(--space-3); font-size: 1.25rem; font-weight: 700; color: var(--primary-color);">
+                    $<span id="credit-total">0.00</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Order Summary -->
+        <div style="border-top: 1px solid var(--gray-200); padding-top: var(--space-6);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+                <span style="font-weight: 600;">Total Items:</span>
+                <span id="summary-item-count">0</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-4);">
+                <span style="font-weight: 600;">Selected Payment:</span>
+                <span id="selected-payment-display" style="color: var(--primary-color); font-weight: 700;">Store Credit (+25%)</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-6); padding: var(--space-4); background: var(--gray-50); border-radius: var(--radius-lg);">
+                <span style="font-size: 1.125rem; font-weight: 700;">Total Value:</span>
+                <span id="final-total" style="font-size: 1.25rem; font-weight: 700; color: var(--primary-color);">$0.00</span>
+            </div>
+            
+            <button onclick="submitBuylistOrder()" style="width: 100%; padding: var(--space-4); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-lg); font-weight: 600; cursor: pointer; font-size: 1.125rem; transition: all 0.2s ease;">
+                Submit Buylist Order
+            </button>
+        </div>
+    </div>
+</section>
+
+<style>
+.payment-option:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-md);
+}
+
+.payment-option.selected {
+    border-color: var(--primary-color);
+    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+}
+
+.checkout-item {
+    display: flex;
+    gap: var(--space-4);
+    align-items: center;
+    padding: var(--space-4);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-3);
+    background: white;
+}
+
+.checkout-item:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
+}
+</style>
+
+<script>
+let checkoutItems = [];
+let selectedPaymentMethod = 'credit'; // Default to store credit
+
+// Load checkout data on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadCheckoutData();
+});
+
+function loadCheckoutData() {
+    const checkoutData = localStorage.getItem('tcg-buylist-checkout');
+    if (!checkoutData) {
+        // No checkout data, redirect back to buylist
+        alert('No buylist items found. Please add items to your buylist first.');
+        window.location.hash = '#page=buylist';
+        return;
+    }
+    
+    try {
+        checkoutItems = JSON.parse(checkoutData);
+        if (checkoutItems.length === 0) {
+            alert('Your buylist is empty. Please add items first.');
+            window.location.hash = '#page=buylist';
+            return;
+        }
+        
+        renderCheckoutItems();
+        updateTotals();
+        selectPaymentMethod('credit'); // Default selection
+        
+    } catch (error) {
+        console.error('Error loading checkout data:', error);
+        alert('Error loading your buylist. Please try again.');
+        window.location.hash = '#page=buylist';
+    }
+}
+
+function renderCheckoutItems() {
+    const container = document.getElementById('checkout-items');
+    
+    const itemsHTML = checkoutItems.map(item => `
+        <div class="checkout-item">
+            <img src="${item.image}" alt="${item.name}" style="width: 60px; height: 84px; object-fit: contain; border-radius: var(--radius-sm); flex-shrink: 0;">
+            <div style="flex: 1; min-width: 0;">
+                <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2); line-height: 1.3;">${item.name}</h4>
+                <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2);">
+                    <span style="background: var(--gray-100); color: var(--gray-700); padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: 0.75rem;">${item.condition}</span>
+                    <span style="background: var(--primary-color); color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: 0.75rem;">Qty: ${item.quantity}</span>
+                </div>
+                <div style="display: flex; gap: var(--space-4);">
+                    <div style="font-size: 0.875rem; color: var(--gray-600);">Cash: <span style="font-weight: 600; color: var(--success-color);">$${(item.cashPrice * item.quantity).toFixed(2)}</span></div>
+                    <div style="font-size: 0.875rem; color: var(--gray-600);">Credit: <span style="font-weight: 600; color: var(--primary-color);">$${(item.creditPrice * item.quantity).toFixed(2)}</span></div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    container.innerHTML = itemsHTML;
+}
+
+function updateTotals() {
+    let totalItems = 0;
+    let totalCash = 0;
+    let totalCredit = 0;
+    
+    checkoutItems.forEach(item => {
+        totalItems += item.quantity;
+        totalCash += item.cashPrice * item.quantity;
+        totalCredit += item.creditPrice * item.quantity;
+    });
+    
+    document.getElementById('cash-total').textContent = totalCash.toFixed(2);
+    document.getElementById('credit-total').textContent = totalCredit.toFixed(2);
+    document.getElementById('summary-item-count').textContent = totalItems.toString();
+    
+    // Update final total based on selected payment method
+    updateFinalTotal();
+}
+
+function selectPaymentMethod(method) {
+    selectedPaymentMethod = method;
+    
+    // Update visual selection
+    document.getElementById('cash-option').classList.remove('selected');
+    document.getElementById('credit-option').classList.remove('selected');
+    
+    if (method === 'cash') {
+        document.getElementById('cash-option').classList.add('selected');
+        document.getElementById('selected-payment-display').textContent = 'Cash Payment';
+        document.getElementById('selected-payment-display').style.color = 'var(--success-color)';
+    } else {
+        document.getElementById('credit-option').classList.add('selected');
+        document.getElementById('selected-payment-display').textContent = 'Store Credit (+25%)';
+        document.getElementById('selected-payment-display').style.color = 'var(--primary-color)';
+    }
+    
+    updateFinalTotal();
+}
+
+function updateFinalTotal() {
+    let totalCash = 0;
+    let totalCredit = 0;
+    
+    checkoutItems.forEach(item => {
+        totalCash += item.cashPrice * item.quantity;
+        totalCredit += item.creditPrice * item.quantity;
+    });
+    
+    const finalTotal = selectedPaymentMethod === 'cash' ? totalCash : totalCredit;
+    const finalTotalElement = document.getElementById('final-total');
+    
+    finalTotalElement.textContent = `$${finalTotal.toFixed(2)}`;
+    finalTotalElement.style.color = selectedPaymentMethod === 'cash' ? 'var(--success-color)' : 'var(--primary-color)';
+}
+
+function submitBuylistOrder() {
+    if (checkoutItems.length === 0) {
+        alert('No items to submit!');
+        return;
+    }
+    
+    // Get current user
+    const currentUser = JSON.parse(localStorage.getItem('tcg-user') || 'null');
+    if (!currentUser) {
+        alert('Please log in to submit your buylist order.');
+        window.location.hash = '#account';
+        return;
+    }
+    
+    // Calculate totals
+    let totalItems = 0;
+    let totalCash = 0;
+    let totalCredit = 0;
+    
+    checkoutItems.forEach(item => {
+        totalItems += item.quantity;
+        totalCash += item.cashPrice * item.quantity;
+        totalCredit += item.creditPrice * item.quantity;
+    });
+    
+    const finalValue = selectedPaymentMethod === 'cash' ? totalCash : totalCredit;
+    
+    // Create buylist submission
+    const submission = {
+        id: Date.now(),
+        type: 'buylist',
+        userId: currentUser.id,
+        userEmail: currentUser.email,
+        userName: `${currentUser.firstName} ${currentUser.lastName}`,
+        items: checkoutItems.map(item => ({...item})),
+        totalItems: totalItems,
+        totalCash: totalCash,
+        totalCredit: totalCredit,
+        paymentMethod: selectedPaymentMethod,
+        finalValue: finalValue,
+        status: 'pending',
+        submittedAt: new Date().toISOString(),
+        game: 'yugioh' // Default for now
+    };
+    
+    // Save to buylist submissions (separate from orders)
+    const existingSubmissions = JSON.parse(localStorage.getItem('tcg-buylist-submissions') || '[]');
+    existingSubmissions.push(submission);
+    localStorage.setItem('tcg-buylist-submissions', JSON.stringify(existingSubmissions));
+    
+    // Clear checkout data
+    localStorage.removeItem('tcg-buylist-checkout');
+    
+    // Show success modal
+    showSubmissionSuccessModal(submission);
+}
+
+function showSubmissionSuccessModal(submission) {
+    const modalHTML = `
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: var(--space-4);" onclick="closeSuccessModal()">
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-width: 600px; width: 100%; animation: modalSlideIn 0.3s ease-out;" onclick="event.stopPropagation()">
+                <div style="padding: var(--space-6);">
+                    <div style="text-align: center; margin-bottom: var(--space-6);">
+                        <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--success-color);">✅</div>
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-3);">
+                            Buylist Order Submitted!
+                        </h2>
+                        <p style="color: var(--gray-600); line-height: 1.5; margin-bottom: var(--space-4);">
+                            Your buylist order has been submitted and will be processed by our admin team.
+                        </p>
+                    </div>
+                    
+                    <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                        <h3 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Order Details</h3>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); font-size: 0.875rem;">
+                            <div>
+                                <span style="color: var(--gray-600);">Order ID:</span><br>
+                                <span style="font-weight: 600; color: var(--gray-900);">#${submission.id}</span>
+                            </div>
+                            <div>
+                                <span style="color: var(--gray-600);">Total Items:</span><br>
+                                <span style="font-weight: 600; color: var(--gray-900);">${submission.totalItems}</span>
+                            </div>
+                            <div>
+                                <span style="color: var(--gray-600);">Payment Method:</span><br>
+                                <span style="font-weight: 600; color: var(--gray-900);">${submission.paymentMethod === 'cash' ? 'Cash Payment' : 'Store Credit'}</span>
+                            </div>
+                            <div>
+                                <span style="color: var(--gray-600);">Total Value:</span><br>
+                                <span style="font-weight: 600; color: ${submission.paymentMethod === 'cash' ? 'var(--success-color)' : 'var(--primary-color)'};">$${submission.finalValue.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: var(--info-color); color: white; border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                        <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: var(--space-2);">Next Steps</h4>
+                        <ol style="margin: 0; padding-left: var(--space-4); font-size: 0.875rem; line-height: 1.5;">
+                            <li>Our team will review your submission within 24 hours</li>
+                            <li>You'll receive shipping instructions via email</li>
+                            <li>Ship your cards using our prepaid label</li>
+                            <li>We'll process payment within 3-5 business days after inspection</li>
+                        </ol>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button onclick="closeSuccessModal()" style="background: var(--primary-color); color: white; border: none; padding: var(--space-3) var(--space-6); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
+                            Continue Shopping
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <style>
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        </style>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSuccessModal() {
+    const modal = document.querySelector('[style*="position: fixed"][style*="z-index: 2000"]');
+    if (modal) {
+        modal.remove();
+        document.body.style.overflow = '';
+    }
+    
+    // Redirect to home page
+    window.location.hash = '#';
+}
+</script>
