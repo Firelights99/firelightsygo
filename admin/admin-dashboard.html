@@ -270,22 +270,33 @@
             font-size: 1rem;
         }
         
-        .logout-btn {
-            position: absolute;
-            top: var(--space-4);
-            right: var(--space-4);
-            background: var(--error-color);
-            color: white;
-            border: none;
-            padding: var(--space-2) var(--space-4);
-            border-radius: var(--radius-md);
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition-fast);
+        .admin-header-buttons {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            z-index: 1000;
         }
         
-        .logout-btn:hover {
-            background: var(--error-dark);
+        .admin-header-buttons button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .admin-header-buttons button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         @media (max-width: 768px) {
@@ -304,11 +315,11 @@
     </style>
 </head>
 <body>
-    <div style="position: absolute; top: var(--space-4); right: var(--space-4); display: flex; gap: var(--space-3); align-items: center;">
-        <button class="return-website-btn" onclick="returnToWebsite()" style="background: var(--primary-color); color: white; border: none; padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast); display: flex; align-items: center; gap: var(--space-2);">
+    <div class="admin-header-buttons">
+        <button onclick="returnToWebsite()" style="background: var(--primary-color); color: white;">
             <i class="fas fa-home"></i> Return to Website
         </button>
-        <button class="logout-btn" onclick="adminLogout()" style="background: var(--error-color); color: white; border: none; padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast); display: flex; align-items: center; gap: var(--space-2);">
+        <button onclick="adminLogout()" style="background: var(--error-color); color: white;">
             <i class="fas fa-sign-out-alt"></i> Logout
         </button>
     </div>
