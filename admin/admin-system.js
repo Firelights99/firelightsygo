@@ -1932,10 +1932,8 @@ function addToBuylist() {
                     <select id="buylist-game" required style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
                         <option value="">Select Game</option>
                         <option value="yugioh">Yu-Gi-Oh!</option>
-                        <option value="magic">Magic: The Gathering</option>
                         <option value="pokemon">Pokemon</option>
-                        <option value="lorcana">Lorcana</option>
-                        <option value="onepiece">One Piece</option>
+                        <option value="bulk">Bulk Orders</option>
                     </select>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-3);">
@@ -2071,10 +2069,8 @@ function editBuylistItem(itemId) {
                     <label style="display: block; margin-bottom: var(--space-1); font-weight: 600;">Game *</label>
                     <select id="edit-buylist-game" required style="width: 100%; padding: var(--space-2); border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
                         <option value="yugioh" ${item.game === 'yugioh' ? 'selected' : ''}>Yu-Gi-Oh!</option>
-                        <option value="magic" ${item.game === 'magic' ? 'selected' : ''}>Magic: The Gathering</option>
                         <option value="pokemon" ${item.game === 'pokemon' ? 'selected' : ''}>Pokemon</option>
-                        <option value="lorcana" ${item.game === 'lorcana' ? 'selected' : ''}>Lorcana</option>
-                        <option value="onepiece" ${item.game === 'onepiece' ? 'selected' : ''}>One Piece</option>
+                        <option value="bulk" ${item.game === 'bulk' ? 'selected' : ''}>Bulk Orders</option>
                     </select>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-3);">
