@@ -566,6 +566,12 @@ class ModernTCGStore {
         // Hide the search dropdown first
         this.hideSearchDropdown();
         
+        // Clear the search input
+        const searchInput = document.querySelector('.search-input');
+        if (searchInput) {
+            searchInput.value = '';
+        }
+        
         // Use a more robust navigation approach with retries
         this.performNavigation('product', `?id=${encodeURIComponent(cardIdentifier)}`);
     }

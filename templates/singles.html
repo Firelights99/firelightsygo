@@ -1,12 +1,106 @@
 <!-- Page Header -->
 <section style="text-align: center; margin-bottom: var(--space-8);">
-    <h1 style="font-size: 3rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
+    <h1 id="singles-title" style="font-size: 3rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
         Yu-Gi-Oh! Singles
     </h1>
-    <p style="font-size: 1.125rem; color: var(--gray-600); max-width: 600px; margin: 0 auto;">
+    <p id="singles-description" style="font-size: 1.125rem; color: var(--gray-600); max-width: 600px; margin: 0 auto;">
         Browse our extensive collection of Yu-Gi-Oh! single cards with real-time pricing
     </p>
+    
+    <!-- Game Selection Tabs -->
+    <div style="display: flex; justify-content: center; gap: var(--space-3); margin-top: var(--space-6);">
+        <button id="yugioh-tab" class="game-tab active" onclick="switchGame('yugioh')" style="padding: var(--space-3) var(--space-6); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-lg); font-weight: 600; cursor: pointer; transition: var(--transition-fast);">
+            <i class="game-icon yugioh-icon">🃏</i> Yu-Gi-Oh!
+        </button>
+        <button id="pokemon-tab" class="game-tab" onclick="switchGame('pokemon')" style="padding: var(--space-3) var(--space-6); background: var(--gray-200); color: var(--gray-700); border: none; border-radius: var(--radius-lg); font-weight: 600; cursor: pointer; transition: var(--transition-fast);">
+            <i class="game-icon pokemon-icon">⚡</i> Pokemon
+        </button>
+    </div>
 </section>
+
+<script>
+// Game switching functionality
+let currentGame = 'yugioh';
+
+function switchGame(game) {
+    currentGame = game;
+    
+    // Update tab states
+    document.querySelectorAll('.game-tab').forEach(tab => {
+        tab.classList.remove('active');
+        tab.style.background = 'var(--gray-200)';
+        tab.style.color = 'var(--gray-700)';
+    });
+    
+    const activeTab = document.getElementById(`${game}-tab`);
+    if (activeTab) {
+        activeTab.classList.add('active');
+        activeTab.style.background = 'var(--primary-color)';
+        activeTab.style.color = 'white';
+    }
+    
+    // Update page content based on game
+    updateGameContent(game);
+    
+    // Clear and reload search results
+    clearAllFilters();
+    performCardSearch();
+}
+
+function updateGameContent(game) {
+    const title = document.getElementById('singles-title');
+    const description = document.getElementById('singles-description');
+    
+    if (game === 'yugioh') {
+        title.textContent = 'Yu-Gi-Oh! Singles';
+        description.textContent = 'Browse our extensive collection of Yu-Gi-Oh! single cards with real-time pricing';
+        
+        // Show Yu-Gi-Oh specific filters
+        document.getElementById('type-filter').innerHTML = `
+            <option value="">All Types</option>
+            <option value="Effect Monster">Effect Monster</option>
+            <option value="Normal Monster">Normal Monster</option>
+            <option value="Ritual Monster">Ritual Monster</option>
+            <option value="Fusion Monster">Fusion Monster</option>
+            <option value="Synchro Monster">Synchro Monster</option>
+            <option value="Xyz Monster">Xyz Monster</option>
+            <option value="Pendulum Monster">Pendulum Monster</option>
+            <option value="Link Monster">Link Monster</option>
+            <option value="Spell Card">Spell Card</option>
+            <option value="Trap Card">Trap Card</option>
+        `;
+        
+    } else if (game === 'pokemon') {
+        title.textContent = 'Pokemon Singles';
+        description.textContent = 'Browse our extensive collection of Pokemon single cards with competitive pricing';
+        
+        // Show Pokemon specific filters
+        document.getElementById('type-filter').innerHTML = `
+            <option value="">All Types</option>
+            <option value="Pokemon">Pokemon</option>
+            <option value="Trainer">Trainer</option>
+            <option value="Energy">Energy</option>
+        `;
+    }
+}
+
+// Initialize game switching functionality when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Check URL parameters for game selection
+    const urlParams = new URLSearchParams(window.location.search);
+    const gameParam = urlParams.get('game');
+    
+    if (gameParam && (gameParam === 'yugioh' || gameParam === 'pokemon')) {
+        switchGame(gameParam);
+    } else {
+        // Default to Yu-Gi-Oh
+        switchGame('yugioh');
+    }
+});
+
+// Make switchGame globally accessible
+window.switchGame = switchGame;
+</script>
 
 <!-- Advanced Search System -->
 <section style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-6); margin-bottom: var(--space-8); border: 1px solid var(--gray-200);">

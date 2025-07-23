@@ -108,7 +108,7 @@ class AppRouter {
 
             // Update page
             this.renderPage(content);
-            this.updateMetadata(pageName);
+            this.updateMetadata(pageName, params);
             this.updateNavigation(pageName);
 
             // Scroll to top of page after content is loaded

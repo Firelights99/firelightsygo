@@ -85,9 +85,43 @@
                 <nav class="nav-section">
                     <ul class="nav-links">
                         <li><a href="#" class="nav-link" id="nav-home" onclick="navigateTo('home')">Home</a></li>
-                        <li><a href="#" class="nav-link" id="nav-singles" onclick="navigateTo('singles')">Singles</a></li>
+                        
+                        <!-- Singles Dropdown -->
+                        <li class="nav-dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" id="nav-singles">
+                                Singles <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            </a>
+                            <div class="dropdown-menu">
+                                <a href="#" class="dropdown-item" onclick="navigateTo('singles', '?game=yugioh')">
+                                    <i class="game-icon yugioh-icon">🃏</i>
+                                    Yu-Gi-Oh! Singles
+                                </a>
+                                <a href="#" class="dropdown-item" onclick="navigateTo('singles', '?game=pokemon')">
+                                    <i class="game-icon pokemon-icon">⚡</i>
+                                    Pokemon Singles
+                                </a>
+                            </div>
+                        </li>
+                        
                         <li><a href="#" class="nav-link" id="nav-sealed" onclick="navigateTo('sealed')">Sealed</a></li>
-                        <li><a href="#" class="nav-link" id="nav-decks" onclick="navigateTo('decks')">Decks</a></li>
+                        
+                        <!-- Decks Dropdown -->
+                        <li class="nav-dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" id="nav-decks">
+                                Decks <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            </a>
+                            <div class="dropdown-menu">
+                                <a href="#" class="dropdown-item" onclick="navigateTo('decks', '?game=yugioh')">
+                                    <i class="game-icon yugioh-icon">🃏</i>
+                                    Yu-Gi-Oh! Decks
+                                </a>
+                                <a href="#" class="dropdown-item" onclick="navigateTo('decks', '?game=pokemon')">
+                                    <i class="game-icon pokemon-icon">⚡</i>
+                                    Pokemon Decks
+                                </a>
+                            </div>
+                        </li>
+                        
                         <li><a href="#" class="nav-link" id="nav-buylist" onclick="navigateTo('buylist')">Buylist</a></li>
                         <!-- Events hidden - store not hosting events -->
                         <li style="display: none;"><a href="#" class="nav-link" id="nav-events" onclick="navigateTo('events')">Events</a></li>
