@@ -253,7 +253,7 @@ body {
 /* 401Games-Style Search */
 .search-section {
     position: relative;
-    max-width: 400px;
+    max-width: 500px;
     flex: 1;
 }
 
