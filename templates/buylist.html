@@ -22,27 +22,9 @@
                 <p style="font-size: 0.875rem; opacity: 0.9;">Singles & Sealed Products</p>
             </div>
             
-            <div class="game-category-card" onclick="selectGameCategory('magic')" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); border-radius: var(--radius-lg); padding: var(--space-6); text-align: center; cursor: pointer; transition: var(--transition-fast); color: white;">
-                <div style="font-size: 2.5rem; margin-bottom: var(--space-3);">🔮</div>
-                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: var(--space-2);">Magic: The Gathering</h3>
-                <p style="font-size: 0.875rem; opacity: 0.9;">Singles & Sealed Products</p>
-            </div>
-            
             <div class="game-category-card" onclick="selectGameCategory('pokemon')" style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); border-radius: var(--radius-lg); padding: var(--space-6); text-align: center; cursor: pointer; transition: var(--transition-fast); color: white;">
                 <div style="font-size: 2.5rem; margin-bottom: var(--space-3);">⚡</div>
                 <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: var(--space-2);">Pokemon</h3>
-                <p style="font-size: 0.875rem; opacity: 0.9;">Singles & Sealed Products</p>
-            </div>
-            
-            <div class="game-category-card" onclick="selectGameCategory('lorcana')" style="background: linear-gradient(135deg, #06B6D4 0%, #0891B2 100%); border-radius: var(--radius-lg); padding: var(--space-6); text-align: center; cursor: pointer; transition: var(--transition-fast); color: white;">
-                <div style="font-size: 2.5rem; margin-bottom: var(--space-3);">✨</div>
-                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: var(--space-2);">Lorcana</h3>
-                <p style="font-size: 0.875rem; opacity: 0.9;">Singles & Sealed Products</p>
-            </div>
-            
-            <div class="game-category-card" onclick="selectGameCategory('onepiece')" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); border-radius: var(--radius-lg); padding: var(--space-6); text-align: center; cursor: pointer; transition: var(--transition-fast); color: white;">
-                <div style="font-size: 2.5rem; margin-bottom: var(--space-3);">🏴‍☠️</div>
-                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: var(--space-2);">One Piece</h3>
                 <p style="font-size: 0.875rem; opacity: 0.9;">Singles & Sealed Products</p>
             </div>
             
@@ -605,8 +587,218 @@ function submitBuylist() {
         return;
     }
     
-    alert('Buylist submission feature coming soon! For now, please contact us directly with your list.');
+    // Check if user is logged in
+    const currentUser = JSON.parse(localStorage.getItem('tcg-user') || 'null');
+    
+    if (!currentUser) {
+        // Show login required modal
+        showLoginRequiredModal();
+        return;
+    }
+    
+    // Check if user is an admin (admins cannot use buylist)
+    if (currentUser.isAdmin) {
+        alert('Admin accounts cannot submit buylist orders. Please use a regular customer account.');
+        return;
+    }
+    
+    // Process buylist submission
+    processBuylistSubmission(currentUser);
 }
+
+function showLoginRequiredModal() {
+    const modalHTML = `
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: var(--space-4);" onclick="closeLoginModal()">
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-width: 500px; width: 100%; animation: modalSlideIn 0.3s ease-out;" onclick="event.stopPropagation()">
+                <div style="padding: var(--space-6) var(--space-6) 0 var(--space-6);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin: 0;">Login Required</h2>
+                        <button onclick="closeLoginModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500); padding: var(--space-2);">×</button>
+                    </div>
+                </div>
+                
+                <div style="padding: 0 var(--space-6) var(--space-6) var(--space-6);">
+                    <div style="text-align: center; margin-bottom: var(--space-6);">
+                        <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--primary-color);">🔐</div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">
+                            Account Required for Buylist
+                        </h3>
+                        <p style="color: var(--gray-600); line-height: 1.5; margin-bottom: var(--space-4);">
+                            To submit a buylist order, you need to be logged in to your account. This helps us track your submissions and process payments.
+                        </p>
+                        
+                        <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                            <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Why do I need an account?</h4>
+                            <ul style="text-align: left; color: var(--gray-600); font-size: 0.875rem; line-height: 1.5; margin: 0; padding-left: var(--space-4);">
+                                <li>Track your buylist submissions</li>
+                                <li>Receive payment notifications</li>
+                                <li>View submission history</li>
+                                <li>Secure payment processing</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: var(--space-3); justify-content: center;">
+                        <button onclick="closeLoginModal()" style="background: var(--gray-200); color: var(--gray-700); border: none; padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease; min-width: 120px;">
+                            Cancel
+                        </button>
+                        <button onclick="redirectToLogin()" style="background: var(--primary-color); color: white; border: none; padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease; min-width: 120px;">
+                            Login / Sign Up
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <style>
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        </style>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLoginModal() {
+    const modal = document.querySelector('[style*="position: fixed"][style*="z-index: 2000"]');
+    if (modal) {
+        modal.remove();
+        document.body.style.overflow = '';
+    }
+}
+
+function redirectToLogin() {
+    closeLoginModal();
+    // Save current buylist cart to restore after login
+    localStorage.setItem('tcg-pending-buylist', JSON.stringify(buylistCart));
+    // Redirect to account page which handles login
+    window.location.hash = '#account';
+}
+
+function processBuylistSubmission(user) {
+    // Create buylist submission
+    const submission = {
+        id: Date.now(),
+        userId: user.id,
+        userEmail: user.email,
+        userName: `${user.firstName} ${user.lastName}`,
+        items: buylistCart.map(item => ({...item})),
+        totalCash: buylistCart.reduce((sum, item) => sum + (item.cashPrice * item.quantity), 0),
+        totalCredit: buylistCart.reduce((sum, item) => sum + (item.creditPrice * item.quantity), 0),
+        status: 'pending',
+        submittedAt: new Date().toISOString(),
+        game: selectedGame
+    };
+    
+    // Save to localStorage (in a real app, this would go to a server)
+    const existingSubmissions = JSON.parse(localStorage.getItem('tcg-buylist-submissions') || '[]');
+    existingSubmissions.push(submission);
+    localStorage.setItem('tcg-buylist-submissions', JSON.stringify(existingSubmissions));
+    
+    // Show success message
+    showSubmissionSuccessModal(submission);
+    
+    // Clear cart
+    buylistCart = [];
+    updateBuylistCart();
+    hideBuylistCart();
+}
+
+function showSubmissionSuccessModal(submission) {
+    const modalHTML = `
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: var(--space-4);" onclick="closeSuccessModal()">
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-width: 600px; width: 100%; animation: modalSlideIn 0.3s ease-out;" onclick="event.stopPropagation()">
+                <div style="padding: var(--space-6);">
+                    <div style="text-align: center; margin-bottom: var(--space-6);">
+                        <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--success-color);">✅</div>
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-3);">
+                            Buylist Submitted Successfully!
+                        </h2>
+                        <p style="color: var(--gray-600); line-height: 1.5; margin-bottom: var(--space-4);">
+                            Your buylist submission has been received and is being reviewed by our team.
+                        </p>
+                    </div>
+                    
+                    <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                        <h3 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Submission Details</h3>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); font-size: 0.875rem;">
+                            <div>
+                                <span style="color: var(--gray-600);">Submission ID:</span><br>
+                                <span style="font-weight: 600; color: var(--gray-900);">#${submission.id}</span>
+                            </div>
+                            <div>
+                                <span style="color: var(--gray-600);">Total Items:</span><br>
+                                <span style="font-weight: 600; color: var(--gray-900);">${submission.items.reduce((sum, item) => sum + item.quantity, 0)}</span>
+                            </div>
+                            <div>
+                                <span style="color: var(--gray-600);">Cash Value:</span><br>
+                                <span style="font-weight: 600; color: var(--success-color);">$${submission.totalCash.toFixed(2)}</span>
+                            </div>
+                            <div>
+                                <span style="color: var(--gray-600);">Credit Value:</span><br>
+                                <span style="font-weight: 600; color: var(--primary-color);">$${submission.totalCredit.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: var(--info-color); color: white; border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                        <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: var(--space-2);">Next Steps</h4>
+                        <ol style="margin: 0; padding-left: var(--space-4); font-size: 0.875rem; line-height: 1.5;">
+                            <li>We'll review your submission within 24 hours</li>
+                            <li>You'll receive an email with shipping instructions</li>
+                            <li>Ship your cards to us using the provided label</li>
+                            <li>We'll inspect and process payment within 3-5 business days</li>
+                        </ol>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button onclick="closeSuccessModal()" style="background: var(--primary-color); color: white; border: none; padding: var(--space-3) var(--space-6); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
+                            Continue Shopping
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSuccessModal() {
+    const modal = document.querySelector('[style*="position: fixed"][style*="z-index: 2000"]');
+    if (modal) {
+        modal.remove();
+        document.body.style.overflow = '';
+    }
+}
+
+// Check for pending buylist on page load (after user logs in)
+document.addEventListener('DOMContentLoaded', function() {
+    const pendingBuylist = localStorage.getItem('tcg-pending-buylist');
+    if (pendingBuylist) {
+        try {
+            buylistCart = JSON.parse(pendingBuylist);
+            localStorage.removeItem('tcg-pending-buylist');
+            if (buylistCart.length > 0) {
+                updateBuylistCart();
+                showBuylistCart();
+                alert('Your buylist cart has been restored. You can now submit your order!');
+            }
+        } catch (error) {
+            console.error('Error restoring buylist cart:', error);
+        }
+    }
+});
 
 function showBuylistGuide() {
     alert('Buylist Guide:\n\n1. Search for cards you want to sell\n2. Select condition and quantity\n3. Add to your buylist cart\n4. Submit your list for review\n5. Ship your cards to us\n6. Get paid via cash or store credit\n\nDetailed guide coming soon!');
