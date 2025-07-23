@@ -803,7 +803,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function showBuylistGuide() {
+window.showBuylistGuide = function() {
     const modalHTML = `
         <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: var(--space-4);" onclick="closeBuylistGuideModal()">
             <div style="background: white; border-radius: var(--radius-xl); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-width: 700px; width: 100%; animation: modalSlideIn 0.3s ease-out;" onclick="event.stopPropagation()">
@@ -893,7 +893,7 @@ function showBuylistGuide() {
     document.body.style.overflow = 'hidden';
 }
 
-function showConditionGuide() {
+window.showConditionGuide = function() {
     const modalHTML = `
         <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: var(--space-4);" onclick="closeConditionGuideModal()">
             <div style="background: white; border-radius: var(--radius-xl); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-width: 600px; width: 100%; animation: modalSlideIn 0.3s ease-out;" onclick="event.stopPropagation()">
@@ -967,7 +967,7 @@ function showConditionGuide() {
     document.body.style.overflow = 'hidden';
 }
 
-function showPaymentDetails() {
+window.showPaymentDetails = function() {
     const modalHTML = `
         <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: var(--space-4);" onclick="closePaymentDetailsModal()">
             <div style="background: white; border-radius: var(--radius-xl); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-width: 600px; width: 100%; animation: modalSlideIn 0.3s ease-out;" onclick="event.stopPropagation()">
