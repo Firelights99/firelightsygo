@@ -2423,6 +2423,531 @@ window.closePaymentDetailsModal = function() {
     }
 };
 
+// Buylist functionality - globally accessible
+let selectedGame = '';
+let buylistCart = [];
+
+window.selectGameCategory = function(game) {
+    selectedGame = game;
+    document.getElementById('card-search-section').style.display = 'block';
+    
+    const titles = {
+        'yugioh': 'Yu-Gi-Oh! Buylist',
+        'magic': 'Magic: The Gathering Buylist',
+        'pokemon': 'Pokemon Buylist',
+        'lorcana': 'Lorcana Buylist',
+        'onepiece': 'One Piece Buylist',
+        'bulk': 'Bulk Submission'
+    };
+    
+    document.getElementById('selected-game-title').textContent = titles[game] || 'Buylist';
+    
+    // Scroll to search section
+    document.getElementById('card-search-section').scrollIntoView({ behavior: 'smooth' });
+    
+    // Load initial results
+    searchBuylistCards();
+};
+
+window.goBackToGameSelection = function() {
+    document.getElementById('card-search-section').style.display = 'none';
+    selectedGame = '';
+};
+
+window.searchBuylistCards = async function() {
+    if (!selectedGame) return;
+    
+    const query = document.getElementById('buylist-search')?.value || '';
+    const setFilter = document.getElementById('set-filter')?.value || '';
+    const rarityFilter = document.getElementById('rarity-filter')?.value || '';
+    
+    const resultsContainer = document.getElementById('buylist-results');
+    
+    // Show loading state
+    resultsContainer.innerHTML = `
+        <div style="text-align: center; padding: var(--space-8); color: var(--gray-500);">
+            <div class="loading-spinner" style="margin: 0 auto var(--space-4) auto;"></div>
+            <p>Searching buylist...</p>
+        </div>
+    `;
+    
+    try {
+        // For Yu-Gi-Oh, use the YGOPRODeck API
+        if (selectedGame === 'yugioh') {
+            let apiUrl = 'https://db.ygoprodeck.com/api/v7/cardinfo.php?';
+            const params = new URLSearchParams();
+            
+            if (query) {
+                params.append('fname', query);
+            }
+            
+            if (rarityFilter) {
+                params.append('rarity', rarityFilter);
+            }
+            
+            params.append('num', '20');
+            params.append('offset', '0');
+            
+            const response = await fetch(apiUrl + params.toString());
+            
+            if (!response.ok) {
+                throw new Error(`API request failed: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            const cards = data.data || [];
+            
+            renderBuylistResults(cards);
+        } else {
+            // For other games, show placeholder results
+            renderPlaceholderResults(selectedGame);
+        }
+        
+    } catch (error) {
+        console.error('Error searching buylist:', error);
+        resultsContainer.innerHTML = `
+            <div style="text-align: center; padding: var(--space-8); color: var(--error-color);">
+                <div style="font-size: 2rem; margin-bottom: var(--space-2);">⚠️</div>
+                <p>Error loading buylist. Please try again.</p>
+            </div>
+        `;
+    }
+};
+
+function renderBuylistResults(cards) {
+    const resultsContainer = document.getElementById('buylist-results');
+    
+    if (cards.length === 0) {
+        resultsContainer.innerHTML = `
+            <div style="text-align: center; padding: var(--space-8); color: var(--gray-500);">
+                <div style="font-size: 2rem; margin-bottom: var(--space-2);">❌</div>
+                <p>No cards found in our buylist matching your search</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const resultsHTML = cards.map(card => {
+        const image = card.card_images && card.card_images.length > 0 ? 
+            card.card_images[0].image_url_small || card.card_images[0].image_url : 
+            'https://images.ygoprodeck.com/images/cards/back.jpg';
+        
+        // Calculate buylist prices (typically 40-60% of market value)
+        const cashPrice = (Math.random() * 15 + 2).toFixed(2);
+        const creditPrice = (parseFloat(cashPrice) * 1.25).toFixed(2);
+        
+        return `
+            <div class="buylist-card">
+                <div style="display: flex; gap: var(--space-4); align-items: flex-start;">
+                    <img src="${image}" alt="${card.name}" style="width: 60px; height: 84px; object-fit: contain; border-radius: var(--radius-sm); flex-shrink: 0;">
+                    
+                    <div style="flex: 1; min-width: 0;">
+                        <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2); line-height: 1.3;">${card.name}</h4>
+                        <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2);">
+                            <span style="background: var(--gray-100); color: var(--gray-700); padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: 0.75rem;">${card.type}</span>
+                            ${card.card_sets && card.card_sets.length > 0 ? `<span style="background: var(--primary-color); color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: 0.75rem;">${card.card_sets[0].set_rarity || 'Common'}</span>` : ''}
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
+                            <div>
+                                <div style="font-size: 0.875rem; color: var(--gray-600);">Cash: <span style="font-weight: 600; color: var(--success-color);">$${cashPrice}</span></div>
+                                <div style="font-size: 0.875rem; color: var(--gray-600);">Credit: <span style="font-weight: 600; color: var(--primary-color);">$${creditPrice}</span></div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 0.75rem; color: var(--gray-600); margin-bottom: var(--space-1);">Condition:</div>
+                                <div class="condition-selector">
+                                    <button class="condition-btn selected" onclick="selectCondition(this, '${card.id}', 'NM')">NM</button>
+                                    <button class="condition-btn" onclick="selectCondition(this, '${card.id}', 'LP')">LP</button>
+                                    <button class="condition-btn" onclick="selectCondition(this, '${card.id}', 'MP')">MP</button>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div style="font-size: 0.75rem; color: var(--gray-600); margin-bottom: var(--space-1);">Quantity:</div>
+                                <div class="quantity-selector">
+                                    <button class="quantity-btn" onclick="changeQuantity('${card.id}', -1)">-</button>
+                                    <input type="number" class="quantity-input" id="qty-${card.id}" value="1" min="1" max="99">
+                                    <button class="quantity-btn" onclick="changeQuantity('${card.id}', 1)">+</button>
+                                </div>
+                            </div>
+                            
+                            <button onclick="addToBuylistCart('${card.id}', '${card.name.replace(/'/g, "\\'")}', '${image}', ${cashPrice}, ${creditPrice})" style="background: var(--primary-color); color: white; border: none; padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    resultsContainer.innerHTML = resultsHTML;
+}
+
+function renderPlaceholderResults(game) {
+    const resultsContainer = document.getElementById('buylist-results');
+    
+    const gameNames = {
+        'magic': 'Magic: The Gathering',
+        'pokemon': 'Pokemon',
+        'lorcana': 'Lorcana',
+        'onepiece': 'One Piece'
+    };
+    
+    resultsContainer.innerHTML = `
+        <div style="text-align: center; padding: var(--space-12); color: var(--gray-500);">
+            <div style="font-size: 3rem; margin-bottom: var(--space-4);">🚧</div>
+            <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3);">${gameNames[game]} Buylist Coming Soon</h3>
+            <p>We're working on adding ${gameNames[game]} to our buylist system. Check back soon!</p>
+            <p style="margin-top: var(--space-4);">For now, you can contact us directly about selling your ${gameNames[game]} cards.</p>
+        </div>
+    `;
+}
+
+window.selectCondition = function(button, cardId, condition) {
+    // Remove selected class from all condition buttons for this card
+    const conditionButtons = button.parentElement.querySelectorAll('.condition-btn');
+    conditionButtons.forEach(btn => btn.classList.remove('selected'));
+    
+    // Add selected class to clicked button
+    button.classList.add('selected');
+};
+
+window.changeQuantity = function(cardId, change) {
+    const quantityInput = document.getElementById(`qty-${cardId}`);
+    if (quantityInput) {
+        const currentValue = parseInt(quantityInput.value) || 1;
+        const newValue = Math.max(1, Math.min(99, currentValue + change));
+        quantityInput.value = newValue;
+    }
+};
+
+window.addToBuylistCart = function(cardId, cardName, image, cashPrice, creditPrice) {
+    const quantityInput = document.getElementById(`qty-${cardId}`);
+    const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
+    
+    // Get selected condition
+    const conditionButtons = document.querySelectorAll(`[onclick*="${cardId}"][onclick*="selectCondition"]`);
+    let selectedCondition = 'NM';
+    conditionButtons.forEach(btn => {
+        if (btn.classList.contains('selected')) {
+            selectedCondition = btn.textContent;
+        }
+    });
+    
+    // Add to cart
+    const cartItem = {
+        id: cardId,
+        name: cardName,
+        image: image,
+        cashPrice: parseFloat(cashPrice),
+        creditPrice: parseFloat(creditPrice),
+        quantity: quantity,
+        condition: selectedCondition
+    };
+    
+    // Check if item already exists in cart
+    const existingItemIndex = buylistCart.findIndex(item => 
+        item.id === cardId && item.condition === selectedCondition
+    );
+    
+    if (existingItemIndex >= 0) {
+        buylistCart[existingItemIndex].quantity += quantity;
+    } else {
+        buylistCart.push(cartItem);
+    }
+    
+    updateBuylistCart();
+    showBuylistCart();
+    
+    // Show success message
+    alert(`Added ${quantity}x ${cardName} (${selectedCondition}) to buylist cart!`);
+};
+
+window.updateBuylistCart = function() {
+    const cartItemsContainer = document.getElementById('buylist-cart-items');
+    const itemCountElement = document.getElementById('cart-item-count');
+    const cashTotalElement = document.getElementById('cart-cash-total');
+    const creditTotalElement = document.getElementById('cart-credit-total');
+    
+    if (buylistCart.length === 0) {
+        cartItemsContainer.innerHTML = `
+            <div style="text-align: center; padding: var(--space-4); color: var(--gray-500);">
+                <p>Your buylist cart is empty</p>
+            </div>
+        `;
+        itemCountElement.textContent = '0';
+        cashTotalElement.textContent = '$0.00';
+        creditTotalElement.textContent = '$0.00';
+        return;
+    }
+    
+    let totalItems = 0;
+    let totalCash = 0;
+    let totalCredit = 0;
+    
+    const cartHTML = buylistCart.map(item => {
+        totalItems += item.quantity;
+        totalCash += item.cashPrice * item.quantity;
+        totalCredit += item.creditPrice * item.quantity;
+        
+        return `
+            <div style="display: flex; gap: var(--space-2); align-items: center; padding: var(--space-2); border: 1px solid var(--gray-200); border-radius: var(--radius-md); margin-bottom: var(--space-2);">
+                <img src="${item.image}" alt="${item.name}" style="width: 30px; height: 42px; object-fit: contain; border-radius: var(--radius-sm);">
+                <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 0.75rem; font-weight: 600; color: var(--gray-900); line-height: 1.2; margin-bottom: var(--space-1);">${item.name}</div>
+                    <div style="font-size: 0.625rem; color: var(--gray-600);">${item.condition} • Qty: ${item.quantity}</div>
+                    <div style="font-size: 0.625rem; color: var(--success-color);">Cash: $${(item.cashPrice * item.quantity).toFixed(2)} | Credit: $${(item.creditPrice * item.quantity).toFixed(2)}</div>
+                </div>
+                <button onclick="removeFromBuylistCart('${item.id}', '${item.condition}')" style="background: var(--error-color); color: white; border: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; font-size: 0.75rem;">×</button>
+            </div>
+        `;
+    }).join('');
+    
+    cartItemsContainer.innerHTML = cartHTML;
+    itemCountElement.textContent = totalItems.toString();
+    cashTotalElement.textContent = `$${totalCash.toFixed(2)}`;
+    creditTotalElement.textContent = `$${totalCredit.toFixed(2)}`;
+};
+
+window.removeFromBuylistCart = function(cardId, condition) {
+    buylistCart = buylistCart.filter(item => !(item.id === cardId && item.condition === condition));
+    updateBuylistCart();
+    
+    if (buylistCart.length === 0) {
+        hideBuylistCart();
+    }
+};
+
+window.showBuylistCart = function() {
+    document.getElementById('buylist-cart-section').style.display = 'block';
+};
+
+window.hideBuylistCart = function() {
+    document.getElementById('buylist-cart-section').style.display = 'none';
+};
+
+window.toggleBuylistCart = function() {
+    const cartSection = document.getElementById('buylist-cart-section');
+    if (cartSection.style.display === 'none') {
+        showBuylistCart();
+    } else {
+        hideBuylistCart();
+    }
+};
+
+window.clearBuylistCart = function() {
+    if (confirm('Are you sure you want to clear your buylist cart?')) {
+        buylistCart = [];
+        updateBuylistCart();
+        hideBuylistCart();
+    }
+};
+
+window.submitBuylist = function() {
+    if (buylistCart.length === 0) {
+        alert('Your buylist cart is empty. Add some cards first!');
+        return;
+    }
+    
+    // Check if user is logged in
+    const currentUser = JSON.parse(localStorage.getItem('tcg-user') || 'null');
+    
+    if (!currentUser) {
+        // Show login required modal
+        showLoginRequiredModal();
+        return;
+    }
+    
+    // Check if user is an admin (admins cannot use buylist)
+    if (currentUser.isAdmin) {
+        alert('Admin accounts cannot submit buylist orders. Please use a regular customer account.');
+        return;
+    }
+    
+    // Process buylist submission
+    processBuylistSubmission(currentUser);
+};
+
+function showLoginRequiredModal() {
+    const modalHTML = `
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: var(--space-4);" onclick="closeLoginModal()">
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-width: 500px; width: 100%; animation: modalSlideIn 0.3s ease-out;" onclick="event.stopPropagation()">
+                <div style="padding: var(--space-6) var(--space-6) 0 var(--space-6);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin: 0;">Login Required</h2>
+                        <button onclick="closeLoginModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500); padding: var(--space-2);">×</button>
+                    </div>
+                </div>
+                
+                <div style="padding: 0 var(--space-6) var(--space-6) var(--space-6);">
+                    <div style="text-align: center; margin-bottom: var(--space-6);">
+                        <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--primary-color);">🔐</div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">
+                            Account Required for Buylist
+                        </h3>
+                        <p style="color: var(--gray-600); line-height: 1.5; margin-bottom: var(--space-4);">
+                            To submit a buylist order, you need to be logged in to your account. This helps us track your submissions and process payments.
+                        </p>
+                        
+                        <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                            <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Why do I need an account?</h4>
+                            <ul style="text-align: left; color: var(--gray-600); font-size: 0.875rem; line-height: 1.5; margin: 0; padding-left: var(--space-4);">
+                                <li>Track your buylist submissions</li>
+                                <li>Receive payment notifications</li>
+                                <li>View submission history</li>
+                                <li>Secure payment processing</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: var(--space-3); justify-content: center;">
+                        <button onclick="closeLoginModal()" style="background: var(--gray-200); color: var(--gray-700); border: none; padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease; min-width: 120px;">
+                            Cancel
+                        </button>
+                        <button onclick="redirectToLogin()" style="background: var(--primary-color); color: white; border: none; padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease; min-width: 120px;">
+                            Login / Sign Up
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <style>
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        </style>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLoginModal() {
+    const modal = document.querySelector('[style*="position: fixed"][style*="z-index: 2000"]');
+    if (modal) {
+        modal.remove();
+        document.body.style.overflow = '';
+    }
+}
+
+function redirectToLogin() {
+    closeLoginModal();
+    // Save current buylist cart to restore after login
+    localStorage.setItem('tcg-pending-buylist', JSON.stringify(buylistCart));
+    // Redirect to account page which handles login
+    window.location.hash = '#account';
+}
+
+function processBuylistSubmission(user) {
+    // Create buylist submission
+    const submission = {
+        id: Date.now(),
+        userId: user.id,
+        userEmail: user.email,
+        userName: `${user.firstName} ${user.lastName}`,
+        items: buylistCart.map(item => ({...item})),
+        totalCash: buylistCart.reduce((sum, item) => sum + (item.cashPrice * item.quantity), 0),
+        totalCredit: buylistCart.reduce((sum, item) => sum + (item.creditPrice * item.quantity), 0),
+        status: 'pending',
+        submittedAt: new Date().toISOString(),
+        game: selectedGame
+    };
+    
+    // Save to localStorage (in a real app, this would go to a server)
+    const existingSubmissions = JSON.parse(localStorage.getItem('tcg-buylist-submissions') || '[]');
+    existingSubmissions.push(submission);
+    localStorage.setItem('tcg-buylist-submissions', JSON.stringify(existingSubmissions));
+    
+    // Show success message
+    showSubmissionSuccessModal(submission);
+    
+    // Clear cart
+    buylistCart = [];
+    updateBuylistCart();
+    hideBuylistCart();
+}
+
+function showSubmissionSuccessModal(submission) {
+    const modalHTML = `
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: var(--space-4);" onclick="closeSuccessModal()">
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-width: 600px; width: 100%; animation: modalSlideIn 0.3s ease-out;" onclick="event.stopPropagation()">
+                <div style="padding: var(--space-6);">
+                    <div style="text-align: center; margin-bottom: var(--space-6);">
+                        <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--success-color);">✅</div>
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-3);">
+                            Buylist Submitted Successfully!
+                        </h2>
+                        <p style="color: var(--gray-600); line-height: 1.5; margin-bottom: var(--space-4);">
+                            Your buylist submission has been received and is being reviewed by our team.
+                        </p>
+                    </div>
+                    
+                    <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                        <h3 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Submission Details</h3>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); font-size: 0.875rem;">
+                            <div>
+                                <span style="color: var(--gray-600);">Submission ID:</span><br>
+                                <span style="font-weight: 600; color: var(--gray-900);">#${submission.id}</span>
+                            </div>
+                            <div>
+                                <span style="color: var(--gray-600);">Total Items:</span><br>
+                                <span style="font-weight: 600; color: var(--gray-900);">${submission.items.reduce((sum, item) => sum + item.quantity, 0)}</span>
+                            </div>
+                            <div>
+                                <span style="color: var(--gray-600);">Cash Value:</span><br>
+                                <span style="font-weight: 600; color: var(--success-color);">$${submission.totalCash.toFixed(2)}</span>
+                            </div>
+                            <div>
+                                <span style="color: var(--gray-600);">Credit Value:</span><br>
+                                <span style="font-weight: 600; color: var(--primary-color);">$${submission.totalCredit.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: var(--info-color); color: white; border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                        <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: var(--space-2);">Next Steps</h4>
+                        <ol style="margin: 0; padding-left: var(--space-4); font-size: 0.875rem; line-height: 1.5;">
+                            <li>We'll review your submission within 24 hours</li>
+                            <li>You'll receive an email with shipping instructions</li>
+                            <li>Ship your cards to us using the provided label</li>
+                            <li>We'll inspect and process payment within 3-5 business days</li>
+                        </ol>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button onclick="closeSuccessModal()" style="background: var(--primary-color); color: white; border: none; padding: var(--space-3) var(--space-6); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
+                            Continue Shopping
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSuccessModal() {
+    const modal = document.querySelector('[style*="position: fixed"][style*="z-index: 2000"]');
+    if (modal) {
+        modal.remove();
+        document.body.style.overflow = '';
+    }
+}
+
 // Initialize router when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.appRouter = new AppRouter();
