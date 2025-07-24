@@ -19,6 +19,8 @@
     <link rel="stylesheet" href="assets/css/mobile.css">
     <link rel="icon" href="assets/images/firelight-logo.svg" type="image/svg+xml">
     <link rel="icon" href="assets/images/f3c4e91c-8a34-4545-a53a-489b4eb181c4.jpg" type="image/jpeg">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     
     <!-- Meta tags for SEO -->
     <meta property="og:title" id="og-title" content="Firelight Duel Academy - Modern Yu-Gi-Oh! TCG Store">
@@ -918,6 +920,85 @@
         window.convertPrice = convertPrice;
         window.formatPrice = formatPrice;
         window.getCurrentCurrency = function() { return currentCurrency; };
+
+        // Game switching functionality for singles page
+        let currentGame = 'yugioh';
+        
+        function switchGame(game) {
+            currentGame = game;
+            
+            // Update tab appearance
+            document.querySelectorAll('.game-tab').forEach(tab => {
+                tab.classList.remove('active');
+                tab.style.background = 'var(--gray-200)';
+                tab.style.color = 'var(--gray-700)';
+            });
+            
+            const activeTab = document.getElementById(`${game}-tab`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+                activeTab.style.background = 'var(--primary-color)';
+                activeTab.style.color = 'white';
+            }
+            
+            // Update search placeholder
+            const searchInput = document.getElementById('card-search-input');
+            if (searchInput) {
+                if (game === 'pokemon') {
+                    searchInput.placeholder = 'Search Pokemon cards...';
+                } else {
+                    searchInput.placeholder = 'Search Yu-Gi-Oh! cards...';
+                }
+            }
+            
+            // Clear current results and show appropriate message
+            const cardsGrid = document.getElementById('cards-grid');
+            if (cardsGrid) {
+                if (game === 'pokemon') {
+                    cardsGrid.innerHTML = `
+                        <div style="text-align: center; padding: var(--space-12); color: var(--gray-500); grid-column: 1 / -1;">
+                            <div style="font-size: 4rem; margin-bottom: var(--space-4);">⚡</div>
+                            <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3);">Pokemon Cards Coming Soon!</h3>
+                            <p style="margin-bottom: var(--space-6);">We're working on adding Pokemon cards to our inventory. Check back soon!</p>
+                            <button onclick="switchGame('yugioh')" style="padding: var(--space-3) var(--space-6); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-lg); font-weight: 600; cursor: pointer;">
+                                Browse Yu-Gi-Oh! Cards
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    // Reload Yu-Gi-Oh cards
+                    if (window.loadFeaturedCards && typeof window.loadFeaturedCards === 'function') {
+                        window.loadFeaturedCards();
+                    } else if (window.performCardSearch && typeof window.performCardSearch === 'function') {
+                        window.performCardSearch();
+                    }
+                }
+            }
+            
+            // Update results info
+            const resultsTitle = document.getElementById('results-title');
+            const resultsCount = document.getElementById('results-count');
+            
+            if (resultsTitle) {
+                if (game === 'pokemon') {
+                    resultsTitle.textContent = 'Pokemon Cards';
+                } else {
+                    resultsTitle.textContent = 'Yu-Gi-Oh! Cards';
+                }
+            }
+            
+            if (resultsCount) {
+                if (game === 'pokemon') {
+                    resultsCount.textContent = 'Coming Soon';
+                } else {
+                    resultsCount.textContent = '';
+                }
+            }
+        }
+        
+        // Make switchGame globally available
+        window.switchGame = switchGame;
+        window.getCurrentGame = function() { return currentGame; };
     </script>
 </body>
 </html>
