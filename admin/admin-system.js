@@ -117,7 +117,7 @@ class AdminSystem {
         window.location.href = 'admin-login.html';
     }
 
-    loadAllData() {
+    async loadAllData() {
         // Load orders (both user and guest orders)
         const userOrders = JSON.parse(localStorage.getItem('tcg-orders') || '[]');
         const guestOrders = JSON.parse(localStorage.getItem('tcg-guest-orders') || '[]');
@@ -129,8 +129,8 @@ class AdminSystem {
         const users = JSON.parse(localStorage.getItem('tcg-users') || '{}');
         this.customers = Object.values(users).filter(user => !user.isAdmin);
 
-        // Load inventory (mock data for now, can be extended)
-        this.loadInventoryData();
+        // Load inventory from API
+        await this.loadInventoryData();
 
         // Load buylist data
         this.loadBuylistData();
@@ -139,74 +139,109 @@ class AdminSystem {
         this.calculateAnalytics();
     }
 
-    loadInventoryData() {
-        // Load existing inventory or create sample data
+    async loadInventoryData() {
+        // Load existing inventory from localStorage
         let inventory = JSON.parse(localStorage.getItem('tcg-inventory') || '[]');
         
         if (inventory.length === 0) {
-            // Create sample inventory data
-            inventory = [
-                {
-                    id: 1,
-                    name: 'Snake-Eye Ash',
-                    price: 45.99,
-                    quantity: 12,
-                    category: 'Monster',
-                    rarity: 'Ultra Rare',
-                    set: 'FIRE',
-                    lowStockThreshold: 5,
-                    image: 'https://images.ygoprodeck.com/images/cards/back.jpg'
-                },
-                {
-                    id: 2,
-                    name: 'Kashtira Fenrir',
-                    price: 32.50,
-                    quantity: 8,
-                    category: 'Monster',
-                    rarity: 'Secret Rare',
-                    set: 'PHHY',
-                    lowStockThreshold: 5,
-                    image: 'https://images.ygoprodeck.com/images/cards/back.jpg'
-                },
-                {
-                    id: 3,
-                    name: 'Ash Blossom & Joyous Spring',
-                    price: 28.75,
-                    quantity: 25,
-                    category: 'Monster',
-                    rarity: 'Ultra Rare',
-                    set: 'MAGO',
-                    lowStockThreshold: 10,
-                    image: 'https://images.ygoprodeck.com/images/cards/back.jpg'
-                },
-                {
-                    id: 4,
-                    name: 'Infinite Impermanence',
-                    price: 22.99,
-                    quantity: 3,
-                    category: 'Trap',
-                    rarity: 'Secret Rare',
-                    set: 'FLOD',
-                    lowStockThreshold: 5,
-                    image: 'https://images.ygoprodeck.com/images/cards/back.jpg'
-                },
-                {
-                    id: 5,
-                    name: 'Nibiru, the Primal Being',
-                    price: 12.50,
-                    quantity: 15,
-                    category: 'Monster',
-                    rarity: 'Super Rare',
-                    set: 'TN19',
-                    lowStockThreshold: 8,
-                    image: 'https://images.ygoprodeck.com/images/cards/back.jpg'
-                }
-            ];
+            console.log('🔄 Loading inventory from API...');
             
-            localStorage.setItem('tcg-inventory', JSON.stringify(inventory));
+            try {
+                // Load meta cards from API
+                const metaCards = await window.ygoproAPI.getMetaCards();
+                
+                if (metaCards && metaCards.length > 0) {
+                    inventory = metaCards.map((card, index) => {
+                        const formattedCard = window.ygoproAPI.formatCardForDisplay(card);
+                        
+                        return {
+                            id: card.id || (Date.now() + index),
+                            name: card.name,
+                            price: parseFloat(formattedCard.price),
+                            quantity: this.generateRandomQuantity(),
+                            category: this.getCardCategory(card),
+                            rarity: formattedCard.rarity,
+                            set: this.getCardSet(card),
+                            lowStockThreshold: 5,
+                            image: formattedCard.image,
+                            apiData: card // Store original API data
+                        };
+                    });
+                    
+                    // Save to localStorage
+                    localStorage.setItem('tcg-inventory', JSON.stringify(inventory));
+                    console.log(`✅ Loaded ${inventory.length} cards from API`);
+                } else {
+                    console.warn('⚠️ No cards returned from API, using fallback data');
+                    inventory = this.getFallbackInventory();
+                }
+            } catch (error) {
+                console.error('❌ Error loading cards from API:', error);
+                inventory = this.getFallbackInventory();
+            }
         }
         
         this.inventory = inventory;
+    }
+
+    generateRandomQuantity() {
+        // Generate realistic inventory quantities
+        const quantities = [0, 1, 2, 3, 4, 5, 8, 12, 15, 20, 25];
+        return quantities[Math.floor(Math.random() * quantities.length)];
+    }
+
+    getCardCategory(card) {
+        if (!card.type) return 'Unknown';
+        
+        if (card.type.includes('Monster')) return 'Monster';
+        if (card.type.includes('Spell')) return 'Spell';
+        if (card.type.includes('Trap')) return 'Trap';
+        return 'Unknown';
+    }
+
+    getCardSet(card) {
+        if (card.card_sets && card.card_sets.length > 0) {
+            return card.card_sets[0].set_code || 'Unknown';
+        }
+        return 'Unknown';
+    }
+
+    getFallbackInventory() {
+        return [
+            {
+                id: 1,
+                name: 'Snake-Eye Ash',
+                price: 45.99,
+                quantity: 12,
+                category: 'Monster',
+                rarity: 'Ultra Rare',
+                set: 'FIRE',
+                lowStockThreshold: 5,
+                image: 'https://images.ygoprodeck.com/images/cards/back.jpg'
+            },
+            {
+                id: 2,
+                name: 'Kashtira Fenrir',
+                price: 32.50,
+                quantity: 8,
+                category: 'Monster',
+                rarity: 'Secret Rare',
+                set: 'PHHY',
+                lowStockThreshold: 5,
+                image: 'https://images.ygoprodeck.com/images/cards/back.jpg'
+            },
+            {
+                id: 3,
+                name: 'Ash Blossom & Joyous Spring',
+                price: 28.75,
+                quantity: 25,
+                category: 'Monster',
+                rarity: 'Ultra Rare',
+                set: 'MAGO',
+                lowStockThreshold: 10,
+                image: 'https://images.ygoprodeck.com/images/cards/back.jpg'
+            }
+        ];
     }
 
     loadBuylistData() {
