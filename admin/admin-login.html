@@ -276,9 +276,30 @@
                 if (!user) return false;
                 if (!user.isAdmin) return false;
                 if (!user.isActive) return false;
-                if (user.password !== password) return false; // In production, use proper password hashing
+                
+                // Handle both plain text passwords and hashed passwords
+                if (user.password) {
+                    // Plain text password (demo/development)
+                    if (user.password !== password) return false;
+                } else if (user.passwordHash) {
+                    // Hashed password (production-like)
+                    const expectedHash = this.hashPassword(password);
+                    if (user.passwordHash !== expectedHash) return false;
+                } else {
+                    return false; // No password field found
+                }
                 
                 return true;
+            }
+
+            hashPassword(password) {
+                let hash = 0;
+                for (let i = 0; i < password.length; i++) {
+                    const char = password.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash;
+                }
+                return hash.toString();
             }
 
             loginSuccess(email) {
