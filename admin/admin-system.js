@@ -690,11 +690,16 @@ class AdminSystem {
     }
 
     updateDashboard() {
-        // Update statistics cards
-        document.getElementById('total-orders').textContent = this.analytics.totalOrders;
-        document.getElementById('total-revenue').textContent = `$${this.analytics.totalRevenue.toFixed(2)}`;
-        document.getElementById('pending-orders').textContent = this.analytics.pendingOrders;
-        document.getElementById('total-customers').textContent = this.analytics.totalCustomers;
+        // Update statistics cards with null checks
+        const totalOrdersEl = document.getElementById('total-orders');
+        const totalRevenueEl = document.getElementById('total-revenue');
+        const pendingOrdersEl = document.getElementById('pending-orders');
+        const totalCustomersEl = document.getElementById('total-customers');
+
+        if (totalOrdersEl) totalOrdersEl.textContent = this.analytics?.totalOrders || 0;
+        if (totalRevenueEl) totalRevenueEl.textContent = `$${(this.analytics?.totalRevenue || 0).toFixed(2)}`;
+        if (pendingOrdersEl) pendingOrdersEl.textContent = this.analytics?.pendingOrders || 0;
+        if (totalCustomersEl) totalCustomersEl.textContent = this.analytics?.totalCustomers || 0;
 
         // Update content based on current tab
         const activeTab = document.querySelector('.admin-tab.active');
