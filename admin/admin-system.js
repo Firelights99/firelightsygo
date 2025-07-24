@@ -195,36 +195,56 @@ class AdminSystem {
             }
         };
         
+        // Performance optimization flags
+        this.isLoading = false;
+        this.loadingStates = {
+            orders: false,
+            customers: false,
+            inventory: false,
+            buylist: false,
+            analytics: false
+        };
+        
         this.init();
     }
 
-    init() {
+    async init() {
         console.log('🔧 Admin System Initializing...');
         
-        // Check admin authentication
-        this.checkAdminAuth();
-        console.log('✅ Admin authentication verified');
+        // Show initial loading state
+        this.showGlobalLoading('Initializing admin dashboard...');
         
-        // Load all data
-        this.loadAllData();
-        console.log('📊 Admin data loaded successfully');
-        
-        // Update dashboard
-        this.updateDashboard();
-        console.log('🎛️ Dashboard updated');
-        
-        // Set up periodic refresh
-        setInterval(() => {
-            this.loadAllData();
+        try {
+            // Check admin authentication
+            this.checkAdminAuth();
+            console.log('✅ Admin authentication verified');
+            
+            // Load all data with loading states
+            await this.loadAllDataWithLoading();
+            console.log('📊 Admin data loaded successfully');
+            
+            // Update dashboard
             this.updateDashboard();
-        }, 30000); // Refresh every 30 seconds
-        
-        console.log('⚡ Admin System fully initialized and ready');
-        console.log(`📈 System Status:
+            console.log('🎛️ Dashboard updated');
+            
+            // Set up periodic refresh (less frequent for performance)
+            setInterval(() => {
+                this.refreshDataInBackground();
+            }, 60000); // Refresh every 60 seconds instead of 30
+            
+            console.log('⚡ Admin System fully initialized and ready');
+            console.log(`📈 System Status:
 - Total Orders: ${this.orders.length}
 - Total Customers: ${this.customers.length}
 - Inventory Items: ${this.inventory.length}
 - Admin: ${this.currentAdmin?.firstName} ${this.currentAdmin?.lastName}`);
+            
+        } catch (error) {
+            console.error('❌ Error initializing admin system:', error);
+            this.showToast('Error initializing admin dashboard', 'error');
+        } finally {
+            this.hideGlobalLoading();
+        }
     }
 
     checkAdminAuth() {
@@ -270,6 +290,175 @@ class AdminSystem {
 
         // Calculate analytics
         this.calculateAnalytics();
+    }
+
+    async loadAllDataWithLoading() {
+        try {
+            // Show loading for orders
+            this.showSectionLoading('orders', 'Loading orders...');
+            const userOrders = JSON.parse(localStorage.getItem('tcg-orders') || '[]');
+            const guestOrders = JSON.parse(localStorage.getItem('tcg-guest-orders') || '[]');
+            this.orders = [...userOrders, ...guestOrders].sort((a, b) => 
+                new Date(b.createdAt) - new Date(a.createdAt)
+            );
+            this.hideSectionLoading('orders');
+
+            // Show loading for customers
+            this.showSectionLoading('customers', 'Loading customers...');
+            const users = JSON.parse(localStorage.getItem('tcg-users') || '{}');
+            this.customers = Object.values(users).filter(user => !user.isAdmin);
+            this.hideSectionLoading('customers');
+
+            // Show loading for inventory
+            this.showSectionLoading('inventory', 'Loading inventory...');
+            await this.loadInventoryData();
+            this.hideSectionLoading('inventory');
+
+            // Show loading for buylist
+            this.showSectionLoading('buylist', 'Loading buylist...');
+            this.loadBuylistData();
+            this.hideSectionLoading('buylist');
+
+            // Calculate analytics
+            this.showSectionLoading('analytics', 'Calculating analytics...');
+            this.calculateAnalytics();
+            this.hideSectionLoading('analytics');
+
+        } catch (error) {
+            console.error('Error loading data:', error);
+            this.hideAllSectionLoading();
+            throw error;
+        }
+    }
+
+    async refreshDataInBackground() {
+        if (this.isLoading) return;
+        
+        try {
+            this.isLoading = true;
+            await this.loadAllData();
+            this.updateDashboard();
+        } catch (error) {
+            console.error('Error refreshing data:', error);
+        } finally {
+            this.isLoading = false;
+        }
+    }
+
+    showGlobalLoading(message = 'Loading...') {
+        const loadingOverlay = document.createElement('div');
+        loadingOverlay.id = 'global-loading';
+        loadingOverlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            font-family: inherit;
+        `;
+        
+        loadingOverlay.innerHTML = `
+            <div style="
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+                padding: 40px;
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            ">
+                <div style="
+                    width: 40px;
+                    height: 40px;
+                    border: 4px solid #e5e7eb;
+                    border-top: 4px solid var(--primary-color);
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                "></div>
+                <div style="
+                    font-size: 1.125rem;
+                    font-weight: 600;
+                    color: var(--gray-700);
+                ">${message}</div>
+            </div>
+        `;
+
+        // Add spin animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        document.body.appendChild(loadingOverlay);
+    }
+
+    hideGlobalLoading() {
+        const loadingOverlay = document.getElementById('global-loading');
+        if (loadingOverlay) {
+            loadingOverlay.remove();
+        }
+    }
+
+    showSectionLoading(section, message = 'Loading...') {
+        this.loadingStates[section] = true;
+        
+        const containers = {
+            orders: ['pending-orders-list', 'processing-orders-list', 'completed-orders-list', 'all-orders-list'],
+            customers: ['customers-list'],
+            inventory: ['inventory-list'],
+            buylist: ['buylist-items'],
+            analytics: ['sales-chart', 'top-cards-list']
+        };
+
+        const sectionContainers = containers[section] || [];
+        
+        sectionContainers.forEach(containerId => {
+            const container = document.getElementById(containerId);
+            if (container) {
+                container.innerHTML = `
+                    <div style="
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 40px;
+                        color: var(--gray-500);
+                    ">
+                        <div style="
+                            width: 24px;
+                            height: 24px;
+                            border: 3px solid #e5e7eb;
+                            border-top: 3px solid var(--primary-color);
+                            border-radius: 50%;
+                            animation: spin 1s linear infinite;
+                            margin-bottom: 12px;
+                        "></div>
+                        <div style="font-size: 0.875rem;">${message}</div>
+                    </div>
+                `;
+            }
+        });
+    }
+
+    hideSectionLoading(section) {
+        this.loadingStates[section] = false;
+    }
+
+    hideAllSectionLoading() {
+        Object.keys(this.loadingStates).forEach(section => {
+            this.loadingStates[section] = false;
+        });
     }
 
     async loadInventoryData() {
