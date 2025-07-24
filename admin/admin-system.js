@@ -2447,18 +2447,56 @@ function importBuylistFromAPI() {
 }
 
 function exportBuylist() {
-    const buylistData = JSON.stringify(adminSystem.buylist, null, 2);
-    const blob = new Blob([buylistData], { type: 'application/json' });
+    // Create CSV headers
+    const headers = [
+        'Card Name',
+        'Game',
+        'Cash Price',
+        'Credit Price',
+        'Category',
+        'Rarity',
+        'Set',
+        'Status',
+        'Max Quantity',
+        'Current Stock',
+        'Date Added'
+    ];
+    
+    // Convert buylist data to CSV format
+    const csvRows = [headers.join(',')];
+    
+    adminSystem.buylist.forEach(item => {
+        const row = [
+            `"${item.name.replace(/"/g, '""')}"`, // Escape quotes in card names
+            item.game,
+            item.cashPrice.toFixed(2),
+            item.creditPrice.toFixed(2),
+            `"${item.category.replace(/"/g, '""')}"`,
+            `"${item.rarity.replace(/"/g, '""')}"`,
+            `"${item.set.replace(/"/g, '""')}"`,
+            item.status,
+            item.maxQuantity,
+            item.currentStock,
+            new Date(item.createdAt).toLocaleDateString()
+        ];
+        csvRows.push(row.join(','));
+    });
+    
+    // Create CSV content
+    const csvContent = csvRows.join('\n');
+    
+    // Create and download the file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `buylist-export-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `buylist-export-${new Date().toISOString().split('T')[0]}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
-    adminSystem.showToast('Buylist exported successfully', 'success');
+    adminSystem.showToast('Buylist exported to CSV successfully', 'success');
 }
 
 // Initialize admin system
