@@ -1669,45 +1669,85 @@ function switchTab(tabName) {
 }
 
 function returnToWebsite() {
-    const modalContent = `
-        <div style="max-width: 450px; text-align: center;">
-            <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--primary-color);">
-                🏠
+    // Create modal with store-style animation and behavior
+    const modal = document.createElement('div');
+    modal.id = 'return-website-modal';
+    modal.className = 'store-modal-overlay';
+    modal.innerHTML = `
+        <div class="store-modal-content" onclick="event.stopPropagation()">
+            <div class="store-modal-header">
+                <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin: 0;">Return to Website</h2>
+                <button onclick="closeReturnWebsiteModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500); padding: var(--space-2);">×</button>
             </div>
-            <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-3);">
-                Return to Main Website?
-            </h3>
-            <p style="color: var(--gray-600); margin-bottom: var(--space-6); line-height: 1.5;">
-                You will be redirected to the main Firelight Duel Academy website. Your admin session will remain active so you can return to the dashboard anytime.
-            </p>
-            
-            <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
-                <div style="display: flex; align-items: center; justify-content: center; gap: var(--space-2); color: var(--gray-600); font-size: 0.875rem;">
-                    <i class="fas fa-info-circle"></i>
-                    <span>Note: Admin accounts cannot make purchases or use the buylist on the main site</span>
+            <div class="store-modal-body">
+                <div style="text-align: center; padding: var(--space-6);">
+                    <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--primary-color);">🏠</div>
+                    <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-3);">
+                        Return to Main Website?
+                    </h3>
+                    <p style="color: var(--gray-600); margin-bottom: var(--space-6); line-height: 1.5;">
+                        You will be redirected to the main Firelight Duel Academy website. Your admin session will remain active so you can return to the dashboard anytime.
+                    </p>
+                    
+                    <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: var(--space-2); color: var(--gray-600); font-size: 0.875rem;">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Note: Admin accounts cannot make purchases or use the buylist on the main site</span>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: var(--space-3); justify-content: center;">
+                        <button class="secondary-btn" onclick="closeReturnWebsiteModal()" style="min-width: 120px;">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button class="primary-btn" onclick="confirmReturnToWebsite()" style="min-width: 120px;">
+                            <i class="fas fa-home"></i> Go to Website
+                        </button>
+                    </div>
                 </div>
-            </div>
-            
-            <div style="display: flex; gap: var(--space-3); justify-content: center;">
-                <button class="admin-btn btn-secondary" onclick="adminSystem.closeModal()" style="min-width: 120px;">
-                    <i class="fas fa-times"></i> Cancel
-                </button>
-                <button class="admin-btn btn-primary" onclick="confirmReturnToWebsite()" style="min-width: 120px;">
-                    <i class="fas fa-home"></i> Go to Website
-                </button>
             </div>
         </div>
     `;
 
-    adminSystem.showModal('Return to Website', modalContent);
+    // Add to body and show with animation
+    document.body.appendChild(modal);
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    
+    // Add click outside to close
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeReturnWebsiteModal();
+        }
+    });
+    
+    // Add escape key to close
+    const escapeHandler = (e) => {
+        if (e.key === 'Escape') {
+            closeReturnWebsiteModal();
+            document.removeEventListener('keydown', escapeHandler);
+        }
+    };
+    document.addEventListener('keydown', escapeHandler);
+}
+
+function closeReturnWebsiteModal() {
+    const modal = document.getElementById('return-website-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.remove();
+        document.body.style.overflow = '';
+    }
 }
 
 function confirmReturnToWebsite() {
     // Close the modal
-    adminSystem.closeModal();
+    closeReturnWebsiteModal();
     
-    // Show a brief message
-    adminSystem.showToast('Redirecting to main website...', 'info', 1500);
+    // Show a brief message using admin system toast
+    if (window.adminSystem && adminSystem.showToast) {
+        adminSystem.showToast('Redirecting to main website...', 'info');
+    }
     
     // Redirect to main website after a short delay
     setTimeout(() => {
@@ -1716,45 +1756,85 @@ function confirmReturnToWebsite() {
 }
 
 function adminLogout() {
-    const modalContent = `
-        <div style="max-width: 450px; text-align: center;">
-            <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--warning-color);">
-                🚪
+    // Create modal with store-style animation and behavior
+    const modal = document.createElement('div');
+    modal.id = 'admin-logout-modal';
+    modal.className = 'store-modal-overlay';
+    modal.innerHTML = `
+        <div class="store-modal-content" onclick="event.stopPropagation()">
+            <div class="store-modal-header">
+                <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin: 0;">Admin Logout</h2>
+                <button onclick="closeAdminLogoutModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500); padding: var(--space-2);">×</button>
             </div>
-            <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-3);">
-                Sign Out of Admin Dashboard?
-            </h3>
-            <p style="color: var(--gray-600); margin-bottom: var(--space-6); line-height: 1.5;">
-                You will be logged out of the admin dashboard and redirected to the login page. Any unsaved changes will be lost.
-            </p>
-            
-            <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
-                <div style="display: flex; align-items: center; justify-content: center; gap: var(--space-2); color: var(--gray-600); font-size: 0.875rem;">
-                    <i class="fas fa-info-circle"></i>
-                    <span>You can sign back in anytime with your admin credentials</span>
+            <div class="store-modal-body">
+                <div style="text-align: center; padding: var(--space-6);">
+                    <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--warning-color);">🚪</div>
+                    <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-3);">
+                        Sign Out of Admin Dashboard?
+                    </h3>
+                    <p style="color: var(--gray-600); margin-bottom: var(--space-6); line-height: 1.5;">
+                        You will be logged out of the admin dashboard and redirected to the login page. Any unsaved changes will be lost.
+                    </p>
+                    
+                    <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: var(--space-2); color: var(--gray-600); font-size: 0.875rem;">
+                            <i class="fas fa-info-circle"></i>
+                            <span>You can sign back in anytime with your admin credentials</span>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: var(--space-3); justify-content: center;">
+                        <button class="secondary-btn" onclick="closeAdminLogoutModal()" style="min-width: 120px;">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button class="danger-btn" onclick="confirmAdminLogout()" style="min-width: 120px;">
+                            <i class="fas fa-sign-out-alt"></i> Sign Out
+                        </button>
+                    </div>
                 </div>
-            </div>
-            
-            <div style="display: flex; gap: var(--space-3); justify-content: center;">
-                <button class="admin-btn btn-secondary" onclick="adminSystem.closeModal()" style="min-width: 120px;">
-                    <i class="fas fa-times"></i> Cancel
-                </button>
-                <button class="admin-btn btn-danger" onclick="confirmAdminLogout()" style="min-width: 120px;">
-                    <i class="fas fa-sign-out-alt"></i> Sign Out
-                </button>
             </div>
         </div>
     `;
 
-    adminSystem.showModal('Admin Logout', modalContent);
+    // Add to body and show with animation
+    document.body.appendChild(modal);
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    
+    // Add click outside to close
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeAdminLogoutModal();
+        }
+    });
+    
+    // Add escape key to close
+    const escapeHandler = (e) => {
+        if (e.key === 'Escape') {
+            closeAdminLogoutModal();
+            document.removeEventListener('keydown', escapeHandler);
+        }
+    };
+    document.addEventListener('keydown', escapeHandler);
+}
+
+function closeAdminLogoutModal() {
+    const modal = document.getElementById('admin-logout-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.remove();
+        document.body.style.overflow = '';
+    }
 }
 
 function confirmAdminLogout() {
     // Close the modal
-    adminSystem.closeModal();
+    closeAdminLogoutModal();
     
-    // Show a brief "signing out" message
-    adminSystem.showToast('Signing out...', 'info', 1500);
+    // Show a brief "signing out" message using admin system toast
+    if (window.adminSystem && adminSystem.showToast) {
+        adminSystem.showToast('Signing out...', 'info');
+    }
     
     // Clear both admin and user sessions completely
     setTimeout(() => {
@@ -1774,6 +1854,8 @@ window.returnToWebsite = returnToWebsite;
 window.adminLogout = adminLogout;
 window.confirmReturnToWebsite = confirmReturnToWebsite;
 window.confirmAdminLogout = confirmAdminLogout;
+window.closeReturnWebsiteModal = closeReturnWebsiteModal;
+window.closeAdminLogoutModal = closeAdminLogoutModal;
 
 // Buylist Management Functions
 function searchBuylist() {
