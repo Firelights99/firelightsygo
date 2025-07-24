@@ -69,6 +69,15 @@ class DatabaseInitializer {
 
     async createSampleAdmin() {
         try {
+            // Check if any admin user already exists
+            const users = JSON.parse(localStorage.getItem('tcg-users') || '{}');
+            const existingAdmin = Object.values(users).find(user => user.isAdmin);
+            
+            if (existingAdmin) {
+                console.log('👑 Admin user already exists:', existingAdmin.email);
+                return;
+            }
+
             const adminUser = await this.dbService.createUser({
                 email: 'admin@firelightduelacademy.com',
                 password: 'admin123',
@@ -79,10 +88,10 @@ class DatabaseInitializer {
             });
 
             // Mark as admin (would be done in backend normally)
-            const users = JSON.parse(localStorage.getItem('tcg-users') || '{}');
-            if (users[adminUser.email]) {
-                users[adminUser.email].isAdmin = true;
-                localStorage.setItem('tcg-users', JSON.stringify(users));
+            const updatedUsers = JSON.parse(localStorage.getItem('tcg-users') || '{}');
+            if (updatedUsers[adminUser.email]) {
+                updatedUsers[adminUser.email].isAdmin = true;
+                localStorage.setItem('tcg-users', JSON.stringify(updatedUsers));
             }
 
             console.log('👑 Admin user created:', adminUser.email);
