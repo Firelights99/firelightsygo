@@ -1670,6 +1670,11 @@ function switchTab(tabName) {
 
 // Make returnToWebsite available globally
 window.returnToWebsite = function() {
+    if (!window.adminSystem) {
+        console.error('AdminSystem not initialized');
+        return;
+    }
+    
     adminSystem.showStoreStyleModal('Return to Website', `
         <div style="text-align: center; padding: var(--space-6);">
             <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--primary-color);">🏠</div>
@@ -1701,6 +1706,11 @@ window.returnToWebsite = function() {
 
 // Make adminLogout available globally
 window.adminLogout = function() {
+    if (!window.adminSystem) {
+        console.error('AdminSystem not initialized');
+        return;
+    }
+    
     adminSystem.showStoreStyleModal('Admin Logout', `
         <div style="text-align: center; padding: var(--space-6);">
             <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--warning-color);">🚪</div>
@@ -1732,11 +1742,16 @@ window.adminLogout = function() {
 
 // Make confirmReturnToWebsite available globally
 window.confirmReturnToWebsite = function() {
+    if (!window.adminSystem) {
+        console.error('AdminSystem not initialized');
+        return;
+    }
+    
     // Close the modal
-    adminSystem.closeModal();
+    adminSystem.closeStoreStyleModal();
     
     // Show a brief message
-    adminSystem.showToast('Redirecting to main website...', 'info', 1500);
+    adminSystem.showToast('Redirecting to main website...', 'info');
     
     // Redirect to main website after a short delay
     setTimeout(() => {
@@ -1744,46 +1759,18 @@ window.confirmReturnToWebsite = function() {
     }, 1000);
 };
 
-function adminLogout() {
-    const modalContent = `
-        <div style="max-width: 450px; text-align: center;">
-            <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--warning-color);">
-                🚪
-            </div>
-            <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-3);">
-                Sign Out of Admin Dashboard?
-            </h3>
-            <p style="color: var(--gray-600); margin-bottom: var(--space-6); line-height: 1.5;">
-                You will be logged out of the admin dashboard and redirected to the login page. Any unsaved changes will be lost.
-            </p>
-            
-            <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
-                <div style="display: flex; align-items: center; justify-content: center; gap: var(--space-2); color: var(--gray-600); font-size: 0.875rem;">
-                    <i class="fas fa-info-circle"></i>
-                    <span>You can sign back in anytime with your admin credentials</span>
-                </div>
-            </div>
-            
-            <div style="display: flex; gap: var(--space-3); justify-content: center;">
-                <button class="admin-btn btn-secondary" onclick="adminSystem.closeModal()" style="min-width: 120px;">
-                    <i class="fas fa-times"></i> Cancel
-                </button>
-                <button class="admin-btn btn-danger" onclick="confirmAdminLogout()" style="min-width: 120px;">
-                    <i class="fas fa-sign-out-alt"></i> Sign Out
-                </button>
-            </div>
-        </div>
-    `;
-
-    adminSystem.showModal('Admin Logout', modalContent);
-}
-
-function confirmAdminLogout() {
+// Make confirmAdminLogout available globally
+window.confirmAdminLogout = function() {
+    if (!window.adminSystem) {
+        console.error('AdminSystem not initialized');
+        return;
+    }
+    
     // Close the modal
-    adminSystem.closeModal();
+    adminSystem.closeStoreStyleModal();
     
     // Show a brief "signing out" message
-    adminSystem.showToast('Signing out...', 'info', 1500);
+    adminSystem.showToast('Signing out...', 'info');
     
     // Clear both admin and user sessions completely
     setTimeout(() => {
@@ -1796,54 +1783,7 @@ function confirmAdminLogout() {
         // Redirect to admin login
         window.location.href = 'admin-login.html';
     }, 1000);
-}
-
-function returnToWebsite() {
-    const modalContent = `
-        <div style="max-width: 450px; text-align: center;">
-            <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--primary-color);">
-                🏠
-            </div>
-            <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-3);">
-                Return to Main Website?
-            </h3>
-            <p style="color: var(--gray-600); margin-bottom: var(--space-6); line-height: 1.5;">
-                You will be redirected to the main Firelight Duel Academy website. Your admin session will remain active so you can return to the dashboard anytime.
-            </p>
-            
-            <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
-                <div style="display: flex; align-items: center; justify-content: center; gap: var(--space-2); color: var(--gray-600); font-size: 0.875rem;">
-                    <i class="fas fa-info-circle"></i>
-                    <span>Note: Admin accounts cannot make purchases or use the buylist on the main site</span>
-                </div>
-            </div>
-            
-            <div style="display: flex; gap: var(--space-3); justify-content: center;">
-                <button class="admin-btn btn-secondary" onclick="adminSystem.closeModal()" style="min-width: 120px;">
-                    <i class="fas fa-times"></i> Cancel
-                </button>
-                <button class="admin-btn btn-primary" onclick="confirmReturnToWebsite()" style="min-width: 120px;">
-                    <i class="fas fa-home"></i> Go to Website
-                </button>
-            </div>
-        </div>
-    `;
-
-    adminSystem.showModal('Return to Website', modalContent);
-}
-
-function confirmReturnToWebsite() {
-    // Close the modal
-    adminSystem.closeModal();
-    
-    // Show a brief message
-    adminSystem.showToast('Redirecting to main website...', 'info', 1500);
-    
-    // Redirect to main website after a short delay
-    setTimeout(() => {
-        window.location.href = '../app.html';
-    }, 1000);
-}
+};
 
 // Buylist Management Functions
 function searchBuylist() {
