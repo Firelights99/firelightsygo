@@ -1869,6 +1869,21 @@ window.confirmAdminLogout = confirmAdminLogout;
 window.closeReturnWebsiteModal = closeReturnWebsiteModal;
 window.closeAdminLogoutModal = closeAdminLogoutModal;
 
+// Debug function to test if functions are working
+window.testModalFunctions = function() {
+    console.log('Testing modal functions...');
+    console.log('returnToWebsite function:', typeof returnToWebsite);
+    console.log('adminLogout function:', typeof adminLogout);
+    
+    // Test if modal container exists
+    const modalContainer = document.getElementById('modal-container');
+    console.log('Modal container exists:', !!modalContainer);
+    
+    if (!modalContainer) {
+        console.error('Modal container not found! This could be the issue.');
+    }
+};
+
 // Buylist Management Functions
 function searchBuylist() {
     const query = document.getElementById('buylist-search').value.toLowerCase();
