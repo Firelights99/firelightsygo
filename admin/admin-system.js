@@ -1668,16 +1668,12 @@ function switchTab(tabName) {
     adminSystem.updateDashboard();
 }
 
-// Make returnToWebsite available globally
-window.returnToWebsite = function() {
-    if (!window.adminSystem) {
-        console.error('AdminSystem not initialized');
-        return;
-    }
-    
-    adminSystem.showStoreStyleModal('Return to Website', `
-        <div style="text-align: center; padding: var(--space-6);">
-            <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--primary-color);">🏠</div>
+function returnToWebsite() {
+    const modalContent = `
+        <div style="max-width: 450px; text-align: center;">
+            <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--primary-color);">
+                🏠
+            </div>
             <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-3);">
                 Return to Main Website?
             </h3>
@@ -1693,27 +1689,38 @@ window.returnToWebsite = function() {
             </div>
             
             <div style="display: flex; gap: var(--space-3); justify-content: center;">
-                <button class="secondary-btn" onclick="adminSystem.closeStoreStyleModal()" style="min-width: 120px;">
+                <button class="admin-btn btn-secondary" onclick="adminSystem.closeModal()" style="min-width: 120px;">
                     <i class="fas fa-times"></i> Cancel
                 </button>
-                <button class="primary-btn" onclick="confirmReturnToWebsite()" style="min-width: 120px;">
+                <button class="admin-btn btn-primary" onclick="confirmReturnToWebsite()" style="min-width: 120px;">
                     <i class="fas fa-home"></i> Go to Website
                 </button>
             </div>
         </div>
-    `);
-};
+    `;
 
-// Make adminLogout available globally
-window.adminLogout = function() {
-    if (!window.adminSystem) {
-        console.error('AdminSystem not initialized');
-        return;
-    }
+    adminSystem.showModal('Return to Website', modalContent);
+}
+
+function confirmReturnToWebsite() {
+    // Close the modal
+    adminSystem.closeModal();
     
-    adminSystem.showStoreStyleModal('Admin Logout', `
-        <div style="text-align: center; padding: var(--space-6);">
-            <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--warning-color);">🚪</div>
+    // Show a brief message
+    adminSystem.showToast('Redirecting to main website...', 'info', 1500);
+    
+    // Redirect to main website after a short delay
+    setTimeout(() => {
+        window.location.href = '../app.html';
+    }, 1000);
+}
+
+function adminLogout() {
+    const modalContent = `
+        <div style="max-width: 450px; text-align: center;">
+            <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--warning-color);">
+                🚪
+            </div>
             <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-3);">
                 Sign Out of Admin Dashboard?
             </h3>
@@ -1729,48 +1736,25 @@ window.adminLogout = function() {
             </div>
             
             <div style="display: flex; gap: var(--space-3); justify-content: center;">
-                <button class="secondary-btn" onclick="adminSystem.closeStoreStyleModal()" style="min-width: 120px;">
+                <button class="admin-btn btn-secondary" onclick="adminSystem.closeModal()" style="min-width: 120px;">
                     <i class="fas fa-times"></i> Cancel
                 </button>
-                <button class="danger-btn" onclick="confirmAdminLogout()" style="min-width: 120px;">
+                <button class="admin-btn btn-danger" onclick="confirmAdminLogout()" style="min-width: 120px;">
                     <i class="fas fa-sign-out-alt"></i> Sign Out
                 </button>
             </div>
         </div>
-    `);
-};
+    `;
 
-// Make confirmReturnToWebsite available globally
-window.confirmReturnToWebsite = function() {
-    if (!window.adminSystem) {
-        console.error('AdminSystem not initialized');
-        return;
-    }
-    
-    // Close the modal
-    adminSystem.closeStoreStyleModal();
-    
-    // Show a brief message
-    adminSystem.showToast('Redirecting to main website...', 'info');
-    
-    // Redirect to main website after a short delay
-    setTimeout(() => {
-        window.location.href = '../app.html';
-    }, 1000);
-};
+    adminSystem.showModal('Admin Logout', modalContent);
+}
 
-// Make confirmAdminLogout available globally
-window.confirmAdminLogout = function() {
-    if (!window.adminSystem) {
-        console.error('AdminSystem not initialized');
-        return;
-    }
-    
+function confirmAdminLogout() {
     // Close the modal
-    adminSystem.closeStoreStyleModal();
+    adminSystem.closeModal();
     
     // Show a brief "signing out" message
-    adminSystem.showToast('Signing out...', 'info');
+    adminSystem.showToast('Signing out...', 'info', 1500);
     
     // Clear both admin and user sessions completely
     setTimeout(() => {
@@ -1783,7 +1767,13 @@ window.confirmAdminLogout = function() {
         // Redirect to admin login
         window.location.href = 'admin-login.html';
     }, 1000);
-};
+}
+
+// Make functions globally available
+window.returnToWebsite = returnToWebsite;
+window.adminLogout = adminLogout;
+window.confirmReturnToWebsite = confirmReturnToWebsite;
+window.confirmAdminLogout = confirmAdminLogout;
 
 // Buylist Management Functions
 function searchBuylist() {
