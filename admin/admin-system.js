@@ -2298,6 +2298,76 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
 });
 
+// Mobile Navigation Functions
+function toggleMobileNav() {
+    const sidebar = document.getElementById('mobile-sidebar');
+    const overlay = document.getElementById('mobile-overlay');
+    
+    if (sidebar && overlay) {
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+        
+        // Prevent body scroll when sidebar is open
+        if (sidebar.classList.contains('active')) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+    }
+}
+
+function closeMobileNav() {
+    const sidebar = document.getElementById('mobile-sidebar');
+    const overlay = document.getElementById('mobile-overlay');
+    
+    if (sidebar && overlay) {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+// Update mobile nav active state when switching tabs
+function updateMobileNavActiveState(activeTabName) {
+    const navItems = document.querySelectorAll('.mobile-nav-item');
+    navItems.forEach(item => {
+        item.classList.remove('active');
+        const itemText = item.textContent.toLowerCase().trim();
+        if (itemText.includes(activeTabName.toLowerCase())) {
+            item.classList.add('active');
+        }
+    });
+}
+
+// Enhanced switchTab function with mobile nav support
+function switchTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.admin-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    const activeTabButton = document.querySelector(`[onclick="switchTab('${tabName}')"]`);
+    if (activeTabButton) {
+        activeTabButton.classList.add('active');
+    }
+
+    // Update tab content
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    const activeTabContent = document.getElementById(`${tabName}-tab`);
+    if (activeTabContent) {
+        activeTabContent.classList.add('active');
+    }
+
+    // Update mobile nav active state
+    updateMobileNavActiveState(tabName);
+
+    // Update content
+    if (window.adminSystem) {
+        adminSystem.updateDashboard();
+    }
+}
+
 // Add CSS animations
 const animationStyle = document.createElement('style');
 animationStyle.textContent = `
@@ -2324,3 +2394,8 @@ animationStyle.textContent = `
     }
 `;
 document.head.appendChild(animationStyle);
+
+// Make mobile navigation functions globally available
+window.toggleMobileNav = toggleMobileNav;
+window.closeMobileNav = closeMobileNav;
+window.switchTab = switchTab;
