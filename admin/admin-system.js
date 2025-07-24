@@ -2772,6 +2772,41 @@ async function loadCardsFromAPI() {
     }
 }
 
+// Make search functions globally available
+window.searchInventory = function() {
+    if (window.adminSystem) {
+        adminSystem.searchInventory();
+    }
+};
+
+window.searchCustomers = function() {
+    if (window.adminSystem) {
+        adminSystem.searchCustomers();
+    }
+};
+
+window.searchBuylist = searchBuylist;
+
+// Make other admin functions globally available
+window.addNewCard = function() {
+    if (window.adminSystem) {
+        adminSystem.addNewCard();
+    }
+};
+
+window.bulkUpdatePrices = function() {
+    if (window.adminSystem) {
+        adminSystem.bulkUpdatePrices();
+    }
+};
+
+window.addToBuylist = addToBuylist;
+window.bulkUpdateBuylistPrices = bulkUpdateBuylistPrices;
+window.importBuylistFromAPI = importBuylistFromAPI;
+window.exportBuylist = exportBuylist;
+window.filterBuylistByGame = filterBuylistByGame;
+window.filterBuylistByStatus = filterBuylistByStatus;
+
 // Make game toggle functions globally available
 window.switchInventoryGame = switchInventoryGame;
 window.switchBuylistGame = switchBuylistGame;
