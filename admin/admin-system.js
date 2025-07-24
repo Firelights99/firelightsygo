@@ -462,48 +462,65 @@ class AdminSystem {
     }
 
     async loadInventoryData() {
-        // Load existing inventory from localStorage
-        let inventory = JSON.parse(localStorage.getItem('tcg-inventory') || '[]');
+        // Always try to load fresh data from API for better user experience
+        console.log('🔄 Loading inventory from API...');
         
-        if (inventory.length === 0) {
-            console.log('🔄 Loading inventory from API...');
+        try {
+            // Check if API is available
+            if (!window.ygoproAPI) {
+                console.warn('⚠️ YGOPRODeck API not available, using fallback data');
+                this.inventory = this.getFallbackInventory();
+                return;
+            }
+
+            // Load meta cards from API with timeout
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('API timeout')), 5000)
+            );
             
-            try {
-                // Load meta cards from API
-                const metaCards = await window.ygoproAPI.getMetaCards();
-                
-                if (metaCards && metaCards.length > 0) {
-                    inventory = metaCards.map((card, index) => {
-                        const formattedCard = window.ygoproAPI.formatCardForDisplay(card);
-                        
-                        return {
-                            id: card.id || (Date.now() + index),
-                            name: card.name,
-                            price: parseFloat(formattedCard.price),
-                            quantity: this.generateRandomQuantity(),
-                            category: this.getCardCategory(card),
-                            rarity: formattedCard.rarity,
-                            set: this.getCardSet(card),
-                            lowStockThreshold: 5,
-                            image: formattedCard.image,
-                            apiData: card // Store original API data
-                        };
-                    });
+            const apiPromise = window.ygoproAPI.getMetaCards();
+            const metaCards = await Promise.race([apiPromise, timeoutPromise]);
+            
+            if (metaCards && metaCards.length > 0) {
+                const inventory = metaCards.map((card, index) => {
+                    const formattedCard = window.ygoproAPI.formatCardForDisplay(card);
                     
-                    // Save to localStorage
-                    localStorage.setItem('tcg-inventory', JSON.stringify(inventory));
-                    console.log(`✅ Loaded ${inventory.length} cards from API`);
-                } else {
-                    console.warn('⚠️ No cards returned from API, using fallback data');
-                    inventory = this.getFallbackInventory();
-                }
-            } catch (error) {
-                console.error('❌ Error loading cards from API:', error);
-                inventory = this.getFallbackInventory();
+                    return {
+                        id: card.id || (Date.now() + index),
+                        name: card.name,
+                        price: parseFloat(formattedCard.price),
+                        quantity: this.generateRandomQuantity(),
+                        category: this.getCardCategory(card),
+                        rarity: formattedCard.rarity,
+                        set: this.getCardSet(card),
+                        lowStockThreshold: 5,
+                        image: formattedCard.image,
+                        game: 'yugioh',
+                        apiData: card // Store original API data
+                    };
+                });
+                
+                // Save to localStorage for future use
+                localStorage.setItem('tcg-inventory', JSON.stringify(inventory));
+                this.inventory = inventory;
+                console.log(`✅ Loaded ${inventory.length} cards from API`);
+            } else {
+                console.warn('⚠️ No cards returned from API, using fallback data');
+                this.inventory = this.getFallbackInventory();
+            }
+        } catch (error) {
+            console.error('❌ Error loading cards from API:', error);
+            
+            // Try to load from localStorage first, then fallback
+            const cachedInventory = JSON.parse(localStorage.getItem('tcg-inventory') || '[]');
+            if (cachedInventory.length > 0) {
+                console.log('📦 Using cached inventory data');
+                this.inventory = cachedInventory;
+            } else {
+                console.log('🔄 Using fallback inventory data');
+                this.inventory = this.getFallbackInventory();
             }
         }
-        
-        this.inventory = inventory;
     }
 
     generateRandomQuantity() {
@@ -772,17 +789,15 @@ class AdminSystem {
         // Show loading state
         container.innerHTML = '<div style="text-align: center; padding: var(--space-4); color: var(--gray-500);">Loading orders...</div>';
 
-        // Simulate loading delay for better UX
-        setTimeout(() => {
-            if (pageOrders.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: var(--gray-500); padding: var(--space-4);">No orders found</p>';
-            } else {
-                container.innerHTML = pageOrders.map(order => this.generateOrderHTML(order)).join('');
-            }
-            
-            // Update pagination controls
-            this.updatePaginationControls('orders');
-        }, 200);
+        // Render immediately for better performance
+        if (pageOrders.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: var(--gray-500); padding: var(--space-4);">No orders found</p>';
+        } else {
+            container.innerHTML = pageOrders.map(order => this.generateOrderHTML(order)).join('');
+        }
+        
+        // Update pagination controls
+        this.updatePaginationControls('orders');
     }
 
     applyOrderFilters(orders) {
