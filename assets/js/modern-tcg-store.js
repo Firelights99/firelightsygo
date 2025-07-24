@@ -42,18 +42,33 @@ class ModernTCGStore {
             
             // Clean and validate each cart item
             return cartData.map(item => {
+                // Ensure we have a valid name - if not, try to recover from other properties
+                let itemName = item.name;
+                if (!itemName || itemName === 'Unknown Item' || itemName.trim() === '') {
+                    // Try to recover name from other properties
+                    if (item.cardName) {
+                        itemName = item.cardName;
+                    } else if (item.title) {
+                        itemName = item.title;
+                    } else {
+                        // If we still don't have a name, this item is invalid
+                        console.warn('Cart item missing name:', item);
+                        return null; // Mark for removal
+                    }
+                }
+
                 return {
                     id: item.id || Date.now() + Math.random(),
-                    name: String(item.name || 'Unknown Item'),
+                    name: String(itemName).trim(),
                     price: parseFloat(item.price) || 0,
                     image: String(item.image || 'https://images.ygoprodeck.com/images/cards/back.jpg'),
                     quantity: parseInt(item.quantity) || 1,
                     setCode: item.setCode || '',
                     rarity: item.rarity || '',
                     setName: item.setName || '',
-                    itemKey: item.itemKey || `${item.name}_${item.setCode || ''}_${item.rarity || ''}`
+                    itemKey: item.itemKey || `${itemName}_${item.setCode || ''}_${item.rarity || ''}`
                 };
-            }).filter(item => item.name !== 'Unknown Item' || item.price > 0); // Remove completely invalid items
+            }).filter(item => item !== null && item.name && item.name.trim() !== ''); // Remove invalid items
         } catch (error) {
             console.error('Error loading cart data:', error);
             // Clear corrupted cart data

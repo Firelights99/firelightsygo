@@ -754,15 +754,25 @@ class AdminSystem {
 
                 <div style="margin-bottom: var(--space-4);">
                     <h5 style="margin: 0 0 var(--space-2) 0;">Order Items</h5>
-                    ${order.items ? order.items.map(item => `
-                        <div style="display: flex; justify-content: space-between; padding: var(--space-2); border-bottom: 1px solid var(--gray-200);">
-                            <div>
-                                <strong>${item.name || 'Unknown Item'}</strong><br>
-                                <small>Qty: ${item.quantity || 0} × $${(item.price || 0).toFixed(2)}</small>
+                    ${order.items ? order.items.map(item => {
+                        // Enhanced item name recovery
+                        let itemName = item.name;
+                        if (!itemName || itemName === 'Unknown Item' || itemName.trim() === '') {
+                            // Try to recover from other possible properties
+                            itemName = item.cardName || item.title || item.productName || 'Unnamed Item';
+                        }
+                        
+                        return `
+                            <div style="display: flex; justify-content: space-between; padding: var(--space-2); border-bottom: 1px solid var(--gray-200);">
+                                <div>
+                                    <strong>${itemName}</strong><br>
+                                    <small>Qty: ${item.quantity || 0} × $${(item.price || 0).toFixed(2)}</small>
+                                    ${item.setCode && item.rarity ? `<br><small style="color: var(--gray-500);">${item.setCode} - ${item.rarity}</small>` : ''}
+                                </div>
+                                <div style="font-weight: 600;">$${((item.price || 0) * (item.quantity || 0)).toFixed(2)}</div>
                             </div>
-                            <div style="font-weight: 600;">$${((item.price || 0) * (item.quantity || 0)).toFixed(2)}</div>
-                        </div>
-                    `).join('') : '<p>No items found</p>'}
+                        `;
+                    }).join('') : '<p>No items found</p>'}
                 </div>
 
                 <div style="padding: var(--space-4); background: var(--gray-50); border-radius: var(--radius-lg);">
