@@ -414,8 +414,8 @@ class AdminSystem {
     applyOrderFilters(orders) {
         let filtered = [...orders];
         
-        // Apply status filter
-        if (this.filters.orders.status) {
+        // Apply status filter - include all statuses if no specific filter is set
+        if (this.filters.orders.status && this.filters.orders.status !== 'all') {
             filtered = filtered.filter(order => order.status === this.filters.orders.status);
         }
         
