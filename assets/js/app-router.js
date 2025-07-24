@@ -1783,11 +1783,7 @@ function exportCurrentDeck() {
 
 // Global product page functions - Make sure it's accessible globally
 window.selectSet = function(setCode, rarity, price, setName, clickedElement) {
-    console.log('🎯 selectSet called with:', { setCode, rarity, price, setName });
-    console.log('🎯 Event object:', event);
-    console.log('🎯 Function is working!');
-    console.log('🎯 Window.selectSet function executed successfully');
-    
+
     // Update all set options to remove selected state
     document.querySelectorAll('.set-option').forEach(option => {
         option.classList.remove('selected');
@@ -1833,7 +1829,7 @@ window.selectSet = function(setCode, rarity, price, setName, clickedElement) {
     
     // Animate price update
     if (priceElement) {
-        console.log('Updating price from', priceElement.textContent, 'to $' + price);
+        
         priceElement.classList.add('price-update');
         priceElement.textContent = '$' + price;
         setTimeout(() => {
@@ -1845,16 +1841,14 @@ window.selectSet = function(setCode, rarity, price, setName, clickedElement) {
     
     // Animate rarity badge update with smooth JavaScript animations
     if (rarityBadge) {
-        console.log('✅ Found rarity badge element!');
+        
         console.log('Current rarity badge:', {
             textContent: rarityBadge.textContent,
             backgroundColor: rarityBadge.style.backgroundColor,
             id: rarityBadge.id
         });
-        console.log('Updating rarity badge from', rarityBadge.textContent, 'to', rarity);
         
         const rarityColor = getRarityColor(rarity);
-        console.log('Setting rarity color to:', rarityColor);
         
         // Animate the rarity badge update with smooth transitions
         animateRarityBadgeUpdate(rarityBadge, rarity, rarityColor);
@@ -1869,11 +1863,11 @@ window.selectSet = function(setCode, rarity, price, setName, clickedElement) {
         );
         
         // Try to find the element with a small delay in case of timing issues
-        console.log('🔄 Retrying element detection in 100ms...');
+        
         setTimeout(() => {
             const delayedRarityBadge = document.getElementById('rarity-badge');
             if (delayedRarityBadge) {
-                console.log('✅ Found rarity badge on retry!');
+                
                 const rarityColor = getRarityColor(rarity);
                 animateRarityBadgeUpdate(delayedRarityBadge, rarity, rarityColor);
             } else {
@@ -1888,7 +1882,7 @@ window.selectSet = function(setCode, rarity, price, setName, clickedElement) {
         const cardName = document.querySelector('h1').textContent;
         const cardImage = document.getElementById('main-card-image').src;
         addToCartBtn.setAttribute('onclick', `addProductToCartWithDetails('${cardName}', ${price}, '${cardImage}', '${rarity}')`);
-        console.log('Updated add to cart button with new rarity:', rarity);
+        
     } else {
         console.error('Add to cart button not found!');
     }
@@ -1946,8 +1940,7 @@ function animateRarityBadgeUpdate(rarityBadge, newRarity, newColor) {
             rarityBadge.style.boxShadow = '0 1px 2px rgba(0,0,0,0.3)';
         }, 200);
     }, 50);
-    
-    console.log('✅ Rarity badge updated successfully:', { newRarity, newColor });
+
 }
 
 function changeQuantity(change) {
@@ -2081,15 +2074,12 @@ window.testClick = function() {
 
 // FAQ Toggle Function with Animation
 window.toggleFAQ = function(button) {
-    console.log('🔧 toggleFAQ called!', button);
     
     const faqItem = button.parentElement;
     const answer = faqItem.querySelector('div[style*="display"], div:last-child');
     const icon = button.querySelector('span:last-child');
     const isExpanded = button.getAttribute('aria-expanded') === 'true';
-    
-    console.log('🔧 FAQ elements:', { faqItem, answer, icon, isExpanded });
-    
+
     if (!answer) {
         console.error('❌ No answer element found!');
         return;
@@ -2157,7 +2147,6 @@ window.toggleFAQ = function(button) {
         
         // Get target height
         const targetHeight = answer.scrollHeight;
-        console.log('🔧 Target height:', targetHeight);
         
         // Animate to expanded state
         answer.style.maxHeight = targetHeight + 'px';
@@ -2179,8 +2168,7 @@ window.toggleFAQ = function(button) {
     setTimeout(() => {
         button.style.transform = '';
     }, 150);
-    
-    console.log('✅ FAQ toggle completed');
+
 };
 
 // Buylist modal functions - globally accessible
@@ -2981,30 +2969,17 @@ document.addEventListener('DOMContentLoaded', () => {
     window.appRouter = new AppRouter();
     
     // Test function accessibility
-    console.log('🔧 App router loaded, testing selectSet function...');
-    console.log('🔧 window.selectSet exists:', typeof window.selectSet);
-    console.log('🔧 getRarityColor exists:', typeof getRarityColor);
-    console.log('🔧 animateRarityBadgeUpdate exists:', typeof animateRarityBadgeUpdate);
-    console.log('🔧 window.testClick exists:', typeof window.testClick);
-    console.log('🔧 window.toggleFAQ exists:', typeof window.toggleFAQ);
-    console.log('🔧 window.showBuylistGuide exists:', typeof window.showBuylistGuide);
-    console.log('🔧 window.showConditionGuide exists:', typeof window.showConditionGuide);
-    console.log('🔧 window.showPaymentDetails exists:', typeof window.showPaymentDetails);
-    
+
     // Add a manual test function
     window.testRarityBadge = function() {
-        console.log('🧪 Manual test function called');
+        
         const rarityBadge = document.getElementById('rarity-badge');
         if (rarityBadge) {
-            console.log('🧪 Found rarity badge, testing animation...');
+            
             animateRarityBadgeUpdate(rarityBadge, 'Ultra Rare', '#F59E0B');
         } else {
-            console.log('🧪 Rarity badge not found on this page');
+            
         }
     };
-    
-    console.log('🔧 Manual test function added: window.testRarityBadge()');
-    console.log('🔧 Basic click test function added: window.testClick()');
-    console.log('🔧 FAQ toggle function added: window.toggleFAQ()');
-    console.log('🔧 Buylist modal functions added and globally accessible');
+
 });

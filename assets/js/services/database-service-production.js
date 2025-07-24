@@ -37,7 +37,7 @@ class ProductionDatabaseService {
             const response = await fetch(this.apiBaseURL.replace('/api/v1', '/health'));
             if (response.ok) {
                 const health = await response.json();
-                console.log('✅ Backend connection successful:', health);
+                
             }
         } catch (error) {
             console.warn('⚠️ Backend connection failed:', error.message);

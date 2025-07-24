@@ -30,7 +30,7 @@ class ModernTCGStore {
         try {
             // Force clear any existing cart data to start fresh
             localStorage.removeItem('tcg-cart');
-            console.log('Cart data cleared for fresh start');
+            
         } catch (error) {
             console.error('Error clearing cart data:', error);
         }
@@ -568,7 +568,6 @@ class ModernTCGStore {
 
     navigateToProductFromSearch(cardId, cardName) {
         // Method specifically for search dropdown navigation
-        console.log('Navigating to product from search:', cardId, cardName);
         
         // Use card ID if available, otherwise use card name as fallback
         const cardIdentifier = cardId || cardName;
@@ -593,31 +592,30 @@ class ModernTCGStore {
 
     performNavigation(page, params = '') {
         // Robust navigation method with multiple fallbacks and retries
-        console.log('Performing navigation to:', page, params);
         
         // Method 1: Try global navigateTo function
         if (typeof navigateTo === 'function') {
-            console.log('Using global navigateTo function');
+            
             navigateTo(page, params);
             return;
         }
         
         // Method 2: Try window.navigateTo
         if (window.navigateTo && typeof window.navigateTo === 'function') {
-            console.log('Using window.navigateTo function');
+            
             window.navigateTo(page, params);
             return;
         }
         
         // Method 3: Try appRouter directly
         if (window.appRouter && typeof window.appRouter.loadPage === 'function') {
-            console.log('Using window.appRouter.loadPage');
+            
             window.appRouter.loadPage(page, true, params);
             return;
         }
         
         // Method 4: Wait for appRouter to be available (with timeout)
-        console.log('Navigation methods not immediately available, waiting for appRouter...');
+        
         let retryCount = 0;
         const maxRetries = 10;
         const retryInterval = 100; // 100ms
@@ -626,13 +624,13 @@ class ModernTCGStore {
             retryCount++;
             
             if (window.appRouter && typeof window.appRouter.loadPage === 'function') {
-                console.log(`AppRouter available on retry ${retryCount}, navigating...`);
+                
                 window.appRouter.loadPage(page, true, params);
                 return;
             }
             
             if (typeof navigateTo === 'function') {
-                console.log(`Global navigateTo available on retry ${retryCount}, navigating...`);
+                
                 navigateTo(page, params);
                 return;
             }
@@ -4198,15 +4196,13 @@ class ModernTCGStore {
                 `event.stopPropagation(); tcgStore.addToCartFromCard('${cardElementId}', '${cardName}', ${newPrice}, '${cardImage}', '${newRarity}', '${setCode}', '${setName}')`
             );
         }
-        
-        console.log(`✅ Rarity badge updated: ${newRarity} (${rarityColor}) - $${newPrice}`);
+
     }
 
     addToCartFromCard(cardElementId, cardName, price, image, rarity, setCode = '', setName = '') {
         // Add to cart with set and rarity details
         this.addToCartWithDetails(cardName, price, image, setCode, rarity, setName);
-        
-        console.log(`Added to cart: ${cardName} (${setCode} - ${rarity}) - $${price}`);
+
     }
 
     // Check if current user is an admin account

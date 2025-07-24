@@ -12,8 +12,6 @@ class DatabaseInitializer {
     async initialize() {
         if (this.initialized) return;
 
-        console.log('🔄 Initializing Firelight Duel Academy Database...');
-
         try {
             // Wait for database service to be ready
             await this.waitForDatabaseService();
@@ -26,11 +24,9 @@ class DatabaseInitializer {
 
             // Verify database health
             const health = this.dbService.healthCheck();
-            console.log('📊 Database Health:', health);
-
+            
             this.initialized = true;
-            console.log('✅ Database initialization complete!');
-
+            
             // Show initialization success message
             this.showInitializationMessage();
 
@@ -53,12 +49,10 @@ class DatabaseInitializer {
             throw new Error('Database service failed to initialize');
         }
 
-        console.log('✅ Database service ready');
     }
 
     async initializeSampleData() {
-        console.log('📝 Setting up sample data...');
-
+        
         // Create sample admin user if none exists
         await this.createSampleAdmin();
 
@@ -71,7 +65,6 @@ class DatabaseInitializer {
         // Create sample orders
         await this.createSampleOrders();
 
-        console.log('✅ Sample data initialized');
     }
 
     async createSampleAdmin() {
@@ -292,12 +285,11 @@ class DatabaseInitializer {
             }
         }
 
-        console.log('✅ Data relationships established');
     }
 
     showInitializationMessage() {
         // Database initialization complete - no popup needed
-        console.log('✅ Database initialization message suppressed');
+        
     }
 
     showErrorMessage(message) {
