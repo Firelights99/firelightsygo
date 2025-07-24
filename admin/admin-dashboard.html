@@ -951,6 +951,43 @@
                     <h3>Inventory Management</h3>
                 </div>
                 <div class="section-content">
+                    <!-- Game Toggle -->
+                    <div style="margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;">
+                        <label style="font-weight: 600; color: var(--gray-700);">Game:</label>
+                        <div style="display: flex; background: var(--gray-100); border-radius: var(--radius-lg); padding: var(--space-1);">
+                            <button id="inventory-yugioh-btn" class="game-toggle-btn active" onclick="switchInventoryGame('yugioh')" style="
+                                padding: var(--space-2) var(--space-4);
+                                border: none;
+                                border-radius: var(--radius-md);
+                                font-weight: 600;
+                                cursor: pointer;
+                                transition: all 0.2s ease;
+                                background: var(--primary-color);
+                                color: white;
+                                display: flex;
+                                align-items: center;
+                                gap: var(--space-2);
+                            ">
+                                🃏 Yu-Gi-Oh!
+                            </button>
+                            <button id="inventory-pokemon-btn" class="game-toggle-btn" onclick="switchInventoryGame('pokemon')" style="
+                                padding: var(--space-2) var(--space-4);
+                                border: none;
+                                border-radius: var(--radius-md);
+                                font-weight: 600;
+                                cursor: pointer;
+                                transition: all 0.2s ease;
+                                background: transparent;
+                                color: var(--gray-600);
+                                display: flex;
+                                align-items: center;
+                                gap: var(--space-2);
+                            ">
+                                ⚡ Pokemon
+                            </button>
+                        </div>
+                    </div>
+                    
                     <div class="search-bar">
                         <input type="text" id="inventory-search" placeholder="Search cards by name..." onkeyup="searchInventory()">
                     </div>
@@ -960,6 +997,9 @@
                         </button>
                         <button class="admin-btn btn-secondary" onclick="bulkUpdatePrices()">
                             <i class="fas fa-sync"></i> Bulk Update Prices
+                        </button>
+                        <button class="admin-btn btn-warning" onclick="loadCardsFromAPI()">
+                            <i class="fas fa-download"></i> Load from API
                         </button>
                     </div>
                     <div id="inventory-list">

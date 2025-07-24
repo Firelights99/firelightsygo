@@ -10,6 +10,8 @@ class AdminSystem {
         this.customers = [];
         this.inventory = [];
         this.analytics = {};
+        this.currentInventoryGame = 'yugioh';
+        this.currentBuylistGame = 'yugioh';
         
         // Pagination settings
         this.pagination = {
@@ -2643,6 +2645,137 @@ animationStyle.textContent = `
     }
 `;
 document.head.appendChild(animationStyle);
+
+// Game Toggle Functions
+function switchInventoryGame(game) {
+    if (window.adminSystem) {
+        adminSystem.currentInventoryGame = game;
+        
+        // Update button styles
+        const yugioBtn = document.getElementById('inventory-yugioh-btn');
+        const pokemonBtn = document.getElementById('inventory-pokemon-btn');
+        
+        if (game === 'yugioh') {
+            yugioBtn.style.background = 'var(--primary-color)';
+            yugioBtn.style.color = 'white';
+            pokemonBtn.style.background = 'transparent';
+            pokemonBtn.style.color = 'var(--gray-600)';
+        } else {
+            pokemonBtn.style.background = 'var(--primary-color)';
+            pokemonBtn.style.color = 'white';
+            yugioBtn.style.background = 'transparent';
+            yugioBtn.style.color = 'var(--gray-600)';
+        }
+        
+        // Load cards for the selected game
+        loadCardsFromAPI();
+        adminSystem.showToast(`Switched to ${game === 'yugioh' ? 'Yu-Gi-Oh!' : 'Pokemon'}`, 'info');
+    }
+}
+
+function switchBuylistGame(game) {
+    if (window.adminSystem) {
+        adminSystem.currentBuylistGame = game;
+        
+        // Filter buylist by game
+        const gameFilter = document.getElementById('game-filter');
+        if (gameFilter) {
+            gameFilter.value = game;
+            filterBuylistByGame();
+        }
+        
+        adminSystem.showToast(`Filtered buylist to ${game === 'yugioh' ? 'Yu-Gi-Oh!' : 'Pokemon'}`, 'info');
+    }
+}
+
+async function loadCardsFromAPI() {
+    if (!window.adminSystem) return;
+    
+    const game = adminSystem.currentInventoryGame;
+    adminSystem.showToast(`Loading ${game === 'yugioh' ? 'Yu-Gi-Oh!' : 'Pokemon'} cards from API...`, 'info');
+    
+    try {
+        let newCards = [];
+        
+        if (game === 'yugioh') {
+            // Load Yu-Gi-Oh! cards from YGOPRODeck API
+            const metaCards = await window.ygoproAPI.getMetaCards();
+            
+            if (metaCards && metaCards.length > 0) {
+                newCards = metaCards.map((card, index) => {
+                    const formattedCard = window.ygoproAPI.formatCardForDisplay(card);
+                    
+                    return {
+                        id: Date.now() + index,
+                        name: card.name,
+                        price: parseFloat(formattedCard.price),
+                        quantity: adminSystem.generateRandomQuantity(),
+                        category: adminSystem.getCardCategory(card),
+                        rarity: formattedCard.rarity,
+                        set: adminSystem.getCardSet(card),
+                        lowStockThreshold: 5,
+                        image: formattedCard.image,
+                        game: 'yugioh',
+                        apiData: card
+                    };
+                });
+            }
+        } else if (game === 'pokemon') {
+            // Generate Pokemon cards (since we don't have a Pokemon API)
+            const pokemonCards = [
+                { name: 'Charizard', rarity: 'Holo Rare', set: 'Base Set', category: 'Pokemon', price: 45.99 },
+                { name: 'Blastoise', rarity: 'Holo Rare', set: 'Base Set', category: 'Pokemon', price: 32.50 },
+                { name: 'Venusaur', rarity: 'Holo Rare', set: 'Base Set', category: 'Pokemon', price: 28.75 },
+                { name: 'Pikachu', rarity: 'Common', set: 'Base Set', category: 'Pokemon', price: 12.99 },
+                { name: 'Mewtwo', rarity: 'Holo Rare', set: 'Base Set', category: 'Pokemon', price: 55.00 },
+                { name: 'Mew', rarity: 'Holo Rare', set: 'Fossil', category: 'Pokemon', price: 38.50 },
+                { name: 'Alakazam', rarity: 'Holo Rare', set: 'Base Set', category: 'Pokemon', price: 25.99 },
+                { name: 'Machamp', rarity: 'Holo Rare', set: 'Base Set', category: 'Pokemon', price: 22.50 },
+                { name: 'Gengar', rarity: 'Holo Rare', set: 'Fossil', category: 'Pokemon', price: 35.75 },
+                { name: 'Dragonite', rarity: 'Holo Rare', set: 'Fossil', category: 'Pokemon', price: 42.00 }
+            ];
+            
+            newCards = pokemonCards.map((card, index) => ({
+                id: Date.now() + index,
+                name: card.name,
+                price: card.price,
+                quantity: adminSystem.generateRandomQuantity(),
+                category: card.category,
+                rarity: card.rarity,
+                set: card.set,
+                lowStockThreshold: 5,
+                image: 'https://images.pokemontcg.io/base1/4_hires.png', // Placeholder Pokemon image
+                game: 'pokemon'
+            }));
+        }
+        
+        // Replace current inventory with new cards for the selected game
+        const existingInventory = JSON.parse(localStorage.getItem('tcg-inventory') || '[]');
+        const otherGameCards = existingInventory.filter(item => item.game && item.game !== game);
+        const updatedInventory = [...otherGameCards, ...newCards];
+        
+        localStorage.setItem('tcg-inventory', JSON.stringify(updatedInventory));
+        adminSystem.inventory = updatedInventory;
+        
+        // Update display to show only current game cards
+        const currentGameCards = updatedInventory.filter(item => !item.game || item.game === game);
+        const container = document.getElementById('inventory-list');
+        if (container) {
+            container.innerHTML = currentGameCards.map(item => adminSystem.generateInventoryHTML(item)).join('');
+        }
+        
+        adminSystem.showToast(`Loaded ${newCards.length} ${game === 'yugioh' ? 'Yu-Gi-Oh!' : 'Pokemon'} cards`, 'success');
+        
+    } catch (error) {
+        console.error('Error loading cards from API:', error);
+        adminSystem.showToast('Error loading cards from API', 'error');
+    }
+}
+
+// Make game toggle functions globally available
+window.switchInventoryGame = switchInventoryGame;
+window.switchBuylistGame = switchBuylistGame;
+window.loadCardsFromAPI = loadCardsFromAPI;
 
 // Make mobile navigation functions globally available
 window.toggleMobileNav = toggleMobileNav;
