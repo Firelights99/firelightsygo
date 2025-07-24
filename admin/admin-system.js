@@ -66,20 +66,32 @@ class AdminSystem {
     }
 
     init() {
+        console.log('🔧 Admin System Initializing...');
+        
         // Check admin authentication
         this.checkAdminAuth();
+        console.log('✅ Admin authentication verified');
         
         // Load all data
         this.loadAllData();
+        console.log('📊 Admin data loaded successfully');
         
         // Update dashboard
         this.updateDashboard();
+        console.log('🎛️ Dashboard updated');
         
         // Set up periodic refresh
         setInterval(() => {
             this.loadAllData();
             this.updateDashboard();
         }, 30000); // Refresh every 30 seconds
+        
+        console.log('⚡ Admin System fully initialized and ready');
+        console.log(`📈 System Status:
+- Total Orders: ${this.orders.length}
+- Total Customers: ${this.customers.length}
+- Inventory Items: ${this.inventory.length}
+- Admin: ${this.currentAdmin?.firstName} ${this.currentAdmin?.lastName}`);
     }
 
     checkAdminAuth() {
