@@ -5,13 +5,13 @@
 
 // Game Toggle Functions - Define these first so they're available immediately
 function switchInventoryGame(game) {
-    if (window.adminSystem) {
-        adminSystem.currentInventoryGame = game;
-        
-        // Update button classes and styles
-        const yugioBtn = document.getElementById('inventory-yugioh-btn');
-        const pokemonBtn = document.getElementById('inventory-pokemon-btn');
-        
+    console.log('switchInventoryGame called with:', game);
+    
+    // Always update button visual state immediately
+    const yugioBtn = document.getElementById('inventory-yugioh-btn');
+    const pokemonBtn = document.getElementById('inventory-pokemon-btn');
+    
+    if (yugioBtn && pokemonBtn) {
         if (game === 'yugioh') {
             yugioBtn.classList.add('active');
             pokemonBtn.classList.remove('active');
@@ -19,21 +19,42 @@ function switchInventoryGame(game) {
             pokemonBtn.classList.add('active');
             yugioBtn.classList.remove('active');
         }
+        console.log('Button states updated');
+    } else {
+        console.error('Buttons not found:', { yugioBtn: !!yugioBtn, pokemonBtn: !!pokemonBtn });
+    }
+    
+    // Wait for adminSystem if not ready, or proceed if ready
+    if (window.adminSystem) {
+        adminSystem.currentInventoryGame = game;
+        console.log('AdminSystem ready, updating inventory...');
         
-        // Load cards for the selected game
-        loadCardsFromAPI();
+        // Update inventory display
+        updateInventoryForGame(game);
+        
+        // Show toast
         adminSystem.showToast(`Switched to ${game === 'yugioh' ? 'Yu-Gi-Oh!' : 'Pokemon'}`, 'info');
+    } else {
+        console.log('AdminSystem not ready, will retry...');
+        // Retry after a short delay
+        setTimeout(() => {
+            if (window.adminSystem) {
+                adminSystem.currentInventoryGame = game;
+                updateInventoryForGame(game);
+                adminSystem.showToast(`Switched to ${game === 'yugioh' ? 'Yu-Gi-Oh!' : 'Pokemon'}`, 'info');
+            }
+        }, 500);
     }
 }
 
 function switchBuylistGame(game) {
-    if (window.adminSystem) {
-        adminSystem.currentBuylistGame = game;
-        
-        // Update button classes and styles
-        const yugioBtn = document.getElementById('buylist-yugioh-btn');
-        const pokemonBtn = document.getElementById('buylist-pokemon-btn');
-        
+    console.log('switchBuylistGame called with:', game);
+    
+    // Always update button visual state immediately
+    const yugioBtn = document.getElementById('buylist-yugioh-btn');
+    const pokemonBtn = document.getElementById('buylist-pokemon-btn');
+    
+    if (yugioBtn && pokemonBtn) {
         if (game === 'yugioh') {
             yugioBtn.classList.add('active');
             pokemonBtn.classList.remove('active');
@@ -41,6 +62,15 @@ function switchBuylistGame(game) {
             pokemonBtn.classList.add('active');
             yugioBtn.classList.remove('active');
         }
+        console.log('Buylist button states updated');
+    } else {
+        console.error('Buylist buttons not found:', { yugioBtn: !!yugioBtn, pokemonBtn: !!pokemonBtn });
+    }
+    
+    // Wait for adminSystem if not ready, or proceed if ready
+    if (window.adminSystem) {
+        adminSystem.currentBuylistGame = game;
+        console.log('AdminSystem ready, updating buylist...');
         
         // Filter buylist by game
         const gameFilter = document.getElementById('game-filter');
@@ -49,7 +79,82 @@ function switchBuylistGame(game) {
             filterBuylistByGame();
         }
         
+        // Show toast
         adminSystem.showToast(`Filtered buylist to ${game === 'yugioh' ? 'Yu-Gi-Oh!' : 'Pokemon'}`, 'info');
+    } else {
+        console.log('AdminSystem not ready for buylist, will retry...');
+        // Retry after a short delay
+        setTimeout(() => {
+            if (window.adminSystem) {
+                adminSystem.currentBuylistGame = game;
+                const gameFilter = document.getElementById('game-filter');
+                if (gameFilter) {
+                    gameFilter.value = game;
+                    filterBuylistByGame();
+                }
+                adminSystem.showToast(`Filtered buylist to ${game === 'yugioh' ? 'Yu-Gi-Oh!' : 'Pokemon'}`, 'info');
+            }
+        }, 500);
+    }
+}
+
+// Helper function to update inventory display for selected game
+function updateInventoryForGame(game) {
+    console.log('Updating inventory for game:', game);
+    
+    if (!window.adminSystem || !adminSystem.inventory) {
+        console.log('AdminSystem or inventory not ready');
+        return;
+    }
+    
+    // Filter inventory by game
+    const gameInventory = adminSystem.inventory.filter(item => !item.game || item.game === game);
+    console.log(`Found ${gameInventory.length} items for ${game}`);
+    
+    // Update inventory display
+    const container = document.getElementById('inventory-list');
+    if (container) {
+        if (gameInventory.length === 0) {
+            if (game === 'pokemon') {
+                container.innerHTML = `
+                    <div style="
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 60px 20px;
+                        text-align: center;
+                        color: var(--gray-600);
+                    ">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">⚡</div>
+                        <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: 12px;">
+                            Pokemon Cards Coming Soon!
+                        </h3>
+                        <p style="font-size: 1rem; color: var(--gray-600); max-width: 400px; line-height: 1.5;">
+                            We're working hard to bring you Pokemon card inventory management. 
+                            Stay tuned for updates!
+                        </p>
+                        <button class="admin-btn btn-primary" onclick="loadCardsFromAPI()" style="margin-top: 20px;">
+                            <i class="fas fa-download"></i> Load Pokemon Cards
+                        </button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--gray-500);">
+                        <p>No ${game === 'yugioh' ? 'Yu-Gi-Oh!' : 'Pokemon'} cards found.</p>
+                        <button class="admin-btn btn-primary" onclick="loadCardsFromAPI()" style="margin-top: 20px;">
+                            <i class="fas fa-download"></i> Load from API
+                        </button>
+                    </div>
+                `;
+            }
+        } else {
+            container.innerHTML = gameInventory.map(item => adminSystem.generateInventoryHTML(item)).join('');
+        }
+        console.log('Inventory display updated');
+    } else {
+        console.error('Inventory container not found');
     }
 }
 
