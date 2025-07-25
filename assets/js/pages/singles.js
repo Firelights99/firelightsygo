@@ -11,7 +11,7 @@
 
 let currentSearchResults = [];
 let currentPage = 0;
-const cardsPerPage = 20;
+const cardsPerPage = 10;
 let isLoading = false;
 
 export async function initPage(params = '') {

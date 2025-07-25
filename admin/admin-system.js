@@ -8,20 +8,16 @@ function switchInventoryGame(game) {
     if (window.adminSystem) {
         adminSystem.currentInventoryGame = game;
         
-        // Update button styles
+        // Update button classes and styles
         const yugioBtn = document.getElementById('inventory-yugioh-btn');
         const pokemonBtn = document.getElementById('inventory-pokemon-btn');
         
         if (game === 'yugioh') {
-            yugioBtn.style.background = 'var(--primary-color)';
-            yugioBtn.style.color = 'white';
-            pokemonBtn.style.background = 'transparent';
-            pokemonBtn.style.color = 'var(--gray-600)';
+            yugioBtn.classList.add('active');
+            pokemonBtn.classList.remove('active');
         } else {
-            pokemonBtn.style.background = 'var(--primary-color)';
-            pokemonBtn.style.color = 'white';
-            yugioBtn.style.background = 'transparent';
-            yugioBtn.style.color = 'var(--gray-600)';
+            pokemonBtn.classList.add('active');
+            yugioBtn.classList.remove('active');
         }
         
         // Load cards for the selected game
@@ -33,6 +29,18 @@ function switchInventoryGame(game) {
 function switchBuylistGame(game) {
     if (window.adminSystem) {
         adminSystem.currentBuylistGame = game;
+        
+        // Update button classes and styles
+        const yugioBtn = document.getElementById('buylist-yugioh-btn');
+        const pokemonBtn = document.getElementById('buylist-pokemon-btn');
+        
+        if (game === 'yugioh') {
+            yugioBtn.classList.add('active');
+            pokemonBtn.classList.remove('active');
+        } else {
+            pokemonBtn.classList.add('active');
+            yugioBtn.classList.remove('active');
+        }
         
         // Filter buylist by game
         const gameFilter = document.getElementById('game-filter');
@@ -78,32 +86,44 @@ async function loadCardsFromAPI() {
                 });
             }
         } else if (game === 'pokemon') {
-            // Generate Pokemon cards (since we don't have a Pokemon API)
-            const pokemonCards = [
-                { name: 'Charizard', rarity: 'Holo Rare', set: 'Base Set', category: 'Pokemon', price: 45.99 },
-                { name: 'Blastoise', rarity: 'Holo Rare', set: 'Base Set', category: 'Pokemon', price: 32.50 },
-                { name: 'Venusaur', rarity: 'Holo Rare', set: 'Base Set', category: 'Pokemon', price: 28.75 },
-                { name: 'Pikachu', rarity: 'Common', set: 'Base Set', category: 'Pokemon', price: 12.99 },
-                { name: 'Mewtwo', rarity: 'Holo Rare', set: 'Base Set', category: 'Pokemon', price: 55.00 },
-                { name: 'Mew', rarity: 'Holo Rare', set: 'Fossil', category: 'Pokemon', price: 38.50 },
-                { name: 'Alakazam', rarity: 'Holo Rare', set: 'Base Set', category: 'Pokemon', price: 25.99 },
-                { name: 'Machamp', rarity: 'Holo Rare', set: 'Base Set', category: 'Pokemon', price: 22.50 },
-                { name: 'Gengar', rarity: 'Holo Rare', set: 'Fossil', category: 'Pokemon', price: 35.75 },
-                { name: 'Dragonite', rarity: 'Holo Rare', set: 'Fossil', category: 'Pokemon', price: 42.00 }
-            ];
-            
-            newCards = pokemonCards.map((card, index) => ({
-                id: Date.now() + index,
-                name: card.name,
-                price: card.price,
-                quantity: adminSystem.generateRandomQuantity(),
-                category: card.category,
-                rarity: card.rarity,
-                set: card.set,
-                lowStockThreshold: 5,
-                image: 'https://images.pokemontcg.io/base1/4_hires.png', // Placeholder Pokemon image
-                game: 'pokemon'
-            }));
+            // Pokemon is coming soon - show message instead of loading cards
+            const container = document.getElementById('inventory-list');
+            if (container) {
+                container.innerHTML = `
+                    <div style="
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 60px 20px;
+                        text-align: center;
+                        color: var(--gray-600);
+                        grid-column: 1 / -1;
+                    ">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">⚡</div>
+                        <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: 12px;">
+                            Pokemon Cards Coming Soon!
+                        </h3>
+                        <p style="font-size: 1rem; color: var(--gray-600); max-width: 400px; line-height: 1.5;">
+                            We're working hard to bring you Pokemon card inventory management. 
+                            Stay tuned for updates!
+                        </p>
+                        <div style="
+                            margin-top: 24px;
+                            padding: 16px 24px;
+                            background: var(--gray-50);
+                            border-radius: 8px;
+                            border-left: 4px solid var(--primary-color);
+                        ">
+                            <p style="margin: 0; font-size: 0.875rem; color: var(--gray-700);">
+                                <strong>For now:</strong> Use the Yu-Gi-Oh! section to manage your card inventory.
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }
+            adminSystem.showToast('Pokemon inventory coming soon!', 'info');
+            return; // Exit early, don't process any cards
         }
         
         // Replace current inventory with new cards for the selected game
@@ -134,6 +154,46 @@ window.switchInventoryGame = switchInventoryGame;
 window.switchBuylistGame = switchBuylistGame;
 window.loadCardsFromAPI = loadCardsFromAPI;
 
+// Debug function to test button functionality
+window.testGameToggle = function() {
+    console.log('Testing game toggle functions...');
+    console.log('switchInventoryGame:', typeof window.switchInventoryGame);
+    console.log('switchBuylistGame:', typeof window.switchBuylistGame);
+    
+    // Test button elements
+    const inventoryYugioh = document.getElementById('inventory-yugioh-btn');
+    const inventoryPokemon = document.getElementById('inventory-pokemon-btn');
+    const buylistYugioh = document.getElementById('buylist-yugioh-btn');
+    const buylistPokemon = document.getElementById('buylist-pokemon-btn');
+    
+    console.log('Inventory buttons:', {
+        yugioh: !!inventoryYugioh,
+        pokemon: !!inventoryPokemon
+    });
+    
+    console.log('Buylist buttons:', {
+        yugioh: !!buylistYugioh,
+        pokemon: !!buylistPokemon
+    });
+    
+    // Test adminSystem
+    console.log('adminSystem available:', !!window.adminSystem);
+    
+    return {
+        functions: {
+            switchInventoryGame: typeof window.switchInventoryGame,
+            switchBuylistGame: typeof window.switchBuylistGame
+        },
+        buttons: {
+            inventoryYugioh: !!inventoryYugioh,
+            inventoryPokemon: !!inventoryPokemon,
+            buylistYugioh: !!buylistYugioh,
+            buylistPokemon: !!buylistPokemon
+        },
+        adminSystem: !!window.adminSystem
+    };
+};
+
 class AdminSystem {
     constructor() {
         this.currentAdmin = null;
@@ -154,19 +214,19 @@ class AdminSystem {
             },
             customers: {
                 currentPage: 1,
-                itemsPerPage: 15,
+                itemsPerPage: 10,
                 totalItems: 0,
                 totalPages: 0
             },
             inventory: {
                 currentPage: 1,
-                itemsPerPage: 20,
+                itemsPerPage: 10, // Set to 10 items per page as requested
                 totalItems: 0,
                 totalPages: 0
             },
             buylist: {
                 currentPage: 1,
-                itemsPerPage: 20,
+                itemsPerPage: 10,
                 totalItems: 0,
                 totalPages: 0
             }
@@ -473,16 +533,19 @@ class AdminSystem {
                 return;
             }
 
-            // Load meta cards from API with timeout
+            // Load ALL cards from API with timeout (entire API worth of cards)
             const timeoutPromise = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('API timeout')), 5000)
+                setTimeout(() => reject(new Error('API timeout')), 15000) // Increased timeout for full API load
             );
             
-            const apiPromise = window.ygoproAPI.getMetaCards();
-            const metaCards = await Promise.race([apiPromise, timeoutPromise]);
+            // Get all cards from the API (no search parameters = all cards)
+            const apiPromise = window.ygoproAPI.getCards({});
+            const allCards = await Promise.race([apiPromise, timeoutPromise]);
             
-            if (metaCards && metaCards.length > 0) {
-                const inventory = metaCards.map((card, index) => {
+            if (allCards && allCards.length > 0) {
+                console.log(`📦 Loading ${allCards.length} cards from YGOPRODeck API...`);
+                
+                const inventory = allCards.map((card, index) => {
                     const formattedCard = window.ygoproAPI.formatCardForDisplay(card);
                     
                     return {
@@ -503,7 +566,7 @@ class AdminSystem {
                 // Save to localStorage for future use
                 localStorage.setItem('tcg-inventory', JSON.stringify(inventory));
                 this.inventory = inventory;
-                console.log(`✅ Loaded ${inventory.length} cards from API`);
+                console.log(`✅ Loaded ${inventory.length} cards from YGOPRODeck API`);
             } else {
                 console.warn('⚠️ No cards returned from API, using fallback data');
                 this.inventory = this.getFallbackInventory();
@@ -989,15 +1052,60 @@ class AdminSystem {
     }
 
     updateInventoryTab() {
+        this.renderPaginatedInventory();
+    }
+
+    renderPaginatedInventory() {
         const container = document.getElementById('inventory-list');
         if (!container) return;
 
-        if (this.inventory.length === 0) {
-            container.innerHTML = '<p style="text-align: center; color: var(--gray-500); padding: var(--space-4);">No inventory items found</p>';
-            return;
+        // Apply filters
+        let filteredInventory = this.applyInventoryFilters(this.inventory);
+        
+        // Update pagination info
+        this.pagination.inventory.totalItems = filteredInventory.length;
+        this.pagination.inventory.totalPages = Math.ceil(filteredInventory.length / this.pagination.inventory.itemsPerPage);
+        
+        // Ensure current page is valid
+        if (this.pagination.inventory.currentPage > this.pagination.inventory.totalPages) {
+            this.pagination.inventory.currentPage = Math.max(1, this.pagination.inventory.totalPages);
         }
 
-        container.innerHTML = this.inventory.map(item => this.generateInventoryHTML(item)).join('');
+        // Get inventory for current page
+        const startIndex = (this.pagination.inventory.currentPage - 1) * this.pagination.inventory.itemsPerPage;
+        const endIndex = startIndex + this.pagination.inventory.itemsPerPage;
+        const pageInventory = filteredInventory.slice(startIndex, endIndex);
+
+        if (pageInventory.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: var(--gray-500); padding: var(--space-4);">No inventory items found</p>';
+        } else {
+            container.innerHTML = pageInventory.map(item => this.generateInventoryHTML(item)).join('');
+        }
+        
+        // Update pagination controls
+        this.updatePaginationControls('inventory');
+    }
+
+    applyInventoryFilters(inventory) {
+        let filtered = [...inventory];
+        
+        // Filter by current game
+        if (this.currentInventoryGame) {
+            filtered = filtered.filter(item => !item.game || item.game === this.currentInventoryGame);
+        }
+        
+        // Apply search filter
+        if (this.filters.inventory.searchQuery) {
+            const query = this.filters.inventory.searchQuery.toLowerCase();
+            filtered = filtered.filter(item => 
+                item.name.toLowerCase().includes(query) ||
+                item.category.toLowerCase().includes(query) ||
+                item.set.toLowerCase().includes(query) ||
+                item.rarity.toLowerCase().includes(query)
+            );
+        }
+        
+        return filtered;
     }
 
     generateInventoryHTML(item) {
@@ -1747,17 +1855,10 @@ class AdminSystem {
     }
 
     searchInventory() {
-        const query = document.getElementById('inventory-search').value.toLowerCase();
-        const filteredInventory = this.inventory.filter(item => 
-            item.name.toLowerCase().includes(query) ||
-            item.category.toLowerCase().includes(query) ||
-            item.set.toLowerCase().includes(query)
-        );
-
-        const container = document.getElementById('inventory-list');
-        if (container) {
-            container.innerHTML = filteredInventory.map(item => this.generateInventoryHTML(item)).join('');
-        }
+        const query = document.getElementById('inventory-search')?.value || '';
+        this.filters.inventory.searchQuery = query;
+        this.pagination.inventory.currentPage = 1; // Reset to first page
+        this.renderPaginatedInventory();
     }
 
     searchCustomers() {
@@ -2421,9 +2522,15 @@ function renderBuylistItems(items = null) {
     const container = document.getElementById('buylist-items');
     if (!container) return;
     
+    // Ensure adminSystem and buylist exist
+    if (!window.adminSystem || !adminSystem.buylist) {
+        container.innerHTML = '<p style="text-align: center; color: var(--gray-500); padding: var(--space-4);">Loading buylist...</p>';
+        return;
+    }
+    
     const buylistItems = items || adminSystem.buylist;
     
-    if (buylistItems.length === 0) {
+    if (!buylistItems || buylistItems.length === 0) {
         container.innerHTML = '<p style="text-align: center; color: var(--gray-500); padding: var(--space-4);">No buylist items found</p>';
         return;
     }
@@ -2883,7 +2990,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Load buylist items when buylist tab is active
     setTimeout(() => {
-        if (document.getElementById('buylist-items')) {
+        if (document.getElementById('buylist-items') && window.adminSystem && adminSystem.buylist) {
             renderBuylistItems();
         }
     }, 1000);
@@ -2991,20 +3098,16 @@ function switchInventoryGame(game) {
     if (window.adminSystem) {
         adminSystem.currentInventoryGame = game;
         
-        // Update button styles
+        // Update button classes and styles
         const yugioBtn = document.getElementById('inventory-yugioh-btn');
         const pokemonBtn = document.getElementById('inventory-pokemon-btn');
         
         if (game === 'yugioh') {
-            yugioBtn.style.background = 'var(--primary-color)';
-            yugioBtn.style.color = 'white';
-            pokemonBtn.style.background = 'transparent';
-            pokemonBtn.style.color = 'var(--gray-600)';
+            yugioBtn.classList.add('active');
+            pokemonBtn.classList.remove('active');
         } else {
-            pokemonBtn.style.background = 'var(--primary-color)';
-            pokemonBtn.style.color = 'white';
-            yugioBtn.style.background = 'transparent';
-            yugioBtn.style.color = 'var(--gray-600)';
+            pokemonBtn.classList.add('active');
+            yugioBtn.classList.remove('active');
         }
         
         // Load cards for the selected game
@@ -3016,6 +3119,18 @@ function switchInventoryGame(game) {
 function switchBuylistGame(game) {
     if (window.adminSystem) {
         adminSystem.currentBuylistGame = game;
+        
+        // Update button classes and styles
+        const yugioBtn = document.getElementById('buylist-yugioh-btn');
+        const pokemonBtn = document.getElementById('buylist-pokemon-btn');
+        
+        if (game === 'yugioh') {
+            yugioBtn.classList.add('active');
+            pokemonBtn.classList.remove('active');
+        } else {
+            pokemonBtn.classList.add('active');
+            yugioBtn.classList.remove('active');
+        }
         
         // Filter buylist by game
         const gameFilter = document.getElementById('game-filter');

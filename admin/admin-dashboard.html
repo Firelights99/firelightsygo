@@ -674,11 +674,42 @@
             }
         }
 
+        /* Game Toggle Button Styles */
+        .game-toggle-btn {
+            padding: var(--space-2) var(--space-4);
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: transparent;
+            color: var(--gray-600);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .game-toggle-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .game-toggle-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .game-toggle-btn:hover:not(.active) {
+            background: var(--gray-100);
+            color: var(--gray-700);
+        }
+
         /* Touch-friendly improvements */
         @media (hover: none) and (pointer: coarse) {
             .admin-btn,
             .admin-tab,
-            .mobile-nav-item {
+            .mobile-nav-item,
+            .game-toggle-btn {
                 min-height: 44px;
                 display: flex;
                 align-items: center;
@@ -955,34 +986,10 @@
                     <div style="margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;">
                         <label style="font-weight: 600; color: var(--gray-700);">Game:</label>
                         <div style="display: flex; background: var(--gray-100); border-radius: var(--radius-lg); padding: var(--space-1);">
-                            <button id="inventory-yugioh-btn" class="game-toggle-btn active" onclick="switchInventoryGame('yugioh')" style="
-                                padding: var(--space-2) var(--space-4);
-                                border: none;
-                                border-radius: var(--radius-md);
-                                font-weight: 600;
-                                cursor: pointer;
-                                transition: all 0.2s ease;
-                                background: var(--primary-color);
-                                color: white;
-                                display: flex;
-                                align-items: center;
-                                gap: var(--space-2);
-                            ">
+                            <button id="inventory-yugioh-btn" class="game-toggle-btn active" onclick="switchInventoryGame('yugioh')">
                                 🃏 Yu-Gi-Oh!
                             </button>
-                            <button id="inventory-pokemon-btn" class="game-toggle-btn" onclick="switchInventoryGame('pokemon')" style="
-                                padding: var(--space-2) var(--space-4);
-                                border: none;
-                                border-radius: var(--radius-md);
-                                font-weight: 600;
-                                cursor: pointer;
-                                transition: all 0.2s ease;
-                                background: transparent;
-                                color: var(--gray-600);
-                                display: flex;
-                                align-items: center;
-                                gap: var(--space-2);
-                            ">
+                            <button id="inventory-pokemon-btn" class="game-toggle-btn" onclick="switchInventoryGame('pokemon')">
                                 ⚡ Pokemon
                             </button>
                         </div>
@@ -1005,6 +1012,11 @@
                     <div id="inventory-list">
                         <!-- Inventory items will be loaded here -->
                     </div>
+                    
+                    <!-- Pagination Controls -->
+                    <div id="inventory-pagination" style="display: none;">
+                        <!-- Pagination controls will be inserted here -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -1018,6 +1030,19 @@
                         <h3>Buylist Management</h3>
                     </div>
                     <div class="section-content">
+                        <!-- Game Toggle -->
+                        <div style="margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;">
+                            <label style="font-weight: 600; color: var(--gray-700);">Game:</label>
+                            <div style="display: flex; background: var(--gray-100); border-radius: var(--radius-lg); padding: var(--space-1);">
+                                <button id="buylist-yugioh-btn" class="game-toggle-btn active" onclick="switchBuylistGame('yugioh')">
+                                    🃏 Yu-Gi-Oh!
+                                </button>
+                                <button id="buylist-pokemon-btn" class="game-toggle-btn" onclick="switchBuylistGame('pokemon')">
+                                    ⚡ Pokemon
+                                </button>
+                            </div>
+                        </div>
+                        
                         <div class="search-bar">
                             <input type="text" id="buylist-search" placeholder="Search cards in buylist..." onkeyup="searchBuylist()">
                         </div>
@@ -1125,5 +1150,42 @@
     <script src="../assets/js/services/ygoprodeck-api.js"></script>
     <script src="../assets/js/modern-tcg-store.js"></script>
     <script src="admin-system.js"></script>
+    
+    <script>
+        // Debug script to test game toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Admin Dashboard loaded');
+            
+            // Test if functions are available
+            setTimeout(() => {
+                console.log('Testing game toggle functions...');
+                console.log('switchInventoryGame:', typeof window.switchInventoryGame);
+                console.log('switchBuylistGame:', typeof window.switchBuylistGame);
+                console.log('testGameToggle:', typeof window.testGameToggle);
+                
+                // Test button elements
+                const inventoryYugioh = document.getElementById('inventory-yugioh-btn');
+                const inventoryPokemon = document.getElementById('inventory-pokemon-btn');
+                const buylistYugioh = document.getElementById('buylist-yugioh-btn');
+                const buylistPokemon = document.getElementById('buylist-pokemon-btn');
+                
+                console.log('Button elements found:', {
+                    inventoryYugioh: !!inventoryYugioh,
+                    inventoryPokemon: !!inventoryPokemon,
+                    buylistYugioh: !!buylistYugioh,
+                    buylistPokemon: !!buylistPokemon
+                });
+                
+                // Test adminSystem
+                console.log('adminSystem available:', !!window.adminSystem);
+                
+                if (window.testGameToggle) {
+                    console.log('Running testGameToggle...');
+                    const result = window.testGameToggle();
+                    console.log('Test result:', result);
+                }
+            }, 2000);
+        });
+    </script>
 </body>
 </html>
