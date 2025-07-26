@@ -1961,9 +1961,15 @@ class AdminSystem {
 
     searchInventory() {
         const query = document.getElementById('inventory-search')?.value || '';
+        console.log('Searching inventory with query:', query);
+        
         this.filters.inventory.searchQuery = query;
         this.pagination.inventory.currentPage = 1; // Reset to first page
+        
+        // Force update the inventory display
         this.renderPaginatedInventory();
+        
+        console.log('Inventory search completed');
     }
 
     searchCustomers() {
