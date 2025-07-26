@@ -239,12 +239,9 @@ async function loadCardsFromAPI() {
         localStorage.setItem('tcg-inventory', JSON.stringify(updatedInventory));
         adminSystem.inventory = updatedInventory;
         
-        // Update display to show only current game cards
-        const currentGameCards = updatedInventory.filter(item => !item.game || item.game === game);
-        const container = document.getElementById('inventory-list');
-        if (container) {
-            container.innerHTML = currentGameCards.map(item => adminSystem.generateInventoryHTML(item)).join('');
-        }
+        // Reset pagination to first page and update display with pagination
+        adminSystem.pagination.inventory.currentPage = 1;
+        adminSystem.renderPaginatedInventory();
         
         adminSystem.showToast(`Loaded ${newCards.length} ${game === 'yugioh' ? 'Yu-Gi-Oh!' : 'Pokemon'} cards`, 'success');
         
