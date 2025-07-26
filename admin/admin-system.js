@@ -102,59 +102,73 @@ function switchBuylistGame(game) {
 function updateInventoryForGame(game) {
     console.log('Updating inventory for game:', game);
     
-    if (!window.adminSystem || !adminSystem.inventory) {
-        console.log('AdminSystem or inventory not ready');
+    if (!window.adminSystem) {
+        console.log('AdminSystem not ready');
         return;
     }
     
-    // Filter inventory by game
-    const gameInventory = adminSystem.inventory.filter(item => !item.game || item.game === game);
-    console.log(`Found ${gameInventory.length} items for ${game}`);
+    // Set the current game
+    adminSystem.currentInventoryGame = game;
     
-    // Update inventory display
-    const container = document.getElementById('inventory-list');
-    if (container) {
-        if (gameInventory.length === 0) {
-            if (game === 'pokemon') {
-                container.innerHTML = `
-                    <div style="
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        justify-content: center;
-                        padding: 60px 20px;
-                        text-align: center;
-                        color: var(--gray-600);
-                    ">
-                        <div style="font-size: 4rem; margin-bottom: 20px;">⚡</div>
-                        <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: 12px;">
-                            Pokemon Cards Coming Soon!
-                        </h3>
-                        <p style="font-size: 1rem; color: var(--gray-600); max-width: 400px; line-height: 1.5;">
-                            We're working hard to bring you Pokemon card inventory management. 
-                            Stay tuned for updates!
-                        </p>
-                        <button class="admin-btn btn-primary" onclick="loadCardsFromAPI()" style="margin-top: 20px;">
-                            <i class="fas fa-download"></i> Load Pokemon Cards
-                        </button>
-                    </div>
-                `;
+    // Reset pagination and clear search when switching games
+    adminSystem.pagination.inventory.currentPage = 1;
+    adminSystem.filters.inventory.searchQuery = '';
+    const searchInput = document.getElementById('inventory-search');
+    if (searchInput) {
+        searchInput.value = '';
+    }
+    
+    // For Yu-Gi-Oh, automatically load from API with pagination
+    if (game === 'yugioh') {
+        console.log('Loading Yu-Gi-Oh cards with pagination...');
+        adminSystem.renderPaginatedInventory();
+    } else {
+        // For other games, use the existing logic
+        const gameInventory = adminSystem.inventory.filter(item => !item.game || item.game === game);
+        console.log(`Found ${gameInventory.length} items for ${game}`);
+        
+        const container = document.getElementById('inventory-list');
+        if (container) {
+            if (gameInventory.length === 0) {
+                if (game === 'pokemon') {
+                    container.innerHTML = `
+                        <div style="
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                            padding: 60px 20px;
+                            text-align: center;
+                            color: var(--gray-600);
+                        ">
+                            <div style="font-size: 4rem; margin-bottom: 20px;">⚡</div>
+                            <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: 12px;">
+                                Pokemon Cards Coming Soon!
+                            </h3>
+                            <p style="font-size: 1rem; color: var(--gray-600); max-width: 400px; line-height: 1.5;">
+                                We're working hard to bring you Pokemon card inventory management. 
+                                Stay tuned for updates!
+                            </p>
+                            <button class="admin-btn btn-primary" onclick="loadCardsFromAPI()" style="margin-top: 20px;">
+                                <i class="fas fa-download"></i> Load Pokemon Cards
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: var(--gray-500);">
+                            <p>No ${game === 'yugioh' ? 'Yu-Gi-Oh!' : 'Pokemon'} cards found.</p>
+                            <button class="admin-btn btn-primary" onclick="loadCardsFromAPI()" style="margin-top: 20px;">
+                                <i class="fas fa-download"></i> Load from API
+                            </button>
+                        </div>
+                    `;
+                }
             } else {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: var(--gray-500);">
-                        <p>No ${game === 'yugioh' ? 'Yu-Gi-Oh!' : 'Pokemon'} cards found.</p>
-                        <button class="admin-btn btn-primary" onclick="loadCardsFromAPI()" style="margin-top: 20px;">
-                            <i class="fas fa-download"></i> Load from API
-                        </button>
-                    </div>
-                `;
+                container.innerHTML = gameInventory.map(item => adminSystem.generateInventoryHTML(item)).join('');
             }
-        } else {
-            container.innerHTML = gameInventory.map(item => adminSystem.generateInventoryHTML(item)).join('');
         }
         console.log('Inventory display updated');
-    } else {
-        console.error('Inventory container not found');
     }
 }
 
@@ -648,6 +662,200 @@ class AdminSystem {
         }
     }
 
+    async loadInventoryPage(page, itemsPerPage, searchQuery = '', game = 'yugioh') {
+        try {
+            // Create cache key for this specific request
+            const cacheKey = `${game}-${page}-${itemsPerPage}-${searchQuery}`;
+            
+            // Check if we have this page cached
+            if (this.inventoryCache && this.inventoryCache.has(cacheKey)) {
+                console.log('📦 Using cached inventory page:', cacheKey);
+                return this.inventoryCache.get(cacheKey);
+            }
+
+            console.log('🔄 Loading inventory page from API:', { page, itemsPerPage, searchQuery, game });
+
+            // Check if API is available
+            if (!window.ygoproAPI) {
+                console.warn('⚠️ YGOPRODeck API not available, using fallback data');
+                return this.getFallbackInventoryPage(page, itemsPerPage, searchQuery, game);
+            }
+
+            let apiCards = [];
+            
+            if (game === 'yugioh') {
+                // Build search parameters for the API
+                const searchParams = {};
+                
+                if (searchQuery) {
+                    searchParams.fname = searchQuery; // Search by card name
+                }
+                
+                // Calculate offset for pagination
+                const offset = (page - 1) * itemsPerPage;
+                searchParams.num = itemsPerPage; // Limit results
+                searchParams.offset = offset;
+                
+                // Load cards from API with search and pagination
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('API timeout')), 10000)
+                );
+                
+                const apiPromise = window.ygoproAPI.getCards(searchParams);
+                apiCards = await Promise.race([apiPromise, timeoutPromise]);
+                
+                if (!apiCards || apiCards.length === 0) {
+                    // If no results, try a broader search or fallback
+                    if (searchQuery) {
+                        console.log('🔍 No results for specific search, trying broader search...');
+                        const broadSearchParams = { num: itemsPerPage, offset };
+                        apiCards = await Promise.race([
+                            window.ygoproAPI.getCards(broadSearchParams),
+                            timeoutPromise
+                        ]);
+                    }
+                }
+            } else if (game === 'pokemon') {
+                // For Pokemon, return placeholder data for now
+                apiCards = this.getPokemonPlaceholderCards(page, itemsPerPage, searchQuery);
+            }
+
+            // Transform API cards to inventory format
+            const inventoryItems = (apiCards || []).map((card, index) => {
+                const formattedCard = window.ygoproAPI ? window.ygoproAPI.formatCardForDisplay(card) : card;
+                
+                return {
+                    id: card.id || (Date.now() + index),
+                    name: card.name || 'Unknown Card',
+                    price: parseFloat(formattedCard.price || Math.random() * 50 + 5), // Random price if not available
+                    quantity: this.generateRandomQuantity(),
+                    category: this.getCardCategory(card),
+                    rarity: formattedCard.rarity || 'Common',
+                    set: this.getCardSet(card),
+                    lowStockThreshold: 5,
+                    image: formattedCard.image || 'https://images.ygoprodeck.com/images/cards/back.jpg',
+                    game: game
+                };
+            });
+
+            // For total count, we need to make a separate API call or estimate
+            let totalCount = 0;
+            if (game === 'yugioh' && window.ygoproAPI) {
+                try {
+                    // Try to get total count - this might not be available in all APIs
+                    if (searchQuery) {
+                        // For searches, estimate based on current results
+                        totalCount = inventoryItems.length < itemsPerPage ? 
+                            ((page - 1) * itemsPerPage) + inventoryItems.length :
+                            ((page - 1) * itemsPerPage) + inventoryItems.length + itemsPerPage;
+                    } else {
+                        // For no search, use a reasonable estimate
+                        totalCount = 12000; // Approximate total cards in YGOPRODeck
+                    }
+                } catch (error) {
+                    console.warn('Could not get total count, using estimate');
+                    totalCount = Math.max(1000, inventoryItems.length * 10);
+                }
+            } else {
+                totalCount = inventoryItems.length;
+            }
+
+            const result = {
+                items: inventoryItems,
+                totalCount: totalCount,
+                currentPage: page,
+                itemsPerPage: itemsPerPage,
+                hasMore: inventoryItems.length === itemsPerPage
+            };
+
+            // Cache the result
+            if (!this.inventoryCache) {
+                this.inventoryCache = new Map();
+            }
+            this.inventoryCache.set(cacheKey, result);
+            
+            // Limit cache size to prevent memory issues
+            if (this.inventoryCache.size > 50) {
+                const firstKey = this.inventoryCache.keys().next().value;
+                this.inventoryCache.delete(firstKey);
+            }
+
+            console.log(`✅ Loaded ${inventoryItems.length} items for page ${page}`);
+            return result;
+
+        } catch (error) {
+            console.error('❌ Error loading inventory page:', error);
+            
+            // Return fallback data on error
+            return this.getFallbackInventoryPage(page, itemsPerPage, searchQuery, game);
+        }
+    }
+
+    getFallbackInventoryPage(page, itemsPerPage, searchQuery = '', game = 'yugioh') {
+        console.log('🔄 Using fallback inventory data');
+        
+        let fallbackData = this.getFallbackInventory();
+        
+        // Filter by game
+        fallbackData = fallbackData.filter(item => !item.game || item.game === game);
+        
+        // Apply search filter if provided
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            fallbackData = fallbackData.filter(item => 
+                item.name.toLowerCase().includes(query) ||
+                item.category.toLowerCase().includes(query) ||
+                item.set.toLowerCase().includes(query) ||
+                item.rarity.toLowerCase().includes(query)
+            );
+        }
+        
+        // Apply pagination
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const pageItems = fallbackData.slice(startIndex, endIndex);
+        
+        return {
+            items: pageItems,
+            totalCount: fallbackData.length,
+            currentPage: page,
+            itemsPerPage: itemsPerPage,
+            hasMore: endIndex < fallbackData.length
+        };
+    }
+
+    getPokemonPlaceholderCards(page, itemsPerPage, searchQuery = '') {
+        const pokemonCards = [
+            { name: 'Charizard', rarity: 'Holo Rare', set: 'Base Set', category: 'Pokemon', price: 45.99 },
+            { name: 'Blastoise', rarity: 'Holo Rare', set: 'Base Set', category: 'Pokemon', price: 32.50 },
+            { name: 'Venusaur', rarity: 'Holo Rare', set: 'Base Set', category: 'Pokemon', price: 28.75 },
+            { name: 'Pikachu', rarity: 'Common', set: 'Base Set', category: 'Pokemon', price: 12.99 },
+            { name: 'Mewtwo', rarity: 'Holo Rare', set: 'Base Set', category: 'Pokemon', price: 55.00 },
+            { name: 'Mew', rarity: 'Holo Rare', set: 'Fossil', category: 'Pokemon', price: 38.50 },
+            { name: 'Alakazam', rarity: 'Holo Rare', set: 'Base Set', category: 'Pokemon', price: 25.99 },
+            { name: 'Machamp', rarity: 'Holo Rare', set: 'Base Set', category: 'Pokemon', price: 22.50 },
+            { name: 'Gengar', rarity: 'Holo Rare', set: 'Fossil', category: 'Pokemon', price: 35.75 },
+            { name: 'Dragonite', rarity: 'Holo Rare', set: 'Fossil', category: 'Pokemon', price: 42.00 }
+        ];
+        
+        // Filter by search query if provided
+        let filteredCards = pokemonCards;
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            filteredCards = pokemonCards.filter(card => 
+                card.name.toLowerCase().includes(query) ||
+                card.category.toLowerCase().includes(query) ||
+                card.set.toLowerCase().includes(query)
+            );
+        }
+        
+        // Apply pagination
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        
+        return filteredCards.slice(startIndex, endIndex);
+    }
+
     generateRandomQuantity() {
         // Generate realistic inventory quantities
         const quantities = [0, 1, 2, 3, 4, 5, 8, 12, 15, 20, 25];
@@ -1117,7 +1325,7 @@ class AdminSystem {
         this.renderPaginatedInventory();
     }
 
-    renderPaginatedInventory() {
+    async renderPaginatedInventory() {
         const container = document.getElementById('inventory-list');
         if (!container) return;
 
@@ -1144,7 +1352,45 @@ class AdminSystem {
             </div>
         `;
 
-        // Apply filters to get filtered inventory
+        // For Yu-Gi-Oh, load data from API in paginated fashion
+        if (this.currentInventoryGame === 'yugioh') {
+            try {
+                const currentPage = this.pagination.inventory.currentPage;
+                const itemsPerPage = this.pagination.inventory.itemsPerPage;
+                const searchQuery = this.filters.inventory.searchQuery;
+
+                // Load the specific page from API
+                const pageData = await this.loadInventoryPage(currentPage, itemsPerPage, searchQuery, 'yugioh');
+                
+                // Update pagination info with API data
+                this.pagination.inventory.totalItems = pageData.totalCount;
+                this.pagination.inventory.totalPages = Math.ceil(pageData.totalCount / itemsPerPage);
+                
+                // Render the API data
+                if (pageData.items.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: var(--gray-500);">
+                            <p>No Yu-Gi-Oh! cards found${searchQuery ? ` for "${searchQuery}"` : ''}.</p>
+                            <button class="admin-btn btn-primary" onclick="adminSystem.clearInventorySearch()" style="margin-top: 20px;">
+                                <i class="fas fa-times"></i> Clear Search
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = pageData.items.map(item => this.generateInventoryHTML(item)).join('');
+                }
+                
+                // Update pagination controls
+                this.updatePaginationControls('inventory');
+                return;
+                
+            } catch (error) {
+                console.error('Error loading Yu-Gi-Oh inventory from API:', error);
+                // Fall back to local data if API fails
+            }
+        }
+
+        // For other games or fallback, use local inventory data
         let filteredInventory = this.applyInventoryFilters(this.inventory);
         
         // Update pagination info
@@ -2175,6 +2421,16 @@ class AdminSystem {
         this.renderPaginatedInventory();
         
         console.log('Inventory search completed');
+    }
+
+    clearInventorySearch() {
+        const searchInput = document.getElementById('inventory-search');
+        if (searchInput) {
+            searchInput.value = '';
+        }
+        this.filters.inventory.searchQuery = '';
+        this.pagination.inventory.currentPage = 1;
+        this.renderPaginatedInventory();
     }
 
     searchCustomers() {
