@@ -1120,7 +1120,7 @@ class AdminSystem {
         this.renderPaginatedInventory();
     }
 
-    async renderPaginatedInventory() {
+    renderPaginatedInventory() {
         const container = document.getElementById('inventory-list');
         if (!container) return;
 
@@ -1147,16 +1147,50 @@ class AdminSystem {
             </div>
         `;
 
-        try {
-            // Load inventory data dynamically based on current page and filters
-            const inventoryData = await this.loadInventoryPage(
-                this.pagination.inventory.currentPage,
-                this.pagination.inventory.itemsPerPage,
-                this.filters.inventory.searchQuery,
-                this.currentInventoryGame
-            );
+        // Apply filters to get filtered inventory
+        let filteredInventory = this.applyInventoryFilters(this.inventory);
+        
+        // Update pagination info
+        this.pagination.inventory.totalItems = filteredInventory.length;
+        this.pagination.inventory.totalPages = Math.ceil(filteredInventory.length / this.pagination.inventory.itemsPerPage);
+        
+        // Ensure current page is valid
+        if (this.pagination.inventory.currentPage > this.pagination.inventory.totalPages) {
+            this.pagination.inventory.currentPage = Math.max(1, this.pagination.inventory.totalPages);
+        }
 
-            if (inventoryData.items.length === 0) {
+        // Get items for current page
+        const startIndex = (this.pagination.inventory.currentPage - 1) * this.pagination.inventory.itemsPerPage;
+        const endIndex = startIndex + this.pagination.inventory.itemsPerPage;
+        const pageItems = filteredInventory.slice(startIndex, endIndex);
+
+        // Render items
+        if (pageItems.length === 0) {
+            if (this.currentInventoryGame === 'pokemon') {
+                container.innerHTML = `
+                    <div style="
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 60px 20px;
+                        text-align: center;
+                        color: var(--gray-600);
+                    ">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">⚡</div>
+                        <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: 12px;">
+                            Pokemon Cards Coming Soon!
+                        </h3>
+                        <p style="font-size: 1rem; color: var(--gray-600); max-width: 400px; line-height: 1.5;">
+                            We're working hard to bring you Pokemon card inventory management. 
+                            Stay tuned for updates!
+                        </p>
+                        <button class="admin-btn btn-primary" onclick="loadCardsFromAPI()" style="margin-top: 20px;">
+                            <i class="fas fa-download"></i> Load Pokemon Cards
+                        </button>
+                    </div>
+                `;
+            } else {
                 container.innerHTML = `
                     <div style="text-align: center; padding: 40px; color: var(--gray-500);">
                         <p>No ${this.currentInventoryGame === 'yugioh' ? 'Yu-Gi-Oh!' : 'Pokemon'} cards found.</p>
@@ -1165,28 +1199,13 @@ class AdminSystem {
                         </button>
                     </div>
                 `;
-            } else {
-                container.innerHTML = inventoryData.items.map(item => this.generateInventoryHTML(item)).join('');
             }
-
-            // Update pagination info
-            this.pagination.inventory.totalItems = inventoryData.totalCount;
-            this.pagination.inventory.totalPages = Math.ceil(inventoryData.totalCount / this.pagination.inventory.itemsPerPage);
-            
-            // Update pagination controls
-            this.updatePaginationControls('inventory');
-
-        } catch (error) {
-            console.error('Error loading inventory page:', error);
-            container.innerHTML = `
-                <div style="text-align: center; padding: 40px; color: var(--error-color);">
-                    <p>Error loading inventory. Please try again.</p>
-                    <button class="admin-btn btn-primary" onclick="adminSystem.renderPaginatedInventory()" style="margin-top: 20px;">
-                        <i class="fas fa-refresh"></i> Retry
-                    </button>
-                </div>
-            `;
+        } else {
+            container.innerHTML = pageItems.map(item => this.generateInventoryHTML(item)).join('');
         }
+        
+        // Update pagination controls
+        this.updatePaginationControls('inventory');
     }
 
     applyInventoryFilters(inventory) {
