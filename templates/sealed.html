@@ -1,0 +1,443 @@
+<section style="text-align: center; margin-bottom: var(--space-12);">
+    <h1 style="font-size: 3rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
+        Yu-Gi-Oh! Sealed Products
+    </h1>
+    <p style="font-size: 1.125rem; color: var(--gray-600); max-width: 600px; margin: 0 auto;">
+        Discover booster packs, boxes, tins, and special sets. From the latest releases to classic collections.
+    </p>
+</section>
+
+<section class="filters-container" style="margin-bottom: var(--space-8);">
+    <div class="filters-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
+        <div class="filter-group">
+            <label class="filter-label" for="product-type">Product Type</label>
+            <select id="product-type" class="filter-select">
+                <option value="">All Products</option>
+                <option value="booster-pack">Booster Packs</option>
+                <option value="booster-box">Booster Boxes</option>
+                <option value="structure-deck">Structure Decks</option>
+                <option value="starter-deck">Starter Decks</option>
+                <option value="tin">Tins</option>
+                <option value="special-set">Special Sets</option>
+                <option value="collection-box">Collection Boxes</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label class="filter-label" for="set-name">Set Name</label>
+            <input type="text" id="set-name" class="filter-input" placeholder="Search by set name...">
+        </div>
+        <div class="filter-group">
+            <label class="filter-label" for="price-range">Price Range</label>
+            <select id="price-range" class="filter-select">
+                <option value="">All Prices</option>
+                <option value="0-25">Under $25</option>
+                <option value="25-50">$25 - $50</option>
+                <option value="50-100">$50 - $100</option>
+                <option value="100-200">$100 - $200</option>
+                <option value="200+">$200+</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <button class="filter-btn" onclick="applySealedFilters()" style="margin-top: 1.5rem;">Apply Filters</button>
+        </div>
+    </div>
+</section>
+
+<section style="margin-bottom: var(--space-8);">
+    <div style="display: flex; justify-content: center; gap: var(--space-3); margin-bottom: var(--space-6); flex-wrap: wrap;">
+        <button class="category-btn active" onclick="showSealedCategory('all')" id="all-sealed-btn">All Products</button>
+        <button class="category-btn" onclick="showSealedCategory('latest')" id="latest-btn">Latest Releases</button>
+        <button class="category-btn" onclick="showSealedCategory('popular')" id="popular-btn">Popular Sets</button>
+        <button class="category-btn" onclick="showSealedCategory('budget')" id="budget-btn">Budget Options</button>
+        <button class="category-btn" onclick="showSealedCategory('premium')" id="premium-btn">Premium Products</button>
+    </div>
+</section>
+
+<section>
+    <div id="sealed-products-grid" class="modern-card-grid">
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Loading sealed products...</p>
+        </div>
+    </div>
+</section>
+
+<script>
+// Sealed products functionality
+let currentSealedCategory = 'all';
+let sealedProducts = [];
+
+// Mock sealed products data (in a real app, this would come from an API)
+const mockSealedProducts = [
+    {
+        id: 'bp-maze-of-millennia',
+        name: 'Maze of Millennia Booster Pack',
+        type: 'booster-pack',
+        set: 'Maze of Millennia',
+        price: 4.99,
+        image: 'https://images.ygoprodeck.com/images/sets/MAZE.jpg',
+        description: '9 cards per pack including 1 guaranteed foil',
+        category: 'latest',
+        inStock: true,
+        stockCount: 48
+    },
+    {
+        id: 'bb-maze-of-millennia',
+        name: 'Maze of Millennia Booster Box',
+        type: 'booster-box',
+        set: 'Maze of Millennia',
+        price: 119.99,
+        image: 'https://images.ygoprodeck.com/images/sets/MAZE.jpg',
+        description: '24 booster packs per box',
+        category: 'latest',
+        inStock: true,
+        stockCount: 6
+    },
+    {
+        id: 'sd-crystal-beasts',
+        name: 'Crystal Beasts Structure Deck',
+        type: 'structure-deck',
+        set: 'Crystal Beasts',
+        price: 12.99,
+        image: 'https://images.ygoprodeck.com/images/sets/SDCB.jpg',
+        description: '43 cards including exclusive reprints',
+        category: 'budget',
+        inStock: true,
+        stockCount: 24
+    },
+    {
+        id: 'tin-pharaohs-servant',
+        name: "Pharaoh's Servant Tin 2024",
+        type: 'tin',
+        set: "Pharaoh's Servant",
+        price: 24.99,
+        image: 'https://images.ygoprodeck.com/images/sets/PSV.jpg',
+        description: '3 mega packs plus exclusive promos',
+        category: 'popular',
+        inStock: true,
+        stockCount: 18
+    },
+    {
+        id: 'cb-legendary-collection',
+        name: 'Legendary Collection Kaiba',
+        type: 'collection-box',
+        set: 'Legendary Collection',
+        price: 89.99,
+        image: 'https://images.ygoprodeck.com/images/sets/LCKC.jpg',
+        description: 'Premium collection with exclusive cards',
+        category: 'premium',
+        inStock: true,
+        stockCount: 8
+    },
+    {
+        id: 'bp-power-of-elements',
+        name: 'Power of the Elements Booster Pack',
+        type: 'booster-pack',
+        set: 'Power of the Elements',
+        price: 4.49,
+        image: 'https://images.ygoprodeck.com/images/sets/POTE.jpg',
+        description: '9 cards per pack with new archetypes',
+        category: 'popular',
+        inStock: true,
+        stockCount: 72
+    },
+    {
+        id: 'bb-power-of-elements',
+        name: 'Power of the Elements Booster Box',
+        type: 'booster-box',
+        set: 'Power of the Elements',
+        price: 109.99,
+        image: 'https://images.ygoprodeck.com/images/sets/POTE.jpg',
+        description: '24 booster packs per box',
+        category: 'popular',
+        inStock: true,
+        stockCount: 4
+    },
+    {
+        id: 'sd-albaz-strike',
+        name: 'Albaz Strike Structure Deck',
+        type: 'structure-deck',
+        set: 'Albaz Strike',
+        price: 11.99,
+        image: 'https://images.ygoprodeck.com/images/sets/SDAZ.jpg',
+        description: 'Fusion-focused deck with Albaz support',
+        category: 'budget',
+        inStock: true,
+        stockCount: 36
+    }
+];
+
+function loadSealedProducts() {
+    sealedProducts = [...mockSealedProducts];
+    showSealedCategory(currentSealedCategory);
+}
+
+function showSealedCategory(category) {
+    currentSealedCategory = category;
+    
+    // Update button states
+    document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(`${category === 'all' ? 'all-sealed' : category}-btn`).classList.add('active');
+    
+    // Filter products by category
+    let filteredProducts = sealedProducts;
+    if (category !== 'all') {
+        filteredProducts = sealedProducts.filter(product => product.category === category);
+    }
+    
+    renderSealedProducts(filteredProducts);
+}
+
+function applySealedFilters() {
+    const productType = document.getElementById('product-type').value;
+    const setName = document.getElementById('set-name').value.toLowerCase();
+    const priceRange = document.getElementById('price-range').value;
+    
+    let filteredProducts = [...sealedProducts];
+    
+    // Filter by product type
+    if (productType) {
+        filteredProducts = filteredProducts.filter(product => product.type === productType);
+    }
+    
+    // Filter by set name
+    if (setName) {
+        filteredProducts = filteredProducts.filter(product => 
+            product.name.toLowerCase().includes(setName) || 
+            product.set.toLowerCase().includes(setName)
+        );
+    }
+    
+    // Filter by price range
+    if (priceRange) {
+        const [min, max] = priceRange.split('-').map(p => p.replace('+', ''));
+        filteredProducts = filteredProducts.filter(product => {
+            if (priceRange.includes('+')) {
+                return product.price >= parseInt(min);
+            } else {
+                return product.price >= parseInt(min) && product.price <= parseInt(max);
+            }
+        });
+    }
+    
+    renderSealedProducts(filteredProducts);
+}
+
+function renderSealedProducts(products) {
+    const container = document.getElementById('sealed-products-grid');
+    
+    if (products.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: var(--space-12); color: var(--gray-500); grid-column: 1 / -1;">
+                <div style="font-size: 3rem; margin-bottom: var(--space-4);">📦</div>
+                <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3);">No Products Found</h3>
+                <p>No sealed products match your current filters. Try adjusting your search criteria.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const productsHTML = products.map(product => {
+        const stockStatus = product.inStock ? 
+            (product.stockCount <= 5 ? 'Low Stock' : 'In Stock') : 
+            'Out of Stock';
+        const stockColor = product.inStock ? 
+            (product.stockCount <= 5 ? 'var(--warning-color)' : 'var(--success-color)') : 
+            'var(--error-color)';
+        
+        return `
+            <div class="product-card" style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; transition: var(--transition-fast); border: 1px solid var(--gray-200); cursor: pointer;" onclick="viewSealedProduct('${product.id}')">
+                <div class="product-image-container" style="position: relative; height: 200px; background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%); display: flex; align-items: center; justify-content: center;">
+                    <img src="${product.image}" alt="${product.name}" style="max-width: 90%; max-height: 90%; object-fit: contain;">
+                    <div class="stock-badge" style="position: absolute; top: var(--space-2); right: var(--space-2); background: ${stockColor}; color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 600;">
+                        ${stockStatus}
+                    </div>
+                </div>
+                
+                <div class="product-info" style="padding: var(--space-4);">
+                    <div style="margin-bottom: var(--space-2);">
+                        <span style="background: var(--primary-color); color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: 0.75rem; font-weight: 600; text-transform: uppercase;">
+                            ${product.type.replace('-', ' ')}
+                        </span>
+                    </div>
+                    
+                    <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2); line-height: 1.3;">
+                        ${product.name}
+                    </h3>
+                    
+                    <p style="color: var(--gray-600); font-size: 0.875rem; line-height: 1.4; margin-bottom: var(--space-3);">
+                        ${product.description}
+                    </p>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
+                        <span style="font-size: 1.25rem; font-weight: 700; color: var(--primary-color);">
+                            $${product.price.toFixed(2)}
+                        </span>
+                        ${product.inStock ? `
+                            <span style="font-size: 0.75rem; color: var(--gray-600);">
+                                ${product.stockCount} available
+                            </span>
+                        ` : ''}
+                    </div>
+                    
+                    <div style="display: flex; gap: var(--space-2);">
+                        <button onclick="event.stopPropagation(); addSealedToCart('${product.id}')" 
+                                style="flex: 1; background: var(--primary-color); color: white; border: none; padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition-fast); ${!product.inStock ? 'opacity: 0.5; cursor: not-allowed;' : ''}"
+                                ${!product.inStock ? 'disabled' : ''}>
+                            ${product.inStock ? 'Add to Cart' : 'Out of Stock'}
+                        </button>
+                        <button onclick="event.stopPropagation(); addSealedToWishlist('${product.id}')" 
+                                style="background: var(--gray-200); color: var(--gray-700); border: none; padding: var(--space-2); border-radius: var(--radius-md); cursor: pointer; transition: var(--transition-fast);">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    container.innerHTML = productsHTML;
+}
+
+function viewSealedProduct(productId) {
+    const product = sealedProducts.find(p => p.id === productId);
+    if (product) {
+        // Navigate to a detailed product view (could be implemented later)
+        console.log('Viewing sealed product:', product);
+        alert(`Detailed view for ${product.name} - Feature coming soon!`);
+    }
+}
+
+function addSealedToCart(productId) {
+    const product = sealedProducts.find(p => p.id === productId);
+    if (product && product.inStock && window.tcgStore) {
+        window.tcgStore.addToCartWithDetails(
+            product.name,
+            product.price,
+            product.image,
+            product.set,
+            product.type,
+            product.description
+        );
+        
+        // Show success notification
+        if (window.showToastNotification) {
+            window.showToastNotification({
+                title: 'Added to Cart',
+                message: product.name,
+                price: `$${product.price.toFixed(2)}`,
+                image: product.image
+            });
+        }
+    } else if (!product.inStock) {
+        alert('This product is currently out of stock.');
+    }
+}
+
+function addSealedToWishlist(productId) {
+    const product = sealedProducts.find(p => p.id === productId);
+    if (product && window.tcgStore && window.tcgStore.currentUser) {
+        // Add to wishlist logic would go here
+        console.log('Adding to wishlist:', product);
+        alert(`${product.name} added to wishlist!`);
+    } else if (!window.tcgStore || !window.tcgStore.currentUser) {
+        alert('Please log in to add items to your wishlist.');
+    }
+}
+
+// Initialize sealed products when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if we're on the sealed products page
+    if (document.getElementById('sealed-products-grid')) {
+        loadSealedProducts();
+    }
+});
+
+// Also initialize if the script is loaded dynamically
+if (document.getElementById('sealed-products-grid')) {
+    loadSealedProducts();
+}
+</script>
+
+<style>
+.category-btn {
+    background: var(--gray-200);
+    color: var(--gray-700);
+    border: none;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    font-size: 0.875rem;
+}
+
+.category-btn:hover {
+    background: var(--gray-300);
+}
+
+.category-btn.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+.product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+}
+
+.product-card:hover .product-image-container img {
+    transform: scale(1.05);
+    transition: var(--transition-fast);
+}
+
+.filter-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: var(--space-2);
+}
+
+.filter-input, .filter-select {
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    transition: var(--transition-fast);
+}
+
+.filter-input:focus, .filter-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.filter-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    width: 100%;
+}
+
+.filter-btn:hover {
+    background: var(--primary-dark);
+}
+
+@media (max-width: 768px) {
+    .filters-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .category-btn {
+        font-size: 0.75rem;
+        padding: var(--space-1) var(--space-3);
+    }
+}
+</style>

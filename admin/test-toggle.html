@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Game Toggle</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .game-toggle-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: transparent;
+            color: #6b7280;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 4px;
+        }
+
+        .game-toggle-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .game-toggle-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-toggle-btn:hover:not(.active) {
+            background: #e5e7eb;
+            color: #374151;
+        }
+        
+        .test-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .toggle-container {
+            display: flex;
+            background: #f3f4f6;
+            border-radius: 12px;
+            padding: 4px;
+            margin: 10px 0;
+        }
+        
+        .debug-output {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            margin: 10px 0;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Game Toggle Button Test</h1>
+    
+    <div class="test-section">
+        <h2>Inventory Game Toggle</h2>
+        <div class="toggle-container">
+            <button id="inventory-yugioh-btn" class="game-toggle-btn active" onclick="switchInventoryGame('yugioh')">
+                🃏 Yu-Gi-Oh!
+            </button>
+            <button id="inventory-pokemon-btn" class="game-toggle-btn" onclick="switchInventoryGame('pokemon')">
+                ⚡ Pokemon
+            </button>
+        </div>
+        <div id="inventory-status">Current game: Yu-Gi-Oh!</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Buylist Game Toggle</h2>
+        <div class="toggle-container">
+            <button id="buylist-yugioh-btn" class="game-toggle-btn active" onclick="switchBuylistGame('yugioh')">
+                🃏 Yu-Gi-Oh!
+            </button>
+            <button id="buylist-pokemon-btn" class="game-toggle-btn" onclick="switchBuylistGame('pokemon')">
+                ⚡ Pokemon
+            </button>
+        </div>
+        <div id="buylist-status">Current game: Yu-Gi-Oh!</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Debug Information</h2>
+        <button onclick="runDebugTest()" style="background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">
+            Run Debug Test
+        </button>
+        <div id="debug-output" class="debug-output">Click "Run Debug Test" to see debug information...</div>
+    </div>
+
+    <script>
+        // Mock adminSystem for testing
+        window.adminSystem = {
+            currentInventoryGame: 'yugioh',
+            currentBuylistGame: 'yugioh',
+            showToast: function(message, type) {
+                console.log(`Toast (${type}): ${message}`);
+                document.getElementById('debug-output').textContent += `Toast (${type}): ${message}\n`;
+            }
+        };
+
+        // Simple toggle functions for testing
+        function switchInventoryGame(game) {
+            console.log('switchInventoryGame called with:', game);
+            
+            if (window.adminSystem) {
+                adminSystem.currentInventoryGame = game;
+                
+                // Update button classes and styles
+                const yugioBtn = document.getElementById('inventory-yugioh-btn');
+                const pokemonBtn = document.getElementById('inventory-pokemon-btn');
+                
+                if (game === 'yugioh') {
+                    yugioBtn.classList.add('active');
+                    pokemonBtn.classList.remove('active');
+                } else {
+                    pokemonBtn.classList.add('active');
+                    yugioBtn.classList.remove('active');
+                }
+                
+                // Update status
+                document.getElementById('inventory-status').textContent = `Current game: ${game === 'yugioh' ? 'Yu-Gi-Oh!' : 'Pokemon'}`;
+                
+                adminSystem.showToast(`Switched to ${game === 'yugioh' ? 'Yu-Gi-Oh!' : 'Pokemon'}`, 'info');
+            }
+        }
+
+        function switchBuylistGame(game) {
+            console.log('switchBuylistGame called with:', game);
+            
+            if (window.adminSystem) {
+                adminSystem.currentBuylistGame = game;
+                
+                // Update button classes and styles
+                const yugioBtn = document.getElementById('buylist-yugioh-btn');
+                const pokemonBtn = document.getElementById('buylist-pokemon-btn');
+                
+                if (game === 'yugioh') {
+                    yugioBtn.classList.add('active');
+                    pokemonBtn.classList.remove('active');
+                } else {
+                    pokemonBtn.classList.add('active');
+                    yugioBtn.classList.remove('active');
+                }
+                
+                // Update status
+                document.getElementById('buylist-status').textContent = `Current game: ${game === 'yugioh' ? 'Yu-Gi-Oh!' : 'Pokemon'}`;
+                
+                adminSystem.showToast(`Filtered buylist to ${game === 'yugioh' ? 'Yu-Gi-Oh!' : 'Pokemon'}`, 'info');
+            }
+        }
+
+        function runDebugTest() {
+            const output = document.getElementById('debug-output');
+            output.textContent = '';
+            
+            output.textContent += 'Debug Test Results:\n';
+            output.textContent += '==================\n\n';
+            
+            // Test function availability
+            output.textContent += `switchInventoryGame function: ${typeof switchInventoryGame}\n`;
+            output.textContent += `switchBuylistGame function: ${typeof switchBuylistGame}\n\n`;
+            
+            // Test button elements
+            const inventoryYugioh = document.getElementById('inventory-yugioh-btn');
+            const inventoryPokemon = document.getElementById('inventory-pokemon-btn');
+            const buylistYugioh = document.getElementById('buylist-yugioh-btn');
+            const buylistPokemon = document.getElementById('buylist-pokemon-btn');
+            
+            output.textContent += 'Button Elements:\n';
+            output.textContent += `inventory-yugioh-btn: ${!!inventoryYugioh}\n`;
+            output.textContent += `inventory-pokemon-btn: ${!!inventoryPokemon}\n`;
+            output.textContent += `buylist-yugioh-btn: ${!!buylistYugioh}\n`;
+            output.textContent += `buylist-pokemon-btn: ${!!buylistPokemon}\n\n`;
+            
+            // Test adminSystem
+            output.textContent += `adminSystem available: ${!!window.adminSystem}\n`;
+            if (window.adminSystem) {
+                output.textContent += `Current inventory game: ${adminSystem.currentInventoryGame}\n`;
+                output.textContent += `Current buylist game: ${adminSystem.currentBuylistGame}\n`;
+            }
+            
+            output.textContent += '\nTest completed. Try clicking the toggle buttons above to see if they work.\n';
+        }
+
+        // Make functions globally available
+        window.switchInventoryGame = switchInventoryGame;
+        window.switchBuylistGame = switchBuylistGame;
+        window.runDebugTest = runDebugTest;
+    </script>
+</body>
+</html>

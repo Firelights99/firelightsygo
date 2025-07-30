@@ -16,13 +16,17 @@
     
     <!-- Stylesheets -->
     <link rel="stylesheet" href="assets/css/modern-tcg-store.css">
-    <link rel="icon" href="https://images.ygoprodeck.com/images/cards/89631139.jpg">
+    <link rel="stylesheet" href="assets/css/mobile.css">
+    <link rel="icon" href="assets/images/firelight-logo.svg" type="image/svg+xml">
+    <link rel="icon" href="assets/images/f3c4e91c-8a34-4545-a53a-489b4eb181c4.jpg" type="image/jpeg">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     
     <!-- Meta tags for SEO -->
     <meta property="og:title" id="og-title" content="Firelight Duel Academy - Modern Yu-Gi-Oh! TCG Store">
     <meta property="og:description" id="og-description" content="Premium Yu-Gi-Oh! singles, competitive pricing, and tournament events.">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="https://images.ygoprodeck.com/images/cards/89631139.jpg">
+    <meta property="og:image" content="assets/images/f3c4e91c-8a34-4545-a53a-489b4eb181c4.jpg">
 </head>
 <body>
     <!-- 401Games-Style Header -->
@@ -37,6 +41,13 @@
                     <!-- <a href="#" class="header-top-link" onclick="navigateTo('events')"><i class="fas fa-trophy"></i> Tournaments</a> -->
                 </div>
                 <div class="header-top-right">
+                    <!-- Currency Toggle -->
+                    <div class="currency-toggle" style="display: inline-flex; align-items: center; gap: var(--space-2); margin-right: var(--space-4);">
+                        <span style="font-size: 0.875rem; color: white; font-weight: 500;">Currency:</span>
+                        <button id="currency-toggle-btn" onclick="toggleCurrency()" style="background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3); font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; color: white;">
+                            CAD
+                        </button>
+                    </div>
                     <span><i class="fas fa-shipping-fast"></i> Free Shipping on Orders $100+ CAD</span>
                 </div>
             </div>
@@ -47,7 +58,33 @@
             <div class="header-container">
                 <!-- Brand Section -->
                 <div class="brand-section">
-                    <img src="https://images.ygoprodeck.com/images/cards/89631139.jpg" alt="Firelight Duel Academy" class="brand-logo">
+                    <!-- Firelight Logo SVG -->
+                    <svg width="50" height="50" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" class="brand-logo">
+                        <defs>
+                            <linearGradient id="headerFireGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#FF6B35;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#F7931E;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#FFD23F;stop-opacity:1" />
+                            </linearGradient>
+                            <filter id="headerGlow">
+                                <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+                                <feMerge> 
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        
+                        <!-- Main flame -->
+                        <path d="M30 45 C30 35, 20 30, 20 20 C20 15, 25 10, 30 15 C35 10, 40 15, 40 20 C40 30, 30 35, 30 45 Z" 
+                              fill="url(#headerFireGradient)" filter="url(#headerGlow)"/>
+                        <!-- Inner flame -->
+                        <path d="M30 40 C30 32, 25 28, 25 22 C25 18, 28 15, 30 18 C32 15, 35 18, 35 22 C35 28, 30 32, 30 40 Z" 
+                              fill="#FFE066" opacity="0.8"/>
+                        <!-- Core flame -->
+                        <path d="M30 35 C30 30, 27 27, 27 24 C27 22, 28.5 20, 30 22 C31.5 20, 33 22, 33 24 C33 27, 30 30, 30 35 Z" 
+                              fill="#FFF2CC" opacity="0.9"/>
+                    </svg>
                     <div class="brand-text">
                         <a href="#" class="brand-name" onclick="navigateTo('home')">Firelight Duel Academy</a>
                         <span class="brand-tagline">Yu-Gi-Oh! Singles & Tournament Store</span>
@@ -58,8 +95,44 @@
                 <nav class="nav-section">
                     <ul class="nav-links">
                         <li><a href="#" class="nav-link" id="nav-home" onclick="navigateTo('home')">Home</a></li>
-                        <li><a href="#" class="nav-link" id="nav-singles" onclick="navigateTo('singles')">Singles</a></li>
-                        <li><a href="#" class="nav-link" id="nav-decks" onclick="navigateTo('decks')">Decks</a></li>
+                        
+                        <!-- Singles Dropdown -->
+                        <li class="nav-dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" id="nav-singles">
+                                Singles <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            </a>
+                            <div class="dropdown-menu">
+                                <a href="#" class="dropdown-item" onclick="navigateTo('singles', '?game=yugioh')">
+                                    <i class="game-icon yugioh-icon">🃏</i>
+                                    Yu-Gi-Oh! Singles
+                                </a>
+                                <a href="#" class="dropdown-item" onclick="navigateTo('singles', '?game=pokemon')">
+                                    <i class="game-icon pokemon-icon">⚡</i>
+                                    Pokemon Singles
+                                </a>
+                            </div>
+                        </li>
+                        
+                        <li><a href="#" class="nav-link" id="nav-sealed" onclick="navigateTo('sealed')">Sealed</a></li>
+                        
+                        <!-- Decks Dropdown -->
+                        <li class="nav-dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" id="nav-decks">
+                                Decks <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            </a>
+                            <div class="dropdown-menu">
+                                <a href="#" class="dropdown-item" onclick="navigateTo('decks', '?game=yugioh')">
+                                    <i class="game-icon yugioh-icon">🃏</i>
+                                    Yu-Gi-Oh! Decks
+                                </a>
+                                <a href="#" class="dropdown-item" onclick="navigateTo('decks', '?game=pokemon')">
+                                    <i class="game-icon pokemon-icon">⚡</i>
+                                    Pokemon Decks
+                                </a>
+                            </div>
+                        </li>
+                        
+                        <li><a href="#" class="nav-link" id="nav-buylist" onclick="navigateTo('buylist')">Buylist</a></li>
                         <!-- Events hidden - store not hosting events -->
                         <li style="display: none;"><a href="#" class="nav-link" id="nav-events" onclick="navigateTo('events')">Events</a></li>
                         <!-- Account navigation removed - access via account button only -->
@@ -82,20 +155,61 @@
                 <!-- Action Section -->
                 <div class="action-section">
                     <button class="action-btn" onclick="handleWishlistClick()">
-                        <i class="fas fa-heart"></i> Wishlist
+                        <i class="fas fa-heart"></i> <span>Wishlist</span>
                         <span class="wishlist-badge" style="display: none;">0</span>
                     </button>
                     <button class="action-btn" onclick="tcgStore.openCart()">
-                        <i class="fas fa-shopping-cart"></i> Cart
+                        <i class="fas fa-shopping-cart"></i> <span>Cart</span>
                         <span class="cart-badge" style="display: none;">0</span>
                     </button>
                     <a href="#" class="action-btn" id="account-btn" onclick="handleAccountClick()">
-                        <i class="fas fa-user"></i> Account
+                        <i class="fas fa-user"></i> <span>Account</span>
                     </a>
                 </div>
+
+                <!-- Mobile Navigation Toggle -->
+                <button class="mobile-nav-toggle" onclick="toggleMobileNav()" aria-label="Toggle navigation menu">
+                    <span></span>
+                </button>
             </div>
         </div>
     </header>
+
+    <!-- Mobile Navigation Menu -->
+    <nav class="mobile-nav-menu" id="mobile-nav-menu">
+        <!-- Mobile Search -->
+        <div class="mobile-search">
+            <div class="search-container">
+                <span class="search-icon"><i class="fas fa-search"></i></span>
+                <input type="text" class="search-input" placeholder="Search Yu-Gi-Oh! cards..." id="mobile-search-input">
+            </div>
+        </div>
+        
+        <!-- Mobile Navigation Links -->
+        <ul class="mobile-nav-links">
+            <li><a href="#" class="mobile-nav-link" id="mobile-nav-home" onclick="navigateTo('home'); closeMobileNav();">
+                <i class="fas fa-home"></i> Home
+            </a></li>
+            <li><a href="#" class="mobile-nav-link" id="mobile-nav-singles" onclick="navigateTo('singles'); closeMobileNav();">
+                <i class="fas fa-cards-blank"></i> Singles
+            </a></li>
+            <li><a href="#" class="mobile-nav-link" id="mobile-nav-decks" onclick="navigateTo('decks'); closeMobileNav();">
+                <i class="fas fa-layer-group"></i> Decks
+            </a></li>
+            <li><a href="#" class="mobile-nav-link" id="mobile-nav-buylist" onclick="navigateTo('buylist'); closeMobileNav();">
+                <i class="fas fa-dollar-sign"></i> Buylist
+            </a></li>
+            <li><a href="#" class="mobile-nav-link" id="mobile-nav-account" onclick="handleAccountClick(); closeMobileNav();">
+                <i class="fas fa-user"></i> My Account
+            </a></li>
+            <li><a href="#" class="mobile-nav-link" onclick="handleWishlistClick(); closeMobileNav();">
+                <i class="fas fa-heart"></i> Wishlist
+            </a></li>
+            <li><a href="#" class="mobile-nav-link" onclick="tcgStore.openCart(); closeMobileNav();">
+                <i class="fas fa-shopping-cart"></i> Shopping Cart
+            </a></li>
+        </ul>
+    </nav>
 
     <!-- Dynamic Content Container -->
     <main id="main-content" style="width: 100%; margin: 0 auto; padding: var(--space-8) var(--space-8); min-height: 60vh;">
@@ -204,6 +318,7 @@
 
     <!-- Scripts -->
     <script src="assets/js/services/database-service.js"></script>
+    <script src="assets/js/services/yugioh-pricing-service.js"></script>
     <script src="assets/js/database-init.js"></script>
     <script src="assets/js/services/deck-builder-service.js"></script>
     <script src="assets/js/app-router.js"></script>
@@ -407,6 +522,483 @@
                 }
             }
         }
+
+        // Mobile Navigation Functions
+        function toggleMobileNav() {
+            const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
+            const mobileNavMenu = document.getElementById('mobile-nav-menu');
+            
+            if (mobileNavToggle && mobileNavMenu) {
+                const isActive = mobileNavToggle.classList.contains('active');
+                
+                if (isActive) {
+                    closeMobileNav();
+                } else {
+                    openMobileNav();
+                }
+            }
+        }
+
+        function openMobileNav() {
+            const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
+            const mobileNavMenu = document.getElementById('mobile-nav-menu');
+            
+            if (mobileNavToggle && mobileNavMenu) {
+                mobileNavToggle.classList.add('active');
+                mobileNavMenu.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            }
+        }
+
+        function closeMobileNav() {
+            const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
+            const mobileNavMenu = document.getElementById('mobile-nav-menu');
+            
+            if (mobileNavToggle && mobileNavMenu) {
+                mobileNavToggle.classList.remove('active');
+                mobileNavMenu.classList.remove('active');
+                document.body.style.overflow = ''; // Restore scrolling
+            }
+        }
+
+        // Close mobile nav when clicking outside
+        document.addEventListener('click', function(event) {
+            const mobileNavMenu = document.getElementById('mobile-nav-menu');
+            const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
+            
+            if (mobileNavMenu && mobileNavToggle) {
+                const isClickInsideNav = mobileNavMenu.contains(event.target);
+                const isClickOnToggle = mobileNavToggle.contains(event.target);
+                
+                if (!isClickInsideNav && !isClickOnToggle && mobileNavMenu.classList.contains('active')) {
+                    closeMobileNav();
+                }
+            }
+        });
+
+        // Close mobile nav on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const mobileNavMenu = document.getElementById('mobile-nav-menu');
+                if (mobileNavMenu && mobileNavMenu.classList.contains('active')) {
+                    closeMobileNav();
+                }
+            }
+        });
+
+        // Handle mobile search
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileSearchInput = document.getElementById('mobile-search-input');
+            if (mobileSearchInput && window.tcgStore) {
+                mobileSearchInput.addEventListener('input', window.tcgStore.debounce(function() {
+                    // Use the same search functionality as desktop
+                    if (window.tcgStore.handleSearchDropdown) {
+                        window.tcgStore.handleSearchDropdown();
+                    }
+                }, 300));
+                
+                mobileSearchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const query = e.target.value.trim();
+                        if (query.length >= 2) {
+                            closeMobileNav();
+                            navigateTo('singles', `?search=${encodeURIComponent(query)}`);
+                        }
+                    }
+                });
+            }
+        });
+
+        // Update mobile navigation active states
+        function updateMobileNavigation(pageName) {
+            // Remove active class from all mobile nav links
+            document.querySelectorAll('.mobile-nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // Add active class to current page
+            const activeMobileLink = document.getElementById(`mobile-nav-${pageName}`);
+            if (activeMobileLink) {
+                activeMobileLink.classList.add('active');
+            }
+        }
+
+        // Ensure navigateTo function is always available and reliable
+        function ensureNavigateTo() {
+            if (!window.navigateTo || typeof window.navigateTo !== 'function') {
+                window.navigateTo = function(page, params = '') {
+                    console.log('Using fallback navigateTo function for:', page, params);
+                    
+                    // Close mobile nav when navigating
+                    closeMobileNav();
+                    
+                    // Update mobile navigation
+                    updateMobileNavigation(page);
+                    
+                    // Use app router if available
+                    if (window.appRouter && typeof window.appRouter.loadPage === 'function') {
+                        window.appRouter.loadPage(page, true, params);
+                    } else {
+                        // Fallback: use hash-based navigation
+                        console.warn('AppRouter not available, using hash fallback');
+                        const url = page === 'home' ? '#' : `#page=${page}${params}`;
+                        window.location.hash = url;
+                        window.location.reload();
+                    }
+                };
+            }
+        }
+
+        // Enhanced navigateTo wrapper that handles mobile nav
+        function createNavigateToWrapper() {
+            const originalNavigateTo = window.navigateTo;
+            
+            window.navigateTo = function(page, params = '') {
+                console.log('NavigateTo called:', page, params);
+                
+                // Close mobile nav when navigating
+                closeMobileNav();
+                
+                // Update mobile navigation
+                updateMobileNavigation(page);
+                
+                // Call navigation function with multiple fallbacks
+                if (originalNavigateTo && typeof originalNavigateTo === 'function') {
+                    originalNavigateTo(page, params);
+                } else if (window.appRouter && typeof window.appRouter.loadPage === 'function') {
+                    window.appRouter.loadPage(page, true, params);
+                } else {
+                    // Final fallback
+                    console.warn('No navigation method available, using hash fallback');
+                    const url = page === 'home' ? '#' : `#page=${page}${params}`;
+                    window.location.hash = url;
+                    window.location.reload();
+                }
+            };
+        }
+
+        // Initialize navigation with retry mechanism
+        function initializeNavigation() {
+            let retryCount = 0;
+            const maxRetries = 10;
+            
+            function tryInitialize() {
+                if (window.appRouter && typeof window.appRouter.loadPage === 'function') {
+                    console.log('AppRouter found, setting up navigation wrapper');
+                    createNavigateToWrapper();
+                } else if (retryCount < maxRetries) {
+                    retryCount++;
+                    console.log(`AppRouter not ready, retry ${retryCount}/${maxRetries}`);
+                    setTimeout(tryInitialize, 100);
+                } else {
+                    console.warn('AppRouter not available after retries, using fallback navigation');
+                    ensureNavigateTo();
+                }
+            }
+            
+            tryInitialize();
+        }
+
+        // Initialize navigation when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeNavigation);
+        } else {
+            initializeNavigation();
+        }
+
+        // Singles page search functions - Make them globally available
+        window.performCardSearch = function() {
+            if (window.tcgStore && typeof window.tcgStore.performAdvancedSearch === 'function') {
+                window.tcgStore.performAdvancedSearch();
+            } else {
+                console.warn('Advanced search function not available');
+            }
+        };
+
+        window.toggleAdvancedFilters = function() {
+            const filtersPanel = document.getElementById('advanced-filters');
+            const chevron = document.getElementById('filter-chevron');
+            
+            if (filtersPanel && chevron) {
+                const isVisible = filtersPanel.style.display !== 'none';
+                filtersPanel.style.display = isVisible ? 'none' : 'block';
+                chevron.className = isVisible ? 'fas fa-chevron-down' : 'fas fa-chevron-up';
+            }
+        };
+
+        window.clearAllFilters = function() {
+            // Clear all filter inputs
+            const filterInputs = document.querySelectorAll('#advanced-filters select, #advanced-filters input');
+            filterInputs.forEach(input => {
+                if (input.type === 'checkbox') {
+                    input.checked = false;
+                } else {
+                    input.value = '';
+                }
+            });
+            
+            // Clear main search input
+            const searchInput = document.getElementById('card-search-input');
+            if (searchInput) {
+                searchInput.value = '';
+            }
+            
+            // Perform search to show all cards
+            window.performCardSearch();
+        };
+
+        window.searchByCategory = function(category) {
+            if (window.tcgStore && typeof window.tcgStore.searchByCategory === 'function') {
+                window.tcgStore.searchByCategory(category);
+            } else {
+                console.warn('Category search function not available');
+            }
+        };
+
+        window.loadMoreCards = function() {
+            if (window.tcgStore && typeof window.tcgStore.loadMoreCards === 'function') {
+                window.tcgStore.loadMoreCards();
+            } else {
+                console.warn('Load more function not available');
+            }
+        };
+
+        // Also create regular function declarations for backward compatibility
+        function performCardSearch() {
+            window.performCardSearch();
+        }
+
+        function toggleAdvancedFilters() {
+            window.toggleAdvancedFilters();
+        }
+
+        function clearAllFilters() {
+            window.clearAllFilters();
+        }
+
+        function searchByCategory(category) {
+            window.searchByCategory(category);
+        }
+
+        function loadMoreCards() {
+            window.loadMoreCards();
+        }
+
+        // Currency Toggle Functionality
+        let currentCurrency = 'CAD';
+        const exchangeRate = 0.74; // CAD to USD conversion rate (approximate)
+
+        function toggleCurrency() {
+            const toggleBtn = document.getElementById('currency-toggle-btn');
+            
+            if (currentCurrency === 'CAD') {
+                currentCurrency = 'USD';
+                toggleBtn.textContent = 'USD';
+                toggleBtn.style.background = 'var(--primary-color)';
+                toggleBtn.style.color = 'white';
+                toggleBtn.style.borderColor = 'var(--primary-color)';
+            } else {
+                currentCurrency = 'CAD';
+                toggleBtn.textContent = 'CAD';
+                toggleBtn.style.background = 'rgba(255, 255, 255, 0.2)';
+                toggleBtn.style.color = 'white';
+                toggleBtn.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+            }
+            
+            // Save currency preference
+            localStorage.setItem('tcg-currency', currentCurrency);
+            
+            // Update all prices on the page
+            updateAllPrices();
+            
+            // Update shipping text in header
+            updateShippingText();
+        }
+
+        function convertPrice(price, fromCurrency, toCurrency) {
+            if (fromCurrency === toCurrency) return price;
+            
+            if (fromCurrency === 'CAD' && toCurrency === 'USD') {
+                return price * exchangeRate;
+            } else if (fromCurrency === 'USD' && toCurrency === 'CAD') {
+                return price / exchangeRate;
+            }
+            
+            return price;
+        }
+
+        function formatPrice(price, currency = currentCurrency) {
+            const symbol = currency === 'USD' ? '$' : '$';
+            const formattedPrice = parseFloat(price).toFixed(2);
+            return `${symbol}${formattedPrice} ${currency}`;
+        }
+
+        function updateAllPrices() {
+            // Update all price elements on the page
+            const priceElements = document.querySelectorAll('[data-price]');
+            priceElements.forEach(element => {
+                const originalPrice = parseFloat(element.dataset.price);
+                const originalCurrency = element.dataset.currency || 'CAD';
+                const convertedPrice = convertPrice(originalPrice, originalCurrency, currentCurrency);
+                
+                // Update the text content
+                if (element.textContent.includes('$')) {
+                    element.textContent = formatPrice(convertedPrice);
+                }
+            });
+            
+            // Update cart prices if cart is open
+            if (window.tcgStore && typeof window.tcgStore.updateCartPrices === 'function') {
+                window.tcgStore.updateCartPrices(currentCurrency);
+            }
+            
+            // Update buylist prices if on buylist page
+            updateBuylistPrices();
+        }
+
+        function updateBuylistPrices() {
+            // Update buylist cart totals
+            const cashTotal = document.getElementById('buylist-cash-total');
+            const creditTotal = document.getElementById('buylist-credit-total');
+            
+            if (cashTotal && creditTotal) {
+                const cashValue = parseFloat(cashTotal.textContent.replace(/[^0-9.]/g, ''));
+                const creditValue = parseFloat(creditTotal.textContent.replace(/[^0-9.]/g, ''));
+                
+                if (!isNaN(cashValue) && !isNaN(creditValue)) {
+                    const convertedCash = convertPrice(cashValue, 'CAD', currentCurrency);
+                    const convertedCredit = convertPrice(creditValue, 'CAD', currentCurrency);
+                    
+                    cashTotal.textContent = formatPrice(convertedCash);
+                    creditTotal.textContent = formatPrice(convertedCredit);
+                }
+            }
+            
+            // Update individual buylist item prices
+            const buylistItems = document.querySelectorAll('#current-buylist-items [style*="font-weight: 600"]');
+            buylistItems.forEach(item => {
+                if (item.textContent.includes('$')) {
+                    const price = parseFloat(item.textContent.replace(/[^0-9.]/g, ''));
+                    if (!isNaN(price)) {
+                        const convertedPrice = convertPrice(price, 'CAD', currentCurrency);
+                        item.textContent = formatPrice(convertedPrice);
+                    }
+                }
+            });
+        }
+
+        function updateShippingText() {
+            const shippingText = document.querySelector('.header-top-right span:last-child');
+            if (shippingText) {
+                const threshold = currentCurrency === 'USD' ? '75' : '100';
+                shippingText.innerHTML = `<i class="fas fa-shipping-fast"></i> Free Shipping on Orders $${threshold}+ ${currentCurrency}`;
+            }
+        }
+
+        // Initialize currency on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved currency preference
+            const savedCurrency = localStorage.getItem('tcg-currency');
+            if (savedCurrency && savedCurrency !== currentCurrency) {
+                currentCurrency = savedCurrency;
+                const toggleBtn = document.getElementById('currency-toggle-btn');
+                if (toggleBtn) {
+                    toggleBtn.textContent = currentCurrency;
+                    if (currentCurrency === 'USD') {
+                        toggleBtn.style.background = 'var(--primary-color)';
+                        toggleBtn.style.color = 'white';
+                        toggleBtn.style.borderColor = 'var(--primary-color)';
+                    }
+                }
+                updateShippingText();
+            }
+        });
+
+        // Make currency functions globally available
+        window.toggleCurrency = toggleCurrency;
+        window.convertPrice = convertPrice;
+        window.formatPrice = formatPrice;
+        window.getCurrentCurrency = function() { return currentCurrency; };
+
+        // Game switching functionality for singles page
+        let currentGame = 'yugioh';
+        
+        function switchGame(game) {
+            currentGame = game;
+            
+            // Update tab appearance
+            document.querySelectorAll('.game-tab').forEach(tab => {
+                tab.classList.remove('active');
+                tab.style.background = 'var(--gray-200)';
+                tab.style.color = 'var(--gray-700)';
+            });
+            
+            const activeTab = document.getElementById(`${game}-tab`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+                activeTab.style.background = 'var(--primary-color)';
+                activeTab.style.color = 'white';
+            }
+            
+            // Update search placeholder
+            const searchInput = document.getElementById('card-search-input');
+            if (searchInput) {
+                if (game === 'pokemon') {
+                    searchInput.placeholder = 'Search Pokemon cards...';
+                } else {
+                    searchInput.placeholder = 'Search Yu-Gi-Oh! cards...';
+                }
+            }
+            
+            // Clear current results and show appropriate message
+            const cardsGrid = document.getElementById('cards-grid');
+            if (cardsGrid) {
+                if (game === 'pokemon') {
+                    cardsGrid.innerHTML = `
+                        <div style="text-align: center; padding: var(--space-12); color: var(--gray-500); grid-column: 1 / -1;">
+                            <div style="font-size: 4rem; margin-bottom: var(--space-4);">⚡</div>
+                            <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3);">Pokemon Cards Coming Soon!</h3>
+                            <p style="margin-bottom: var(--space-6);">We're working on adding Pokemon cards to our inventory. Check back soon!</p>
+                            <button onclick="switchGame('yugioh')" style="padding: var(--space-3) var(--space-6); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-lg); font-weight: 600; cursor: pointer;">
+                                Browse Yu-Gi-Oh! Cards
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    // Reload Yu-Gi-Oh cards
+                    if (window.loadFeaturedCards && typeof window.loadFeaturedCards === 'function') {
+                        window.loadFeaturedCards();
+                    } else if (window.performCardSearch && typeof window.performCardSearch === 'function') {
+                        window.performCardSearch();
+                    }
+                }
+            }
+            
+            // Update results info
+            const resultsTitle = document.getElementById('results-title');
+            const resultsCount = document.getElementById('results-count');
+            
+            if (resultsTitle) {
+                if (game === 'pokemon') {
+                    resultsTitle.textContent = 'Pokemon Cards';
+                } else {
+                    resultsTitle.textContent = 'Yu-Gi-Oh! Cards';
+                }
+            }
+            
+            if (resultsCount) {
+                if (game === 'pokemon') {
+                    resultsCount.textContent = 'Coming Soon';
+                } else {
+                    resultsCount.textContent = '';
+                }
+            }
+        }
+        
+        // Make switchGame globally available
+        window.switchGame = switchGame;
+        window.getCurrentGame = function() { return currentGame; };
     </script>
 </body>
 </html>

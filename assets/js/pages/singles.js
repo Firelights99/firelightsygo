@@ -11,7 +11,7 @@
 
 let currentSearchResults = [];
 let currentPage = 0;
-const cardsPerPage = 20;
+const cardsPerPage = 10;
 let isLoading = false;
 
 export async function initPage(params = '') {
@@ -100,9 +100,17 @@ async function executeCardSearch() {
         race: document.getElementById('race-filter')?.value || '',
         attribute: document.getElementById('attribute-filter')?.value || '',
         level: document.getElementById('level-filter')?.value || '',
+        linkval: document.getElementById('linkval-filter')?.value || '',
         archetype: document.getElementById('archetype-filter')?.value || '',
-        sort: document.getElementById('sort-filter')?.value || 'name'
+        atk: document.getElementById('atk-filter')?.value || '',
+        def: document.getElementById('def-filter')?.value || '',
+        banlist: document.getElementById('banlist-filter')?.value || '',
+        cardset: document.getElementById('cardset-filter')?.value || '',
+        sort: document.getElementById('sort-filter')?.value || 'name',
+        limit: parseInt(document.getElementById('limit-filter')?.value) || 20,
+        misc: document.getElementById('misc-filter')?.checked || false
     };
+    
     isLoading = true;
     showLoadingState();
     
@@ -113,35 +121,35 @@ async function executeCardSearch() {
         
         let results = [];
         
-        if (searchQuery.length >= 2) {
-            // Search by name
-            results = await window.tcgStore.searchCardsByName(searchQuery);
-        } else if (filters.archetype) {
-            // Search by archetype
-            results = await window.tcgStore.getCardsByArchetype(filters.archetype);
-        } else if (Object.values(filters).some(f => f)) {
-            // Search by filters
-            results = await window.tcgStore.searchCardsByFilters(filters);
+        // Build API query parameters
+        const apiParams = buildAPIParams(searchQuery, filters);
+        
+        if (searchQuery.length >= 2 || Object.values(filters).some(f => f && f !== 'name' && f !== 20 && f !== false)) {
+            // Perform advanced search with YGOPRODeck API
+            results = await performAdvancedAPISearch(apiParams);
         } else {
             // Load featured cards if no search criteria
             await loadFeaturedCards();
             return;
         }
         
-        // Apply additional filters
-        results = applyFilters(results, filters);
+        // Apply client-side filters that API doesn't support
+        results = applyClientSideFilters(results, filters);
         
         // Sort results
         results = sortResults(results, filters.sort);
         
-        currentSearchResults = results;
+        // Apply limit
+        const limitedResults = results.slice(0, filters.limit);
+        
+        currentSearchResults = limitedResults;
         currentPage = 0;
         
-        if (results.length > 0) {
-            await displayCards(results.slice(0, cardsPerPage));
-            updateResultsInfo('Search Results', results.length);
+        if (limitedResults.length > 0) {
+            await displayCards(limitedResults.slice(0, cardsPerPage));
+            updateResultsInfo('Search Results', limitedResults.length, results.length);
             
-            if (results.length > cardsPerPage) {
+            if (limitedResults.length > cardsPerPage) {
                 showLoadMoreButton();
             } else {
                 hideLoadMoreButton();
@@ -156,6 +164,150 @@ async function executeCardSearch() {
     } finally {
         isLoading = false;
     }
+}
+
+function buildAPIParams(searchQuery, filters) {
+    const params = new URLSearchParams();
+    
+    // Name search
+    if (searchQuery.length >= 2) {
+        params.append('fname', searchQuery);
+    }
+    
+    // Type filter
+    if (filters.type) {
+        params.append('type', filters.type);
+    }
+    
+    // Race filter
+    if (filters.race) {
+        params.append('race', filters.race);
+    }
+    
+    // Attribute filter
+    if (filters.attribute) {
+        params.append('attribute', filters.attribute);
+    }
+    
+    // Level filter
+    if (filters.level) {
+        params.append('level', filters.level);
+    }
+    
+    // Link value filter
+    if (filters.linkval) {
+        params.append('linkval', filters.linkval);
+    }
+    
+    // Archetype filter
+    if (filters.archetype) {
+        params.append('archetype', filters.archetype);
+    }
+    
+    // Card set filter
+    if (filters.cardset) {
+        params.append('cardset', filters.cardset);
+    }
+    
+    // Banlist filter
+    if (filters.banlist) {
+        params.append('banlist', filters.banlist);
+    }
+    
+    // Sort parameter
+    params.append('sort', filters.sort);
+    
+    return params;
+}
+
+async function performAdvancedAPISearch(params) {
+    const apiBaseURL = 'https://db.ygoprodeck.com/api/v7';
+    const url = `${apiBaseURL}/cardinfo.php?${params.toString()}`;
+    
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        return result.data || [];
+        
+    } catch (error) {
+        console.error('API search error:', error);
+        // Fallback to basic search if advanced search fails
+        if (params.has('fname')) {
+            return await window.tcgStore.searchCards(params.get('fname'));
+        }
+        return [];
+    }
+}
+
+function applyClientSideFilters(cards, filters) {
+    return cards.filter(card => {
+        // ATK range filter
+        if (filters.atk && card.atk !== undefined) {
+            const atkValue = parseInt(card.atk);
+            if (!isNaN(atkValue)) {
+                switch (filters.atk) {
+                    case '0-999':
+                        if (atkValue < 0 || atkValue > 999) return false;
+                        break;
+                    case '1000-1999':
+                        if (atkValue < 1000 || atkValue > 1999) return false;
+                        break;
+                    case '2000-2499':
+                        if (atkValue < 2000 || atkValue > 2499) return false;
+                        break;
+                    case '2500-2999':
+                        if (atkValue < 2500 || atkValue > 2999) return false;
+                        break;
+                    case '3000+':
+                        if (atkValue < 3000) return false;
+                        break;
+                }
+            }
+        }
+        
+        // DEF range filter
+        if (filters.def && card.def !== undefined) {
+            const defValue = parseInt(card.def);
+            if (!isNaN(defValue)) {
+                switch (filters.def) {
+                    case '0-999':
+                        if (defValue < 0 || defValue > 999) return false;
+                        break;
+                    case '1000-1999':
+                        if (defValue < 1000 || defValue > 1999) return false;
+                        break;
+                    case '2000-2499':
+                        if (defValue < 2000 || defValue > 2499) return false;
+                        break;
+                    case '2500-2999':
+                        if (defValue < 2500 || defValue > 2999) return false;
+                        break;
+                    case '3000+':
+                        if (defValue < 3000) return false;
+                        break;
+                }
+            }
+        }
+        
+        // Show only cards with prices filter
+        if (filters.misc) {
+            if (!card.card_prices || card.card_prices.length === 0) {
+                return false;
+            }
+            const prices = card.card_prices[0];
+            const hasPrice = prices.tcgplayer_price || prices.cardmarket_price || 
+                           prices.ebay_price || prices.amazon_price || prices.coolstuffinc_price;
+            if (!hasPrice || parseFloat(hasPrice) <= 0) {
+                return false;
+            }
+        }
+        
+        return true;
+    });
 }
 
 function applyFilters(cards, filters) {
@@ -323,9 +475,29 @@ function updateResultsInfo(title, count) {
 
 function toggleAdvancedFilters() {
     const filtersDiv = document.getElementById('advanced-filters');
+    const chevron = document.getElementById('filter-chevron');
+    const toggleBtn = document.getElementById('advanced-toggle');
+    
     if (filtersDiv) {
         const isVisible = filtersDiv.style.display !== 'none';
-        filtersDiv.style.display = isVisible ? 'none' : 'block';
+        
+        if (isVisible) {
+            // Hide filters
+            filtersDiv.style.display = 'none';
+            if (chevron) chevron.className = 'fas fa-chevron-down';
+            if (toggleBtn) {
+                toggleBtn.style.background = 'var(--secondary-color)';
+                toggleBtn.style.color = 'var(--gray-900)';
+            }
+        } else {
+            // Show filters
+            filtersDiv.style.display = 'block';
+            if (chevron) chevron.className = 'fas fa-chevron-up';
+            if (toggleBtn) {
+                toggleBtn.style.background = 'var(--primary-color)';
+                toggleBtn.style.color = 'white';
+            }
+        }
     }
 }
 

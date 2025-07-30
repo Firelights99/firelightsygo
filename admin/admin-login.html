@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Firelight Duel Academy</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/modern-tcg-store.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-4);
+        }
+
+        .login-container {
+            background: white;
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-2xl);
+            padding: var(--space-8);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-header {
+            margin-bottom: var(--space-8);
+        }
+
+        .login-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 0 0 var(--space-2) 0;
+        }
+
+        .login-header p {
+            color: var(--gray-600);
+            margin: 0;
+        }
+
+        .admin-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: var(--space-4);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-4);
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: var(--space-2);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: var(--space-3);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            transition: var(--transition-fast);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: var(--space-3);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            margin-bottom: var(--space-4);
+        }
+
+        .login-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .login-btn:disabled {
+            background: var(--gray-400);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .error-message {
+            background: var(--error-color);
+            color: white;
+            padding: var(--space-3);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-4);
+            display: none;
+        }
+
+        .back-link {
+            color: var(--gray-600);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: var(--transition-fast);
+        }
+
+        .back-link:hover {
+            color: var(--primary-color);
+        }
+
+        .demo-info {
+            background: var(--info-color);
+            color: white;
+            padding: var(--space-4);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-6);
+            font-size: 0.875rem;
+        }
+
+        .demo-info h4 {
+            margin: 0 0 var(--space-2) 0;
+            font-size: 1rem;
+        }
+
+        .demo-info p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: var(--space-6);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="admin-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h1>Admin Login</h1>
+            <p>Firelight Duel Academy Store Management</p>
+        </div>
+
+        <!-- Demo Information -->
+        <div class="demo-info">
+            <h4><i class="fas fa-info-circle"></i> Demo Admin Access</h4>
+            <p><strong>Email:</strong> admin@firelightygo.com<br>
+            <strong>Password:</strong> admin123</p>
+        </div>
+
+        <div class="error-message" id="error-message">
+            Invalid credentials. Please try again.
+        </div>
+
+        <form id="admin-login-form">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required placeholder="Enter your admin email">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="Enter your password">
+            </div>
+
+            <button type="submit" class="login-btn" id="login-btn">
+                <i class="fas fa-sign-in-alt"></i> Login to Dashboard
+            </button>
+        </form>
+
+        <a href="../index.html" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Website
+        </a>
+    </div>
+
+    <script>
+        class AdminLogin {
+            constructor() {
+                this.form = document.getElementById('admin-login-form');
+                this.errorMessage = document.getElementById('error-message');
+                this.loginBtn = document.getElementById('login-btn');
+                
+                this.init();
+            }
+
+            init() {
+                // Check if already logged in
+                this.checkExistingLogin();
+                
+                // Set up form submission
+                this.form.addEventListener('submit', (e) => this.handleLogin(e));
+                
+                // Create demo admin account if it doesn't exist
+                this.createDemoAdmin();
+            }
+
+            checkExistingLogin() {
+                const adminData = localStorage.getItem('tcg-admin');
+                if (adminData) {
+                    try {
+                        const admin = JSON.parse(adminData);
+                        if (admin.isAdmin && admin.isActive) {
+                            window.location.href = 'admin-dashboard.html';
+                            return;
+                        }
+                    } catch (error) {
+                        localStorage.removeItem('tcg-admin');
+                    }
+                }
+            }
+
+            createDemoAdmin() {
+                const users = JSON.parse(localStorage.getItem('tcg-users') || '{}');
+                const adminEmail = 'admin@firelightygo.com';
+                
+                if (!users[adminEmail]) {
+                    users[adminEmail] = {
+                        id: 'admin-001',
+                        email: adminEmail,
+                        password: 'admin123', // In production, this would be hashed
+                        firstName: 'Admin',
+                        lastName: 'User',
+                        isAdmin: true,
+                        isActive: true,
+                        createdAt: new Date().toISOString(),
+                        permissions: ['orders', 'inventory', 'customers', 'analytics']
+                    };
+                    
+                    localStorage.setItem('tcg-users', JSON.stringify(users));
+                }
+            }
+
+            async handleLogin(event) {
+                event.preventDefault();
+                
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                
+                this.setLoading(true);
+                this.hideError();
+                
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                if (this.validateCredentials(email, password)) {
+                    this.loginSuccess(email);
+                } else {
+                    this.loginError();
+                }
+                
+                this.setLoading(false);
+            }
+
+            validateCredentials(email, password) {
+                const users = JSON.parse(localStorage.getItem('tcg-users') || '{}');
+                const user = users[email];
+                
+                if (!user) return false;
+                if (!user.isAdmin) return false;
+                if (!user.isActive) return false;
+                
+                // Handle both plain text passwords and hashed passwords
+                if (user.password) {
+                    // Plain text password (demo/development)
+                    if (user.password !== password) return false;
+                } else if (user.passwordHash) {
+                    // Hashed password (production-like)
+                    const expectedHash = this.hashPassword(password);
+                    if (user.passwordHash !== expectedHash) return false;
+                } else {
+                    return false; // No password field found
+                }
+                
+                return true;
+            }
+
+            hashPassword(password) {
+                let hash = 0;
+                for (let i = 0; i < password.length; i++) {
+                    const char = password.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash;
+                }
+                return hash.toString();
+            }
+
+            loginSuccess(email) {
+                const users = JSON.parse(localStorage.getItem('tcg-users') || '{}');
+                const user = users[email];
+                
+                // Store admin session
+                const adminSession = {
+                    id: user.id,
+                    email: user.email,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    isAdmin: true,
+                    isActive: true,
+                    permissions: user.permissions || ['orders', 'inventory', 'customers', 'analytics'],
+                    loginTime: new Date().toISOString()
+                };
+                
+                localStorage.setItem('tcg-admin', JSON.stringify(adminSession));
+                
+                // Show success message
+                this.showSuccess();
+                
+                // Redirect to dashboard
+                setTimeout(() => {
+                    window.location.href = 'admin-dashboard.html';
+                }, 1500);
+            }
+
+            loginError() {
+                this.showError('Invalid email or password. Please check your credentials.');
+            }
+
+            setLoading(loading) {
+                this.loginBtn.disabled = loading;
+                if (loading) {
+                    this.loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+                } else {
+                    this.loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login to Dashboard';
+                }
+            }
+
+            showError(message) {
+                this.errorMessage.textContent = message;
+                this.errorMessage.style.display = 'block';
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    this.hideError();
+                }, 5000);
+            }
+
+            hideError() {
+                this.errorMessage.style.display = 'none';
+            }
+
+            showSuccess() {
+                const successDiv = document.createElement('div');
+                successDiv.style.cssText = `
+                    background: var(--success-color);
+                    color: white;
+                    padding: var(--space-3);
+                    border-radius: var(--radius-lg);
+                    margin-bottom: var(--space-4);
+                    text-align: center;
+                `;
+                successDiv.innerHTML = '<i class="fas fa-check-circle"></i> Login successful! Redirecting to dashboard...';
+                
+                this.errorMessage.parentNode.insertBefore(successDiv, this.errorMessage);
+            }
+        }
+
+        // Initialize admin login
+        document.addEventListener('DOMContentLoaded', () => {
+            new AdminLogin();
+        });
+    </script>
+</body>
+</html>

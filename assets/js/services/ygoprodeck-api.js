@@ -180,6 +180,9 @@ class YGOProDeckAPI {
     formatCardForDisplay(card) {
         if (!card) return null;
 
+        const basePrice = card.price || this.getMockPrice(card.name);
+        const baseRarity = this.getCardRarity(card);
+
         return {
             id: card.id,
             name: card.name,
@@ -194,10 +197,13 @@ class YGOProDeckAPI {
             image: this.getCardImageURL(card),
             imageSmall: this.getCardImageURL(card, 'small'),
             imageCropped: this.getCardImageURL(card, 'cropped'),
-            price: card.price || this.getMockPrice(card.name),
+            price: basePrice,
+            originalPrice: basePrice,
             priceChange: card.priceChange || this.getMockPriceChange(),
-            rarity: this.getCardRarity(card),
-            sets: card.card_sets || []
+            rarity: baseRarity,
+            originalRarity: baseRarity,
+            sets: card.card_sets || [],
+            selectedSet: null
         };
     }
 
@@ -220,14 +226,22 @@ class YGOProDeckAPI {
     }
 
     /**
-     * Get card rarity (mock data for now)
+     * Get card rarity (uses actual set data when available)
      */
     getCardRarity(card) {
-        if (!card.card_sets || card.card_sets.length === 0) return 'Common';
+        if (!card.card_sets || card.card_sets.length === 0) {
+            const rarities = ['Common', 'Rare', 'Super Rare', 'Ultra Rare', 'Secret Rare'];
+            return rarities[Math.floor(Math.random() * rarities.length)];
+        }
+        
+        // Use the rarity from the first set, or generate one if not available
+        const firstSet = card.card_sets[0];
+        if (firstSet && firstSet.set_rarity) {
+            return firstSet.set_rarity;
+        }
         
         const rarities = ['Common', 'Rare', 'Super Rare', 'Ultra Rare', 'Secret Rare'];
-        const randomRarity = rarities[Math.floor(Math.random() * rarities.length)];
-        return randomRarity;
+        return rarities[Math.floor(Math.random() * rarities.length)];
     }
 
     /**

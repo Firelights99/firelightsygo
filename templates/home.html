@@ -1,17 +1,71 @@
-<!-- Hero Section -->
-<section style="text-align: center; padding: var(--space-20) 0; background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); border-radius: var(--radius-2xl); color: white; margin-bottom: var(--space-12);">
-    <div style="max-width: 800px; margin: 0 auto; padding: 0 var(--space-6);">
-        <h1 style="font-size: 3.5rem; font-weight: 700; margin-bottom: var(--space-6); line-height: 1.1;">
-            Premium Yu-Gi-Oh! Singles
-        </h1>
-        <p style="font-size: 1.25rem; margin-bottom: var(--space-8); opacity: 0.9; line-height: 1.6;">
-            Discover the latest meta cards, competitive staples, and rare collectibles. 
-            Real-time pricing powered by YGOPRODeck API.
-        </p>
-        <div style="display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap;">
-            <a href="#" onclick="navigateTo('singles')" style="padding: var(--space-4) var(--space-8); background: var(--secondary-color); color: var(--gray-900); text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; transition: var(--transition-fast); text-transform: uppercase; letter-spacing: 0.05em;">
-                Browse Singles
-            </a>
+<!-- Logo Section -->
+<section style="text-align: center; margin-bottom: var(--space-8);">
+    <div style="display: inline-flex; align-items: center; gap: var(--space-4); padding: var(--space-6); background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); border: 1px solid var(--gray-200);">
+        <!-- Firelight Logo SVG -->
+        <svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="fireGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#FF6B35;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#F7931E;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#FFD23F;stop-opacity:1" />
+                </linearGradient>
+                <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#1E3A8A;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:1" />
+                </linearGradient>
+                <filter id="glow">
+                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                    <feMerge> 
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            
+            <!-- Main flame -->
+            <path d="M30 45 C30 35, 20 30, 20 20 C20 15, 25 10, 30 15 C35 10, 40 15, 40 20 C40 30, 30 35, 30 45 Z" 
+                  fill="url(#fireGradient)" filter="url(#glow)"/>
+            <!-- Inner flame -->
+            <path d="M30 40 C30 32, 25 28, 25 22 C25 18, 28 15, 30 18 C32 15, 35 18, 35 22 C35 28, 30 32, 30 40 Z" 
+                  fill="#FFE066" opacity="0.8"/>
+            <!-- Core flame -->
+            <path d="M30 35 C30 30, 27 27, 27 24 C27 22, 28.5 20, 30 22 C31.5 20, 33 22, 33 24 C33 27, 30 30, 30 35 Z" 
+                  fill="#FFF2CC" opacity="0.9"/>
+        </svg>
+        
+        <div style="text-align: left;">
+            <h1 style="font-size: 2rem; font-weight: 700; color: var(--gray-900); margin: 0; background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                Firelight Duel Academy
+            </h1>
+            <p style="font-size: 0.875rem; color: var(--gray-600); margin: 0; font-weight: 500; letter-spacing: 0.05em;">
+                Premium Yu-Gi-Oh! Trading Card Store
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Banner Image Section -->
+<section style="margin-bottom: var(--space-12);">
+    <div style="position: relative; border-radius: var(--radius-2xl); overflow: hidden; box-shadow: var(--shadow-2xl);">
+        <img src="assets/images/f3c4e91c-8a34-4545-a53a-489b4eb181c4.jpg" alt="Firelight Duel Academy Banner" style="width: 100%; height: 400px; object-fit: cover; display: block;">
+        <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(30, 58, 138, 0.8) 0%, rgba(59, 130, 246, 0.6) 100%); display: flex; align-items: center; justify-content: center;">
+            <div style="text-align: center; color: white; padding: var(--space-6);">
+                <h2 style="font-size: 3.5rem; font-weight: 700; margin-bottom: var(--space-4); line-height: 1.1; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                    Premium Yu-Gi-Oh! Singles
+                </h2>
+                <p style="font-size: 1.25rem; margin-bottom: var(--space-8); opacity: 0.95; line-height: 1.6; text-shadow: 0 1px 2px rgba(0,0,0,0.3); max-width: 600px; margin-left: auto; margin-right: auto;">
+                    Discover the latest meta cards, competitive staples, and rare collectibles. 
+                    Real-time pricing powered by YGOPRODeck API.
+                </p>
+                <div style="display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap;">
+                    <a href="#" onclick="navigateTo('singles')" style="padding: var(--space-4) var(--space-8); background: var(--secondary-color); color: var(--gray-900); text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; transition: var(--transition-fast); text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                        Browse Singles
+                    </a>
+                    <a href="#" onclick="navigateTo('buylist')" style="padding: var(--space-4) var(--space-8); background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; transition: var(--transition-fast); text-transform: uppercase; letter-spacing: 0.05em; border: 2px solid rgba(255,255,255,0.3); backdrop-filter: blur(10px);">
+                        Sell Your Cards
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </section>

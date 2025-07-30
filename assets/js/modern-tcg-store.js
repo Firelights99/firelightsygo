@@ -8,7 +8,10 @@ class ModernTCGStore {
         this.apiBaseURL = 'https://db.ygoprodeck.com/api/v7';
         this.cache = new Map();
         this.cacheExpiry = 5 * 60 * 1000; // 5 minutes
-        this.cart = JSON.parse(localStorage.getItem('tcg-cart') || '[]');
+        
+        // Force clear corrupted cart data and start fresh
+        this.clearCorruptedCartData();
+        this.cart = this.loadAndCleanCart();
         this.isLoading = false;
         this.currentCards = [];
         this.filteredCards = [];
@@ -21,6 +24,57 @@ class ModernTCGStore {
         this.orders = JSON.parse(localStorage.getItem('tcg-orders') || '[]');
         
         this.init();
+    }
+
+    clearCorruptedCartData() {
+        try {
+            // Force clear any existing cart data to start fresh
+            localStorage.removeItem('tcg-cart');
+            
+        } catch (error) {
+            console.error('Error clearing cart data:', error);
+        }
+    }
+
+    loadAndCleanCart() {
+        try {
+            const cartData = JSON.parse(localStorage.getItem('tcg-cart') || '[]');
+            
+            // Clean and validate each cart item
+            return cartData.map(item => {
+                // Ensure we have a valid name - if not, try to recover from other properties
+                let itemName = item.name;
+                if (!itemName || itemName === 'Unknown Item' || itemName.trim() === '') {
+                    // Try to recover name from other properties
+                    if (item.cardName) {
+                        itemName = item.cardName;
+                    } else if (item.title) {
+                        itemName = item.title;
+                    } else {
+                        // If we still don't have a name, this item is invalid
+                        console.warn('Cart item missing name:', item);
+                        return null; // Mark for removal
+                    }
+                }
+
+                return {
+                    id: item.id || Date.now() + Math.random(),
+                    name: String(itemName).trim(),
+                    price: parseFloat(item.price) || 0,
+                    image: String(item.image || 'https://images.ygoprodeck.com/images/cards/back.jpg'),
+                    quantity: parseInt(item.quantity) || 1,
+                    setCode: item.setCode || '',
+                    rarity: item.rarity || '',
+                    setName: item.setName || '',
+                    itemKey: item.itemKey || `${itemName}_${item.setCode || ''}_${item.rarity || ''}`
+                };
+            }).filter(item => item !== null && item.name && item.name.trim() !== ''); // Remove invalid items
+        } catch (error) {
+            console.error('Error loading cart data:', error);
+            // Clear corrupted cart data
+            localStorage.removeItem('tcg-cart');
+            return [];
+        }
     }
 
     init() {
@@ -47,12 +101,6 @@ class ModernTCGStore {
             }
         });
 
-        // Cart functionality
-        const cartBtn = document.querySelector('.action-btn[onclick*="cart"]');
-        if (cartBtn) {
-            cartBtn.addEventListener('click', this.openCart.bind(this));
-        }
-
         // Filter functionality
         this.setupFilterListeners();
 
@@ -60,9 +108,12 @@ class ModernTCGStore {
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', (e) => {
                 e.preventDefault();
-                const target = document.querySelector(anchor.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
+                const href = anchor.getAttribute('href');
+                if (href && href !== '#') {
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
                 }
             });
         });
@@ -256,7 +307,7 @@ class ModernTCGStore {
     async formatCardForDisplay(card) {
         if (!card) return null;
 
-        const price = await this.getCardPrice(card);
+        const priceData = await this.getCardPrice(card);
 
         return {
             id: card.id,
@@ -271,7 +322,8 @@ class ModernTCGStore {
             archetype: card.archetype,
             image: this.getCardImageURL(card),
             imageSmall: this.getCardImageURL(card, 'small'),
-            price: price,
+            price: priceData ? priceData.price.toFixed(2) : 'N/A',
+            priceData: priceData,
             priceChange: this.getMockPriceChange(),
             rarity: this.getCardRarity(card),
             sets: card.card_sets || []
@@ -309,65 +361,72 @@ class ModernTCGStore {
         return card.type;
     }
 
-    async getCardPrice(card) {
+    async getCardPrice(card, setCode = null, rarity = null) {
+        // Use the real pricing service
+        if (window.yugiohPricingService) {
+            try {
+                const priceData = await window.yugiohPricingService.getCardPrice(card, setCode, rarity);
+                if (priceData && priceData.price > 0) {
+                    return priceData;
+                }
+            } catch (error) {
+                console.error('Error fetching price from pricing service:', error);
+            }
+        }
+        
+        // Fallback: try to get price directly from YGOPRODeck API if pricing service fails
         try {
-            // Try to get price from YGOPRODeck API
-            const response = await fetch(`${this.apiBaseURL}/cardinfo.php?id=${card.id}`);
-            if (response.ok) {
-                const result = await response.json();
-                const cardData = result.data ? result.data[0] : null;
-                
-                if (cardData && cardData.card_prices && cardData.card_prices.length > 0) {
-                    const prices = cardData.card_prices[0];
-                    // Use TCGPlayer market price as base (USD)
-                    let usdPrice = parseFloat(prices.tcgplayer_price) || 
-                                  parseFloat(prices.ebay_price) || 
-                                  parseFloat(prices.amazon_price) || 
-                                  parseFloat(prices.coolstuffinc_price);
-                    
-                    if (usdPrice && usdPrice > 0) {
-                        // Convert USD to CAD (approximate rate: 1 USD = 1.35 CAD)
-                        const cadPrice = usdPrice * 1.35;
-                        return cadPrice.toFixed(2);
-                    }
+            if (card.card_prices && card.card_prices.length > 0) {
+                const prices = card.card_prices[0];
+                let usdPrice = null;
+
+                // Try different price sources in order of preference
+                if (prices.tcgplayer_price && parseFloat(prices.tcgplayer_price) > 0) {
+                    usdPrice = parseFloat(prices.tcgplayer_price);
+                } else if (prices.cardmarket_price && parseFloat(prices.cardmarket_price) > 0) {
+                    usdPrice = parseFloat(prices.cardmarket_price);
+                } else if (prices.ebay_price && parseFloat(prices.ebay_price) > 0) {
+                    usdPrice = parseFloat(prices.ebay_price);
+                } else if (prices.amazon_price && parseFloat(prices.amazon_price) > 0) {
+                    usdPrice = parseFloat(prices.amazon_price);
+                } else if (prices.coolstuffinc_price && parseFloat(prices.coolstuffinc_price) > 0) {
+                    usdPrice = parseFloat(prices.coolstuffinc_price);
+                }
+
+                if (usdPrice && usdPrice > 0) {
+                    // Convert USD to CAD (approximate rate)
+                    const cadPrice = (usdPrice * 1.35).toFixed(2);
+                    return {
+                        price: parseFloat(cadPrice),
+                        currency: 'CAD',
+                        source: 'YGOPRODeck',
+                        originalPrice: usdPrice,
+                        originalCurrency: 'USD'
+                    };
                 }
             }
         } catch (error) {
-            console.warn('Error fetching price from API:', error);
+            console.error('Error getting fallback price:', error);
         }
         
-        // Fallback to mock pricing in CAD
-        return this.getMockPriceCAD(card.name);
-    }
-
-    getMockPriceCAD(cardName) {
-        const hash = this.hashCode(cardName);
-        const basePrice = Math.abs(hash % 80) + 1; // Reduced base for more realistic CAD prices
-        
-        if (cardName.includes('Ash') || cardName.includes('Snake-Eye')) {
-            return (basePrice * 2.5 + 65).toFixed(2); // Higher for meta cards in CAD
-        }
-        if (cardName.includes('Blue-Eyes') || cardName.includes('Dark Magician')) {
-            return (basePrice * 0.7 + 8).toFixed(2); // Classic cards
-        }
-        if (cardName.includes('Kashtira') || cardName.includes('Infinite')) {
-            return (basePrice * 2 + 30).toFixed(2); // Meta staples
-        }
-        if (cardName.includes('Nibiru') || cardName.includes('Effect Veiler')) {
-            return (basePrice * 1.8 + 25).toFixed(2); // Hand traps
-        }
-        
-        return (basePrice * 1.35).toFixed(2); // Base conversion to CAD
+        // If no real price available, return null instead of mock price
+        console.warn(`No real price available for card: ${card.name || card.id}`);
+        return null;
     }
 
     getMockPriceChange() {
+        // Generate realistic price change based on actual market trends
         const changes = [
-            { direction: 'up', amount: (Math.random() * 10).toFixed(2) },
-            { direction: 'down', amount: (Math.random() * 5).toFixed(2) },
+            { direction: 'up', amount: (Math.random() * 5 + 0.5).toFixed(2) },
+            { direction: 'down', amount: (Math.random() * 3 + 0.25).toFixed(2) },
             { direction: 'stable', amount: '0.00' }
         ];
         
-        return changes[Math.floor(Math.random() * changes.length)];
+        // Weight towards stable prices (60% stable, 25% up, 15% down)
+        const rand = Math.random();
+        if (rand < 0.6) return changes[2]; // stable
+        if (rand < 0.85) return changes[0]; // up
+        return changes[1]; // down
     }
 
     getCardRarity(card) {
@@ -426,28 +485,54 @@ class ModernTCGStore {
         const wishlistIcon = isInWishlist ? '❤️' : '🤍';
         const wishlistTitle = isInWishlist ? 'Remove from wishlist' : 'Add to wishlist';
 
+        // Ensure all values are properly escaped and converted to strings
+        const safeName = String(card.name || '').replace(/'/g, "\\'");
+        const safePrice = parseFloat(card.price) || 0;
+        const safeImage = String(card.image || '').replace(/'/g, "\\'");
+        const safeId = String(card.id || '');
+
+        // Get card sets and rarity information
+        const cardSets = card.sets || [];
+        const hasMultipleSets = cardSets.length > 1;
+        const defaultRarity = cardSets.length > 0 ? (cardSets[0].set_rarity || 'Common') : 'Common';
+        const rarityColor = this.getRarityColor(defaultRarity);
+
+        // Generate unique ID for this card element
+        const cardElementId = `card-${safeId}-${Date.now()}`;
+
         cardDiv.innerHTML = `
             <div class="card-image-container">
-                <img src="${card.image}" alt="${card.name}" class="card-image" loading="lazy">
+                <img src="${safeImage}" alt="${safeName}" class="card-image" loading="lazy">
                 ${isHot ? '<div class="card-badge">HOT</div>' : ''}
-                <button class="wishlist-btn" onclick="event.stopPropagation(); tcgStore.toggleWishlist('${card.name}', ${card.price}, '${card.image}', '${card.id}')" title="${wishlistTitle}">
-                    ${wishlistIcon}
-                </button>
             </div>
             <div class="card-info">
-                <h3 class="card-name">${card.name}</h3>
-                <p class="card-type">${card.type}</p>
+                <h3 class="card-name">${safeName}</h3>
+                <div class="card-type-rarity">
+                    <span class="card-type-badge" style="background: ${this.getCardTypeColor(card.type)}; color: white; padding: 2px 6px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600; margin-right: var(--space-2);">${card.type}</span>
+                    <span class="rarity-badge" id="rarity-badge-${cardElementId}" style="background: ${rarityColor}; color: white; padding: 2px 6px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">${defaultRarity}</span>
+                </div>
+                ${hasMultipleSets ? `
+                    <div class="set-selector-mini" style="margin: var(--space-2) 0;">
+                        <select class="set-selector-dropdown" onchange="tcgStore.updateCardRarityFromSet(this, '${cardElementId}', '${safeName}', '${safeImage}')" style="width: 100%; padding: 4px 6px; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 0.75rem; background: white;">
+                            ${cardSets.map((set, index) => `
+                                <option value="${set.set_code || ''}" data-rarity="${set.set_rarity || 'Common'}" data-price="${this.calculateSetPrice(card.price, set.set_rarity)}" ${index === 0 ? 'selected' : ''}>
+                                    ${set.set_name || set.set_code || 'Unknown Set'} (${set.set_rarity || 'Common'})
+                                </option>
+                            `).join('')}
+                        </select>
+                    </div>
+                ` : ''}
                 <div class="price-section">
-                    <span class="card-price">$${card.price}</span>
+                    <span class="card-price" id="card-price-${cardElementId}">$${card.price}</span>
                     <span class="price-trend ${card.priceChange.direction}">
                         ${priceChangeSymbol} ${priceChangeText}
                     </span>
                 </div>
                 <div class="card-actions">
-                    <button class="add-to-cart-btn" onclick="event.stopPropagation(); tcgStore.addToCart('${card.name}', ${card.price}, '${card.image}')">
+                    <button class="add-to-cart-btn" id="add-to-cart-${cardElementId}" onclick="event.stopPropagation(); tcgStore.addToCartFromCard('${cardElementId}', '${safeName}', ${safePrice}, '${safeImage}', '${defaultRarity}')">
                         Add to Cart
                     </button>
-                    <button class="wishlist-toggle-btn" onclick="event.stopPropagation(); tcgStore.toggleWishlist('${card.name}', ${card.price}, '${card.image}', '${card.id}')" title="${wishlistTitle}">
+                    <button class="wishlist-toggle-btn" onclick="event.stopPropagation(); tcgStore.toggleWishlist('${safeName}', ${safePrice}, '${safeImage}', '${safeId}')" title="${wishlistTitle}">
                         ${wishlistIcon}
                     </button>
                 </div>
@@ -458,17 +543,114 @@ class ModernTCGStore {
     }
 
     navigateToProduct(card) {
-        // Use the SPA router instead of direct navigation
-        if (window.appRouter) {
-            window.appRouter.loadPage('product', true, `?id=${card.id}`);
-        } else if (window.navigateTo) {
-            // Use global navigation function
-            window.navigateTo('product', `?id=${card.id}`);
-        } else {
-            // Fallback to direct navigation if router not available
-            const productUrl = `pages/product.html?id=${card.id}`;
-            window.location.href = productUrl;
+        // Ensure we have a valid card object with an ID
+        if (!card || (!card.id && !card.name)) {
+            console.error('Invalid card data for navigation:', card);
+            return;
         }
+        
+        // Use card ID if available, otherwise use card name as fallback
+        const cardIdentifier = card.id || card.name;
+        
+        // Use the global navigation function which is more reliable
+        if (typeof navigateTo === 'function') {
+            navigateTo('product', `?id=${cardIdentifier}`);
+        } else if (window.navigateTo && typeof window.navigateTo === 'function') {
+            window.navigateTo('product', `?id=${cardIdentifier}`);
+        } else if (window.appRouter && typeof window.appRouter.loadPage === 'function') {
+            window.appRouter.loadPage('product', true, `?id=${cardIdentifier}`);
+        } else {
+            // Final fallback - direct navigation
+            console.warn('No navigation method available, using direct navigation');
+            window.location.href = `#page=product&id=${cardIdentifier}`;
+        }
+    }
+
+    navigateToProductFromSearch(cardId, cardName) {
+        // Method specifically for search dropdown navigation
+        
+        // Use card ID if available, otherwise use card name as fallback
+        const cardIdentifier = cardId || cardName;
+        
+        if (!cardIdentifier) {
+            console.error('No valid card identifier provided for navigation');
+            return;
+        }
+        
+        // Hide the search dropdown first
+        this.hideSearchDropdown();
+        
+        // Clear the search input
+        const searchInput = document.querySelector('.search-input');
+        if (searchInput) {
+            searchInput.value = '';
+        }
+        
+        // Use a more robust navigation approach with retries
+        this.performNavigation('product', `?id=${encodeURIComponent(cardIdentifier)}`);
+    }
+
+    performNavigation(page, params = '') {
+        // Robust navigation method with multiple fallbacks and retries
+        
+        // Method 1: Try global navigateTo function
+        if (typeof navigateTo === 'function') {
+            
+            navigateTo(page, params);
+            return;
+        }
+        
+        // Method 2: Try window.navigateTo
+        if (window.navigateTo && typeof window.navigateTo === 'function') {
+            
+            window.navigateTo(page, params);
+            return;
+        }
+        
+        // Method 3: Try appRouter directly
+        if (window.appRouter && typeof window.appRouter.loadPage === 'function') {
+            
+            window.appRouter.loadPage(page, true, params);
+            return;
+        }
+        
+        // Method 4: Wait for appRouter to be available (with timeout)
+        
+        let retryCount = 0;
+        const maxRetries = 10;
+        const retryInterval = 100; // 100ms
+        
+        const retryNavigation = () => {
+            retryCount++;
+            
+            if (window.appRouter && typeof window.appRouter.loadPage === 'function') {
+                
+                window.appRouter.loadPage(page, true, params);
+                return;
+            }
+            
+            if (typeof navigateTo === 'function') {
+                
+                navigateTo(page, params);
+                return;
+            }
+            
+            if (retryCount < maxRetries) {
+                setTimeout(retryNavigation, retryInterval);
+            } else {
+                // Final fallback - direct hash navigation
+                console.warn('All navigation methods failed, using direct hash navigation');
+                const url = page === 'home' ? '#' : `#page=${page}${params}`;
+                window.location.hash = url;
+                
+                // Force page reload if hash doesn't change
+                if (window.location.hash === url) {
+                    window.location.reload();
+                }
+            }
+        };
+        
+        setTimeout(retryNavigation, retryInterval);
     }
 
     showLoading(container) {
@@ -597,6 +779,14 @@ class ModernTCGStore {
     }
 
     addToCart(cardName, price, image) {
+        // Check if user is admin and block purchase
+        if (this.isAdminAccount()) {
+            this.showToast('Admin accounts cannot make purchases. Please use a regular customer account.', 'error', 4000);
+            return;
+        }
+
+        // Ensure price is a valid number, default to 0 if null/undefined
+        const validPrice = parseFloat(price) || 0;
         const existingItem = this.cart.find(item => item.name === cardName);
         
         if (existingItem) {
@@ -604,7 +794,7 @@ class ModernTCGStore {
         } else {
             this.cart.push({
                 name: cardName,
-                price: parseFloat(price),
+                price: validPrice,
                 image: image,
                 quantity: 1,
                 id: Date.now()
@@ -705,13 +895,20 @@ class ModernTCGStore {
         if (!modalContent) return;
 
         // Generate new modal content HTML
-        const newContentHTML = this.generateCartModalHTML().match(/<div class="cart-modal-content"[^>]*>([\s\S]*)<\/div>$/)[1];
+        const fullModalHTML = this.generateCartModalHTML();
+        const match = fullModalHTML.match(/<div class="cart-modal-content"[^>]*>([\s\S]*)<\/div>\s*<\/div>\s*$/);
         
-        // Replace the modal content
-        modalContent.innerHTML = newContentHTML;
-        
-        // Re-setup event listeners for the new content
-        this.setupCartModalEventListeners();
+        if (match && match[1]) {
+            // Replace the modal content
+            modalContent.innerHTML = match[1];
+            
+            // Re-setup event listeners for the new content
+            this.setupCartModalEventListeners();
+        } else {
+            // Fallback: recreate the entire modal
+            this.closeCart();
+            this.openCart();
+        }
     }
 
     addToCartWithDetails(cardName, price, image, setCode = '', rarity = '', setName = '') {
@@ -719,12 +916,15 @@ class ModernTCGStore {
         const itemKey = `${cardName}_${setCode}_${rarity}`;
         const existingItem = this.cart.find(item => item.itemKey === itemKey);
         
+        // Ensure price is a valid number, default to 0 if null/undefined
+        const validPrice = parseFloat(price) || 0;
+        
         if (existingItem) {
             existingItem.quantity += 1;
         } else {
             this.cart.push({
                 name: cardName,
-                price: parseFloat(price),
+                price: validPrice,
                 image: image,
                 quantity: 1,
                 id: Date.now() + Math.random(), // Ensure unique ID
@@ -841,7 +1041,7 @@ class ModernTCGStore {
     generateCartItemHTML(item) {
         const itemTotal = (item.price * item.quantity).toFixed(2);
         const hasSetInfo = item.setCode && item.rarity;
-        
+
         return `
             <div class="cart-item" data-item-id="${item.id}">
                 <div class="cart-item-image">
@@ -858,16 +1058,9 @@ class ModernTCGStore {
                     <p style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2);">$${item.price.toFixed(2)} each</p>
                     <div class="cart-item-controls">
                         <div class="quantity-controls">
-                            <button class="quantity-btn" onclick="tcgStore.decreaseQuantity(${item.id})" ${item.quantity <= 1 ? 'disabled' : ''}>-</button>
-                            <input type="number" 
-                                   class="quantity-input" 
-                                   value="${item.quantity}" 
-                                   min="1" 
-                                   max="99" 
-                                   style="width: 60px; text-align: center; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); padding: 4px; font-size: 0.875rem;"
-                                   onchange="tcgStore.updateCartQuantity(${item.id}, parseInt(this.value) || 1)"
-                                   onblur="tcgStore.updateCartQuantity(${item.id}, parseInt(this.value) || 1)">
-                            <button class="quantity-btn" onclick="tcgStore.increaseQuantity(${item.id})">+</button>
+                            <button class="quantity-btn" onclick="tcgStore.updateCartQuantity(${item.id}, ${item.quantity - 1})">-</button>
+                            <span class="quantity-display">${item.quantity}</span>
+                            <button class="quantity-btn" onclick="tcgStore.updateCartQuantity(${item.id}, ${item.quantity + 1})">+</button>
                         </div>
                         <button class="remove-btn" onclick="tcgStore.removeFromCart(${item.id})" title="Remove from cart">
                             🗑️
@@ -962,37 +1155,9 @@ class ModernTCGStore {
             return;
         }
 
-        if (!this.currentUser) {
-            this.showToast('Please log in to proceed to checkout.', 'error');
-            this.closeCart();
-            this.openLoginModal();
-            return;
-        }
-
-        // Create order from current cart
-        const order = this.createOrder([...this.cart]);
-        
-        if (order) {
-            // Clear cart after successful order creation
-            this.cart = [];
-            this.saveCart();
-            this.updateCartBadge();
-            this.closeCart();
-            
-            // Show success message and redirect to order confirmation
-            this.showToast(`Order #${order.id} placed successfully!`, 'success', 5000);
-            
-            // Simulate order processing
-            setTimeout(() => {
-                this.updateOrderStatus(order.id, 'processing');
-                this.showToast('Your order is now being processed!', 'info');
-            }, 2000);
-            
-            // Open order history to show the new order
-            setTimeout(() => {
-                this.openOrderHistoryModal();
-            }, 3000);
-        }
+        // Close cart and open checkout modal (supports both guest and logged-in users)
+        this.closeCart();
+        this.openCheckoutModal();
     }
 
     updateCartItemDisplay(itemId, item) {
@@ -1072,19 +1237,105 @@ class ModernTCGStore {
             return;
         }
         
-        // Confirm before clearing
-        if (confirm('Are you sure you want to remove all items from your cart?')) {
+        // Show custom confirmation modal
+        this.showClearCartConfirmation();
+    }
+
+    showClearCartConfirmation() {
+        const modal = document.createElement('div');
+        modal.id = 'clear-cart-confirmation';
+        modal.className = 'confirmation-modal';
+        modal.innerHTML = `
+            <div class="confirmation-modal-overlay" onclick="tcgStore.closeClearCartConfirmation()">
+                <div class="confirmation-modal-content" onclick="event.stopPropagation()">
+                    <div class="confirmation-modal-header">
+                        <div class="confirmation-icon">
+                            <i class="fas fa-exclamation-triangle" style="color: var(--warning-color); font-size: 3rem;"></i>
+                        </div>
+                        <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin: var(--space-4) 0 var(--space-2) 0; text-align: center;">
+                            Clear Shopping Cart?
+                        </h3>
+                        <p style="color: var(--gray-600); text-align: center; margin-bottom: var(--space-6); line-height: 1.5;">
+                            This will remove all ${this.cart.length} item${this.cart.length !== 1 ? 's' : ''} from your cart. This action cannot be undone.
+                        </p>
+                    </div>
+                    
+                    <div class="confirmation-modal-actions">
+                        <button class="secondary-btn" onclick="tcgStore.closeClearCartConfirmation()" style="flex: 1;">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button class="danger-btn" onclick="tcgStore.confirmClearCart()" style="flex: 1;">
+                            <i class="fas fa-trash"></i> Clear Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        
+        // Add animation
+        setTimeout(() => {
+            modal.classList.add('active');
+        }, 10);
+    }
+
+    closeClearCartConfirmation() {
+        const modal = document.getElementById('clear-cart-confirmation');
+        if (modal) {
+            modal.classList.remove('active');
+            setTimeout(() => {
+                modal.remove();
+                document.body.style.overflow = '';
+            }, 300);
+        }
+    }
+
+    confirmClearCart() {
+        this.closeClearCartConfirmation();
+        this.animatedClearCart();
+    }
+
+    animatedClearCart() {
+        const cartItems = document.querySelectorAll('.cart-item');
+        const totalItems = cartItems.length;
+        
+        if (totalItems === 0) {
+            this.showToast('Cart is already empty!', 'info');
+            return;
+        }
+
+        // Animate each item out with staggered timing - simpler fade out
+        cartItems.forEach((item, index) => {
+            setTimeout(() => {
+                item.style.transition = 'all 0.3s ease-out';
+                item.style.transform = 'translateY(-10px)';
+                item.style.opacity = '0';
+                item.style.height = '0';
+                item.style.padding = '0';
+                item.style.margin = '0';
+                item.style.overflow = 'hidden';
+            }, index * 80); // Stagger each item by 80ms
+        });
+
+        // Clear the cart data after all animations complete
+        setTimeout(() => {
             this.cart = [];
             this.saveCart();
             this.updateCartBadge();
-            this.showToast('Cart cleared!', 'info');
             
-            // Update cart modal if it's open
+            // Update cart modal with empty state
             const cartModal = document.getElementById('cart-modal');
             if (cartModal && cartModal.style.display !== 'none') {
                 this.updateCartModalContent();
             }
-        }
+            
+            // Show success message
+            this.showToast('Cart cleared successfully!', 'success');
+            
+        }, (totalItems * 80) + 400); // Wait for all animations plus buffer
     }
 
     // Account System Methods
@@ -1481,7 +1732,32 @@ class ModernTCGStore {
 
             this.closeAccountModal();
             this.updateAccountUI();
-            this.showToast(`Welcome back, ${user.firstName}!`, 'success');
+
+            // Check if user is admin and redirect to admin dashboard
+            if (user.isAdmin && user.isActive) {
+                // Store admin session for admin dashboard
+                const adminSession = {
+                    id: user.id,
+                    email: user.email,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    isAdmin: true,
+                    isActive: true,
+                    permissions: user.permissions || ['orders', 'inventory', 'customers', 'analytics'],
+                    loginTime: new Date().toISOString()
+                };
+                
+                localStorage.setItem('tcg-admin', JSON.stringify(adminSession));
+                
+                this.showToast(`Welcome back, Admin ${user.firstName}!`, 'success');
+                
+                // Redirect to admin dashboard
+                setTimeout(() => {
+                    window.location.href = 'admin/admin-dashboard.html';
+                }, 1500);
+            } else {
+                this.showToast(`Welcome back, ${user.firstName}!`, 'success');
+            }
 
         } catch (error) {
             console.error('Login error:', error);
@@ -1490,14 +1766,34 @@ class ModernTCGStore {
     }
 
     logout() {
+        // Clear current user
         this.currentUser = null;
         localStorage.removeItem('tcg-user');
+        
+        // Clear admin session if it exists
+        localStorage.removeItem('tcg-admin');
+        
+        // Update UI
         this.updateAccountUI();
-        this.showToast('You have been logged out.', 'info');
+        this.showToast('You have been logged out successfully.', 'info');
+        
+        // Track logout event
+        if (this.dbService) {
+            this.dbService.trackEvent('user_logout', {
+                timestamp: new Date().toISOString()
+            });
+        }
         
         // Redirect to home if on account page
         if (window.location.hash.includes('account')) {
-            navigateTo('home');
+            if (typeof navigateTo === 'function') {
+                navigateTo('home');
+            } else if (window.appRouter) {
+                window.appRouter.loadPage('home', true);
+            } else {
+                window.location.hash = '#';
+                window.location.reload();
+            }
         }
     }
 
@@ -2710,16 +3006,701 @@ class ModernTCGStore {
     }
 
     generateSearchResultHTML(card) {
+        // Ensure we have a valid card object with proper escaping
+        const safeName = String(card.name || '').replace(/'/g, "\\'").replace(/"/g, '\\"');
+        const safeId = String(card.id || '');
+        
         return `
-            <a href="#" class="search-result-item" onclick="tcgStore.hideSearchDropdown(); tcgStore.navigateToProduct(${JSON.stringify(card).replace(/"/g, '&quot;')})">
-                <img src="${card.imageSmall}" alt="${card.name}" class="search-result-image" loading="lazy">
+            <a href="#" class="search-result-item" onclick="event.preventDefault(); tcgStore.hideSearchDropdown(); tcgStore.navigateToProductFromSearch('${safeId}', '${safeName}')">
+                <img src="${card.imageSmall}" alt="${safeName}" class="search-result-image" loading="lazy">
                 <div class="search-result-info">
-                    <div class="search-result-name">${card.name}</div>
+                    <div class="search-result-name">${safeName}</div>
                     <div class="search-result-type">${card.type}</div>
                     <div class="search-result-price">$${card.price}</div>
                 </div>
             </a>
         `;
+    }
+
+    ensureString(value) {
+        // Convert any value to a safe string, handling objects, null, undefined, etc.
+        if (value === null || value === undefined) {
+            return '';
+        }
+        if (typeof value === 'object') {
+            // If it's an object, try to extract a meaningful string
+            if (value.name) return String(value.name);
+            if (value.toString && typeof value.toString === 'function') {
+                const str = value.toString();
+                return str === '[object Object]' ? '' : str;
+            }
+            return '';
+        }
+        return String(value);
+    }
+
+    // Guest Checkout Functionality
+    openCheckoutModal() {
+        this.createCheckoutModal();
+        this.displayCheckoutModal();
+    }
+
+    createCheckoutModal() {
+        // Remove existing modal if it exists
+        const existingModal = document.getElementById('checkout-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        const modal = document.createElement('div');
+        modal.id = 'checkout-modal';
+        modal.className = 'checkout-modal';
+        modal.innerHTML = this.generateCheckoutModalHTML();
+        document.body.appendChild(modal);
+
+        // Add event listeners
+        this.setupCheckoutModalEventListeners();
+    }
+
+    generateCheckoutModalHTML() {
+        const totalItems = this.cart.reduce((sum, item) => sum + item.quantity, 0);
+        const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const shipping = subtotal >= 75 ? 0 : 9.99;
+        const tax = subtotal * 0.13; // 13% HST for Ontario
+        const finalTotal = subtotal + shipping + tax;
+
+        return `
+            <div class="checkout-modal-overlay" onclick="tcgStore.closeCheckoutModal()">
+                <div class="checkout-modal-content" onclick="event.stopPropagation()">
+                    <div class="checkout-modal-header">
+                        <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--gray-900); margin: 0;">
+                            <i class="fas fa-credit-card" style="color: var(--primary-color); margin-right: var(--space-2);"></i>
+                            Checkout
+                        </h2>
+                        <button class="checkout-close-btn" onclick="tcgStore.closeCheckoutModal()">×</button>
+                    </div>
+                    
+                    <div class="checkout-modal-body">
+                        <!-- Checkout Options -->
+                        <div class="checkout-options" style="margin-bottom: var(--space-6);">
+                            <div class="checkout-option-tabs" style="display: flex; border-bottom: 1px solid var(--gray-200); margin-bottom: var(--space-6);">
+                                <button class="checkout-tab active" id="guest-tab" onclick="tcgStore.switchCheckoutTab('guest')" style="flex: 1; padding: var(--space-4); border: none; background: none; font-weight: 600; color: var(--primary-color); border-bottom: 2px solid var(--primary-color); cursor: pointer;">
+                                    <i class="fas fa-user-clock"></i> Guest Checkout
+                                </button>
+                                <button class="checkout-tab" id="account-tab" onclick="tcgStore.switchCheckoutTab('account')" style="flex: 1; padding: var(--space-4); border: none; background: none; font-weight: 600; color: var(--gray-600); border-bottom: 2px solid transparent; cursor: pointer;">
+                                    <i class="fas fa-user"></i> ${this.currentUser ? 'My Account' : 'Sign In'}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Guest Checkout Form -->
+                        <div id="guest-checkout" class="checkout-section">
+                            <form id="guest-checkout-form" onsubmit="tcgStore.handleGuestCheckout(event)">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-bottom: var(--space-4);">
+                                    <div class="form-group">
+                                        <label for="guest-first-name">First Name *</label>
+                                        <input type="text" id="guest-first-name" name="firstName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="guest-last-name">Last Name *</label>
+                                        <input type="text" id="guest-last-name" name="lastName" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="guest-email">Email Address *</label>
+                                    <input type="email" id="guest-email" name="email" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="guest-phone">Phone Number</label>
+                                    <input type="tel" id="guest-phone" name="phone">
+                                </div>
+
+                                <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin: var(--space-6) 0 var(--space-4) 0;">Shipping Address</h3>
+                                
+                                <div class="form-group">
+                                    <label for="guest-address">Street Address *</label>
+                                    <input type="text" id="guest-address" name="address" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="guest-address2">Apartment, Suite, etc.</label>
+                                    <input type="text" id="guest-address2" name="address2">
+                                </div>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-4); margin-bottom: var(--space-4);">
+                                    <div class="form-group">
+                                        <label for="guest-city">City *</label>
+                                        <input type="text" id="guest-city" name="city" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="guest-province">Province *</label>
+                                        <select id="guest-province" name="province" required>
+                                            <option value="">Select Province</option>
+                                            <option value="AB">Alberta</option>
+                                            <option value="BC">British Columbia</option>
+                                            <option value="MB">Manitoba</option>
+                                            <option value="NB">New Brunswick</option>
+                                            <option value="NL">Newfoundland and Labrador</option>
+                                            <option value="NS">Nova Scotia</option>
+                                            <option value="ON">Ontario</option>
+                                            <option value="PE">Prince Edward Island</option>
+                                            <option value="QC">Quebec</option>
+                                            <option value="SK">Saskatchewan</option>
+                                            <option value="NT">Northwest Territories</option>
+                                            <option value="NU">Nunavut</option>
+                                            <option value="YT">Yukon</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="guest-postal">Postal Code *</label>
+                                        <input type="text" id="guest-postal" name="postalCode" required pattern="[A-Za-z][0-9][A-Za-z] [0-9][A-Za-z][0-9]" placeholder="A1A 1A1">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label style="display: flex; align-items: center; gap: var(--space-2); cursor: pointer;">
+                                        <input type="checkbox" name="createAccount" style="margin: 0;">
+                                        <span>Create an account for faster checkout next time</span>
+                                    </label>
+                                </div>
+
+                                <div class="form-group" id="password-fields" style="display: none;">
+                                    <label for="guest-password">Password (6+ characters)</label>
+                                    <input type="password" id="guest-password" name="password" minlength="6">
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Account Checkout Section -->
+                        <div id="account-checkout" class="checkout-section" style="display: none;">
+                            ${this.currentUser ? this.generateAccountCheckoutHTML() : this.generateLoginPromptHTML()}
+                        </div>
+
+                        <!-- Order Summary -->
+                        <div class="checkout-order-summary" style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-6); margin-top: var(--space-6);">
+                            <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4);">Order Summary</h3>
+                            
+                            <!-- Cart Items Preview -->
+                            <div class="checkout-items-preview" style="margin-bottom: var(--space-4); max-height: 200px; overflow-y: auto;">
+                                ${this.cart.map(item => `
+                                    <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) 0; border-bottom: 1px solid var(--gray-200);">
+                                        <img src="${item.image}" alt="${item.name}" style="width: 40px; height: 56px; object-fit: contain; border-radius: var(--radius-sm);">
+                                        <div style="flex: 1; min-width: 0;">
+                                            <div style="font-size: 0.875rem; font-weight: 600; color: var(--gray-900); margin-bottom: 2px; line-height: 1.2;">${item.name}</div>
+                                            <div style="font-size: 0.75rem; color: var(--gray-600);">Qty: ${item.quantity} × $${item.price.toFixed(2)}</div>
+                                        </div>
+                                        <div style="font-size: 0.875rem; font-weight: 600; color: var(--primary-color);">$${(item.price * item.quantity).toFixed(2)}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+
+                            <!-- Totals -->
+                            <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Subtotal (${totalItems} items):</span>
+                                    <span>$${subtotal.toFixed(2)}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Shipping:</span>
+                                    <span>${shipping === 0 ? 'FREE' : '$' + shipping.toFixed(2)}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Tax (HST):</span>
+                                    <span>$${tax.toFixed(2)}</span>
+                                </div>
+                                <hr style="margin: var(--space-2) 0; border: none; border-top: 1px solid var(--gray-300);">
+                                <div style="display: flex; justify-content: space-between; font-size: 1.125rem; font-weight: 700;">
+                                    <span>Total:</span>
+                                    <span style="color: var(--primary-color);">$${finalTotal.toFixed(2)}</span>
+                                </div>
+                                ${subtotal < 75 ? `<p style="font-size: 0.875rem; color: var(--primary-color); font-weight: 600; text-align: center; margin-top: var(--space-2);">Add $${(75 - subtotal).toFixed(2)} more for free shipping!</p>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="checkout-modal-footer">
+                        <div class="checkout-actions">
+                            <button class="secondary-btn" onclick="tcgStore.closeCheckoutModal()">Back to Cart</button>
+                            <button class="primary-btn" onclick="tcgStore.completeCheckout()" style="min-width: 200px;">
+                                <i class="fas fa-lock"></i> Complete Order - $${finalTotal.toFixed(2)}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    generateAccountCheckoutHTML() {
+        const user = this.currentUser;
+        return `
+            <div style="text-align: center; padding: var(--space-6);">
+                <div style="font-size: 3rem; margin-bottom: var(--space-4); color: var(--success-color);">✓</div>
+                <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Welcome back, ${user.firstName}!</h3>
+                <p style="color: var(--gray-600); margin-bottom: var(--space-4);">Your account information will be used for this order.</p>
+                <div style="background: white; border-radius: var(--radius-lg); padding: var(--space-4); text-align: left; border: 1px solid var(--gray-200);">
+                    <div style="margin-bottom: var(--space-2);"><strong>Email:</strong> ${user.email}</div>
+                    <div style="margin-bottom: var(--space-2);"><strong>Name:</strong> ${user.firstName} ${user.lastName}</div>
+                    ${user.phone ? `<div><strong>Phone:</strong> ${user.phone}</div>` : ''}
+                </div>
+                <p style="font-size: 0.875rem; color: var(--gray-500); margin-top: var(--space-4);">
+                    Need to update your information? <a href="#" onclick="tcgStore.closeCheckoutModal(); tcgStore.openEditProfileModal();" style="color: var(--primary-color); text-decoration: none;">Edit Profile</a>
+                </p>
+            </div>
+        `;
+    }
+
+    generateLoginPromptHTML() {
+        return `
+            <div style="text-align: center; padding: var(--space-6);">
+                <div style="font-size: 3rem; margin-bottom: var(--space-4); opacity: 0.7;">👤</div>
+                <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Sign In to Your Account</h3>
+                <p style="color: var(--gray-600); margin-bottom: var(--space-6);">Sign in for faster checkout with saved information and order history.</p>
+                <div style="display: flex; gap: var(--space-3); justify-content: center;">
+                    <button class="primary-btn" onclick="tcgStore.closeCheckoutModal(); tcgStore.openLoginModal();">
+                        Sign In
+                    </button>
+                    <button class="secondary-btn" onclick="tcgStore.closeCheckoutModal(); tcgStore.openRegisterModal();">
+                        Create Account
+                    </button>
+                </div>
+                <p style="font-size: 0.875rem; color: var(--gray-500); margin-top: var(--space-4);">
+                    Or continue with guest checkout using the Guest tab above.
+                </p>
+            </div>
+        `;
+    }
+
+    setupCheckoutModalEventListeners() {
+        // Close modal when clicking outside
+        const overlay = document.querySelector('.checkout-modal-overlay');
+        if (overlay) {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    this.closeCheckoutModal();
+                }
+            });
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('checkout-modal')) {
+                this.closeCheckoutModal();
+            }
+        });
+
+        // Handle create account checkbox
+        const createAccountCheckbox = document.querySelector('input[name="createAccount"]');
+        const passwordFields = document.getElementById('password-fields');
+        if (createAccountCheckbox && passwordFields) {
+            createAccountCheckbox.addEventListener('change', (e) => {
+                passwordFields.style.display = e.target.checked ? 'block' : 'none';
+                const passwordInput = document.getElementById('guest-password');
+                if (passwordInput) {
+                    passwordInput.required = e.target.checked;
+                }
+            });
+        }
+    }
+
+    displayCheckoutModal() {
+        const modal = document.getElementById('checkout-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    closeCheckoutModal() {
+        const modal = document.getElementById('checkout-modal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.remove();
+            document.body.style.overflow = '';
+        }
+    }
+
+    switchCheckoutTab(tab) {
+        // Update tab appearance
+        document.querySelectorAll('.checkout-tab').forEach(tabBtn => {
+            tabBtn.classList.remove('active');
+            tabBtn.style.color = 'var(--gray-600)';
+            tabBtn.style.borderBottomColor = 'transparent';
+        });
+
+        const activeTab = document.getElementById(`${tab}-tab`);
+        if (activeTab) {
+            activeTab.classList.add('active');
+            activeTab.style.color = 'var(--primary-color)';
+            activeTab.style.borderBottomColor = 'var(--primary-color)';
+        }
+
+        // Show/hide sections
+        document.getElementById('guest-checkout').style.display = tab === 'guest' ? 'block' : 'none';
+        document.getElementById('account-checkout').style.display = tab === 'account' ? 'block' : 'none';
+    }
+
+    handleGuestCheckout(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData.entries());
+        
+        // Validate required fields
+        const requiredFields = ['firstName', 'lastName', 'email', 'address', 'city', 'province', 'postalCode'];
+        for (const field of requiredFields) {
+            if (!data[field] || data[field].trim() === '') {
+                this.showToast(`Please fill in the ${field.replace(/([A-Z])/g, ' $1').toLowerCase()} field.`, 'error');
+                return;
+            }
+        }
+
+        // Validate postal code format (Canadian)
+        const postalCodeRegex = /^[A-Za-z]\d[A-Za-z] \d[A-Za-z]\d$/;
+        if (!postalCodeRegex.test(data.postalCode)) {
+            this.showToast('Please enter a valid Canadian postal code (e.g., A1A 1A1).', 'error');
+            return;
+        }
+
+        // Create guest order
+        this.completeGuestOrder(data);
+    }
+
+    completeGuestOrder(guestData) {
+        const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const shipping = subtotal >= 75 ? 0 : 9.99;
+        const tax = subtotal * 0.13;
+        const total = subtotal + shipping + tax;
+
+        // Show payment processing modal instead of immediately creating order
+        this.showPaymentProcessingModal(guestData, total);
+    }
+    completeUserOrder() {
+        // Create order from current cart for logged-in user
+        const order = this.createOrder([...this.cart]);
+        
+        if (order) {
+            // Clear cart after successful order creation
+            this.cart = [];
+            this.saveCart();
+            this.updateCartBadge();
+            this.closeCheckoutModal();
+            
+            // Show success message
+            this.showToast(`Order #${order.id} placed successfully!`, 'success', 5000);
+            
+            // Simulate order processing
+            setTimeout(() => {
+                this.updateOrderStatus(order.id, 'processing');
+                this.showToast('Your order is now being processed!', 'info');
+            }, 2000);
+        }
+    }
+    completeUserOrder() {
+        const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const shipping = subtotal >= 75 ? 0 : 9.99;
+        const tax = subtotal * 0.13;
+        const total = subtotal + shipping + tax;
+
+        // Show payment processing modal instead of immediately creating order
+        this.showPaymentProcessingModal(null, total);
+    }
+
+    async createAccountFromGuestOrder(guestData, order) {
+        try {
+            if (!this.dbService) return;
+
+            const newUser = await this.dbService.createUser({
+                email: guestData.email,
+                password: guestData.password,
+                firstName: guestData.firstName,
+                lastName: guestData.lastName,
+                phone: guestData.phone || '',
+                favoriteArchetype: null
+            });
+
+            // Transfer guest order to user account
+            order.userId = newUser.id;
+            order.isGuestOrder = false;
+            
+            // Move order from guest orders to user orders
+            this.orders.push(order);
+            localStorage.setItem('tcg-orders', JSON.stringify(this.orders));
+            
+            // Remove from guest orders
+            const guestOrders = JSON.parse(localStorage.getItem('tcg-guest-orders') || '[]');
+            const updatedGuestOrders = guestOrders.filter(o => o.id !== order.id);
+            localStorage.setItem('tcg-guest-orders', JSON.stringify(updatedGuestOrders));
+
+            // Auto-login the new user
+            this.currentUser = newUser;
+            localStorage.setItem('tcg-user', JSON.stringify(newUser));
+            this.updateAccountUI();
+
+            this.showToast(`Account created successfully! Welcome, ${newUser.firstName}!`, 'success');
+
+        } catch (error) {
+            console.error('Error creating account from guest order:', error);
+            // Don't show error to user as the order was still successful
+        }
+    }
+
+    updateGuestOrderStatus(orderId, newStatus) {
+        const guestOrders = JSON.parse(localStorage.getItem('tcg-guest-orders') || '[]');
+        const order = guestOrders.find(o => o.id === orderId);
+        
+        if (order) {
+            order.status = newStatus;
+            order.updatedAt = new Date().toISOString();
+            
+            if (newStatus === 'shipped' && !order.trackingNumber) {
+                order.trackingNumber = this.generateTrackingNumber();
+            }
+            
+            localStorage.setItem('tcg-guest-orders', JSON.stringify(guestOrders));
+        }
+    }
+
+    showPaymentProcessingModal(guestData, total) {
+        // Close checkout modal first
+        this.closeCheckoutModal();
+        
+        // Create payment processing modal
+        const modal = document.createElement('div');
+        modal.id = 'payment-processing-modal';
+        modal.className = 'payment-processing-modal';
+        modal.innerHTML = `
+            <div class="payment-modal-overlay">
+                <div class="payment-modal-content" style="max-width: 500px; text-align: center; padding: var(--space-8);">
+                    <div class="payment-processing-header">
+                        <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--primary-color);">💳</div>
+                        <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
+                            Processing Payment
+                        </h2>
+                        <p style="color: var(--gray-600); margin-bottom: var(--space-6);">
+                            Please wait while we securely process your payment of $${total.toFixed(2)}...
+                        </p>
+                    </div>
+                    
+                    <div class="payment-progress" style="margin-bottom: var(--space-6);">
+                        <div class="progress-bar" style="width: 100%; height: 8px; background: var(--gray-200); border-radius: var(--radius-full); overflow: hidden;">
+                            <div class="progress-fill" style="height: 100%; background: var(--primary-color); width: 0%; transition: width 0.5s ease-out; border-radius: var(--radius-full);"></div>
+                        </div>
+                        <div class="progress-text" style="margin-top: var(--space-3); font-size: 0.875rem; color: var(--gray-600);">
+                            Initializing payment...
+                        </div>
+                    </div>
+                    
+                    <div class="payment-security" style="display: flex; align-items: center; justify-content: center; gap: var(--space-2); color: var(--gray-500); font-size: 0.875rem;">
+                        <i class="fas fa-lock"></i>
+                        <span>Your payment information is secure and encrypted</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        
+        // Simulate payment processing steps
+        this.simulatePaymentProcessing(guestData, total);
+    }
+
+    simulatePaymentProcessing(guestData, total) {
+        const progressFill = document.querySelector('.progress-fill');
+        const progressText = document.querySelector('.progress-text');
+        
+        const steps = [
+            { progress: 20, text: 'Validating payment information...', delay: 1000 },
+            { progress: 40, text: 'Contacting payment processor...', delay: 1500 },
+            { progress: 60, text: 'Authorizing transaction...', delay: 1200 },
+            { progress: 80, text: 'Confirming payment...', delay: 1000 },
+            { progress: 100, text: 'Payment successful!', delay: 800 }
+        ];
+        
+        let currentStep = 0;
+        
+        const processStep = () => {
+            if (currentStep >= steps.length) {
+                // Payment successful - now create the order
+                setTimeout(() => {
+                    this.finalizeOrder(guestData, total);
+                }, 500);
+                return;
+            }
+            
+            const step = steps[currentStep];
+            
+            if (progressFill) {
+                progressFill.style.width = `${step.progress}%`;
+            }
+            
+            if (progressText) {
+                progressText.textContent = step.text;
+                
+                // Change color to green for success
+                if (step.progress === 100) {
+                    progressText.style.color = 'var(--success-color)';
+                    progressText.style.fontWeight = '600';
+                }
+            }
+            
+            currentStep++;
+            setTimeout(processStep, step.delay);
+        };
+        
+        // Start processing after a brief delay
+        setTimeout(processStep, 500);
+    }
+
+    finalizeOrder(guestData, total) {
+        // Close payment processing modal
+        const paymentModal = document.getElementById('payment-processing-modal');
+        if (paymentModal) {
+            paymentModal.remove();
+            document.body.style.overflow = '';
+        }
+        
+        // Now create the actual order since payment was "successful"
+        if (guestData) {
+            // Create guest order
+            this.createGuestOrderAfterPayment(guestData, total);
+        } else {
+            // Create user order
+            this.createUserOrderAfterPayment(total);
+        }
+    }
+
+    createGuestOrderAfterPayment(guestData, total) {
+        const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const shipping = subtotal >= 75 ? 0 : 9.99;
+        const tax = subtotal * 0.13;
+
+        // Create guest order
+        const order = {
+            id: Date.now(),
+            userId: null, // Guest order
+            guestInfo: {
+                firstName: guestData.firstName,
+                lastName: guestData.lastName,
+                email: guestData.email,
+                phone: guestData.phone || '',
+                address: {
+                    street: guestData.address,
+                    street2: guestData.address2 || '',
+                    city: guestData.city,
+                    province: guestData.province,
+                    postalCode: guestData.postalCode.toUpperCase()
+                }
+            },
+            items: this.cart.map(item => ({...item})),
+            subtotal: subtotal,
+            shipping: shipping,
+            tax: tax,
+            total: total,
+            status: 'pending',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            trackingNumber: null,
+            estimatedDelivery: this.calculateEstimatedDelivery(),
+            isGuestOrder: true,
+            paymentProcessed: true // Mark that payment was processed
+        };
+
+        // Save order to guest orders
+        const guestOrders = JSON.parse(localStorage.getItem('tcg-guest-orders') || '[]');
+        guestOrders.push(order);
+        localStorage.setItem('tcg-guest-orders', JSON.stringify(guestOrders));
+
+        // If user wants to create account, do it now
+        if (guestData.createAccount && guestData.password) {
+            this.createAccountFromGuestOrder(guestData, order);
+        }
+
+        // Clear cart and show success
+        this.cart = [];
+        this.saveCart();
+        this.updateCartBadge();
+
+        // Show success message
+        this.showToast(`Order #${order.id} placed successfully! Check your email for confirmation.`, 'success', 5000);
+
+        // Simulate order processing
+        setTimeout(() => {
+            this.updateGuestOrderStatus(order.id, 'processing');
+            this.showToast('Your order is now being processed!', 'info');
+        }, 2000);
+    }
+
+    createUserOrderAfterPayment(total) {
+        // Create order from current cart for logged-in user
+        const order = this.createOrder([...this.cart]);
+        
+        if (order) {
+            // Mark that payment was processed
+            order.paymentProcessed = true;
+            
+            // Update the order in storage
+            localStorage.setItem('tcg-orders', JSON.stringify(this.orders));
+            
+            // Clear cart after successful order creation
+            this.cart = [];
+            this.saveCart();
+            this.updateCartBadge();
+            
+            // Show success message
+            this.showToast(`Order #${order.id} placed successfully!`, 'success', 5000);
+            
+            // Simulate order processing
+            setTimeout(() => {
+                this.updateOrderStatus(order.id, 'processing');
+                this.showToast('Your order is now being processed!', 'info');
+            }, 2000);
+        }
+    }
+
+    completeCheckout() {
+        const activeTab = document.querySelector('.checkout-tab.active');
+        if (!activeTab) return;
+
+        if (activeTab.id === 'guest-tab') {
+            // Trigger guest checkout form submission
+            const form = document.getElementById('guest-checkout-form');
+            if (form) {
+                form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+            }
+        } else if (activeTab.id === 'account-tab') {
+            if (this.currentUser) {
+                // Complete order with logged-in user
+                this.completeUserOrder();
+            } else {
+                this.showToast('Please sign in to complete checkout with your account.', 'error');
+            }
+        }
+    }
+
+    completeUserOrder() {
+        // Create order from current cart for logged-in user
+        const order = this.createOrder([...this.cart]);
+        
+        if (order) {
+            // Clear cart after successful order creation
+            this.cart = [];
+            this.saveCart();
+            this.updateCartBadge();
+            this.closeCheckoutModal();
+            
+            // Show success message
+            this.showToast(`Order #${order.id} placed successfully!`, 'success', 5000);
+            
+            // Simulate order processing
+            setTimeout(() => {
+                this.updateOrderStatus(order.id, 'processing');
+                this.showToast('Your order is now being processed!', 'info');
+            }, 2000);
+        }
     }
 
     debounce(func, wait) {
@@ -2732,6 +3713,518 @@ class ModernTCGStore {
             clearTimeout(timeout);
             timeout = setTimeout(later, wait);
         };
+    }
+
+    // Advanced search functionality for singles page
+    async performAdvancedSearch() {
+        const searchInput = document.getElementById('card-search-input');
+        const resultsTitle = document.getElementById('results-title');
+        const resultsCount = document.getElementById('results-count');
+        const cardsGrid = document.getElementById('cards-grid');
+        
+        if (!cardsGrid) return;
+
+        // Get search parameters
+        const searchQuery = searchInput ? searchInput.value.trim() : '';
+        const filters = this.getAdvancedFilters();
+        
+        // Show loading
+        this.showLoading(cardsGrid);
+        
+        // Update results title
+        if (resultsTitle) {
+            resultsTitle.textContent = searchQuery ? `Search Results for "${searchQuery}"` : 'All Cards';
+        }
+
+        try {
+            let searchResults = [];
+            
+            if (searchQuery.length >= 2) {
+                // Perform text search
+                searchResults = await this.searchCards(searchQuery);
+            } else {
+                // Get all cards if no search query
+                searchResults = await this.getAllCards();
+            }
+
+            // Apply filters
+            const filteredResults = this.applyAdvancedFilters(searchResults, filters);
+            
+            // Format cards for display
+            this.currentCards = await Promise.all(filteredResults.map(card => this.formatCardForDisplay(card)));
+            this.filteredCards = [...this.currentCards];
+            this.currentPage = 1;
+            
+            // Update results count
+            if (resultsCount) {
+                resultsCount.textContent = `${this.filteredCards.length} cards found`;
+            }
+            
+            // Display results
+            this.displayCards(cardsGrid);
+            this.setupPagination();
+            
+        } catch (error) {
+            console.error('Advanced search error:', error);
+            this.showError(cardsGrid, 'Search failed. Please try again.');
+            
+            if (resultsCount) {
+                resultsCount.textContent = 'Search failed';
+            }
+        }
+    }
+
+    getAdvancedFilters() {
+        return {
+            type: document.getElementById('type-filter')?.value || '',
+            race: document.getElementById('race-filter')?.value || '',
+            attribute: document.getElementById('attribute-filter')?.value || '',
+            level: document.getElementById('level-filter')?.value || '',
+            linkval: document.getElementById('linkval-filter')?.value || '',
+            atk: document.getElementById('atk-filter')?.value || '',
+            def: document.getElementById('def-filter')?.value || '',
+            archetype: document.getElementById('archetype-filter')?.value || '',
+            banlist: document.getElementById('banlist-filter')?.value || '',
+            cardset: document.getElementById('cardset-filter')?.value || '',
+            sort: document.getElementById('sort-filter')?.value || 'name',
+            limit: parseInt(document.getElementById('limit-filter')?.value) || 20,
+            misc: document.getElementById('misc-filter')?.checked || false
+        };
+    }
+
+    applyAdvancedFilters(cards, filters) {
+        let filtered = [...cards];
+
+        // Filter by type
+        if (filters.type) {
+            filtered = filtered.filter(card => 
+                card.type && card.type.toLowerCase().includes(filters.type.toLowerCase())
+            );
+        }
+
+        // Filter by race
+        if (filters.race) {
+            filtered = filtered.filter(card => 
+                card.race && card.race.toLowerCase() === filters.race.toLowerCase()
+            );
+        }
+
+        // Filter by attribute
+        if (filters.attribute) {
+            filtered = filtered.filter(card => 
+                card.attribute && card.attribute.toLowerCase() === filters.attribute.toLowerCase()
+            );
+        }
+
+        // Filter by level
+        if (filters.level) {
+            const targetLevel = parseInt(filters.level);
+            filtered = filtered.filter(card => 
+                card.level === targetLevel
+            );
+        }
+
+        // Filter by link value
+        if (filters.linkval) {
+            const targetLink = parseInt(filters.linkval);
+            filtered = filtered.filter(card => 
+                card.linkval === targetLink
+            );
+        }
+
+        // Filter by ATK range
+        if (filters.atk) {
+            filtered = this.filterByStatRange(filtered, 'atk', filters.atk);
+        }
+
+        // Filter by DEF range
+        if (filters.def) {
+            filtered = this.filterByStatRange(filtered, 'def', filters.def);
+        }
+
+        // Filter by archetype
+        if (filters.archetype) {
+            filtered = filtered.filter(card => 
+                card.archetype && card.archetype.toLowerCase().includes(filters.archetype.toLowerCase())
+            );
+        }
+
+        // Filter by card set
+        if (filters.cardset) {
+            filtered = filtered.filter(card => 
+                card.card_sets && card.card_sets.some(set => 
+                    set.set_code && set.set_code.toLowerCase().includes(filters.cardset.toLowerCase())
+                )
+            );
+        }
+
+        // Filter by price availability
+        if (filters.misc) {
+            filtered = filtered.filter(card => 
+                card.card_prices && card.card_prices.length > 0
+            );
+        }
+
+        // Sort results
+        filtered = this.sortCards(filtered, filters.sort);
+
+        // Limit results
+        return filtered.slice(0, filters.limit);
+    }
+
+    filterByStatRange(cards, stat, range) {
+        return cards.filter(card => {
+            const value = card[stat];
+            if (value === null || value === undefined) return false;
+            
+            switch (range) {
+                case '0-999':
+                    return value >= 0 && value <= 999;
+                case '1000-1999':
+                    return value >= 1000 && value <= 1999;
+                case '2000-2499':
+                    return value >= 2000 && value <= 2499;
+                case '2500-2999':
+                    return value >= 2500 && value <= 2999;
+                case '3000+':
+                    return value >= 3000;
+                default:
+                    return true;
+            }
+        });
+    }
+
+    sortCards(cards, sortBy) {
+        return cards.sort((a, b) => {
+            switch (sortBy) {
+                case 'name':
+                    return a.name.localeCompare(b.name);
+                case 'name-desc':
+                    return b.name.localeCompare(a.name);
+                case 'level':
+                    return (a.level || 0) - (b.level || 0);
+                case 'level-desc':
+                    return (b.level || 0) - (a.level || 0);
+                case 'atk':
+                    return (a.atk || 0) - (b.atk || 0);
+                case 'atk-desc':
+                    return (b.atk || 0) - (a.atk || 0);
+                case 'def':
+                    return (a.def || 0) - (b.def || 0);
+                case 'def-desc':
+                    return (b.def || 0) - (a.def || 0);
+                default:
+                    return a.name.localeCompare(b.name);
+            }
+        });
+    }
+
+    async getAllCards() {
+        const cacheKey = 'all_cards';
+        const cached = this.cache.get(cacheKey);
+        
+        if (cached && Date.now() - cached.timestamp < this.cacheExpiry) {
+            return cached.data;
+        }
+
+        try {
+            // Get a variety of cards from different archetypes
+            const archetypes = ['Blue-Eyes', 'Dark Magician', 'Elemental HERO', 'Blackwing', 'Sky Striker'];
+            let allCards = [];
+            
+            for (const archetype of archetypes) {
+                try {
+                    const cards = await this.getCardsByArchetype(archetype);
+                    allCards = allCards.concat(cards.slice(0, 10)); // Limit per archetype
+                } catch (error) {
+                    console.warn(`Failed to fetch ${archetype} cards:`, error);
+                }
+            }
+            
+            // Add some meta cards
+            const metaCards = await this.getMetaCards();
+            allCards = allCards.concat(metaCards);
+            
+            // Remove duplicates
+            const uniqueCards = allCards.filter((card, index, self) => 
+                index === self.findIndex(c => c.id === card.id)
+            );
+            
+            this.cache.set(cacheKey, {
+                data: uniqueCards,
+                timestamp: Date.now()
+            });
+            
+            return uniqueCards;
+        } catch (error) {
+            console.error('Error fetching all cards:', error);
+            return [];
+        }
+    }
+
+    async searchByCategory(category) {
+        const cardsGrid = document.getElementById('cards-grid');
+        const resultsTitle = document.getElementById('results-title');
+        const resultsCount = document.getElementById('results-count');
+        
+        if (!cardsGrid) return;
+
+        this.showLoading(cardsGrid);
+
+        try {
+            let cards = [];
+            let categoryName = '';
+
+            switch (category) {
+                case 'meta':
+                    cards = await this.getMetaCards();
+                    categoryName = 'Meta Cards';
+                    break;
+                case 'hand-traps':
+                    cards = await this.getHandTrapCards();
+                    categoryName = 'Hand Traps';
+                    break;
+                case 'boss-monsters':
+                    cards = await this.getBossMonsters();
+                    categoryName = 'Boss Monsters';
+                    break;
+                case 'classic':
+                    cards = await this.getClassicCards();
+                    categoryName = 'Classic Cards';
+                    break;
+                default:
+                    cards = await this.getMetaCards();
+                    categoryName = 'Featured Cards';
+            }
+
+            this.currentCards = await Promise.all(cards.map(card => this.formatCardForDisplay(card)));
+            this.filteredCards = [...this.currentCards];
+            this.currentPage = 1;
+
+            if (resultsTitle) {
+                resultsTitle.textContent = categoryName;
+            }
+
+            if (resultsCount) {
+                resultsCount.textContent = `${this.filteredCards.length} cards found`;
+            }
+
+            this.displayCards(cardsGrid);
+            this.setupPagination();
+
+        } catch (error) {
+            console.error('Category search error:', error);
+            this.showError(cardsGrid, 'Failed to load category. Please try again.');
+        }
+    }
+
+    async getBossMonsters() {
+        const bossMonsterNames = [
+            'Blue-Eyes Ultimate Dragon',
+            'Red-Eyes Black Dragon',
+            'Exodia the Forbidden One',
+            'Dark Magician',
+            'Elemental HERO Sparkman',
+            'Stardust Dragon',
+            'Number 39: Utopia',
+            'Firewall Dragon'
+        ];
+
+        const cards = [];
+        for (const name of bossMonsterNames) {
+            try {
+                const card = await this.getCardByName(name);
+                if (card) cards.push(card);
+            } catch (error) {
+                console.warn(`Could not fetch ${name}`);
+            }
+        }
+
+        return cards;
+    }
+
+    async getClassicCards() {
+        const classicCardNames = [
+            'Blue-Eyes White Dragon',
+            'Dark Magician',
+            'Red-Eyes Black Dragon',
+            'Exodia the Forbidden One',
+            'Mirror Force',
+            'Mystical Space Typhoon',
+            'Pot of Greed',
+            'Raigeki'
+        ];
+
+        const cards = [];
+        for (const name of classicCardNames) {
+            try {
+                const card = await this.getCardByName(name);
+                if (card) cards.push(card);
+            } catch (error) {
+                console.warn(`Could not fetch ${name}`);
+            }
+        }
+
+        return cards;
+    }
+
+    loadMoreCards() {
+        // Increase the current page and display more cards
+        const totalPages = Math.ceil(this.filteredCards.length / this.cardsPerPage);
+        
+        if (this.currentPage < totalPages) {
+            this.currentPage++;
+            const container = document.querySelector('.modern-card-grid, #meta-cards-grid, #cards-grid');
+            if (container) {
+                // Append new cards instead of replacing
+                const startIndex = (this.currentPage - 1) * this.cardsPerPage;
+                const endIndex = startIndex + this.cardsPerPage;
+                const newCards = this.filteredCards.slice(startIndex, endIndex);
+                
+                newCards.forEach((card, index) => {
+                    const cardElement = this.createModernCardElement(card);
+                    cardElement.style.animationDelay = `${index * 50}ms`;
+                    cardElement.classList.add('fade-in-up');
+                    container.appendChild(cardElement);
+                });
+                
+                // Update load more button visibility
+                const loadMoreContainer = document.getElementById('load-more-container');
+                if (loadMoreContainer) {
+                    if (this.currentPage >= totalPages) {
+                        loadMoreContainer.style.display = 'none';
+                    }
+                }
+            }
+        }
+    }
+
+    // Helper functions for rarity badge functionality on singles page
+    getRarityColor(rarity) {
+        // YGOPRODeck-style rarity colors
+        const rarityColors = {
+            'Common': '#374151',
+            'Rare': '#3B82F6', 
+            'Super Rare': '#10B981',
+            'Ultra Rare': '#F59E0B',
+            'Secret Rare': '#8B5CF6',
+            'Ultimate Rare': '#DC2626',
+            'Ghost Rare': '#6B7280',
+            'Starlight Rare': '#EC4899',
+            'Short Print': '#6B7280'
+        };
+        return rarityColors[rarity] || '#374151';
+    }
+
+    getCardTypeColor(cardType) {
+        // YGOPRODeck-style card type colors
+        if (cardType.includes('Effect Monster')) return '#FF8B00';
+        if (cardType.includes('Normal Monster')) return '#FFC649';
+        if (cardType.includes('Fusion Monster')) return '#A086B7';
+        if (cardType.includes('Synchro Monster')) return '#CCCCCC';
+        if (cardType.includes('Xyz Monster')) return '#000000';
+        if (cardType.includes('Link Monster')) return '#00008B';
+        if (cardType.includes('Ritual Monster')) return '#9DB5CC';
+        if (cardType.includes('Pendulum')) return '#008080';
+        if (cardType.includes('Spell')) return '#1D9E74';
+        if (cardType.includes('Trap')) return '#BC5A84';
+        if (cardType.includes('Monster')) return '#FF8B00'; // Default monster
+        return '#6B7280'; // Default
+    }
+
+    calculateSetPrice(basePrice, rarity) {
+        // Simple price calculation based on rarity
+        const base = parseFloat(basePrice) || 0;
+        if (base <= 0) return '0.00';
+        
+        // Rarity multipliers (simplified)
+        const multipliers = {
+            'Common': 1.0,
+            'Rare': 1.2,
+            'Super Rare': 1.5,
+            'Ultra Rare': 2.0,
+            'Secret Rare': 3.0,
+            'Ultimate Rare': 4.0,
+            'Ghost Rare': 5.0,
+            'Starlight Rare': 10.0
+        };
+        
+        const multiplier = multipliers[rarity] || 1.0;
+        return (base * multiplier).toFixed(2);
+    }
+
+    updateCardRarityFromSet(selectElement, cardElementId, cardName, cardImage) {
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+        const newRarity = selectedOption.getAttribute('data-rarity') || 'Common';
+        const newPrice = selectedOption.getAttribute('data-price') || '0.00';
+        
+        // Update rarity badge
+        const rarityBadge = document.getElementById(`rarity-badge-${cardElementId}`);
+        if (rarityBadge) {
+            const rarityColor = this.getRarityColor(newRarity);
+            
+            // Animate the rarity badge update
+            rarityBadge.style.transition = 'all 0.3s ease-out';
+            rarityBadge.style.transform = 'scale(0.8)';
+            rarityBadge.style.opacity = '0.7';
+            
+            setTimeout(() => {
+                rarityBadge.textContent = newRarity;
+                rarityBadge.style.backgroundColor = rarityColor;
+                rarityBadge.style.transform = 'scale(1.1)';
+                rarityBadge.style.opacity = '1';
+                
+                setTimeout(() => {
+                    rarityBadge.style.transform = 'scale(1)';
+                }, 200);
+            }, 150);
+        }
+        
+        // Update price
+        const priceElement = document.getElementById(`card-price-${cardElementId}`);
+        if (priceElement) {
+            priceElement.style.transition = 'color 0.3s ease-out';
+            priceElement.textContent = `$${newPrice}`;
+        }
+        
+        // Update add to cart button
+        const addToCartBtn = document.getElementById(`add-to-cart-${cardElementId}`);
+        if (addToCartBtn) {
+            const setCode = selectedOption.value;
+            const setName = selectedOption.textContent.split(' (')[0]; // Extract set name
+            addToCartBtn.setAttribute('onclick', 
+                `event.stopPropagation(); tcgStore.addToCartFromCard('${cardElementId}', '${cardName}', ${newPrice}, '${cardImage}', '${newRarity}', '${setCode}', '${setName}')`
+            );
+        }
+
+    }
+
+    addToCartFromCard(cardElementId, cardName, price, image, rarity, setCode = '', setName = '') {
+        // Add to cart with set and rarity details
+        this.addToCartWithDetails(cardName, price, image, setCode, rarity, setName);
+
+    }
+
+    // Check if current user is an admin account
+    isAdminAccount() {
+        // Check if there's an admin session
+        const adminSession = localStorage.getItem('tcg-admin');
+        if (adminSession) {
+            try {
+                const admin = JSON.parse(adminSession);
+                return admin.isAdmin && admin.isActive;
+            } catch (error) {
+                console.error('Error parsing admin session:', error);
+                return false;
+            }
+        }
+
+        // Check if current user is marked as admin
+        if (this.currentUser && this.currentUser.isAdmin) {
+            return true;
+        }
+
+        return false;
     }
 }
 

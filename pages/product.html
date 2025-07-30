@@ -13,7 +13,8 @@
     
     <!-- Stylesheets -->
     <link rel="stylesheet" href="../assets/css/modern-tcg-store.css">
-    <link rel="icon" href="https://images.ygoprodeck.com/images/cards/89631139.jpg">
+    <link rel="icon" href="../assets/images/firelight-logo.svg" type="image/svg+xml">
+    <link rel="icon" href="../assets/images/f3c4e91c-8a34-4545-a53a-489b4eb181c4.jpg" type="image/jpeg">
 </head>
 <body>
     <!-- Modern Header -->
@@ -97,9 +98,9 @@
                 
                 <!-- Product Images -->
                 <div>
-                    <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
-                        <div style="aspect-ratio: 3/4; background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: var(--space-4); cursor: pointer;" onclick="openImageZoom()">
-                            <img id="main-card-image" src="" alt="" style="width: 100%; height: 100%; object-fit: contain; padding: var(--space-2);">
+                    <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-6); border: 1px solid var(--gray-200);">
+                        <div id="image-container" class="product-image-container" style="max-width: 88px !important; max-height: 118px !important; width: 88px !important; height: 118px !important; margin: 0 auto; background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: var(--space-4); cursor: pointer;" onclick="openImageZoom()">
+                            <img id="main-card-image" class="product-card-image" src="" alt="" style="max-width: 80px !important; max-height: 110px !important; width: 80px !important; height: auto !important; object-fit: contain; padding: 4px; margin: 0 auto; display: block;">
                         </div>
                         <div style="display: flex; gap: var(--space-2); justify-content: center;">
                             <img id="thumb-normal" src="" alt="Normal view" style="width: 60px; height: 80px; object-fit: contain; border-radius: var(--radius-md); border: 2px solid var(--primary-color); cursor: pointer;" onclick="switchImage('normal')">
@@ -134,6 +135,17 @@
                             </div>
                         </div>
 
+                        <!-- Sets and Rarities Section -->
+                        <div id="sets-rarities-section" style="margin-bottom: var(--space-6); display: none;">
+                            <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Available Sets & Rarities</h3>
+                            <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-4);">
+                                <label style="display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);">Select Set & Rarity:</label>
+                                <select id="set-rarity-select" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-size: 0.875rem;" onchange="updatePriceForSet()">
+                                    <!-- Options will be populated by JavaScript -->
+                                </select>
+                            </div>
+                        </div>
+
                         <!-- Add to Cart Section -->
                         <div style="margin-bottom: var(--space-6);">
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-bottom: var(--space-4);">
@@ -156,8 +168,8 @@
                                     </select>
                                 </div>
                             </div>
-                            <button id="add-to-cart-btn" style="width: 100%; padding: var(--space-4); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; font-size: 1.125rem; cursor: pointer; transition: var(--transition-fast); text-transform: uppercase; letter-spacing: 0.05em;" onclick="addCurrentCardToCart()">
-                                Add to Cart
+                            <button id="add-to-buylist-btn" style="width: 100%; padding: var(--space-4); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; font-size: 1.125rem; cursor: pointer; transition: var(--transition-fast); text-transform: uppercase; letter-spacing: 0.05em;" onclick="addCurrentCardToBuylist()">
+                                Add to Buylist
                             </button>
                         </div>
 
@@ -208,7 +220,29 @@
         document.addEventListener('DOMContentLoaded', async function() {
             await loadProduct();
             setupSearchDropdown();
+            
+            // Force image size with JavaScript as backup
+            setTimeout(forceImageSize, 100);
+            setTimeout(forceImageSize, 500);
+            setTimeout(forceImageSize, 1000);
         });
+
+        function forceImageSize() {
+            const image = document.getElementById('main-card-image');
+            if (image) {
+                console.log('Forcing image size - before:', image.style.width, image.style.height);
+                image.style.setProperty('width', '80px', 'important');
+                image.style.setProperty('height', 'auto', 'important');
+                image.style.setProperty('max-width', '80px', 'important');
+                image.style.setProperty('max-height', '110px', 'important');
+                image.width = 80;
+                image.height = 110;
+                console.log('Forcing image size - after:', image.style.width, image.style.height);
+                console.log('Image element:', image);
+            } else {
+                console.log('Image element not found!');
+            }
+        }
 
         async function loadProduct() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -260,6 +294,7 @@
             document.getElementById('thumb-small').src = card.imageSmall;
 
             displayCardStats(card);
+            displaySetsAndRarities(card);
 
             document.getElementById('current-price').textContent = `$${card.price}`;
             const trendElement = document.getElementById('price-trend');
@@ -300,6 +335,114 @@
             }
 
             statsContainer.innerHTML = statsHTML;
+        }
+
+        function displaySetsAndRarities(card) {
+            const setsSection = document.getElementById('sets-rarities-section');
+            const setSelect = document.getElementById('set-rarity-select');
+            
+            if (!card.sets || !Array.isArray(card.sets) || card.sets.length === 0) {
+                setsSection.style.display = 'none';
+                return;
+            }
+
+            // Show the sets section
+            setsSection.style.display = 'block';
+            
+            // Clear existing options
+            setSelect.innerHTML = '';
+            
+            // Add default option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = `Default - ${card.rarity} ($${card.price})`;
+            defaultOption.selected = true;
+            setSelect.appendChild(defaultOption);
+            
+            // Add options for each set
+            card.sets.forEach((set, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                
+                // Generate different prices for different sets/rarities
+                const setPrice = generateSetPrice(card.price, set);
+                
+                const setName = set.set_name || 'Unknown Set';
+                const setCode = set.set_code || '';
+                const setRarity = set.set_rarity || 'Common';
+                
+                option.textContent = `${setName} (${setCode}) - ${setRarity} ($${setPrice})`;
+                option.dataset.price = setPrice;
+                option.dataset.rarity = setRarity;
+                option.dataset.setName = setName;
+                option.dataset.setCode = setCode;
+                
+                setSelect.appendChild(option);
+            });
+        }
+
+        function generateSetPrice(basePrice, set) {
+            const base = parseFloat(basePrice) || 1.00;
+            const setRarity = set.set_rarity || 'Common';
+            
+            // Price multipliers based on rarity
+            const rarityMultipliers = {
+                'Common': 0.8,
+                'Rare': 1.0,
+                'Super Rare': 1.5,
+                'Ultra Rare': 2.0,
+                'Secret Rare': 3.0,
+                'Ultimate Rare': 4.0,
+                'Ghost Rare': 5.0,
+                'Starlight Rare': 10.0
+            };
+            
+            const multiplier = rarityMultipliers[setRarity] || 1.0;
+            const price = (base * multiplier).toFixed(2);
+            
+            return price;
+        }
+
+        function updatePriceForSet() {
+            const setSelect = document.getElementById('set-rarity-select');
+            const priceElement = document.getElementById('current-price');
+            const rarityElement = document.getElementById('product-rarity');
+            
+            const selectedOption = setSelect.options[setSelect.selectedIndex];
+            
+            if (selectedOption && selectedOption.value !== '') {
+                // Update price
+                const newPrice = selectedOption.dataset.price;
+                priceElement.textContent = `$${newPrice}`;
+                
+                // Update rarity display
+                const newRarity = selectedOption.dataset.rarity;
+                rarityElement.textContent = newRarity;
+                
+                // Update current card data for cart
+                if (currentCard) {
+                    currentCard.price = newPrice;
+                    currentCard.rarity = newRarity;
+                    currentCard.selectedSet = {
+                        name: selectedOption.dataset.setName,
+                        code: selectedOption.dataset.setCode,
+                        rarity: newRarity
+                    };
+                }
+            } else {
+                // Reset to default values
+                if (currentCard) {
+                    const originalPrice = currentCard.originalPrice || currentCard.price;
+                    const originalRarity = currentCard.originalRarity || currentCard.rarity;
+                    
+                    priceElement.textContent = `$${originalPrice}`;
+                    rarityElement.textContent = originalRarity;
+                    
+                    currentCard.price = originalPrice;
+                    currentCard.rarity = originalRarity;
+                    currentCard.selectedSet = null;
+                }
+            }
         }
 
         async function loadRelatedCards(card) {
@@ -405,6 +548,66 @@
             }
         }
 
+        function addCurrentCardToBuylist() {
+            if (!currentCard) return;
+            
+            const quantity = parseInt(document.getElementById('quantity').value) || 1;
+            const condition = document.getElementById('condition').value;
+            
+            // Calculate buylist price (typically 40-60% of market value)
+            let buylistPrice = parseFloat(currentCard.price) * 0.5; // 50% of market price
+            
+            const conditionMultipliers = {
+                'near_mint': 1.0,
+                'lightly_played': 0.9,
+                'moderately_played': 0.8,
+                'heavily_played': 0.65,
+                'damaged': 0.5
+            };
+            
+            buylistPrice *= conditionMultipliers[condition] || 1.0;
+            
+            // Calculate cash and credit prices
+            const cashPrice = buylistPrice.toFixed(2);
+            const creditPrice = (buylistPrice * 1.25).toFixed(2); // 25% bonus for store credit
+            
+            // Get or create buylist cart
+            let buylistCart = JSON.parse(localStorage.getItem('tcg-buylist-cart') || '[]');
+            
+            // Create buylist item
+            const buylistItem = {
+                id: currentCard.id,
+                name: currentCard.name,
+                image: currentCard.image,
+                cashPrice: parseFloat(cashPrice),
+                creditPrice: parseFloat(creditPrice),
+                quantity: quantity,
+                condition: condition,
+                type: currentCard.type,
+                rarity: currentCard.rarity
+            };
+            
+            // Check if item already exists in buylist
+            const existingItemIndex = buylistCart.findIndex(item => 
+                item.id === currentCard.id && item.condition === condition
+            );
+            
+            if (existingItemIndex >= 0) {
+                buylistCart[existingItemIndex].quantity += quantity;
+            } else {
+                buylistCart.push(buylistItem);
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('tcg-buylist-cart', JSON.stringify(buylistCart));
+            
+            // Show success message
+            alert(`Added ${quantity}x ${currentCard.name} (${condition.replace('_', ' ')}) to buylist!\nCash: $${cashPrice} | Credit: $${creditPrice}`);
+            
+            // Navigate to buylist page to show the updated cart
+            window.location.href = '../app.html#page=buylist';
+        }
+
         function setupSearchDropdown() {
             const searchInput = document.getElementById('search-dropdown-input');
             const dropdown = document.getElementById('search-dropdown');
@@ -477,6 +680,17 @@
 
         .search-results div:hover {
             background: var(--gray-50);
+        }
+
+        .product-card-image {
+            max-width: 80px !important;
+            max-height: 110px !important;
+            width: 80px !important;
+            height: auto !important;
+            object-fit: contain !important;
+            padding: 4px !important;
+            margin: 0 auto !important;
+            display: block !important;
         }
 
         @media (max-width: 768px) {

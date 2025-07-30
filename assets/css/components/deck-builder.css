@@ -504,9 +504,10 @@
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     padding: var(--space-4);
+    padding-top: 15vh;
 }
 
 .deck-modal-content {
@@ -652,19 +653,23 @@
 /* File Upload */
 .file-upload-btn {
     display: inline-block;
-    padding: var(--space-3) var(--space-4);
-    background: var(--secondary-color);
-    color: var(--gray-900);
-    border: 1px solid var(--gray-300);
+    padding: var(--space-2) var(--space-3);
+    background: var(--primary-color);
+    color: white;
+    border: none;
     border-radius: var(--radius-md);
+    font-size: 0.75rem;
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition-fast);
     text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .file-upload-btn:hover {
-    background: var(--gray-100);
+    background: var(--primary-dark);
+    transform: translateY(-1px);
 }
 
 #ydk-file-input {

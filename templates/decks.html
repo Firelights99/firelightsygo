@@ -3,7 +3,7 @@
     <h1 style="font-size: 3rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
         Deck Editor
     </h1>
-    <p style="font-size: 1.125rem; color: var(--gray-600); max-width: 600px; margin: 0 auto;">
+    <p style="font-size: 1.125rem; color: var(--gray-600); max-width: 900px; margin: 0 auto;">
         Manage your decks, build new strategies, and explore popular deck lists
     </p>
 </section>
@@ -26,6 +26,9 @@
         </button>
         <button class="secondary-btn" onclick="showDeckTemplates()" style="padding: var(--space-3) var(--space-6);">
             <span style="margin-right: var(--space-2);">📋</span> Templates
+        </button>
+        <button class="secondary-btn" onclick="exportCurrentDeck()" style="padding: var(--space-3) var(--space-6);">
+            <span style="margin-right: var(--space-2);">💾</span> Export YDK
         </button>
     </div>
 </section>
@@ -66,42 +69,70 @@
                 <div class="search-filters">
                     <select class="filter-select" id="type-filter" onchange="searchCards()">
                         <option value="">All Types</option>
-                        <option value="Monster">Monster</option>
-                        <option value="Spell">Spell</option>
-                        <option value="Trap">Trap</option>
+                        <option value="Effect Monster">Effect Monster</option>
+                        <option value="Normal Monster">Normal Monster</option>
+                        <option value="Ritual Monster">Ritual Monster</option>
+                        <option value="Fusion Monster">Fusion Monster</option>
+                        <option value="Synchro Monster">Synchro Monster</option>
+                        <option value="XYZ Monster">XYZ Monster</option>
+                        <option value="Pendulum Effect Monster">Pendulum Effect Monster</option>
+                        <option value="Pendulum Normal Monster">Pendulum Normal Monster</option>
+                        <option value="Link Monster">Link Monster</option>
+                        <option value="Spell Card">Spell Card</option>
+                        <option value="Trap Card">Trap Card</option>
                     </select>
                     <select class="filter-select" id="race-filter" onchange="searchCards()">
-                        <option value="">All Races</option>
-                        <option value="Dragon">Dragon</option>
-                        <option value="Spellcaster">Spellcaster</option>
-                        <option value="Warrior">Warrior</option>
+                        <option value="">All Monster Types</option>
+                        <option value="Aqua">Aqua</option>
                         <option value="Beast">Beast</option>
+                        <option value="Beast-Warrior">Beast-Warrior</option>
+                        <option value="Creator-God">Creator-God</option>
+                        <option value="Cyberse">Cyberse</option>
+                        <option value="Dinosaur">Dinosaur</option>
+                        <option value="Divine-Beast">Divine-Beast</option>
+                        <option value="Dragon">Dragon</option>
+                        <option value="Fairy">Fairy</option>
                         <option value="Fiend">Fiend</option>
+                        <option value="Fish">Fish</option>
+                        <option value="Insect">Insect</option>
                         <option value="Machine">Machine</option>
+                        <option value="Plant">Plant</option>
+                        <option value="Psychic">Psychic</option>
+                        <option value="Pyro">Pyro</option>
+                        <option value="Reptile">Reptile</option>
+                        <option value="Rock">Rock</option>
+                        <option value="Sea Serpent">Sea Serpent</option>
+                        <option value="Spellcaster">Spellcaster</option>
+                        <option value="Thunder">Thunder</option>
+                        <option value="Warrior">Warrior</option>
+                        <option value="Winged Beast">Winged Beast</option>
+                        <option value="Wyrm">Wyrm</option>
+                        <option value="Zombie">Zombie</option>
                     </select>
                     <select class="filter-select" id="attribute-filter" onchange="searchCards()">
                         <option value="">All Attributes</option>
                         <option value="DARK">DARK</option>
-                        <option value="LIGHT">LIGHT</option>
-                        <option value="FIRE">FIRE</option>
-                        <option value="WATER">WATER</option>
+                        <option value="DIVINE">DIVINE</option>
                         <option value="EARTH">EARTH</option>
+                        <option value="FIRE">FIRE</option>
+                        <option value="LIGHT">LIGHT</option>
+                        <option value="WATER">WATER</option>
                         <option value="WIND">WIND</option>
                     </select>
                     <select class="filter-select" id="level-filter" onchange="searchCards()">
-                        <option value="">All Levels</option>
-                        <option value="1">Level 1</option>
-                        <option value="2">Level 2</option>
-                        <option value="3">Level 3</option>
-                        <option value="4">Level 4</option>
-                        <option value="5">Level 5</option>
-                        <option value="6">Level 6</option>
-                        <option value="7">Level 7</option>
-                        <option value="8">Level 8</option>
-                        <option value="9">Level 9</option>
-                        <option value="10">Level 10</option>
-                        <option value="11">Level 11</option>
-                        <option value="12">Level 12</option>
+                        <option value="">All Levels/Ranks</option>
+                        <option value="1">Level/Rank 1</option>
+                        <option value="2">Level/Rank 2</option>
+                        <option value="3">Level/Rank 3</option>
+                        <option value="4">Level/Rank 4</option>
+                        <option value="5">Level/Rank 5</option>
+                        <option value="6">Level/Rank 6</option>
+                        <option value="7">Level/Rank 7</option>
+                        <option value="8">Level/Rank 8</option>
+                        <option value="9">Level/Rank 9</option>
+                        <option value="10">Level/Rank 10</option>
+                        <option value="11">Level/Rank 11</option>
+                        <option value="12">Level/Rank 12</option>
                     </select>
                 </div>
             </div>
@@ -225,10 +256,34 @@
     </div>
 
     <!-- Keyboard Shortcuts Help -->
-    <div class="shortcuts-help">
+    <div class="shortcuts-help" style="display: none;">
         <strong>Shortcuts:</strong><br>
         Ctrl+S: Save | Ctrl+O: Load | Ctrl+N: New | Ctrl+Z: Undo
     </div>
+    
+    <style>
+        /* Show shortcuts only on desktop */
+        @media (min-width: 768px) {
+            .shortcuts-help {
+                display: block !important;
+                background: var(--gray-100);
+                padding: var(--space-3);
+                border-radius: var(--radius-md);
+                font-size: 0.875rem;
+                color: var(--gray-600);
+                text-align: center;
+                margin-top: var(--space-4);
+                border: 1px solid var(--gray-200);
+            }
+        }
+        
+        /* Hide shortcuts on mobile and tablet */
+        @media (max-width: 767px) {
+            .shortcuts-help {
+                display: none !important;
+            }
+        }
+    </style>
 </section>
 
 <!-- Deck Templates Section (includes Popular Decks) -->

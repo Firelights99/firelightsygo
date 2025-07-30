@@ -88,6 +88,9 @@ function displayProduct(card) {
     // Display card stats
     displayCardStats(card);
 
+    // Display sets and rarities if available
+    displaySetsAndRarities(card);
+
     // Update pricing
     document.getElementById('current-price').textContent = `$${card.price}`;
     const trendElement = document.getElementById('price-trend');
@@ -136,6 +139,76 @@ function displayCardStats(card) {
     }
 }
 
+function displaySetsAndRarities(card) {
+    const setsSection = document.getElementById('sets-rarities-section');
+    const setSelect = document.getElementById('set-rarity-select');
+    
+    console.log('Card data for sets/rarities:', card);
+    console.log('Card sets:', card.sets);
+    
+    if (!card.sets || !Array.isArray(card.sets) || card.sets.length === 0) {
+        console.log('No sets data available, hiding section');
+        setsSection.style.display = 'none';
+        return;
+    }
+
+    // Show the sets section
+    setsSection.style.display = 'block';
+    
+    // Clear existing options
+    setSelect.innerHTML = '';
+    
+    // Add default option
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = `Default - ${card.rarity} ($${card.price})`;
+    defaultOption.selected = true;
+    setSelect.appendChild(defaultOption);
+    
+    // Add options for each set
+    card.sets.forEach((set, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        
+        // Generate different prices for different sets/rarities
+        const setPrice = generateSetPrice(card.price, set);
+        
+        const setName = set.set_name || 'Unknown Set';
+        const setCode = set.set_code || '';
+        const setRarity = set.set_rarity || 'Common';
+        
+        option.textContent = `${setName} (${setCode}) - ${setRarity} ($${setPrice})`;
+        option.dataset.price = setPrice;
+        option.dataset.rarity = setRarity;
+        option.dataset.setName = setName;
+        option.dataset.setCode = setCode;
+        
+        setSelect.appendChild(option);
+    });
+}
+
+function generateSetPrice(basePrice, set) {
+    const base = parseFloat(basePrice) || 1.00;
+    const setRarity = set.set_rarity || 'Common';
+    
+    // Price multipliers based on rarity
+    const rarityMultipliers = {
+        'Common': 0.8,
+        'Rare': 1.0,
+        'Super Rare': 1.5,
+        'Ultra Rare': 2.0,
+        'Secret Rare': 3.0,
+        'Ultimate Rare': 4.0,
+        'Ghost Rare': 5.0,
+        'Starlight Rare': 10.0
+    };
+    
+    const multiplier = rarityMultipliers[setRarity] || 1.0;
+    const price = (base * multiplier).toFixed(2);
+    
+    return price;
+}
+
 async function loadRelatedCards(card) {
     const relatedContainer = document.getElementById('related-cards-grid');
     
@@ -182,6 +255,48 @@ window.changeQuantity = function(delta) {
     const currentValue = parseInt(quantityInput.value) || 1;
     const newValue = Math.max(1, Math.min(99, currentValue + delta));
     quantityInput.value = newValue;
+};
+
+window.updatePriceForSet = function() {
+    const setSelect = document.getElementById('set-rarity-select');
+    const priceElement = document.getElementById('current-price');
+    const rarityElement = document.getElementById('product-rarity');
+    
+    const selectedOption = setSelect.options[setSelect.selectedIndex];
+    
+    if (selectedOption && selectedOption.value !== '') {
+        // Update price
+        const newPrice = selectedOption.dataset.price;
+        priceElement.textContent = `$${newPrice}`;
+        
+        // Update rarity display
+        const newRarity = selectedOption.dataset.rarity;
+        rarityElement.textContent = newRarity;
+        
+        // Update current card data for cart
+        if (currentCard) {
+            currentCard.price = newPrice;
+            currentCard.rarity = newRarity;
+            currentCard.selectedSet = {
+                name: selectedOption.dataset.setName,
+                code: selectedOption.dataset.setCode,
+                rarity: newRarity
+            };
+        }
+    } else {
+        // Reset to default values
+        if (currentCard) {
+            const originalPrice = currentCard.originalPrice || currentCard.price;
+            const originalRarity = currentCard.originalRarity || currentCard.rarity;
+            
+            priceElement.textContent = `$${originalPrice}`;
+            rarityElement.textContent = originalRarity;
+            
+            currentCard.price = originalPrice;
+            currentCard.rarity = originalRarity;
+            currentCard.selectedSet = null;
+        }
+    }
 };
 
 window.switchImage = function(type) {

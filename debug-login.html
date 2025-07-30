@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Debug Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .danger {
+            background: #dc2626;
+        }
+        .danger:hover {
+            background: #b91c1c;
+        }
+        .success {
+            background: #16a34a;
+        }
+        .success:hover {
+            background: #15803d;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .success-msg {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .error-msg {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .test-section {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Login Debug Tool</h1>
+        
+        <div class="info">
+            <h3>This tool will help debug the login issue</h3>
+            <p>Use this to check what's in localStorage and test the authentication directly.</p>
+        </div>
+
+        <div class="test-section">
+            <h3>Step 1: Check Current Data</h3>
+            <button onclick="checkCurrentData()">Check localStorage Data</button>
+            <button onclick="clearAllData()" class="danger">Clear All Data</button>
+        </div>
+
+        <div class="test-section">
+            <h3>Step 2: Create Test Accounts</h3>
+            <button onclick="createTestAccounts()" class="success">Create Test Accounts</button>
+        </div>
+
+        <div class="test-section">
+            <h3>Step 3: Test Login</h3>
+            <div>
+                <input type="email" id="test-email" placeholder="Email" value="admin@firelightygo.com">
+                <input type="password" id="test-password" placeholder="Password" value="admin123">
+                <button onclick="testLogin()">Test Login</button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Step 4: Force Fix</h3>
+            <button onclick="forceFix()" class="success">Force Fix Authentication</button>
+        </div>
+        
+        <div id="output"></div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const output = document.getElementById('output');
+            const div = document.createElement('div');
+            div.className = type + '-msg';
+            div.innerHTML = message;
+            output.appendChild(div);
+        }
+
+        function hashPassword(password) {
+            let hash = 0;
+            for (let i = 0; i < password.length; i++) {
+                const char = password.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return hash.toString();
+        }
+
+        function checkCurrentData() {
+            try {
+                const users = localStorage.getItem('tcg-users');
+                const admin = localStorage.getItem('tcg-admin');
+                const settings = localStorage.getItem('tcg-settings');
+                
+                log(`<h4>Current localStorage Data:</h4>
+                     <strong>tcg-users:</strong><br>
+                     <pre>${users || 'Not found'}</pre>
+                     <strong>tcg-admin:</strong><br>
+                     <pre>${admin || 'Not found'}</pre>
+                     <strong>tcg-settings:</strong><br>
+                     <pre>${settings || 'Not found'}</pre>`, 'info');
+
+                if (users) {
+                    const parsedUsers = JSON.parse(users);
+                    const userCount = Object.keys(parsedUsers).length;
+                    log(`Found ${userCount} users in database`, 'success');
+                } else {
+                    log('No users found in database', 'error');
+                }
+            } catch (error) {
+                log(`Error checking data: ${error.message}`, 'error');
+            }
+        }
+
+        function clearAllData() {
+            try {
+                const keys = Object.keys(localStorage);
+                const tcgKeys = keys.filter(key => key.startsWith('tcg-'));
+                
+                tcgKeys.forEach(key => {
+                    localStorage.removeItem(key);
+                });
+                
+                log(`Cleared ${tcgKeys.length} localStorage items`, 'success');
+            } catch (error) {
+                log(`Error clearing data: ${error.message}`, 'error');
+            }
+        }
+
+        function createTestAccounts() {
+            try {
+                const users = {};
+                
+                // Create admin account
+                const adminUser = {
+                    id: 'admin-001',
+                    username: 'admin',
+                    email: 'admin@firelightygo.com',
+                    passwordHash: hashPassword('admin123'),
+                    firstName: 'Admin',
+                    lastName: 'User',
+                    phone: '',
+                    dateOfBirth: null,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    isActive: true,
+                    emailVerified: true,
+                    isAdmin: true,
+                    profileImage: null,
+                    favoriteArchetype: null,
+                    addresses: [],
+                    orders: [],
+                    wishlist: [],
+                    storeCredit: {
+                        balance: 0.00,
+                        lifetimeEarned: 0.00,
+                        lifetimeSpent: 0.00
+                    },
+                    permissions: ['orders', 'inventory', 'customers', 'analytics']
+                };
+
+                // Create test user
+                const testUser = {
+                    id: Date.now(),
+                    username: 'testuser',
+                    email: 'test@example.com',
+                    passwordHash: hashPassword('test123'),
+                    firstName: 'Test',
+                    lastName: 'User',
+                    phone: '',
+                    dateOfBirth: null,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    isActive: true,
+                    emailVerified: false,
+                    isAdmin: false,
+                    profileImage: null,
+                    favoriteArchetype: null,
+                    addresses: [],
+                    orders: [],
+                    wishlist: [],
+                    storeCredit: {
+                        balance: 0.00,
+                        lifetimeEarned: 0.00,
+                        lifetimeSpent: 0.00
+                    }
+                };
+
+                users['admin@firelightygo.com'] = adminUser;
+                users['test@example.com'] = testUser;
+                
+                localStorage.setItem('tcg-users', JSON.stringify(users));
+
+                // Create admin session
+                localStorage.setItem('tcg-admin', JSON.stringify({
+                    id: adminUser.id,
+                    email: adminUser.email,
+                    firstName: adminUser.firstName,
+                    lastName: adminUser.lastName,
+                    isAdmin: true,
+                    isActive: true,
+                    permissions: adminUser.permissions,
+                    loginTime: new Date().toISOString()
+                }));
+
+                // Create settings
+                localStorage.setItem('tcg-settings', JSON.stringify({
+                    initialized: true,
+                    siteName: 'Firelight Duel Academy',
+                    currency: 'CAD',
+                    taxRate: 0.13
+                }));
+
+                log(`✅ Test accounts created successfully!<br>
+                     <strong>Admin:</strong> admin@firelightygo.com / admin123<br>
+                     <strong>Test User:</strong> test@example.com / test123`, 'success');
+            } catch (error) {
+                log(`Error creating accounts: ${error.message}`, 'error');
+            }
+        }
+
+        function testLogin() {
+            try {
+                const email = document.getElementById('test-email').value;
+                const password = document.getElementById('test-password').value;
+                
+                if (!email || !password) {
+                    log('Please enter email and password', 'error');
+                    return;
+                }
+
+                const users = JSON.parse(localStorage.getItem('tcg-users') || '{}');
+                const user = users[email];
+
+                log(`Testing login for: ${email}`, 'info');
+
+                if (!user) {
+                    log(`❌ User not found: ${email}`, 'error');
+                    log(`Available users: ${Object.keys(users).join(', ')}`, 'info');
+                    return;
+                }
+
+                const expectedHash = hashPassword(password);
+                const storedHash = user.passwordHash;
+
+                log(`Expected hash: ${expectedHash}`, 'info');
+                log(`Stored hash: ${storedHash}`, 'info');
+
+                if (expectedHash === storedHash) {
+                    log(`✅ Login test successful for ${email}!`, 'success');
+                    log(`User details: ${JSON.stringify(user, null, 2)}`, 'info');
+                } else {
+                    log(`❌ Password hash mismatch for ${email}`, 'error');
+                }
+
+                if (!user.isActive) {
+                    log(`❌ Account is deactivated`, 'error');
+                }
+
+            } catch (error) {
+                log(`Error testing login: ${error.message}`, 'error');
+            }
+        }
+
+        function forceFix() {
+            try {
+                // Clear everything and recreate
+                clearAllData();
+                createTestAccounts();
+                
+                // Force reload the database service by clearing window.dbService
+                if (window.dbService) {
+                    delete window.dbService;
+                }
+                
+                log('✅ Force fix completed! Try logging in now.', 'success');
+                log('The database service will reinitialize when you go back to the main site.', 'info');
+                
+            } catch (error) {
+                log(`Error during force fix: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-run on page load
+        window.onload = function() {
+            log('🔧 Login Debug Tool Loaded', 'info');
+            checkCurrentData();
+        };
+    </script>
+</body>
+</html>

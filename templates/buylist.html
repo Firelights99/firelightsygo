@@ -1,0 +1,1135 @@
+<!-- Page Header -->
+<section style="text-align: center; margin-bottom: var(--space-8);">
+    <h1 style="font-size: 3rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
+        Sell Your Cards
+    </h1>
+    <p style="font-size: 1.125rem; color: var(--gray-600); max-width: 900px; margin: 0 auto;">
+        Turn your collection into cash or store credit. We buy Yu-Gi-Oh!, Magic, Pokemon, and more!
+    </p>
+</section>
+
+<!-- Game Selection -->
+<section style="margin-bottom: var(--space-12);">
+    <div style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+        <h2 style="font-size: 2rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-6); text-align: center;">
+            Which cards do you want to sell?
+        </h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-8);">
+            <div class="game-category-card" onclick="selectGameCategory('yugioh')" style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); border-radius: var(--radius-lg); padding: var(--space-6); text-align: center; cursor: pointer; transition: var(--transition-fast); color: white;">
+                <div style="font-size: 2.5rem; margin-bottom: var(--space-3);">🃏</div>
+                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: var(--space-2);">Yu-Gi-Oh!</h3>
+                <p style="font-size: 0.875rem; opacity: 0.9;">Singles & Sealed Products</p>
+            </div>
+            
+            <div class="game-category-card" onclick="selectGameCategory('pokemon')" style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); border-radius: var(--radius-lg); padding: var(--space-6); text-align: center; cursor: pointer; transition: var(--transition-fast); color: white;">
+                <div style="font-size: 2.5rem; margin-bottom: var(--space-3);">⚡</div>
+                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: var(--space-2);">Pokemon</h3>
+                <p style="font-size: 0.875rem; opacity: 0.9;">Singles & Sealed Products</p>
+            </div>
+            
+            <div class="game-category-card" onclick="selectGameCategory('bulk')" style="background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%); border-radius: var(--radius-lg); padding: var(--space-6); text-align: center; cursor: pointer; transition: var(--transition-fast); color: white;">
+                <div style="font-size: 2.5rem; margin-bottom: var(--space-3);">📦</div>
+                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: var(--space-2);">Bulk Submission</h3>
+                <p style="font-size: 0.875rem; opacity: 0.9;">Large Collections</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Card Search Section -->
+<section id="card-search-section" style="display: none; margin-bottom: var(--space-12);">
+    <div style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+        <div style="display: flex; justify-content: between; align-items: center; margin-bottom: var(--space-6);">
+            <h2 id="selected-game-title" style="font-size: 2rem; font-weight: 700; color: var(--gray-900);">Yu-Gi-Oh! Buylist</h2>
+            <button onclick="goBackToGameSelection()" style="background: var(--gray-100); color: var(--gray-700); border: 1px solid var(--gray-300); padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); cursor: pointer; font-weight: 600;">
+                ← Back to Games
+            </button>
+        </div>
+        
+        <!-- Search Filters -->
+        <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-6);">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-4);">
+                <div>
+                    <label style="display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);">Card Name</label>
+                    <input type="text" id="buylist-search" placeholder="Search for cards..." style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md);" onkeyup="searchBuylistCards()">
+                </div>
+                <div>
+                    <label style="display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);">Set</label>
+                    <select id="set-filter" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md);" onchange="searchBuylistCards()">
+                        <option value="">All Sets</option>
+                        <option value="POTE">Power of the Elements</option>
+                        <option value="MAMA">Magnificent Mavens</option>
+                        <option value="PHHY">Photon Hypernova</option>
+                        <option value="DAMA">Dawn of Majesty</option>
+                        <option value="BODE">Burst of Destiny</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);">Rarity</label>
+                    <select id="rarity-filter" style="width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md);" onchange="searchBuylistCards()">
+                        <option value="">All Rarities</option>
+                        <option value="Common">Common</option>
+                        <option value="Rare">Rare</option>
+                        <option value="Super Rare">Super Rare</option>
+                        <option value="Ultra Rare">Ultra Rare</option>
+                        <option value="Secret Rare">Secret Rare</option>
+                        <option value="Ghost Rare">Ghost Rare</option>
+                        <option value="Starlight Rare">Starlight Rare</option>
+                    </select>
+                </div>
+                <div style="display: flex; align-items: end;">
+                    <button onclick="searchBuylistCards()" style="width: 100%; padding: var(--space-3); background: var(--primary-color); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
+                        Search Cards
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Search Results -->
+        <div id="buylist-results">
+            <div style="text-align: center; padding: var(--space-12); color: var(--gray-500);">
+                <div style="font-size: 3rem; margin-bottom: var(--space-4);">🔍</div>
+                <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3);">Search for Cards</h3>
+                <p>Enter a card name or use the filters above to find cards we're buying</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Current Buylist Section -->
+<section id="current-buylist-section" style="display: none; margin-bottom: var(--space-12);">
+    <div style="background: white; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6);">
+            <h2 style="font-size: 2rem; font-weight: 700; color: var(--gray-900); margin: 0;">Current Buylist</h2>
+            <button onclick="clearBuylistCart()" style="background: var(--error-color); color: white; border: none; padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
+                Clear All
+            </button>
+        </div>
+        
+        <div id="current-buylist-items">
+            <!-- Buylist items will be populated here -->
+        </div>
+        
+        <div style="border-top: 1px solid var(--gray-200); padding-top: var(--space-6); margin-top: var(--space-6);">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
+                <div style="text-align: center; padding: var(--space-4); background: var(--gray-50); border-radius: var(--radius-lg);">
+                    <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-1);">Total Items</div>
+                    <div id="buylist-item-count" style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900);">0</div>
+                </div>
+                <div style="text-align: center; padding: var(--space-4); background: linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%); border-radius: var(--radius-lg);">
+                    <div style="font-size: 0.875rem; color: var(--success-color); margin-bottom: var(--space-1);">Cash Value</div>
+                    <div id="buylist-cash-total" style="font-size: 1.5rem; font-weight: 700; color: var(--success-color);">$0.00</div>
+                </div>
+                <div style="text-align: center; padding: var(--space-4); background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border-radius: var(--radius-lg);">
+                    <div style="font-size: 0.875rem; color: var(--primary-color); margin-bottom: var(--space-1);">Credit Value (+25%)</div>
+                    <div id="buylist-credit-total" style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color);">$0.00</div>
+                </div>
+            </div>
+            
+            <div style="text-align: center;">
+                <button onclick="proceedToBuylistCheckout()" style="background: var(--primary-color); color: white; border: none; padding: var(--space-4) var(--space-8); border-radius: var(--radius-lg); font-weight: 600; cursor: pointer; font-size: 1.125rem; transition: all 0.2s ease;">
+                    Proceed to Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Information Section -->
+<section style="margin-bottom: var(--space-12);">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-6);">
+        <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+            <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4);">
+                <div style="background: var(--primary-color); color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">📋</div>
+                <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin: 0;">Buylist Guide</h3>
+            </div>
+            <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-4);">
+                Learn how to sell your cards to us, including condition requirements, shipping instructions, and payment options.
+            </p>
+            <button onclick="showBuylistGuide()" style="background: var(--primary-color); color: white; border: none; padding: var(--space-3) var(--space-6); border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
+                View Guide
+            </button>
+        </div>
+        
+        <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+            <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4);">
+                <div style="background: var(--info-color); color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">🔍</div>
+                <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin: 0;">Condition Guide</h3>
+            </div>
+            <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-4);">
+                Understand our card condition standards to ensure accurate pricing and smooth transactions.
+            </p>
+            <button onclick="showConditionGuide()" style="background: var(--info-color); color: white; border: none; padding: var(--space-3) var(--space-6); border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
+                View Conditions
+            </button>
+        </div>
+        
+        <div style="background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--space-8); border: 1px solid var(--gray-200);">
+            <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4);">
+                <div style="background: var(--success-color); color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">💰</div>
+                <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin: 0;">Payment Options</h3>
+            </div>
+            <p style="color: var(--gray-700); line-height: 1.6; margin-bottom: var(--space-4);">
+                Choose between cash payment or store credit (with 25% bonus value) for your cards.
+            </p>
+            <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-4);">
+                <span style="background: var(--success-color); color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: 0.75rem; font-weight: 600;">Cash</span>
+                <span style="background: var(--primary-color); color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: 0.75rem; font-weight: 600;">Store Credit +25%</span>
+            </div>
+            <button onclick="showPaymentDetails()" style="background: var(--success-color); color: white; border: none; padding: var(--space-3) var(--space-6); border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
+                View Details
+            </button>
+        </div>
+    </div>
+</section>
+
+<style>
+.game-category-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.buylist-card {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    margin-bottom: var(--space-3);
+    transition: var(--transition-fast);
+}
+
+.buylist-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-md);
+}
+
+.condition-selector {
+    display: flex;
+    gap: var(--space-2);
+    margin: var(--space-2) 0;
+}
+
+.condition-btn {
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--gray-300);
+    background: white;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.condition-btn:hover {
+    background: var(--gray-50);
+}
+
+.condition-btn.selected {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: var(--space-2) 0;
+}
+
+.quantity-btn {
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--gray-300);
+    background: white;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+.quantity-input {
+    width: 50px;
+    text-align: center;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+    padding: var(--space-1);
+}
+</style>
+
+<script>
+let selectedGame = '';
+let buylistCart = [];
+
+function selectGameCategory(game) {
+    selectedGame = game;
+    document.getElementById('card-search-section').style.display = 'block';
+    
+    const titles = {
+        'yugioh': 'Yu-Gi-Oh! Buylist',
+        'magic': 'Magic: The Gathering Buylist',
+        'pokemon': 'Pokemon Buylist',
+        'lorcana': 'Lorcana Buylist',
+        'onepiece': 'One Piece Buylist',
+        'bulk': 'Bulk Submission'
+    };
+    
+    document.getElementById('selected-game-title').textContent = titles[game] || 'Buylist';
+    
+    // Scroll to search section
+    document.getElementById('card-search-section').scrollIntoView({ behavior: 'smooth' });
+    
+    // Load initial results
+    searchBuylistCards();
+}
+
+function goBackToGameSelection() {
+    document.getElementById('card-search-section').style.display = 'none';
+    selectedGame = '';
+}
+
+async function searchBuylistCards() {
+    if (!selectedGame) return;
+    
+    const query = document.getElementById('buylist-search')?.value || '';
+    const setFilter = document.getElementById('set-filter')?.value || '';
+    const rarityFilter = document.getElementById('rarity-filter')?.value || '';
+    
+    const resultsContainer = document.getElementById('buylist-results');
+    
+    // Show loading state
+    resultsContainer.innerHTML = `
+        <div style="text-align: center; padding: var(--space-8); color: var(--gray-500);">
+            <div class="loading-spinner" style="margin: 0 auto var(--space-4) auto;"></div>
+            <p>Searching buylist...</p>
+        </div>
+    `;
+    
+    try {
+        // For Yu-Gi-Oh, use the YGOPRODeck API
+        if (selectedGame === 'yugioh') {
+            let apiUrl = 'https://db.ygoprodeck.com/api/v7/cardinfo.php?';
+            const params = new URLSearchParams();
+            
+            if (query) {
+                params.append('fname', query);
+            }
+            
+            if (rarityFilter) {
+                params.append('rarity', rarityFilter);
+            }
+            
+            params.append('num', '20');
+            params.append('offset', '0');
+            
+            const response = await fetch(apiUrl + params.toString());
+            
+            if (!response.ok) {
+                throw new Error(`API request failed: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            const cards = data.data || [];
+            
+            renderBuylistResults(cards);
+        } else {
+            // For other games, show placeholder results
+            renderPlaceholderResults(selectedGame);
+        }
+        
+    } catch (error) {
+        console.error('Error searching buylist:', error);
+        resultsContainer.innerHTML = `
+            <div style="text-align: center; padding: var(--space-8); color: var(--error-color);">
+                <div style="font-size: 2rem; margin-bottom: var(--space-2);">⚠️</div>
+                <p>Error loading buylist. Please try again.</p>
+            </div>
+        `;
+    }
+}
+
+function renderBuylistResults(cards) {
+    const resultsContainer = document.getElementById('buylist-results');
+    
+    if (cards.length === 0) {
+        resultsContainer.innerHTML = `
+            <div style="text-align: center; padding: var(--space-8); color: var(--gray-500);">
+                <div style="font-size: 2rem; margin-bottom: var(--space-2);">❌</div>
+                <p>No cards found in our buylist matching your search</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const resultsHTML = cards.map(card => {
+        const image = card.card_images && card.card_images.length > 0 ? 
+            card.card_images[0].image_url_small || card.card_images[0].image_url : 
+            'https://images.ygoprodeck.com/images/cards/back.jpg';
+        
+        // Calculate buylist prices (typically 40-60% of market value)
+        const cashPrice = (Math.random() * 15 + 2).toFixed(2);
+        const creditPrice = (parseFloat(cashPrice) * 1.25).toFixed(2);
+        
+        return `
+            <div class="buylist-card">
+                <div style="display: flex; gap: var(--space-4); align-items: flex-start;">
+                    <img src="${image}" alt="${card.name}" style="width: 60px; height: 84px; object-fit: contain; border-radius: var(--radius-sm); flex-shrink: 0;">
+                    
+                    <div style="flex: 1; min-width: 0;">
+                        <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2); line-height: 1.3;">${card.name}</h4>
+                        <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2);">
+                            <span style="background: var(--gray-100); color: var(--gray-700); padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: 0.75rem;">${card.type}</span>
+                            ${card.card_sets && card.card_sets.length > 0 ? `<span style="background: var(--primary-color); color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: 0.75rem;">${card.card_sets[0].set_rarity || 'Common'}</span>` : ''}
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
+                            <div>
+                                <div style="font-size: 0.875rem; color: var(--gray-600);">Cash: <span style="font-weight: 600; color: var(--success-color);">$${cashPrice}</span></div>
+                                <div style="font-size: 0.875rem; color: var(--gray-600);">Credit: <span style="font-weight: 600; color: var(--primary-color);">$${creditPrice}</span></div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 0.75rem; color: var(--gray-600); margin-bottom: var(--space-1);">Condition:</div>
+                                <div class="condition-selector">
+                                    <button class="condition-btn selected" onclick="selectCondition(this, '${card.id}', 'NM')">NM</button>
+                                    <button class="condition-btn" onclick="selectCondition(this, '${card.id}', 'LP')">LP</button>
+                                    <button class="condition-btn" onclick="selectCondition(this, '${card.id}', 'MP')">MP</button>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div style="font-size: 0.75rem; color: var(--gray-600); margin-bottom: var(--space-1);">Quantity:</div>
+                                <div class="quantity-selector">
+                                    <button class="quantity-btn" onclick="changeQuantity('${card.id}', -1)">-</button>
+                                    <input type="number" class="quantity-input" id="qty-${card.id}" value="1" min="1" max="99">
+                                    <button class="quantity-btn" onclick="changeQuantity('${card.id}', 1)">+</button>
+                                </div>
+                            </div>
+                            
+                            <button onclick="addToBuylistCart('${card.id}', '${card.name.replace(/'/g, "\\'")}', '${image}', ${cashPrice}, ${creditPrice})" style="background: var(--primary-color); color: white; border: none; padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
+                                Add to Buylist
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    resultsContainer.innerHTML = resultsHTML;
+}
+
+function renderPlaceholderResults(game) {
+    const resultsContainer = document.getElementById('buylist-results');
+    
+    const gameNames = {
+        'magic': 'Magic: The Gathering',
+        'pokemon': 'Pokemon',
+        'lorcana': 'Lorcana',
+        'onepiece': 'One Piece'
+    };
+    
+    resultsContainer.innerHTML = `
+        <div style="text-align: center; padding: var(--space-12); color: var(--gray-500);">
+            <div style="font-size: 3rem; margin-bottom: var(--space-4);">🚧</div>
+            <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: var(--space-3);">${gameNames[game]} Buylist Coming Soon</h3>
+            <p>We're working on adding ${gameNames[game]} to our buylist system. Check back soon!</p>
+            <p style="margin-top: var(--space-4);">For now, you can contact us directly about selling your ${gameNames[game]} cards.</p>
+        </div>
+    `;
+}
+
+function selectCondition(button, cardId, condition) {
+    // Remove selected class from all condition buttons for this card
+    const conditionButtons = button.parentElement.querySelectorAll('.condition-btn');
+    conditionButtons.forEach(btn => btn.classList.remove('selected'));
+    
+    // Add selected class to clicked button
+    button.classList.add('selected');
+}
+
+function changeQuantity(cardId, change) {
+    const quantityInput = document.getElementById(`qty-${cardId}`);
+    if (quantityInput) {
+        const currentValue = parseInt(quantityInput.value) || 1;
+        const newValue = Math.max(1, Math.min(99, currentValue + change));
+        quantityInput.value = newValue;
+    }
+}
+
+function addToBuylistCart(cardId, cardName, image, cashPrice, creditPrice) {
+    const quantityInput = document.getElementById(`qty-${cardId}`);
+    const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
+    
+    // Get selected condition
+    const conditionButtons = document.querySelectorAll(`[onclick*="${cardId}"][onclick*="selectCondition"]`);
+    let selectedCondition = 'NM';
+    conditionButtons.forEach(btn => {
+        if (btn.classList.contains('selected')) {
+            selectedCondition = btn.textContent;
+        }
+    });
+    
+    // Add to cart
+    const cartItem = {
+        id: cardId,
+        name: cardName,
+        image: image,
+        cashPrice: parseFloat(cashPrice),
+        creditPrice: parseFloat(creditPrice),
+        quantity: quantity,
+        condition: selectedCondition
+    };
+    
+    // Check if item already exists in cart
+    const existingItemIndex = buylistCart.findIndex(item => 
+        item.id === cardId && item.condition === selectedCondition
+    );
+    
+    if (existingItemIndex >= 0) {
+        buylistCart[existingItemIndex].quantity += quantity;
+    } else {
+        buylistCart.push(cartItem);
+    }
+    
+    updateBuylistCart();
+    showBuylistCart();
+    
+    // Show success message
+    alert(`Added ${quantity}x ${cardName} (${selectedCondition}) to buylist cart!`);
+}
+
+function updateBuylistCart() {
+    // Save to localStorage
+    localStorage.setItem('tcg-buylist-cart', JSON.stringify(buylistCart));
+    
+    // Update current buylist section
+    const currentBuylistSection = document.getElementById('current-buylist-section');
+    const currentBuylistItems = document.getElementById('current-buylist-items');
+    const buylistItemCount = document.getElementById('buylist-item-count');
+    const buylistCashTotal = document.getElementById('buylist-cash-total');
+    const buylistCreditTotal = document.getElementById('buylist-credit-total');
+    
+    if (buylistCart.length === 0) {
+        currentBuylistSection.style.display = 'none';
+        localStorage.removeItem('tcg-buylist-cart');
+        return;
+    }
+    
+    // Show current buylist section
+    currentBuylistSection.style.display = 'block';
+    
+    let totalItems = 0;
+    let totalCash = 0;
+    let totalCredit = 0;
+    
+    const buylistHTML = buylistCart.map(item => {
+        totalItems += item.quantity;
+        totalCash += item.cashPrice * item.quantity;
+        totalCredit += item.creditPrice * item.quantity;
+        
+        return `
+            <div style="display: flex; gap: var(--space-4); align-items: center; padding: var(--space-4); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); margin-bottom: var(--space-3); background: white;">
+                <img src="${item.image}" alt="${item.name}" style="width: 60px; height: 84px; object-fit: contain; border-radius: var(--radius-sm); flex-shrink: 0;">
+                <div style="flex: 1; min-width: 0;">
+                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2); line-height: 1.3;">${item.name}</h4>
+                    <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2);">
+                        <span style="background: var(--gray-100); color: var(--gray-700); padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: 0.75rem;">${item.condition}</span>
+                        <span style="background: var(--primary-color); color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: 0.75rem;">Qty: ${item.quantity}</span>
+                    </div>
+                    <div style="display: flex; gap: var(--space-4);">
+                        <div style="font-size: 0.875rem; color: var(--gray-600);">Cash: <span style="font-weight: 600; color: var(--success-color);">$${(item.cashPrice * item.quantity).toFixed(2)}</span></div>
+                        <div style="font-size: 0.875rem; color: var(--gray-600);">Credit: <span style="font-weight: 600; color: var(--primary-color);">$${(item.creditPrice * item.quantity).toFixed(2)}</span></div>
+                    </div>
+                </div>
+                <button onclick="removeFromBuylistCart('${item.id}', '${item.condition}')" style="background: var(--error-color); color: white; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center;">×</button>
+            </div>
+        `;
+    }).join('');
+    
+    currentBuylistItems.innerHTML = buylistHTML;
+    buylistItemCount.textContent = totalItems.toString();
+    buylistCashTotal.textContent = `$${totalCash.toFixed(2)}`;
+    buylistCreditTotal.textContent = `$${totalCredit.toFixed(2)}`;
+}
+
+function removeFromBuylistCart(cardId, condition) {
+    buylistCart = buylistCart.filter(item => !(item.id === cardId && item.condition === condition));
+    updateBuylistCart();
+    
+    if (buylistCart.length === 0) {
+        hideBuylistCart();
+    }
+}
+
+function showBuylistCart() {
+    document.getElementById('buylist-cart-section').style.display = 'block';
+}
+
+function hideBuylistCart() {
+    document.getElementById('buylist-cart-section').style.display = 'none';
+}
+
+function toggleBuylistCart() {
+    const cartSection = document.getElementById('buylist-cart-section');
+    if (cartSection.style.display === 'none') {
+        showBuylistCart();
+    } else {
+        hideBuylistCart();
+    }
+}
+
+function clearBuylistCart() {
+    if (confirm('Are you sure you want to clear your buylist cart?')) {
+        buylistCart = [];
+        updateBuylistCart();
+        hideBuylistCart();
+    }
+}
+
+function submitBuylist() {
+    if (buylistCart.length === 0) {
+        alert('Your buylist cart is empty. Add some cards first!');
+        return;
+    }
+    
+    // Check if user is logged in
+    const currentUser = JSON.parse(localStorage.getItem('tcg-user') || 'null');
+    
+    if (!currentUser) {
+        // Show login required modal
+        showLoginRequiredModal();
+        return;
+    }
+    
+    // Check if user is an admin (admins cannot use buylist)
+    if (currentUser.isAdmin) {
+        alert('Admin accounts cannot submit buylist orders. Please use a regular customer account.');
+        return;
+    }
+    
+    // Process buylist submission
+    processBuylistSubmission(currentUser);
+}
+
+function showLoginRequiredModal() {
+    const modalHTML = `
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: var(--space-4);" onclick="closeLoginModal()">
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-width: 500px; width: 100%; animation: modalSlideIn 0.3s ease-out;" onclick="event.stopPropagation()">
+                <div style="padding: var(--space-6) var(--space-6) 0 var(--space-6);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin: 0;">Login Required</h2>
+                        <button onclick="closeLoginModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500); padding: var(--space-2);">×</button>
+                    </div>
+                </div>
+                
+                <div style="padding: 0 var(--space-6) var(--space-6) var(--space-6);">
+                    <div style="text-align: center; margin-bottom: var(--space-6);">
+                        <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--primary-color);">🔐</div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">
+                            Account Required for Buylist
+                        </h3>
+                        <p style="color: var(--gray-600); line-height: 1.5; margin-bottom: var(--space-4);">
+                            To submit a buylist order, you need to be logged in to your account. This helps us track your submissions and process payments.
+                        </p>
+                        
+                        <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                            <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Why do I need an account?</h4>
+                            <ul style="text-align: left; color: var(--gray-600); font-size: 0.875rem; line-height: 1.5; margin: 0; padding-left: var(--space-4);">
+                                <li>Track your buylist submissions</li>
+                                <li>Receive payment notifications</li>
+                                <li>View submission history</li>
+                                <li>Secure payment processing</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: var(--space-3); justify-content: center;">
+                        <button onclick="closeLoginModal()" style="background: var(--gray-200); color: var(--gray-700); border: none; padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease; min-width: 120px;">
+                            Cancel
+                        </button>
+                        <button onclick="redirectToLogin()" style="background: var(--primary-color); color: white; border: none; padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease; min-width: 120px;">
+                            Login / Sign Up
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <style>
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        </style>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLoginModal() {
+    const modal = document.querySelector('[style*="position: fixed"][style*="z-index: 2000"]');
+    if (modal) {
+        modal.remove();
+        document.body.style.overflow = '';
+    }
+}
+
+function redirectToLogin() {
+    closeLoginModal();
+    // Save current buylist cart to restore after login
+    localStorage.setItem('tcg-pending-buylist', JSON.stringify(buylistCart));
+    // Redirect to account page which handles login
+    window.location.hash = '#account';
+}
+
+function processBuylistSubmission(user) {
+    // Create buylist submission
+    const submission = {
+        id: Date.now(),
+        userId: user.id,
+        userEmail: user.email,
+        userName: `${user.firstName} ${user.lastName}`,
+        items: buylistCart.map(item => ({...item})),
+        totalCash: buylistCart.reduce((sum, item) => sum + (item.cashPrice * item.quantity), 0),
+        totalCredit: buylistCart.reduce((sum, item) => sum + (item.creditPrice * item.quantity), 0),
+        status: 'pending',
+        submittedAt: new Date().toISOString(),
+        game: selectedGame
+    };
+    
+    // Save to localStorage (in a real app, this would go to a server)
+    const existingSubmissions = JSON.parse(localStorage.getItem('tcg-buylist-submissions') || '[]');
+    existingSubmissions.push(submission);
+    localStorage.setItem('tcg-buylist-submissions', JSON.stringify(existingSubmissions));
+    
+    // Show success message
+    showSubmissionSuccessModal(submission);
+    
+    // Clear cart
+    buylistCart = [];
+    updateBuylistCart();
+    hideBuylistCart();
+}
+
+function showSubmissionSuccessModal(submission) {
+    const modalHTML = `
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: var(--space-4);" onclick="closeSuccessModal()">
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-width: 600px; width: 100%; animation: modalSlideIn 0.3s ease-out;" onclick="event.stopPropagation()">
+                <div style="padding: var(--space-6);">
+                    <div style="text-align: center; margin-bottom: var(--space-6);">
+                        <div style="font-size: 4rem; margin-bottom: var(--space-4); color: var(--success-color);">✅</div>
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-3);">
+                            Buylist Submitted Successfully!
+                        </h2>
+                        <p style="color: var(--gray-600); line-height: 1.5; margin-bottom: var(--space-4);">
+                            Your buylist submission has been received and is being reviewed by our team.
+                        </p>
+                    </div>
+                    
+                    <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                        <h3 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">Submission Details</h3>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); font-size: 0.875rem;">
+                            <div>
+                                <span style="color: var(--gray-600);">Submission ID:</span><br>
+                                <span style="font-weight: 600; color: var(--gray-900);">#${submission.id}</span>
+                            </div>
+                            <div>
+                                <span style="color: var(--gray-600);">Total Items:</span><br>
+                                <span style="font-weight: 600; color: var(--gray-900);">${submission.items.reduce((sum, item) => sum + item.quantity, 0)}</span>
+                            </div>
+                            <div>
+                                <span style="color: var(--gray-600);">Cash Value:</span><br>
+                                <span style="font-weight: 600; color: var(--success-color);">$${submission.totalCash.toFixed(2)}</span>
+                            </div>
+                            <div>
+                                <span style="color: var(--gray-600);">Credit Value:</span><br>
+                                <span style="font-weight: 600; color: var(--primary-color);">$${submission.totalCredit.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: var(--info-color); color: white; border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                        <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: var(--space-2);">Next Steps</h4>
+                        <ol style="margin: 0; padding-left: var(--space-4); font-size: 0.875rem; line-height: 1.5;">
+                            <li>We'll review your submission within 24 hours</li>
+                            <li>You'll receive an email with shipping instructions</li>
+                            <li>Ship your cards to us using the provided label</li>
+                            <li>We'll inspect and process payment within 3-5 business days</li>
+                        </ol>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button onclick="closeSuccessModal()" style="background: var(--primary-color); color: white; border: none; padding: var(--space-3) var(--space-6); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
+                            Continue Shopping
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSuccessModal() {
+    const modal = document.querySelector('[style*="position: fixed"][style*="z-index: 2000"]');
+    if (modal) {
+        modal.remove();
+        document.body.style.overflow = '';
+    }
+}
+
+function proceedToBuylistCheckout() {
+    if (buylistCart.length === 0) {
+        alert('Your buylist is empty. Add some cards first!');
+        return;
+    }
+    
+    // Check if user is logged in
+    const currentUser = JSON.parse(localStorage.getItem('tcg-user') || 'null');
+    
+    if (!currentUser) {
+        // Show login required modal
+        showLoginRequiredModal();
+        return;
+    }
+    
+    // Check if user is an admin (admins cannot use buylist)
+    if (currentUser.isAdmin) {
+        alert('Admin accounts cannot submit buylist orders. Please use a regular customer account.');
+        return;
+    }
+    
+    // Save buylist to localStorage for checkout page
+    localStorage.setItem('tcg-buylist-checkout', JSON.stringify(buylistCart));
+    
+    // Navigate to buylist checkout page
+    window.location.hash = '#page=buylist-checkout';
+}
+
+// Check for pending buylist on page load (after user logs in)
+document.addEventListener('DOMContentLoaded', function() {
+    // Load existing buylist cart from localStorage
+    const existingBuylist = localStorage.getItem('tcg-buylist-cart');
+    if (existingBuylist) {
+        try {
+            buylistCart = JSON.parse(existingBuylist);
+            if (buylistCart.length > 0) {
+                updateBuylistCart();
+            }
+        } catch (error) {
+            console.error('Error loading buylist cart:', error);
+        }
+    }
+    
+    // Check for pending buylist (after user logs in)
+    const pendingBuylist = localStorage.getItem('tcg-pending-buylist');
+    if (pendingBuylist) {
+        try {
+            const pendingItems = JSON.parse(pendingBuylist);
+            localStorage.removeItem('tcg-pending-buylist');
+            if (pendingItems.length > 0) {
+                // Merge with existing buylist
+                pendingItems.forEach(pendingItem => {
+                    const existingItemIndex = buylistCart.findIndex(item => 
+                        item.id === pendingItem.id && item.condition === pendingItem.condition
+                    );
+                    
+                    if (existingItemIndex >= 0) {
+                        buylistCart[existingItemIndex].quantity += pendingItem.quantity;
+                    } else {
+                        buylistCart.push(pendingItem);
+                    }
+                });
+                
+                // Save merged buylist
+                localStorage.setItem('tcg-buylist-cart', JSON.stringify(buylistCart));
+                updateBuylistCart();
+                alert('Your buylist cart has been restored. You can now submit your order!');
+            }
+        } catch (error) {
+            console.error('Error restoring buylist cart:', error);
+        }
+    }
+});
+
+window.showBuylistGuide = function() {
+    const modalHTML = `
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: var(--space-4);" onclick="closeBuylistGuideModal()">
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-width: 700px; width: 100%; animation: modalSlideIn 0.3s ease-out;" onclick="event.stopPropagation()">
+                <div style="padding: var(--space-6) var(--space-6) 0 var(--space-6);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin: 0;">📋 Buylist Guide</h2>
+                        <button onclick="closeBuylistGuideModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500); padding: var(--space-2);">×</button>
+                    </div>
+                </div>
+                
+                <div style="padding: 0 var(--space-6) var(--space-6) var(--space-6);">
+                    <div style="margin-bottom: var(--space-6);">
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-4);">How to Sell Your Cards</h3>
+                        
+                        <div style="display: grid; gap: var(--space-4);">
+                            <div style="display: flex; gap: var(--space-4); align-items: flex-start;">
+                                <div style="background: var(--primary-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">1</div>
+                                <div>
+                                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">Search for Cards</h4>
+                                    <p style="color: var(--gray-700); line-height: 1.5; margin: 0; font-size: 0.875rem;">Use our search tool to find cards we're currently buying. Filter by game, set, or rarity.</p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: var(--space-4); align-items: flex-start;">
+                                <div style="background: var(--primary-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">2</div>
+                                <div>
+                                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">Select Condition & Quantity</h4>
+                                    <p style="color: var(--gray-700); line-height: 1.5; margin: 0; font-size: 0.875rem;">Choose the condition of your cards (NM, LP, MP) and specify how many you want to sell.</p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: var(--space-4); align-items: flex-start;">
+                                <div style="background: var(--primary-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">3</div>
+                                <div>
+                                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">Add to Buylist Cart</h4>
+                                    <p style="color: var(--gray-700); line-height: 1.5; margin: 0; font-size: 0.875rem;">Build your buylist cart with all the cards you want to sell. See real-time cash and credit values.</p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: var(--space-4); align-items: flex-start;">
+                                <div style="background: var(--primary-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">4</div>
+                                <div>
+                                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">Submit Your List</h4>
+                                    <p style="color: var(--gray-700); line-height: 1.5; margin: 0; font-size: 0.875rem;">Submit your buylist for review. You'll need to be logged in to track your submission.</p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: var(--space-4); align-items: flex-start;">
+                                <div style="background: var(--primary-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">5</div>
+                                <div>
+                                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">Ship Your Cards</h4>
+                                    <p style="color: var(--gray-700); line-height: 1.5; margin: 0; font-size: 0.875rem;">We'll email you shipping instructions and a prepaid label. Package your cards securely.</p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: var(--space-4); align-items: flex-start;">
+                                <div style="background: var(--primary-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">6</div>
+                                <div>
+                                    <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">Get Paid</h4>
+                                    <p style="color: var(--gray-700); line-height: 1.5; margin: 0; font-size: 0.875rem;">Once we receive and verify your cards, we'll process payment within 3-5 business days.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: var(--info-color); color: white; border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                        <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: var(--space-2);">💡 Pro Tips</h4>
+                        <ul style="margin: 0; padding-left: var(--space-4); font-size: 0.875rem; line-height: 1.5;">
+                            <li>Store credit offers 25% bonus value over cash payments</li>
+                            <li>Cards must match the condition you selected</li>
+                            <li>We provide free shipping labels for orders over $50</li>
+                            <li>Track your submission status in your account dashboard</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button onclick="closeBuylistGuideModal()" style="background: var(--primary-color); color: white; border: none; padding: var(--space-3) var(--space-6); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
+                            Got It!
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    document.body.style.overflow = 'hidden';
+}
+
+window.showConditionGuide = function() {
+    const modalHTML = `
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: var(--space-4);" onclick="closeConditionGuideModal()">
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-width: 600px; width: 100%; animation: modalSlideIn 0.3s ease-out;" onclick="event.stopPropagation()">
+                <div style="padding: var(--space-6) var(--space-6) 0 var(--space-6);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin: 0;">🔍 Card Condition Guide</h2>
+                        <button onclick="closeConditionGuideModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500); padding: var(--space-2);">×</button>
+                    </div>
+                </div>
+                
+                <div style="padding: 0 var(--space-6) var(--space-6) var(--space-6);">
+                    <div style="margin-bottom: var(--space-6);">
+                        <p style="color: var(--gray-600); line-height: 1.5; margin-bottom: var(--space-6);">
+                            Understanding card conditions is crucial for accurate buylist pricing. Here's our grading system:
+                        </p>
+                        
+                        <div style="display: grid; gap: var(--space-4);">
+                            <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-4); border-left: 4px solid var(--success-color);">
+                                <h4 style="font-size: 1.125rem; font-weight: 600; color: var(--success-color); margin-bottom: var(--space-2);">Near Mint (NM)</h4>
+                                <p style="color: var(--gray-700); line-height: 1.5; margin: 0; font-size: 0.875rem;">
+                                    Cards appear fresh from the pack with minimal to no visible wear. Sharp corners, clean edges, and no scratches or marks. May have very minor printing imperfections.
+                                </p>
+                                <div style="margin-top: var(--space-2); font-size: 0.75rem; color: var(--success-color); font-weight: 600;">
+                                    ✓ Highest buylist value
+                                </div>
+                            </div>
+                            
+                            <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-4); border-left: 4px solid var(--warning-color);">
+                                <h4 style="font-size: 1.125rem; font-weight: 600; color: var(--warning-color); margin-bottom: var(--space-2);">Lightly Played (LP)</h4>
+                                <p style="color: var(--gray-700); line-height: 1.5; margin: 0; font-size: 0.875rem;">
+                                    Minor wear visible on close inspection. Slight edge wear, minor corner wear, or light scratches. Still tournament legal and attractive for play.
+                                </p>
+                                <div style="margin-top: var(--space-2); font-size: 0.75rem; color: var(--warning-color); font-weight: 600;">
+                                    ≈ 80-90% of NM value
+                                </div>
+                            </div>
+                            
+                            <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-4); border-left: 4px solid var(--error-color);">
+                                <h4 style="font-size: 1.125rem; font-weight: 600; color: var(--error-color); margin-bottom: var(--space-2);">Moderately Played (MP)</h4>
+                                <p style="color: var(--gray-700); line-height: 1.5; margin: 0; font-size: 0.875rem;">
+                                    Noticeable wear but still playable. Moderate edge wear, corner wear, or surface scratches. Card text and artwork remain clearly visible.
+                                </p>
+                                <div style="margin-top: var(--space-2); font-size: 0.75rem; color: var(--error-color); font-weight: 600;">
+                                    ≈ 60-70% of NM value
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                        <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">⚠️ Important Notes</h4>
+                        <ul style="margin: 0; padding-left: var(--space-4); font-size: 0.875rem; line-height: 1.5; color: var(--gray-700);">
+                            <li>We do not accept Heavily Played or Damaged cards</li>
+                            <li>Foil cards may show different wear patterns</li>
+                            <li>When in doubt, select a lower condition grade</li>
+                            <li>We reserve the right to adjust grades upon inspection</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button onclick="closeConditionGuideModal()" style="background: var(--primary-color); color: white; border: none; padding: var(--space-3) var(--space-6); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
+                            Understood
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    document.body.style.overflow = 'hidden';
+}
+
+window.showPaymentDetails = function() {
+    const modalHTML = `
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: var(--space-4);" onclick="closePaymentDetailsModal()">
+            <div style="background: white; border-radius: var(--radius-xl); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-width: 600px; width: 100%; animation: modalSlideIn 0.3s ease-out;" onclick="event.stopPropagation()">
+                <div style="padding: var(--space-6) var(--space-6) 0 var(--space-6);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin: 0;">💰 Payment Options</h2>
+                        <button onclick="closePaymentDetailsModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500); padding: var(--space-2);">×</button>
+                    </div>
+                </div>
+                
+                <div style="padding: 0 var(--space-6) var(--space-6) var(--space-6);">
+                    <div style="margin-bottom: var(--space-6);">
+                        <p style="color: var(--gray-600); line-height: 1.5; margin-bottom: var(--space-6);">
+                            Choose how you'd like to be paid for your cards. We offer two convenient options:
+                        </p>
+                        
+                        <div style="display: grid; gap: var(--space-4);">
+                            <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-6); border-left: 4px solid var(--success-color);">
+                                <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3);">
+                                    <div style="background: var(--success-color); color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">💵</div>
+                                    <h4 style="font-size: 1.25rem; font-weight: 600; color: var(--success-color); margin: 0;">Cash Payment</h4>
+                                </div>
+                                <p style="color: var(--gray-700); line-height: 1.5; margin-bottom: var(--space-3); font-size: 0.875rem;">
+                                    Receive the full cash value of your cards via PayPal, e-transfer, or check. Fast and straightforward payment.
+                                </p>
+                                <div style="background: var(--gray-50); border-radius: var(--radius-md); padding: var(--space-3);">
+                                    <h5 style="font-size: 0.875rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Payment Methods:</h5>
+                                    <ul style="margin: 0; padding-left: var(--space-4); font-size: 0.75rem; line-height: 1.4; color: var(--gray-600);">
+                                        <li>PayPal (instant)</li>
+                                        <li>E-transfer (1-2 business days)</li>
+                                        <li>Check by mail (5-7 business days)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div style="border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-6); border-left: 4px solid var(--primary-color); position: relative;">
+                                <div style="position: absolute; top: -8px; right: var(--space-4); background: var(--primary-color); color: white; padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: 0.75rem; font-weight: 600;">BONUS!</div>
+                                <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3);">
+                                    <div style="background: var(--primary-color); color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">🏪</div>
+                                    <h4 style="font-size: 1.25rem; font-weight: 600; color: var(--primary-color); margin: 0;">Store Credit (+25%)</h4>
+                                </div>
+                                <p style="color: var(--gray-700); line-height: 1.5; margin-bottom: var(--space-3); font-size: 0.875rem;">
+                                    Get 25% bonus value when you choose store credit! Perfect for building new decks or expanding your collection.
+                                </p>
+                                <div style="background: var(--primary-color); background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border-radius: var(--radius-md); padding: var(--space-3);">
+                                    <h5 style="font-size: 0.875rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">Store Credit Benefits:</h5>
+                                    <ul style="margin: 0; padding-left: var(--space-4); font-size: 0.75rem; line-height: 1.4; color: var(--gray-600);">
+                                        <li>25% bonus value on all buylist orders</li>
+                                        <li>Never expires - use anytime</li>
+                                        <li>Can be used on any products in our store</li>
+                                        <li>Stackable with sales and promotions</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: var(--warning-color); background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6);">
+                        <h4 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">💡 Example</h4>
+                        <p style="color: var(--gray-700); line-height: 1.5; margin: 0; font-size: 0.875rem;">
+                            If your cards are worth $100 in cash, you'll receive <strong>$125 in store credit</strong> - that's an extra $25 to spend on new cards!
+                        </p>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button onclick="closePaymentDetailsModal()" style="background: var(--primary-color); color: white; border: none; padding: var(--space-3) var(--space-6); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
+                            Got It!
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    document.body.style.overflow = 'hidden';
+}
+
+function closeBuylistGuideModal() {
+    const modal = document.querySelector('[style*="position: fixed"][style*="z-index: 2000"]');
+    if (modal) {
+        modal.remove();
+        document.body.style.overflow = '';
+    }
+}
+
+function closeConditionGuideModal() {
+    const modal = document.querySelector('[style*="position: fixed"][style*="z-index: 2000"]');
+    if (modal) {
+        modal.remove();
+        document.body.style.overflow = '';
+    }
+}
+
+function closePaymentDetailsModal() {
+    const modal = document.querySelector('[style*="position: fixed"][style*="z-index: 2000"]');
+    if (modal) {
+        modal.remove();
+        document.body.style.overflow = '';
+    }
+}
+</script>
