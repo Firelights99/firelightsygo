@@ -1,0 +1,74 @@
+# theme console
+
+Starts the Shopify Liquid REPL (read-eval-print loop) tool. This tool provides an interactive terminal interface for evaluating Liquid code and exploring Liquid objects, filters, and tags using real store data.
+
+  You can also provide context to the console using a URL, as some Liquid objects are context-specific
+
+```bash
+shopify theme console
+
+shopify theme console --url /products/classic-leather-jacket
+```
+
+## Flags
+
+The following flags are available for the `theme console` command:
+
+### themeconsole
+
+### --no-color
+
+env: SHOPIFY_FLAG_NO_COLOR
+value: `""`
+
+Disable color output.
+
+### --password <value>
+
+env: SHOPIFY_CLI_THEME_TOKEN
+value: `string`
+
+Password generated from the Theme Access app.
+
+### --path <value>
+
+env: SHOPIFY_FLAG_PATH
+value: `string`
+
+The path where you want to run the command. Defaults to the current working directory.
+
+### --store-password <value>
+
+env: SHOPIFY_FLAG_STORE_PASSWORD
+value: `string`
+
+The password for storefronts with password protection.
+
+### --url <value>
+
+env: SHOPIFY_FLAG_URL
+value: `string`
+
+The url to be used as context
+
+### --verbose
+
+env: SHOPIFY_FLAG_VERBOSE
+value: `""`
+
+Increase the verbosity of the output.
+
+### -e, --environment <value>
+
+env: SHOPIFY_FLAG_ENVIRONMENT
+value: `string`
+
+The environment to apply to the current command.
+
+### -s, --store <value>
+
+env: SHOPIFY_FLAG_STORE
+value: `string`
+
+Store URL. It can be the store prefix (example) or the full myshopify.com URL (example.myshopify.com, https://example.myshopify.com).
+
