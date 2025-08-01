@@ -1,0 +1,1001 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Firelight Duel Academy",
+    "theme_version": "1.0.0",
+    "theme_author": "Firelight Duel Academy",
+    "theme_documentation_url": "https://firelights99.github.io/firelightsygo/",
+    "theme_support_url": "https://firelights99.github.io/firelightsygo/"
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Color scheme"
+      },
+      {
+        "type": "color",
+        "id": "colors_solid_button_labels",
+        "default": "#FFFFFF",
+        "label": "Solid button label"
+      },
+      {
+        "type": "color",
+        "id": "colors_accent_1",
+        "default": "#3498db",
+        "label": "Accent 1",
+        "info": "Primary brand color for Yu-Gi-Oh! theme"
+      },
+      {
+        "type": "color",
+        "id": "colors_accent_2",
+        "default": "#e74c3c",
+        "label": "Accent 2",
+        "info": "Secondary brand color"
+      },
+      {
+        "type": "color",
+        "id": "colors_text",
+        "default": "#2c3e50",
+        "label": "Text"
+      },
+      {
+        "type": "color",
+        "id": "colors_outline_button_labels",
+        "default": "#3498db",
+        "label": "Outline button label"
+      },
+      {
+        "type": "color",
+        "id": "colors_background_1",
+        "default": "#FFFFFF",
+        "label": "Background 1"
+      },
+      {
+        "type": "color",
+        "id": "colors_background_2",
+        "default": "#f8f9fa",
+        "label": "Background 2"
+      },
+      {
+        "type": "color_background",
+        "id": "gradient_background_1",
+        "label": "Gradient background 1"
+      },
+      {
+        "type": "color_background",
+        "id": "gradient_background_2",
+        "label": "Gradient background 2"
+      },
+      {
+        "type": "color_background",
+        "id": "gradient_accent_1",
+        "label": "Gradient accent 1"
+      },
+      {
+        "type": "color_background",
+        "id": "gradient_accent_2",
+        "label": "Gradient accent 2"
+      }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Headings"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_header_font",
+        "default": "assistant_n4",
+        "label": "Font",
+        "info": "Selecting a different font can affect the speed of your store. [Learn more about system fonts.](https://help.shopify.com/en/manual/online-store/os/store-speed/improving-speed#fonts)"
+      },
+      {
+        "type": "range",
+        "id": "heading_scale",
+        "min": 100,
+        "max": 150,
+        "step": 5,
+        "unit": "%",
+        "label": "Heading scale",
+        "default": 100
+      },
+      {
+        "type": "header",
+        "content": "Body text"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_body_font",
+        "default": "assistant_n4",
+        "label": "Font",
+        "info": "Selecting a different font can affect the speed of your store. [Learn more about system fonts.](https://help.shopify.com/en/manual/online-store/os/store-speed/improving-speed#fonts)"
+      },
+      {
+        "type": "range",
+        "id": "body_scale",
+        "min": 100,
+        "max": 130,
+        "step": 5,
+        "unit": "%",
+        "label": "Body scale",
+        "default": 100
+      }
+    ]
+  },
+  {
+    "name": "Layout",
+    "settings": [
+      {
+        "type": "range",
+        "id": "page_width",
+        "min": 1000,
+        "max": 1600,
+        "step": 100,
+        "default": 1200,
+        "unit": "px",
+        "label": "Page width"
+      },
+      {
+        "type": "range",
+        "id": "spacing_sections",
+        "min": 0,
+        "max": 100,
+        "step": 4,
+        "unit": "px",
+        "label": "Spacing between sections",
+        "default": 36
+      },
+      {
+        "type": "header",
+        "content": "Grid"
+      },
+      {
+        "type": "range",
+        "id": "spacing_grid_horizontal",
+        "min": 4,
+        "max": 40,
+        "step": 4,
+        "default": 8,
+        "unit": "px",
+        "label": "Horizontal spacing"
+      },
+      {
+        "type": "range",
+        "id": "spacing_grid_vertical",
+        "min": 4,
+        "max": 40,
+        "step": 4,
+        "default": 8,
+        "unit": "px",
+        "label": "Vertical spacing"
+      }
+    ]
+  },
+  {
+    "name": "Product cards",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Product card"
+      },
+      {
+        "type": "select",
+        "id": "card_text_alignment",
+        "default": "left",
+        "label": "Text alignment",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "card_color_scheme",
+        "options": [
+          {
+            "value": "background-1",
+            "label": "Background 1"
+          },
+          {
+            "value": "background-2",
+            "label": "Background 2"
+          },
+          {
+            "value": "inverse",
+            "label": "Text on brand"
+          }
+        ],
+        "default": "background-1",
+        "label": "Color scheme"
+      },
+      {
+        "type": "header",
+        "content": "Product card border"
+      },
+      {
+        "type": "range",
+        "id": "card_border_thickness",
+        "min": 0,
+        "max": 24,
+        "step": 1,
+        "default": 0,
+        "unit": "px",
+        "label": "Thickness"
+      },
+      {
+        "type": "range",
+        "id": "card_border_opacity",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "default": 10,
+        "unit": "%",
+        "label": "Opacity"
+      },
+      {
+        "type": "range",
+        "id": "card_corner_radius",
+        "min": 0,
+        "max": 40,
+        "step": 2,
+        "default": 0,
+        "unit": "px",
+        "label": "Corner radius"
+      },
+      {
+        "type": "header",
+        "content": "Product card shadow"
+      },
+      {
+        "type": "range",
+        "id": "card_shadow_opacity",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "default": 0,
+        "unit": "%",
+        "label": "Opacity"
+      },
+      {
+        "type": "range",
+        "id": "card_shadow_horizontal_offset",
+        "min": -40,
+        "max": 40,
+        "step": 2,
+        "default": 0,
+        "unit": "px",
+        "label": "Horizontal offset"
+      },
+      {
+        "type": "range",
+        "id": "card_shadow_vertical_offset",
+        "min": -40,
+        "max": 40,
+        "step": 2,
+        "default": 0,
+        "unit": "px",
+        "label": "Vertical offset"
+      },
+      {
+        "type": "range",
+        "id": "card_shadow_blur",
+        "min": 0,
+        "max": 40,
+        "step": 5,
+        "default": 0,
+        "unit": "px",
+        "label": "Blur"
+      },
+      {
+        "type": "header",
+        "content": "Image padding"
+      },
+      {
+        "type": "range",
+        "id": "card_image_padding",
+        "min": 0,
+        "max": 20,
+        "step": 2,
+        "default": 0,
+        "unit": "px",
+        "label": "Image padding"
+      }
+    ]
+  },
+  {
+    "name": "Collection cards",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Collection card"
+      },
+      {
+        "type": "select",
+        "id": "collection_card_text_alignment",
+        "default": "left",
+        "label": "Text alignment",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "collection_card_color_scheme",
+        "options": [
+          {
+            "value": "background-1",
+            "label": "Background 1"
+          },
+          {
+            "value": "background-2",
+            "label": "Background 2"
+          },
+          {
+            "value": "inverse",
+            "label": "Text on brand"
+          }
+        ],
+        "default": "background-1",
+        "label": "Color scheme"
+      },
+      {
+        "type": "header",
+        "content": "Collection card border"
+      },
+      {
+        "type": "range",
+        "id": "collection_card_border_thickness",
+        "min": 0,
+        "max": 24,
+        "step": 1,
+        "default": 0,
+        "unit": "px",
+        "label": "Thickness"
+      },
+      {
+        "type": "range",
+        "id": "collection_card_border_opacity",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "default": 10,
+        "unit": "%",
+        "label": "Opacity"
+      },
+      {
+        "type": "range",
+        "id": "collection_card_corner_radius",
+        "min": 0,
+        "max": 40,
+        "step": 2,
+        "default": 0,
+        "unit": "px",
+        "label": "Corner radius"
+      },
+      {
+        "type": "header",
+        "content": "Collection card shadow"
+      },
+      {
+        "type": "range",
+        "id": "collection_card_shadow_opacity",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "default": 0,
+        "unit": "%",
+        "label": "Opacity"
+      },
+      {
+        "type": "range",
+        "id": "collection_card_shadow_horizontal_offset",
+        "min": -40,
+        "max": 40,
+        "step": 2,
+        "default": 0,
+        "unit": "px",
+        "label": "Horizontal offset"
+      },
+      {
+        "type": "range",
+        "id": "collection_card_shadow_vertical_offset",
+        "min": -40,
+        "max": 40,
+        "step": 2,
+        "default": 0,
+        "unit": "px",
+        "label": "Vertical offset"
+      },
+      {
+        "type": "range",
+        "id": "collection_card_shadow_blur",
+        "min": 0,
+        "max": 40,
+        "step": 5,
+        "default": 0,
+        "unit": "px",
+        "label": "Blur"
+      },
+      {
+        "type": "header",
+        "content": "Image padding"
+      },
+      {
+        "type": "range",
+        "id": "collection_card_image_padding",
+        "min": 0,
+        "max": 20,
+        "step": 2,
+        "default": 0,
+        "unit": "px",
+        "label": "Image padding"
+      }
+    ]
+  },
+  {
+    "name": "Yu-Gi-Oh! Store Settings",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Store Configuration"
+      },
+      {
+        "type": "text",
+        "id": "yugioh_store_name",
+        "label": "Store Name",
+        "default": "Firelight Duel Academy"
+      },
+      {
+        "type": "textarea",
+        "id": "yugioh_store_description",
+        "label": "Store Description",
+        "default": "Superior service, personalized attention for TCG enthusiasts"
+      },
+      {
+        "type": "select",
+        "id": "yugioh_currency",
+        "label": "Currency",
+        "options": [
+          {
+            "value": "CAD",
+            "label": "Canadian Dollar (CAD)"
+          },
+          {
+            "value": "USD",
+            "label": "US Dollar (USD)"
+          },
+          {
+            "value": "EUR",
+            "label": "Euro (EUR)"
+          }
+        ],
+        "default": "CAD"
+      },
+      {
+        "type": "number",
+        "id": "free_shipping_threshold",
+        "label": "Free Shipping Threshold",
+        "default": 75
+      },
+      {
+        "type": "header",
+        "content": "API Configuration"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_yugioh_api",
+        "label": "Enable Yu-Gi-Oh! API Integration",
+        "default": true,
+        "info": "Load cards from YGOPRODeck API when no Shopify products exist"
+      },
+      {
+        "type": "text",
+        "id": "yugioh_api_endpoint",
+        "label": "Yu-Gi-Oh! API Endpoint",
+        "default": "https://db.ygoprodeck.com/api/v7/",
+        "info": "YGOPRODeck API endpoint for card data"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_tcgplayer_api",
+        "label": "Enable TCGPlayer API",
+        "default": false,
+        "info": "Requires API key configuration"
+      },
+      {
+        "type": "password",
+        "id": "tcgplayer_api_key",
+        "label": "TCGPlayer API Key",
+        "info": "Optional: For real-time pricing data"
+      },
+      {
+        "type": "header",
+        "content": "Featured Cards"
+      },
+      {
+        "type": "textarea",
+        "id": "featured_card_names",
+        "label": "Featured Card Names",
+        "default": "Blue-Eyes White Dragon\nDark Magician\nExodia the Forbidden One\nRed-Eyes Black Dragon\nElemental HERO Sparkman\nStardust Dragon\nNumber 39: Utopia\nDecode Talker",
+        "info": "One card name per line"
+      },
+      {
+        "type": "textarea",
+        "id": "meta_card_names",
+        "label": "Meta Card Names",
+        "default": "Ash Blossom & Joyous Spring\nMaxx \"C\"\nNibiru, the Primal Being\nEffect Veiler\nInfinite Impermanence\nLightning Storm\nPot of Desires\nCalled by the Grave",
+        "info": "One card name per line"
+      },
+      {
+        "type": "header",
+        "content": "Store Features"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_wishlist",
+        "label": "Enable Wishlist",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_card_search",
+        "label": "Enable Advanced Card Search",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_deck_builder",
+        "label": "Enable Deck Builder",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_card_details",
+        "label": "Show Detailed Card Information",
+        "default": true,
+        "info": "Display ATK/DEF, Level, Type, etc."
+      },
+      {
+        "type": "header",
+        "content": "Pricing"
+      },
+      {
+        "type": "select",
+        "id": "pricing_strategy",
+        "label": "Pricing Strategy",
+        "options": [
+          {
+            "value": "fixed",
+            "label": "Fixed Pricing"
+          },
+          {
+            "value": "dynamic",
+            "label": "Dynamic Pricing (based on card type)"
+          },
+          {
+            "value": "api",
+            "label": "API-based Pricing (requires TCGPlayer)"
+          }
+        ],
+        "default": "dynamic"
+      },
+      {
+        "type": "number",
+        "id": "base_card_price",
+        "label": "Base Card Price",
+        "default": 1.99,
+        "info": "Base price for common cards (CAD)"
+      }
+    ]
+  },
+  {
+    "name": "Cart",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Cart"
+      },
+      {
+        "type": "select",
+        "id": "cart_type",
+        "options": [
+          {
+            "value": "drawer",
+            "label": "Drawer"
+          },
+          {
+            "value": "page",
+            "label": "Page"
+          },
+          {
+            "value": "notification",
+            "label": "Notification"
+          }
+        ],
+        "default": "drawer",
+        "label": "Cart type"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_cart_note",
+        "default": false,
+        "label": "Enable cart notes"
+      },
+      {
+        "type": "header",
+        "content": "Cart drawer"
+      },
+      {
+        "type": "collection",
+        "id": "cart_drawer_collection",
+        "label": "Featured collection",
+        "info": "Show featured products in the cart drawer"
+      }
+    ]
+  },
+  {
+    "name": "Buttons",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Button style"
+      },
+      {
+        "type": "range",
+        "id": "buttons_radius",
+        "min": 0,
+        "max": 40,
+        "step": 2,
+        "default": 0,
+        "unit": "px",
+        "label": "Corner radius"
+      },
+      {
+        "type": "range",
+        "id": "buttons_border_thickness",
+        "min": 0,
+        "max": 12,
+        "step": 1,
+        "default": 1,
+        "unit": "px",
+        "label": "Border thickness"
+      },
+      {
+        "type": "range",
+        "id": "buttons_border_opacity",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "default": 100,
+        "unit": "%",
+        "label": "Border opacity"
+      },
+      {
+        "type": "header",
+        "content": "Button shadow"
+      },
+      {
+        "type": "range",
+        "id": "buttons_shadow_opacity",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "default": 0,
+        "unit": "%",
+        "label": "Opacity"
+      },
+      {
+        "type": "range",
+        "id": "buttons_shadow_horizontal_offset",
+        "min": -12,
+        "max": 12,
+        "step": 1,
+        "default": 0,
+        "unit": "px",
+        "label": "Horizontal offset"
+      },
+      {
+        "type": "range",
+        "id": "buttons_shadow_vertical_offset",
+        "min": -12,
+        "max": 12,
+        "step": 1,
+        "default": 4,
+        "unit": "px",
+        "label": "Vertical offset"
+      },
+      {
+        "type": "range",
+        "id": "buttons_shadow_blur",
+        "min": 0,
+        "max": 20,
+        "step": 5,
+        "default": 5,
+        "unit": "px",
+        "label": "Blur"
+      }
+    ]
+  },
+  {
+    "name": "Variant pills",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Variant pills"
+      },
+      {
+        "type": "range",
+        "id": "variant_pills_radius",
+        "min": 0,
+        "max": 40,
+        "step": 2,
+        "default": 40,
+        "unit": "px",
+        "label": "Corner radius"
+      },
+      {
+        "type": "range",
+        "id": "variant_pills_border_thickness",
+        "min": 0,
+        "max": 12,
+        "step": 1,
+        "default": 1,
+        "unit": "px",
+        "label": "Border thickness"
+      },
+      {
+        "type": "range",
+        "id": "variant_pills_border_opacity",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "default": 55,
+        "unit": "%",
+        "label": "Border opacity"
+      },
+      {
+        "type": "header",
+        "content": "Variant pills shadow"
+      },
+      {
+        "type": "range",
+        "id": "variant_pills_shadow_opacity",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "default": 0,
+        "unit": "%",
+        "label": "Opacity"
+      },
+      {
+        "type": "range",
+        "id": "variant_pills_shadow_horizontal_offset",
+        "min": -12,
+        "max": 12,
+        "step": 1,
+        "default": 0,
+        "unit": "px",
+        "label": "Horizontal offset"
+      },
+      {
+        "type": "range",
+        "id": "variant_pills_shadow_vertical_offset",
+        "min": -12,
+        "max": 12,
+        "step": 1,
+        "default": 4,
+        "unit": "px",
+        "label": "Vertical offset"
+      },
+      {
+        "type": "range",
+        "id": "variant_pills_shadow_blur",
+        "min": 0,
+        "max": 20,
+        "step": 5,
+        "default": 5,
+        "unit": "px",
+        "label": "Blur"
+      }
+    ]
+  },
+  {
+    "name": "Inputs",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Input fields"
+      },
+      {
+        "type": "range",
+        "id": "inputs_radius",
+        "min": 0,
+        "max": 40,
+        "step": 2,
+        "default": 0,
+        "unit": "px",
+        "label": "Corner radius"
+      },
+      {
+        "type": "range",
+        "id": "inputs_border_thickness",
+        "min": 0,
+        "max": 12,
+        "step": 1,
+        "default": 1,
+        "unit": "px",
+        "label": "Border thickness"
+      },
+      {
+        "type": "range",
+        "id": "inputs_border_opacity",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "default": 55,
+        "unit": "%",
+        "label": "Border opacity"
+      },
+      {
+        "type": "header",
+        "content": "Input shadow"
+      },
+      {
+        "type": "range",
+        "id": "inputs_shadow_opacity",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "default": 0,
+        "unit": "%",
+        "label": "Opacity"
+      },
+      {
+        "type": "range",
+        "id": "inputs_shadow_horizontal_offset",
+        "min": -12,
+        "max": 12,
+        "step": 1,
+        "default": 0,
+        "unit": "px",
+        "label": "Horizontal offset"
+      },
+      {
+        "type": "range",
+        "id": "inputs_shadow_vertical_offset",
+        "min": -12,
+        "max": 12,
+        "step": 1,
+        "default": 4,
+        "unit": "px",
+        "label": "Vertical offset"
+      },
+      {
+        "type": "range",
+        "id": "inputs_shadow_blur",
+        "min": 0,
+        "max": 20,
+        "step": 5,
+        "default": 5,
+        "unit": "px",
+        "label": "Blur"
+      }
+    ]
+  },
+  {
+    "name": "Search",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Predictive search"
+      },
+      {
+        "type": "checkbox",
+        "id": "predictive_search_enabled",
+        "default": true,
+        "label": "Enable predictive search"
+      },
+      {
+        "type": "checkbox",
+        "id": "predictive_search_show_vendor",
+        "default": false,
+        "label": "Show vendor"
+      },
+      {
+        "type": "checkbox",
+        "id": "predictive_search_show_price",
+        "default": true,
+        "label": "Show price"
+      }
+    ]
+  },
+  {
+    "name": "Social media",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Social accounts"
+      },
+      {
+        "type": "text",
+        "id": "social_twitter_link",
+        "label": "Twitter",
+        "info": "https://twitter.com/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_facebook_link",
+        "label": "Facebook",
+        "info": "https://facebook.com/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_pinterest_link",
+        "label": "Pinterest",
+        "info": "https://pinterest.com/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_instagram_link",
+        "label": "Instagram",
+        "info": "https://instagram.com/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_tiktok_link",
+        "label": "TikTok",
+        "info": "https://tiktok.com/@shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_tumblr_link",
+        "label": "Tumblr",
+        "info": "https://shopify.tumblr.com"
+      },
+      {
+        "type": "text",
+        "id": "social_snapchat_link",
+        "label": "Snapchat",
+        "info": "https://snapchat.com/add/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_youtube_link",
+        "label": "YouTube",
+        "info": "https://youtube.com/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_vimeo_link",
+        "label": "Vimeo",
+        "info": "https://vimeo.com/shopify"
+      }
+    ]
+  }
+]

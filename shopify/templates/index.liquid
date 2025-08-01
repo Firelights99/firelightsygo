@@ -1,0 +1,370 @@
+{%- comment -%}
+  Firelight Duel Academy - Yu-Gi-Oh! TCG Store Homepage
+  This template integrates with the existing Yu-Gi-Oh! store functionality
+{%- endcomment -%}
+
+<div class="yugioh-store-homepage">
+  {%- for section in section.blocks -%}
+    {%- render section -%}
+  {%- endfor -%}
+
+  {%- if section.blocks.size == 0 -%}
+    <!-- Default Yu-Gi-Oh! Store Content -->
+    <section class="hero-section">
+      <div class="page-width">
+        <div class="hero-content">
+          <h1 class="hero-title">{{ shop.name | default: 'Firelight Duel Academy' }}</h1>
+          <p class="hero-subtitle">{{ shop.description | default: 'Superior service, personalized attention for TCG enthusiasts' }}</p>
+          <div class="hero-buttons">
+            <a href="{{ collections.all.url }}" class="button button--primary">Shop Yu-Gi-Oh! Cards</a>
+            <a href="{{ pages.about.url | default: '#about' }}" class="button button--secondary">Learn More</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Products Section -->
+    <section class="featured-products">
+      <div class="page-width">
+        <h2 class="section-heading">Featured Cards</h2>
+        <div class="product-grid" id="featured-products-grid">
+          {%- if collections.featured.products.size > 0 -%}
+            {%- for product in collections.featured.products limit: 8 -%}
+              {%- render 'product-card', product: product -%}
+            {%- endfor -%}
+          {%- else -%}
+            <!-- Fallback to Yu-Gi-Oh! API featured cards -->
+            <div class="yugioh-featured-cards" data-yugioh-featured="true">
+              <!-- Cards will be loaded via JavaScript -->
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </section>
+
+    <!-- Yu-Gi-Oh! Categories Section -->
+    <section class="yugioh-categories">
+      <div class="page-width">
+        <h2 class="section-heading">Shop by Category</h2>
+        <div class="category-grid">
+          <div class="category-card" data-category="monster">
+            <div class="category-image">
+              <img src="{{ 'yugioh-monster-cards.jpg' | asset_url }}" alt="Monster Cards" loading="lazy">
+            </div>
+            <h3>Monster Cards</h3>
+            <p>Powerful creatures to dominate the field</p>
+            <a href="{{ collections.monsters.url | default: '/collections/monsters' }}" class="category-link">Shop Monsters</a>
+          </div>
+          
+          <div class="category-card" data-category="spell">
+            <div class="category-image">
+              <img src="{{ 'yugioh-spell-cards.jpg' | asset_url }}" alt="Spell Cards" loading="lazy">
+            </div>
+            <h3>Spell Cards</h3>
+            <p>Magic to turn the tide of battle</p>
+            <a href="{{ collections.spells.url | default: '/collections/spells' }}" class="category-link">Shop Spells</a>
+          </div>
+          
+          <div class="category-card" data-category="trap">
+            <div class="category-image">
+              <img src="{{ 'yugioh-trap-cards.jpg' | asset_url }}" alt="Trap Cards" loading="lazy">
+            </div>
+            <h3>Trap Cards</h3>
+            <p>Strategic surprises for your opponents</p>
+            <a href="{{ collections.traps.url | default: '/collections/traps' }}" class="category-link">Shop Traps</a>
+          </div>
+          
+          <div class="category-card" data-category="deck">
+            <div class="category-image">
+              <img src="{{ 'yugioh-structure-decks.jpg' | asset_url }}" alt="Structure Decks" loading="lazy">
+            </div>
+            <h3>Structure Decks</h3>
+            <p>Complete decks ready to play</p>
+            <a href="{{ collections.decks.url | default: '/collections/decks' }}" class="category-link">Shop Decks</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Meta Relevant Cards Section -->
+    <section class="meta-cards">
+      <div class="page-width">
+        <h2 class="section-heading">Meta-Relevant Cards</h2>
+        <p class="section-description">Stay competitive with the latest tournament-winning cards</p>
+        <div class="meta-cards-grid" id="meta-cards-grid">
+          <!-- Meta cards loaded via JavaScript from Yu-Gi-Oh! API -->
+        </div>
+        <div class="section-footer">
+          <a href="{{ collections.meta.url | default: '/collections/meta' }}" class="button button--secondary">View All Meta Cards</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Store Features Section -->
+    <section class="store-features">
+      <div class="page-width">
+        <h2 class="section-heading">Why Choose {{ shop.name | default: 'Firelight Duel Academy' }}?</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7v10c0 5.55 3.84 9.95 9 11 5.16-1.05 9-5.45 9-11V7l-10-5z"/>
+                <path d="M9 12l2 2 4-4"/>
+              </svg>
+            </div>
+            <h3>Authentic Cards</h3>
+            <p>100% genuine Yu-Gi-Oh! trading cards with authenticity guarantee</p>
+          </div>
+          
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9,22 9,12 15,12 15,22"/>
+              </svg>
+            </div>
+            <h3>Fast Shipping</h3>
+            <p>Free shipping on orders over ${{ settings.free_shipping_threshold | default: 75 }} CAD</p>
+          </div>
+          
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <h3>Expert Support</h3>
+            <p>Knowledgeable staff to help with deck building and card selection</p>
+          </div>
+          
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+            </div>
+            <h3>Competitive Prices</h3>
+            <p>Best prices on singles, booster packs, and tournament supplies</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Newsletter Signup -->
+    <section class="newsletter-signup">
+      <div class="page-width">
+        <div class="newsletter-content">
+          <h2>Stay Updated</h2>
+          <p>Get the latest Yu-Gi-Oh! news, new arrivals, and exclusive offers</p>
+          {%- form 'customer', class: 'newsletter-form' -%}
+            <div class="newsletter-form-fields">
+              <input type="email" name="contact[email]" placeholder="Enter your email" required class="newsletter-input">
+              <button type="submit" class="button button--primary newsletter-button">Subscribe</button>
+            </div>
+            <input type="hidden" name="contact[tags]" value="newsletter">
+          {%- endform -%}
+        </div>
+      </div>
+    </section>
+  {%- endif -%}
+</div>
+
+<!-- Yu-Gi-Oh! Store JavaScript Integration -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Yu-Gi-Oh! store functionality
+    if (window.yugiohStore && !window.yugiohStore.initialized) {
+      // Load featured cards from Yu-Gi-Oh! API
+      const featuredGrid = document.getElementById('featured-products-grid');
+      const metaGrid = document.getElementById('meta-cards-grid');
+      
+      if (featuredGrid && featuredGrid.querySelector('.yugioh-featured-cards')) {
+        loadFeaturedCards();
+      }
+      
+      if (metaGrid) {
+        loadMetaCards();
+      }
+      
+      window.yugiohStore.initialized = true;
+    }
+  });
+
+  async function loadFeaturedCards() {
+    try {
+      // Featured card names for the homepage
+      const featuredCards = [
+        'Blue-Eyes White Dragon',
+        'Dark Magician',
+        'Exodia the Forbidden One',
+        'Red-Eyes Black Dragon',
+        'Elemental HERO Sparkman',
+        'Stardust Dragon',
+        'Number 39: Utopia',
+        'Decode Talker'
+      ];
+      
+      const container = document.querySelector('.yugioh-featured-cards');
+      if (!container) return;
+      
+      for (const cardName of featuredCards) {
+        try {
+          const response = await fetch(`${window.yugiohStore.apiEndpoint}cardinfo.php?name=${encodeURIComponent(cardName)}`);
+          const data = await response.json();
+          
+          if (data.data && data.data[0]) {
+            const card = data.data[0];
+            const cardElement = createCardElement(card);
+            container.appendChild(cardElement);
+          }
+        } catch (error) {
+          console.warn(`Failed to load card: ${cardName}`, error);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load featured cards:', error);
+    }
+  }
+
+  async function loadMetaCards() {
+    try {
+      // Current meta-relevant cards
+      const metaCards = [
+        'Ash Blossom & Joyous Spring',
+        'Maxx "C"',
+        'Nibiru, the Primal Being',
+        'Effect Veiler',
+        'Infinite Impermanence',
+        'Lightning Storm',
+        'Pot of Desires',
+        'Called by the Grave'
+      ];
+      
+      const container = document.getElementById('meta-cards-grid');
+      if (!container) return;
+      
+      for (const cardName of metaCards) {
+        try {
+          const response = await fetch(`${window.yugiohStore.apiEndpoint}cardinfo.php?name=${encodeURIComponent(cardName)}`);
+          const data = await response.json();
+          
+          if (data.data && data.data[0]) {
+            const card = data.data[0];
+            const cardElement = createCardElement(card);
+            container.appendChild(cardElement);
+          }
+        } catch (error) {
+          console.warn(`Failed to load meta card: ${cardName}`, error);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load meta cards:', error);
+    }
+  }
+
+  function createCardElement(card) {
+    const cardDiv = document.createElement('div');
+    cardDiv.className = 'product-card yugioh-card';
+    
+    const price = generatePrice(card.type, card.race);
+    
+    cardDiv.innerHTML = `
+      <div class="product-card-image">
+        <img src="${card.card_images[0].image_url}" alt="${card.name}" loading="lazy">
+      </div>
+      <div class="product-card-content">
+        <h3 class="product-card-title">${card.name}</h3>
+        <p class="product-card-type">${card.type} ${card.race ? '- ' + card.race : ''}</p>
+        <div class="product-card-price">
+          <span class="price">$${price} CAD</span>
+        </div>
+        <button class="button button--primary add-to-cart" data-card-id="${card.id}">
+          Add to Cart
+        </button>
+      </div>
+    `;
+    
+    return cardDiv;
+  }
+
+  function generatePrice(type, race) {
+    // Simple pricing logic based on card type and rarity
+    let basePrice = 1.99;
+    
+    if (type.includes('XYZ') || type.includes('Synchro') || type.includes('Fusion')) {
+      basePrice = 4.99;
+    } else if (type.includes('Link')) {
+      basePrice = 6.99;
+    } else if (race && race.includes('Dragon')) {
+      basePrice = 3.99;
+    }
+    
+    // Add some randomization
+    const variation = (Math.random() * 2 - 1) * 0.5; // ±$0.50
+    return Math.max(0.99, (basePrice + variation)).toFixed(2);
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Homepage",
+  "settings": [
+    {
+      "type": "text",
+      "id": "hero_title",
+      "label": "Hero Title",
+      "default": "Firelight Duel Academy"
+    },
+    {
+      "type": "textarea",
+      "id": "hero_subtitle",
+      "label": "Hero Subtitle",
+      "default": "Superior service, personalized attention for TCG enthusiasts"
+    },
+    {
+      "type": "url",
+      "id": "hero_button_url",
+      "label": "Hero Button URL"
+    },
+    {
+      "type": "text",
+      "id": "hero_button_text",
+      "label": "Hero Button Text",
+      "default": "Shop Yu-Gi-Oh! Cards"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "featured_collection",
+      "name": "Featured Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading"
+        },
+        {
+          "type": "range",
+          "id": "products_to_show",
+          "min": 2,
+          "max": 12,
+          "step": 2,
+          "default": 8,
+          "label": "Products to show"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Yu-Gi-Oh! Store Homepage"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,587 @@
+{%- comment -%}
+  Firelight Duel Academy - Yu-Gi-Oh! Collection Template
+  Enhanced collection page with filtering and search
+{%- endcomment -%}
+
+<div class="yugioh-collection-page">
+  <div class="page-width">
+    <!-- Collection Header -->
+    <div class="collection-header">
+      <h1 class="collection-title">{{ collection.title | default: 'All Yu-Gi-Oh! Cards' }}</h1>
+      {%- if collection.description != blank -%}
+        <div class="collection-description">
+          {{ collection.description }}
+        </div>
+      {%- endif -%}
+      
+      <div class="collection-meta">
+        <span class="product-count">
+          {%- if collection.products_count > 0 -%}
+            {{ collection.products_count }} 
+            {%- if collection.products_count == 1 -%}card{%- else -%}cards{%- endif -%}
+          {%- else -%}
+            <span id="dynamic-card-count">Loading cards...</span>
+          {%- endif -%}
+        </span>
+      </div>
+    </div>
+
+    <!-- Collection Filters and Search -->
+    <div class="collection-filters">
+      <div class="filters-row">
+        <!-- Yu-Gi-Oh! Specific Filters -->
+        <div class="filter-group">
+          <label for="card-type-filter">Card Type:</label>
+          <select id="card-type-filter" class="filter-select">
+            <option value="">All Types</option>
+            <option value="Effect Monster">Effect Monster</option>
+            <option value="Normal Monster">Normal Monster</option>
+            <option value="Ritual Monster">Ritual Monster</option>
+            <option value="Fusion Monster">Fusion Monster</option>
+            <option value="Synchro Monster">Synchro Monster</option>
+            <option value="XYZ Monster">XYZ Monster</option>
+            <option value="Link Monster">Link Monster</option>
+            <option value="Pendulum Monster">Pendulum Monster</option>
+            <option value="Spell Card">Spell Card</option>
+            <option value="Trap Card">Trap Card</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="attribute-filter">Attribute:</label>
+          <select id="attribute-filter" class="filter-select">
+            <option value="">All Attributes</option>
+            <option value="DARK">DARK</option>
+            <option value="LIGHT">LIGHT</option>
+            <option value="FIRE">FIRE</option>
+            <option value="WATER">WATER</option>
+            <option value="EARTH">EARTH</option>
+            <option value="WIND">WIND</option>
+            <option value="DIVINE">DIVINE</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="level-filter">Level:</label>
+          <select id="level-filter" class="filter-select">
+            <option value="">All Levels</option>
+            <option value="1">Level 1</option>
+            <option value="2">Level 2</option>
+            <option value="3">Level 3</option>
+            <option value="4">Level 4</option>
+            <option value="5">Level 5</option>
+            <option value="6">Level 6</option>
+            <option value="7">Level 7</option>
+            <option value="8">Level 8</option>
+            <option value="9">Level 9</option>
+            <option value="10">Level 10</option>
+            <option value="11">Level 11</option>
+            <option value="12">Level 12</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="race-filter">Race/Type:</label>
+          <select id="race-filter" class="filter-select">
+            <option value="">All Races</option>
+            <option value="Dragon">Dragon</option>
+            <option value="Spellcaster">Spellcaster</option>
+            <option value="Warrior">Warrior</option>
+            <option value="Beast">Beast</option>
+            <option value="Machine">Machine</option>
+            <option value="Fiend">Fiend</option>
+            <option value="Fairy">Fairy</option>
+            <option value="Zombie">Zombie</option>
+            <option value="Aqua">Aqua</option>
+            <option value="Psychic">Psychic</option>
+            <option value="Thunder">Thunder</option>
+            <option value="Rock">Rock</option>
+            <option value="Plant">Plant</option>
+            <option value="Insect">Insect</option>
+            <option value="Fish">Fish</option>
+            <option value="Sea Serpent">Sea Serpent</option>
+            <option value="Reptile">Reptile</option>
+            <option value="Pyro">Pyro</option>
+            <option value="Dinosaur">Dinosaur</option>
+            <option value="Divine-Beast">Divine-Beast</option>
+            <option value="Winged Beast">Winged Beast</option>
+            <option value="Beast-Warrior">Beast-Warrior</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filters-row">
+        <!-- Search Bar -->
+        <div class="search-group">
+          <label for="card-search">Search Cards:</label>
+          <div class="search-input-wrapper">
+            <input type="text" 
+                   id="card-search" 
+                   placeholder="Search by card name, description, or archetype..." 
+                   class="search-input">
+            <button type="button" class="search-button" id="search-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Sort Options -->
+        <div class="filter-group">
+          <label for="sort-filter">Sort by:</label>
+          <select id="sort-filter" class="filter-select">
+            <option value="name">Name (A-Z)</option>
+            <option value="name-desc">Name (Z-A)</option>
+            <option value="level">Level (Low to High)</option>
+            <option value="level-desc">Level (High to Low)</option>
+            <option value="atk">ATK (Low to High)</option>
+            <option value="atk-desc">ATK (High to Low)</option>
+            <option value="price">Price (Low to High)</option>
+            <option value="price-desc">Price (High to Low)</option>
+          </select>
+        </div>
+
+        <!-- Clear Filters -->
+        <div class="filter-actions">
+          <button type="button" class="button button--secondary" id="clear-filters">
+            Clear Filters
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Collection Products -->
+    <div class="collection-products">
+      {%- if collection.products.size > 0 -%}
+        <!-- Shopify Products -->
+        <div class="product-grid shopify-products">
+          {%- for product in collection.products -%}
+            {%- render 'product-card', product: product -%}
+          {%- endfor -%}
+        </div>
+        
+        {%- if paginate.pages > 1 -%}
+          <div class="pagination-wrapper">
+            {%- render 'pagination', paginate: paginate -%}
+          </div>
+        {%- endif -%}
+      {%- else -%}
+        <!-- Yu-Gi-Oh! API Products -->
+        <div class="product-grid yugioh-api-products" id="yugioh-products-grid">
+          <div class="loading-message">
+            <div class="loading-spinner"></div>
+            <p>Loading Yu-Gi-Oh! cards...</p>
+          </div>
+        </div>
+        
+        <!-- Load More Button -->
+        <div class="load-more-wrapper" id="load-more-wrapper" style="display: none;">
+          <button type="button" class="button button--secondary" id="load-more-btn">
+            Load More Cards
+          </button>
+        </div>
+      {%- endif -%}
+    </div>
+
+    <!-- Quick Filters -->
+    <div class="quick-filters">
+      <h3>Popular Categories</h3>
+      <div class="quick-filter-buttons">
+        <button class="quick-filter-btn" data-filter="meta">Meta Cards</button>
+        <button class="quick-filter-btn" data-filter="dragon">Dragons</button>
+        <button class="quick-filter-btn" data-filter="spellcaster">Spellcasters</button>
+        <button class="quick-filter-btn" data-filter="warrior">Warriors</button>
+        <button class="quick-filter-btn" data-filter="spell">Spell Cards</button>
+        <button class="quick-filter-btn" data-filter="trap">Trap Cards</button>
+        <button class="quick-filter-btn" data-filter="fusion">Fusion Monsters</button>
+        <button class="quick-filter-btn" data-filter="synchro">Synchro Monsters</button>
+        <button class="quick-filter-btn" data-filter="xyz">XYZ Monsters</button>
+        <button class="quick-filter-btn" data-filter="link">Link Monsters</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Yu-Gi-Oh! Collection JavaScript -->
+<script>
+  let currentCards = [];
+  let filteredCards = [];
+  let currentOffset = 0;
+  const cardsPerPage = 20;
+  let isLoading = false;
+
+  document.addEventListener('DOMContentLoaded', function() {
+    initializeCollection();
+    setupFilters();
+    setupSearch();
+    setupQuickFilters();
+  });
+
+  async function initializeCollection() {
+    const collectionTitle = {{ collection.title | json }} || 'All Cards';
+    
+    // If no Shopify products, load from Yu-Gi-Oh! API
+    if (!document.querySelector('.shopify-products')) {
+      await loadYugiohCards();
+    }
+  }
+
+  async function loadYugiohCards(searchParams = {}) {
+    if (isLoading) return;
+    isLoading = true;
+
+    const grid = document.getElementById('yugioh-products-grid');
+    const loadMoreWrapper = document.getElementById('load-more-wrapper');
+    
+    try {
+      let apiUrl = `${window.yugiohStore.apiEndpoint}cardinfo.php?`;
+      const params = new URLSearchParams();
+      
+      // Add search parameters
+      if (searchParams.fname) params.append('fname', searchParams.fname);
+      if (searchParams.type) params.append('type', searchParams.type);
+      if (searchParams.attribute) params.append('attribute', searchParams.attribute);
+      if (searchParams.level) params.append('level', searchParams.level);
+      if (searchParams.race) params.append('race', searchParams.race);
+      
+      // Pagination
+      params.append('num', cardsPerPage.toString());
+      params.append('offset', currentOffset.toString());
+      
+      apiUrl += params.toString();
+      
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+      
+      if (data.data && data.data.length > 0) {
+        if (currentOffset === 0) {
+          currentCards = data.data;
+          grid.innerHTML = '';
+        } else {
+          currentCards = [...currentCards, ...data.data];
+        }
+        
+        displayCards(data.data, currentOffset === 0);
+        
+        // Update card count
+        const countElement = document.getElementById('dynamic-card-count');
+        if (countElement) {
+          countElement.textContent = `${currentCards.length}+ cards`;
+        }
+        
+        // Show load more button if there might be more cards
+        if (data.data.length === cardsPerPage) {
+          loadMoreWrapper.style.display = 'block';
+        } else {
+          loadMoreWrapper.style.display = 'none';
+        }
+        
+        currentOffset += cardsPerPage;
+      } else {
+        if (currentOffset === 0) {
+          grid.innerHTML = '<p class="no-results">No cards found matching your criteria.</p>';
+        }
+        loadMoreWrapper.style.display = 'none';
+      }
+    } catch (error) {
+      console.error('Failed to load Yu-Gi-Oh! cards:', error);
+      grid.innerHTML = '<p class="error-message">Failed to load cards. Please try again later.</p>';
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  function displayCards(cards, clearGrid = false) {
+    const grid = document.getElementById('yugioh-products-grid');
+    
+    if (clearGrid) {
+      grid.innerHTML = '';
+    }
+    
+    cards.forEach(card => {
+      const cardElement = createCardElement(card);
+      grid.appendChild(cardElement);
+    });
+  }
+
+  function createCardElement(card) {
+    const cardDiv = document.createElement('div');
+    cardDiv.className = 'product-card yugioh-card';
+    
+    const price = generatePrice(card.type, card.race);
+    
+    cardDiv.innerHTML = `
+      <div class="product-card-image">
+        <img src="${card.card_images[0].image_url}" alt="${card.name}" loading="lazy">
+        <div class="card-badges">
+          <span class="card-badge type-badge">${card.type}</span>
+          ${card.attribute ? `<span class="card-badge attribute-badge">${card.attribute}</span>` : ''}
+        </div>
+      </div>
+      <div class="product-card-content">
+        <h3 class="product-card-title">${card.name}</h3>
+        <p class="product-card-type">${card.type}${card.race ? ' - ' + card.race : ''}</p>
+        ${card.atk !== undefined ? `<p class="product-card-stats">ATK: ${card.atk} / DEF: ${card.def}</p>` : ''}
+        ${card.level !== undefined ? `<p class="product-card-level">Level ${card.level}</p>` : ''}
+        <div class="product-card-price">
+          <span class="price">$${price} CAD</span>
+        </div>
+        <div class="product-card-actions">
+          <button class="button button--primary add-to-cart" data-card-id="${card.id}" data-card-name="${card.name}" data-price="${price}">
+            Add to Cart
+          </button>
+          <button class="button button--secondary wishlist-btn" data-card-id="${card.id}">
+            ♡
+          </button>
+        </div>
+      </div>
+    `;
+    
+    return cardDiv;
+  }
+
+  function setupFilters() {
+    const filters = ['card-type-filter', 'attribute-filter', 'level-filter', 'race-filter', 'sort-filter'];
+    
+    filters.forEach(filterId => {
+      const filter = document.getElementById(filterId);
+      if (filter) {
+        filter.addEventListener('change', applyFilters);
+      }
+    });
+
+    // Clear filters button
+    const clearBtn = document.getElementById('clear-filters');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', clearAllFilters);
+    }
+
+    // Load more button
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    if (loadMoreBtn) {
+      loadMoreBtn.addEventListener('click', function() {
+        const searchParams = getCurrentSearchParams();
+        loadYugiohCards(searchParams);
+      });
+    }
+  }
+
+  function setupSearch() {
+    const searchInput = document.getElementById('card-search');
+    const searchBtn = document.getElementById('search-btn');
+    
+    if (searchInput && searchBtn) {
+      searchBtn.addEventListener('click', performSearch);
+      searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          performSearch();
+        }
+      });
+    }
+  }
+
+  function setupQuickFilters() {
+    const quickFilterBtns = document.querySelectorAll('.quick-filter-btn');
+    
+    quickFilterBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const filterType = this.dataset.filter;
+        applyQuickFilter(filterType);
+      });
+    });
+  }
+
+  function applyQuickFilter(filterType) {
+    // Clear existing filters
+    clearAllFilters();
+    
+    // Apply specific filter based on type
+    switch (filterType) {
+      case 'meta':
+        document.getElementById('card-search').value = 'Ash Blossom|Maxx "C"|Nibiru|Effect Veiler';
+        break;
+      case 'dragon':
+        document.getElementById('race-filter').value = 'Dragon';
+        break;
+      case 'spellcaster':
+        document.getElementById('race-filter').value = 'Spellcaster';
+        break;
+      case 'warrior':
+        document.getElementById('race-filter').value = 'Warrior';
+        break;
+      case 'spell':
+        document.getElementById('card-type-filter').value = 'Spell Card';
+        break;
+      case 'trap':
+        document.getElementById('card-type-filter').value = 'Trap Card';
+        break;
+      case 'fusion':
+        document.getElementById('card-type-filter').value = 'Fusion Monster';
+        break;
+      case 'synchro':
+        document.getElementById('card-type-filter').value = 'Synchro Monster';
+        break;
+      case 'xyz':
+        document.getElementById('card-type-filter').value = 'XYZ Monster';
+        break;
+      case 'link':
+        document.getElementById('card-type-filter').value = 'Link Monster';
+        break;
+    }
+    
+    applyFilters();
+  }
+
+  function performSearch() {
+    currentOffset = 0;
+    applyFilters();
+  }
+
+  function applyFilters() {
+    currentOffset = 0;
+    const searchParams = getCurrentSearchParams();
+    loadYugiohCards(searchParams);
+  }
+
+  function getCurrentSearchParams() {
+    const params = {};
+    
+    const searchValue = document.getElementById('card-search').value.trim();
+    if (searchValue) {
+      params.fname = searchValue;
+    }
+    
+    const typeValue = document.getElementById('card-type-filter').value;
+    if (typeValue) {
+      params.type = typeValue;
+    }
+    
+    const attributeValue = document.getElementById('attribute-filter').value;
+    if (attributeValue) {
+      params.attribute = attributeValue;
+    }
+    
+    const levelValue = document.getElementById('level-filter').value;
+    if (levelValue) {
+      params.level = levelValue;
+    }
+    
+    const raceValue = document.getElementById('race-filter').value;
+    if (raceValue) {
+      params.race = raceValue;
+    }
+    
+    return params;
+  }
+
+  function clearAllFilters() {
+    document.getElementById('card-search').value = '';
+    document.getElementById('card-type-filter').value = '';
+    document.getElementById('attribute-filter').value = '';
+    document.getElementById('level-filter').value = '';
+    document.getElementById('race-filter').value = '';
+    document.getElementById('sort-filter').value = 'name';
+    
+    currentOffset = 0;
+    loadYugiohCards();
+  }
+
+  function generatePrice(type, race) {
+    // Simple pricing logic based on card type and rarity
+    let basePrice = 1.99;
+    
+    if (type.includes('XYZ') || type.includes('Synchro') || type.includes('Fusion')) {
+      basePrice = 4.99;
+    } else if (type.includes('Link')) {
+      basePrice = 6.99;
+    } else if (race && race.includes('Dragon')) {
+      basePrice = 3.99;
+    }
+    
+    // Add some randomization
+    const variation = (Math.random() * 2 - 1) * 0.5; // ±$0.50
+    return Math.max(0.99, (basePrice + variation)).toFixed(2);
+  }
+
+  // Add to cart functionality
+  document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('add-to-cart')) {
+      const cardId = e.target.dataset.cardId;
+      const cardName = e.target.dataset.cardName;
+      const price = e.target.dataset.price;
+      
+      // Add to cart logic here
+      console.log('Adding to cart:', { cardId, cardName, price });
+      
+      // Update button state
+      e.target.textContent = 'Added!';
+      e.target.disabled = true;
+      setTimeout(() => {
+        e.target.textContent = 'Add to Cart';
+        e.target.disabled = false;
+      }, 2000);
+    }
+    
+    if (e.target.classList.contains('wishlist-btn')) {
+      const cardId = e.target.dataset.cardId;
+      
+      // Add to wishlist logic here
+      console.log('Adding to wishlist:', cardId);
+      
+      // Update button state
+      e.target.textContent = '♥';
+      e.target.style.color = 'red';
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Yu-Gi-Oh! Collection",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 12,
+      "max": 48,
+      "step": 4,
+      "default": 20,
+      "label": "Products per page"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_filtering",
+      "label": "Enable filtering",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sorting",
+      "label": "Enable sorting",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "default_sort",
+      "label": "Default sort order",
+      "options": [
+        {
+          "value": "name",
+          "label": "Name (A-Z)"
+        },
+        {
+          "value": "price-asc",
+          "label": "Price (Low to High)"
+        },
+        {
+          "value": "price-desc",
+          "label": "Price (High to Low)"
+        }
+      ],
+      "default": "name"
+    }
+  ]
+}
+{% endschema %}

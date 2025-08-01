@@ -1,0 +1,191 @@
+{%- comment -%}
+  Renders a product card for Yu-Gi-Oh! cards
+
+  Accepts:
+  - product: {Object} Product Liquid object
+  - media_aspect_ratio: {String} Size of the product image card. Values are "square" and "portrait". Default is "square" (optional)
+  - image_shape: {String} Image mask to apply to the product image card. Values are "arch", "blob", "chevronleft", "chevronright", "diamond", "parallelogram", and "round". (optional)
+  - show_secondary_image: {Boolean} Show the secondary image on hover. Default: false (optional)
+  - show_vendor: {Boolean} Show the product vendor. Default: false
+  - show_rating: {Boolean} Show the product rating. Default: false
+  - extend_height: {Boolean} Card height extends to available container space. Default: true (optional)
+  - lazy_load: {Boolean} Image should be lazy loaded. Default: true (optional)
+  - show_quick_add: {Boolean} Show the quick add button.
+  - section_id: {String} The ID of the section that contains this card.
+  - horizontal_class: {Boolean} Add a card--horizontal class if set to true
+  - horizontal_quick_add: {Boolean} Changes the quick add button styles when set to true
+  - placeholder_image: {String} The placeholder image to use when no product image is available.
+
+  Usage:
+  {% render 'product-card', product: product, show_vendor: section.settings.show_vendor %}
+{%- endcomment -%}
+
+{%- liquid
+  assign ratio = 1
+  if media_aspect_ratio == 'portrait'
+    assign ratio = 0.8
+  endif
+  unless lazy_load == false
+    assign lazy_load = true
+  endunless
+  assign card_color_scheme = settings.card_color_scheme
+  assign card_style = 'card-wrapper underline-links-hover'
+  if horizontal_class
+    assign card_style = card_style | append: ' card--horizontal'
+  endif
+  if extend_height
+    assign card_style = card_style | append: ' card--extend-height'
+  endif
+  if product.featured_media == blank
+    assign card_style = card_style | append: ' card--text'
+  endif
+  if card_color_scheme == 'background-1'
+    assign card_style = card_style | append: ' color-background-1 gradient'
+  elsif card_color_scheme == 'background-2'
+    assign card_style = card_style | append: ' color-background-2 gradient'
+  elsif card_color_scheme == 'inverse'
+    assign card_style = card_style | append: ' color-inverse'
+  endif
+-%}
+
+<div class="{{ card_style }}">
+  <div class="card card--{{ settings.card_style }} card--text{% if extend_height %} card--extend-height{% endif %}{% if product.featured_media == blank %} card--text-only card--soft{% endif %}{% if horizontal_class %} card--horizontal{% endif %}" style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;">
+    <div class="card__inner {% if settings.card_style == 'standard' %}color-{{ card_color_scheme }} gradient{% endif %}{% if product.featured_media or settings.card_style == 'standard' %} ratio{% endif %}" style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;">
+      {%- if product.featured_media -%}
+        <div class="card__media">
+          <div class="media media--transparent media--hover-effect">
+            {% comment %}theme-check-disable ImgLazyLoading{% endcomment %}
+            <img
+              srcset="
+                {%- if product.featured_media.width >= 165 -%}{{ product.featured_media | image_url: width: 165 }} 165w,{%- endif -%}
+                {%- if product.featured_media.width >= 360 -%}{{ product.featured_media | image_url: width: 360 }} 360w,{%- endif -%}
+                {%- if product.featured_media.width >= 533 -%}{{ product.featured_media | image_url: width: 533 }} 533w,{%- endif -%}
+                {%- if product.featured_media.width >= 720 -%}{{ product.featured_media | image_url: width: 720 }} 720w,{%- endif -%}
+                {%- if product.featured_media.width >= 940 -%}{{ product.featured_media | image_url: width: 940 }} 940w,{%- endif -%}
+                {%- if product.featured_media.width >= 1066 -%}{{ product.featured_media | image_url: width: 1066 }} 1066w,{%- endif -%}
+                {{ product.featured_media | image_url }} {{ product.featured_media.width }}w
+              "
+              src="{{ product.featured_media | image_url: width: 533 }}"
+              sizes="(min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 130 | divided_by: 4 }}px, (min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)"
+              alt="{{ product.featured_media.alt | escape }}"
+              class="motion-reduce"
+              {% unless lazy_load == false %}loading="lazy"{% endunless %}
+              width="{{ product.featured_media.width }}"
+              height="{{ product.featured_media.height }}"
+            >
+            {% comment %}theme-check-enable ImgLazyLoading{% endcomment %}
+
+            {%- if product.media[1] != null and show_secondary_image -%}
+              <img
+                srcset="
+                  {%- if product.media[1].width >= 165 -%}{{ product.media[1] | image_url: width: 165 }} 165w,{%- endif -%}
+                  {%- if product.media[1].width >= 360 -%}{{ product.media[1] | image_url: width: 360 }} 360w,{%- endif -%}
+                  {%- if product.media[1].width >= 533 -%}{{ product.media[1] | image_url: width: 533 }} 533w,{%- endif -%}
+                  {%- if product.media[1].width >= 720 -%}{{ product.media[1] | image_url: width: 720 }} 720w,{%- endif -%}
+                  {%- if product.media[1].width >= 940 -%}{{ product.media[1] | image_url: width: 940 }} 940w,{%- endif -%}
+                  {%- if product.media[1].width >= 1066 -%}{{ product.media[1] | image_url: width: 1066 }} 1066w,{%- endif -%}
+                  {{ product.media[1] | image_url }} {{ product.media[1].width }}w
+                "
+                src="{{ product.media[1] | image_url: width: 533 }}"
+                sizes="(min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 130 | divided_by: 4 }}px, (min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)"
+                alt=""
+                class="motion-reduce"
+                loading="lazy"
+                width="{{ product.media[1].width }}"
+                height="{{ product.media[1].height }}"
+              >
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+      
+      <div class="card__content">
+        <div class="card__information">
+          <h3 class="card__heading">
+            <a href="{{ product.url }}" id="StandardCardNoMediaLink-{{ card_product.id }}-{{ section_id }}" class="full-unstyled-link" aria-labelledby="StandardCardNoMediaLink-{{ card_product.id }}-{{ section_id }} NoMediaStandardBadge-{{ card_product.id }}-{{ section_id }}">
+              {{ product.title | escape }}
+            </a>
+          </h3>
+        </div>
+        
+        {%- if show_vendor -%}
+          <span class="visually-hidden">{{ 'accessibility.vendor' | t }}</span>
+          <div class="caption-with-letter-spacing light">{{ product.vendor }}</div>
+        {%- endif -%}
+
+        {% render 'price', product: product, price_class: '' %}
+
+        {%- if show_rating and product.metafields.reviews.rating.value != blank -%}
+          {% liquid
+            assign rating_decimal = 0
+            assign decimal = product.metafields.reviews.rating.value.rating | modulo: 1
+            if decimal >= 0.3 and decimal <= 0.7
+              assign rating_decimal = 0.5
+            elsif decimal > 0.7
+              assign rating_decimal = 1
+            endif
+          %}
+          <div class="rating" role="img" aria-label="{{ 'accessibility.star_reviews_info' | t: rating_value: product.metafields.reviews.rating.value, rating_max: product.metafields.reviews.rating.value.scale_max }}">
+            <span aria-hidden="true" class="rating-star color-icon-{{ settings.accent_icons }}" style="--rating: {{ product.metafields.reviews.rating.value.rating | floor }}; --rating-max: {{ product.metafields.reviews.rating.value.scale_max }}; --rating-decimal: {{ rating_decimal }};"></span>
+          </div>
+          <p class="rating-text caption">
+            <span aria-hidden="true">{{ product.metafields.reviews.rating.value }} / {{ product.metafields.reviews.rating.value.scale_max }}</span>
+          </p>
+          <p class="rating-count caption">
+            <span aria-hidden="true">({{ product.metafields.reviews.rating_count }})</span>
+            <span class="visually-hidden">{{ product.metafields.reviews.rating_count }} {{ "accessibility.total_reviews" | t }}</span>
+          </p>
+        {%- endif -%}
+
+        <!-- Yu-Gi-Oh! Card Badges -->
+        <div class="yugioh-card-badges" data-product-id="{{ product.id }}">
+          <!-- Badges will be populated via JavaScript if Yu-Gi-Oh! API is enabled -->
+        </div>
+      </div>
+    </div>
+    
+    <div class="card__content">
+      <div class="card__information">
+        <h3 class="card__heading{% if product.featured_media == blank and settings.card_style == 'standard' %} h2{% endif %}">
+          <a href="{{ product.url }}" id="CardLink-{{ card_product.id }}-{{ section_id }}" class="full-unstyled-link" aria-labelledby="CardLink-{{ card_product.id }}-{{ section_id }} Badge-{{ card_product.id }}-{{ section_id }}">
+            {{ product.title | escape }}
+          </a>
+        </h3>
+      </div>
+      
+      {%- if show_vendor -%}
+        <span class="visually-hidden">{{ 'accessibility.vendor' | t }}</span>
+        <div class="caption-with-letter-spacing light">{{ product.vendor }}</div>
+      {%- endif -%}
+
+      {% render 'price', product: product, price_class: '' %}
+
+      {%- if show_rating and product.metafields.reviews.rating.value != blank -%}
+        {% liquid
+          assign rating_decimal = 0
+          assign decimal = product.metafields.reviews.rating.value.rating | modulo: 1
+          if decimal >= 0.3 and decimal <= 0.7
+            assign rating_decimal = 0.5
+          elsif decimal > 0.7
+            assign rating_decimal = 1
+          endif
+        %}
+        <div class="rating" role="img" aria-label="{{ 'accessibility.star_reviews_info' | t: rating_value: product.metafields.reviews.rating.value, rating_max: product.metafields.reviews.rating.value.scale_max }}">
+          <span aria-hidden="true" class="rating-star color-icon-{{ settings.accent_icons }}" style="--rating: {{ product.metafields.reviews.rating.value.rating | floor }}; --rating-max: {{ product.metafields.reviews.rating.value.scale_max }}; --rating-decimal: {{ rating_decimal }};"></span>
+        </div>
+        <p class="rating-text caption">
+          <span aria-hidden="true">{{ product.metafields.reviews.rating.value }} / {{ product.metafields.reviews.rating.value.scale_max }}</span>
+        </p>
+        <p class="rating-count caption">
+          <span aria-hidden="true">({{ product.metafields.reviews.rating_count }})</span>
+          <span class="visually-hidden">{{ product.metafields.reviews.rating_count }} {{ "accessibility.total_reviews" | t }}</span>
+        </p>
+      {%- endif -%}
+
+      <!-- Yu-Gi-Oh! Card Badges -->
+      <div class="yugioh-card-badges" data-product-id="{{ product.id }}">
+        <!-- Badges will be populated via JavaScript if Yu-Gi-Oh! API is enabled -->
+      </div>
+    </div>
+  </div>
+</div>

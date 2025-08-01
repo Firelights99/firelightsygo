@@ -1,0 +1,517 @@
+{%- comment -%}
+  Firelight Duel Academy - Yu-Gi-Oh! Card Product Template
+  Enhanced product page with Yu-Gi-Oh! specific features
+{%- endcomment -%}
+
+<div class="yugioh-product-page">
+  <div class="page-width">
+    <div class="product-layout">
+      <!-- Product Images -->
+      <div class="product-media">
+        <div class="product-media-gallery">
+          {%- if product.media.size > 0 -%}
+            <div class="product-media-main">
+              {%- for media in product.media limit: 1 -%}
+                {%- if media.media_type == 'image' -%}
+                  <img src="{{ media | image_url: width: 600 }}" 
+                       alt="{{ media.alt | escape }}" 
+                       class="product-main-image"
+                       data-media-id="{{ media.id }}">
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+            
+            {%- if product.media.size > 1 -%}
+              <div class="product-media-thumbnails">
+                {%- for media in product.media -%}
+                  {%- if media.media_type == 'image' -%}
+                    <button class="product-thumbnail" data-media-id="{{ media.id }}">
+                      <img src="{{ media | image_url: width: 100 }}" alt="{{ media.alt | escape }}">
+                    </button>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+          {%- else -%}
+            <!-- Fallback: Load card image from Yu-Gi-Oh! API -->
+            <div class="product-media-main yugioh-card-image" data-card-name="{{ product.title }}">
+              <div class="loading-placeholder">Loading card image...</div>
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+
+      <!-- Product Information -->
+      <div class="product-info">
+        <div class="product-header">
+          <h1 class="product-title">{{ product.title }}</h1>
+          
+          {%- if product.vendor -%}
+            <p class="product-vendor">{{ product.vendor }}</p>
+          {%- endif -%}
+          
+          <!-- Yu-Gi-Oh! Card Type Badge -->
+          <div class="yugioh-card-badges" id="card-type-badges">
+            <!-- Badges will be populated via JavaScript -->
+          </div>
+        </div>
+
+        <!-- Product Price -->
+        <div class="product-price">
+          {%- if product.compare_at_price > product.price -%}
+            <span class="price-compare">{{ product.compare_at_price | money }}</span>
+            <span class="price-current sale">{{ product.price | money }}</span>
+            <span class="price-badge sale-badge">Sale</span>
+          {%- else -%}
+            <span class="price-current">{{ product.price | money }}</span>
+          {%- endif -%}
+        </div>
+
+        <!-- Product Description -->
+        {%- if product.description != blank -%}
+          <div class="product-description">
+            {{ product.description }}
+          </div>
+        {%- endif -%}
+
+        <!-- Yu-Gi-Oh! Card Details -->
+        <div class="yugioh-card-details" id="card-details">
+          <!-- Card details will be populated via JavaScript -->
+        </div>
+
+        <!-- Product Form -->
+        {%- form 'product', product, class: 'product-form' -%}
+          <div class="product-form-content">
+            {%- unless product.has_only_default_variant -%}
+              <div class="product-variants">
+                {%- for option in product.options_with_values -%}
+                  <div class="product-option">
+                    <label class="product-option-label">{{ option.name }}</label>
+                    <div class="product-option-values">
+                      {%- for value in option.values -%}
+                        <input type="radio" 
+                               id="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}"
+                               name="{{ option.name }}"
+                               value="{{ value | escape }}"
+                               form="{{ product_form_id }}"
+                               {% if option.selected_value == value %}checked{% endif %}>
+                        <label for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}">
+                          {{ value }}
+                        </label>
+                      {%- endfor -%}
+                    </div>
+                  </div>
+                {%- endfor -%}
+              </div>
+            {%- endunless -%}
+
+            <!-- Quantity Selector -->
+            <div class="product-quantity">
+              <label for="quantity" class="quantity-label">Quantity</label>
+              <div class="quantity-input">
+                <button type="button" class="quantity-button quantity-minus" aria-label="Decrease quantity">-</button>
+                <input type="number" 
+                       id="quantity" 
+                       name="quantity" 
+                       value="1" 
+                       min="1" 
+                       class="quantity-field">
+                <button type="button" class="quantity-button quantity-plus" aria-label="Increase quantity">+</button>
+              </div>
+            </div>
+
+            <!-- Add to Cart Button -->
+            <div class="product-form-buttons">
+              <button type="submit" 
+                      name="add" 
+                      class="button button--primary button--full-width add-to-cart-button"
+                      {% unless product.available %}disabled{% endunless %}>
+                {%- if product.available -%}
+                  Add to Cart
+                {%- else -%}
+                  Sold Out
+                {%- endif -%}
+              </button>
+              
+              <!-- Wishlist Button -->
+              <button type="button" class="button button--secondary wishlist-button" data-product-id="{{ product.id }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+                Add to Wishlist
+              </button>
+            </div>
+          </div>
+
+          <select name="id" id="product-select" class="product-select" style="display: none;">
+            {%- for variant in product.variants -%}
+              <option value="{{ variant.id }}" 
+                      {% if variant == product.selected_or_first_available_variant %}selected="selected"{% endif %}
+                      {% unless variant.available %}disabled{% endunless %}>
+                {{ variant.title }} - {{ variant.price | money }}
+              </option>
+            {%- endfor -%}
+          </select>
+        {%- endform -%}
+
+        <!-- Product Features -->
+        <div class="product-features">
+          <div class="feature-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7v10c0 5.55 3.84 9.95 9 11 5.16-1.05 9-5.45 9-11V7l-10-5z"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+            <span>Authentic Yu-Gi-Oh! Card</span>
+          </div>
+          <div class="feature-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9,22 9,12 15,12 15,22"/>
+            </svg>
+            <span>Fast & Secure Shipping</span>
+          </div>
+          <div class="feature-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2-2z"/>
+              <path d="M8 15v-5"/>
+              <path d="M12 15v-5"/>
+              <path d="M16 15v-5"/>
+            </svg>
+            <span>Tournament Legal</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Tabs -->
+    <div class="product-tabs">
+      <div class="tab-navigation">
+        <button class="tab-button active" data-tab="details">Card Details</button>
+        <button class="tab-button" data-tab="rulings">Rulings</button>
+        <button class="tab-button" data-tab="related">Related Cards</button>
+        <button class="tab-button" data-tab="reviews">Reviews</button>
+      </div>
+
+      <div class="tab-content">
+        <!-- Card Details Tab -->
+        <div class="tab-panel active" id="tab-details">
+          <div class="yugioh-card-stats" id="card-stats">
+            <!-- Card statistics will be populated via JavaScript -->
+          </div>
+        </div>
+
+        <!-- Rulings Tab -->
+        <div class="tab-panel" id="tab-rulings">
+          <div class="card-rulings" id="card-rulings">
+            <!-- Card rulings will be populated via JavaScript -->
+          </div>
+        </div>
+
+        <!-- Related Cards Tab -->
+        <div class="tab-panel" id="tab-related">
+          <div class="related-cards" id="related-cards">
+            <!-- Related cards will be populated via JavaScript -->
+          </div>
+        </div>
+
+        <!-- Reviews Tab -->
+        <div class="tab-panel" id="tab-reviews">
+          {%- if product.metafields.reviews.rating -%}
+            <div class="product-reviews">
+              <div class="reviews-summary">
+                <div class="rating-stars">
+                  {%- assign rating = product.metafields.reviews.rating | round -%}
+                  {%- for i in (1..5) -%}
+                    <span class="star {% if i <= rating %}filled{% endif %}">★</span>
+                  {%- endfor -%}
+                </div>
+                <span class="rating-text">{{ product.metafields.reviews.rating }} out of 5 stars</span>
+              </div>
+            </div>
+          {%- else -%}
+            <p>No reviews yet. Be the first to review this card!</p>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+
+    <!-- Recommended Products -->
+    {%- if recommendations.products.size > 0 -%}
+      <div class="recommended-products">
+        <h2 class="section-heading">You might also like</h2>
+        <div class="product-grid">
+          {%- for product in recommendations.products limit: 4 -%}
+            {%- render 'product-card', product: product -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+<!-- Yu-Gi-Oh! Product JavaScript -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    initializeYugiohProduct();
+    initializeProductForm();
+    initializeProductTabs();
+  });
+
+  async function initializeYugiohProduct() {
+    const productTitle = {{ product.title | json }};
+    
+    try {
+      // Load card data from Yu-Gi-Oh! API
+      const response = await fetch(`${window.yugiohStore.apiEndpoint}cardinfo.php?name=${encodeURIComponent(productTitle)}`);
+      const data = await response.json();
+      
+      if (data.data && data.data[0]) {
+        const card = data.data[0];
+        populateCardDetails(card);
+        loadCardImage(card);
+        loadRelatedCards(card);
+      }
+    } catch (error) {
+      console.error('Failed to load Yu-Gi-Oh! card data:', error);
+    }
+  }
+
+  function populateCardDetails(card) {
+    // Populate card type badges
+    const badgesContainer = document.getElementById('card-type-badges');
+    if (badgesContainer) {
+      badgesContainer.innerHTML = `
+        <span class="card-badge type-badge">${card.type}</span>
+        ${card.race ? `<span class="card-badge race-badge">${card.race}</span>` : ''}
+        ${card.attribute ? `<span class="card-badge attribute-badge">${card.attribute}</span>` : ''}
+      `;
+    }
+
+    // Populate card statistics
+    const statsContainer = document.getElementById('card-stats');
+    if (statsContainer) {
+      let statsHTML = `
+        <div class="card-stat-grid">
+          <div class="card-stat">
+            <label>Type:</label>
+            <span>${card.type}</span>
+          </div>
+      `;
+
+      if (card.atk !== undefined) {
+        statsHTML += `
+          <div class="card-stat">
+            <label>ATK:</label>
+            <span>${card.atk}</span>
+          </div>
+        `;
+      }
+
+      if (card.def !== undefined) {
+        statsHTML += `
+          <div class="card-stat">
+            <label>DEF:</label>
+            <span>${card.def}</span>
+          </div>
+        `;
+      }
+
+      if (card.level !== undefined) {
+        statsHTML += `
+          <div class="card-stat">
+            <label>Level:</label>
+            <span>${card.level}</span>
+          </div>
+        `;
+      }
+
+      if (card.race) {
+        statsHTML += `
+          <div class="card-stat">
+            <label>Race:</label>
+            <span>${card.race}</span>
+          </div>
+        `;
+      }
+
+      if (card.attribute) {
+        statsHTML += `
+          <div class="card-stat">
+            <label>Attribute:</label>
+            <span>${card.attribute}</span>
+          </div>
+        `;
+      }
+
+      statsHTML += '</div>';
+
+      if (card.desc) {
+        statsHTML += `
+          <div class="card-description">
+            <h4>Card Text:</h4>
+            <p>${card.desc}</p>
+          </div>
+        `;
+      }
+
+      statsContainer.innerHTML = statsHTML;
+    }
+  }
+
+  function loadCardImage(card) {
+    const imageContainer = document.querySelector('.yugioh-card-image');
+    if (imageContainer && card.card_images && card.card_images[0]) {
+      imageContainer.innerHTML = `
+        <img src="${card.card_images[0].image_url}" 
+             alt="${card.name}" 
+             class="product-main-image yugioh-card-img">
+      `;
+    }
+  }
+
+  async function loadRelatedCards(card) {
+    const relatedContainer = document.getElementById('related-cards');
+    if (!relatedContainer) return;
+
+    try {
+      // Find related cards by archetype or type
+      let searchQuery = '';
+      if (card.archetype) {
+        searchQuery = `archetype=${encodeURIComponent(card.archetype)}`;
+      } else if (card.race) {
+        searchQuery = `race=${encodeURIComponent(card.race)}`;
+      } else {
+        searchQuery = `type=${encodeURIComponent(card.type)}`;
+      }
+
+      const response = await fetch(`${window.yugiohStore.apiEndpoint}cardinfo.php?${searchQuery}&num=8&offset=0`);
+      const data = await response.json();
+
+      if (data.data && data.data.length > 0) {
+        const relatedCards = data.data.filter(relatedCard => relatedCard.id !== card.id).slice(0, 4);
+        
+        let relatedHTML = '<div class="related-cards-grid">';
+        relatedCards.forEach(relatedCard => {
+          const price = generatePrice(relatedCard.type, relatedCard.race);
+          relatedHTML += `
+            <div class="related-card">
+              <img src="${relatedCard.card_images[0].image_url}" alt="${relatedCard.name}" loading="lazy">
+              <h4>${relatedCard.name}</h4>
+              <p class="related-card-price">$${price} CAD</p>
+              <button class="button button--secondary" onclick="window.location.href='/products/${relatedCard.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}'">
+                View Card
+              </button>
+            </div>
+          `;
+        });
+        relatedHTML += '</div>';
+        
+        relatedContainer.innerHTML = relatedHTML;
+      }
+    } catch (error) {
+      console.error('Failed to load related cards:', error);
+      relatedContainer.innerHTML = '<p>Unable to load related cards at this time.</p>';
+    }
+  }
+
+  function initializeProductForm() {
+    // Quantity buttons
+    const quantityMinus = document.querySelector('.quantity-minus');
+    const quantityPlus = document.querySelector('.quantity-plus');
+    const quantityField = document.querySelector('.quantity-field');
+
+    if (quantityMinus && quantityPlus && quantityField) {
+      quantityMinus.addEventListener('click', function() {
+        const currentValue = parseInt(quantityField.value);
+        if (currentValue > 1) {
+          quantityField.value = currentValue - 1;
+        }
+      });
+
+      quantityPlus.addEventListener('click', function() {
+        const currentValue = parseInt(quantityField.value);
+        quantityField.value = currentValue + 1;
+      });
+    }
+
+    // Wishlist button
+    const wishlistButton = document.querySelector('.wishlist-button');
+    if (wishlistButton) {
+      wishlistButton.addEventListener('click', function() {
+        const productId = this.dataset.productId;
+        // Add to wishlist functionality
+        console.log('Adding product to wishlist:', productId);
+        this.innerHTML = '❤️ Added to Wishlist';
+        this.disabled = true;
+      });
+    }
+  }
+
+  function initializeProductTabs() {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+
+    tabButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const targetTab = this.dataset.tab;
+        
+        // Remove active class from all buttons and panels
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        tabPanels.forEach(panel => panel.classList.remove('active'));
+        
+        // Add active class to clicked button and corresponding panel
+        this.classList.add('active');
+        document.getElementById(`tab-${targetTab}`).classList.add('active');
+      });
+    });
+  }
+
+  function generatePrice(type, race) {
+    // Simple pricing logic based on card type and rarity
+    let basePrice = 1.99;
+    
+    if (type.includes('XYZ') || type.includes('Synchro') || type.includes('Fusion')) {
+      basePrice = 4.99;
+    } else if (type.includes('Link')) {
+      basePrice = 6.99;
+    } else if (race && race.includes('Dragon')) {
+      basePrice = 3.99;
+    }
+    
+    // Add some randomization
+    const variation = (Math.random() * 2 - 1) * 0.5; // ±$0.50
+    return Math.max(0.99, (basePrice + variation)).toFixed(2);
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Yu-Gi-Oh! Product",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sku",
+      "label": "Show SKU",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quantity_selector",
+      "label": "Show quantity selector",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dynamic_checkout",
+      "label": "Show dynamic checkout buttons",
+      "default": true
+    }
+  ]
+}
+{% endschema %}
