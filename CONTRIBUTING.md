@@ -231,7 +231,7 @@ assets/
 When contributing, consider these feature areas:
 
 ### Store Functionality
-- Product catalog and search
+- Product catalogue and search
 - Shopping cart and checkout
 - Inventory management
 - Pricing and discounts
