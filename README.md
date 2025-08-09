@@ -103,7 +103,7 @@ Harrison-Website/
 - **Database Migrations**: Complete schema with sample data and relationships
 
 ### E-commerce Functionality
-- **Yu-Gi-Oh! Store**: Complete trading card store with product catalog
+- **Yu-Gi-Oh! Store**: Complete trading card store with product catalogue
 - **Meta-Relevant Featured Cards**: Curated selection of competitive and frequently purchased cards
 - **Product Pages**: Professional individual card pages with detailed information
 - **Shopping Cart**: Comprehensive cart with discount codes, shipping calculation, and totals
@@ -111,7 +111,7 @@ Harrison-Website/
 - **Inventory Management**: Real-time stock tracking and updates
 - **Buylist System**: Card buylist with competitive pricing
 - **Store Credit**: Customer credit system with bonus incentives
-- **Price Stability**: 2-day price caching for consistent shopping experience
+- **Price Stability**: 2-day price caching for a consistent shopping experience
 
 ### Account System
 - **User Authentication**: Secure login/registration system with password hashing
@@ -174,7 +174,7 @@ Harrison-Website/
 
 ## 🎨 Design System
 
-### Color Palette
+### Colour Palette
 - **Primary**: #3498db (Blue)
 - **Secondary**: #e74c3c (Red)
 - **Dark**: #2c3e50
@@ -255,7 +255,7 @@ Open `test-account-page.html` for:
 
 ## 🚀 Deployment
 
-The site is automatically deployed via GitHub Actions with comprehensive CI/CD pipeline:
+The site is automatically deployed via GitHub Actions with a comprehensive CI/CD pipeline:
 
 ### Automated Deployment
 1. **Push changes** to the `main` branch
@@ -288,7 +288,7 @@ The site is automatically deployed via GitHub Actions with comprehensive CI/CD p
 1. Ensure all files are committed to Git
 2. Push to GitHub repository: `git push origin main`
 3. GitHub Actions will automatically deploy
-4. Monitor deployment status in GitHub Actions tab
+4. Monitor deployment status in the GitHub Actions tab
 
 ### Updating GitHub Repository
 
@@ -371,7 +371,7 @@ git push origin main
 
 ### Technical Improvements
 - **Progressive Web App**: Service worker and offline support
-- **Advanced Analytics**: User behavior tracking and conversion optimization
+- **Advanced Analytics**: User behaviour tracking and conversion optimization
 - **CDN Integration**: Global content delivery network
 - **Microservices**: API gateway and service mesh architecture
 - **Real-time Updates**: WebSocket integration for live inventory
@@ -447,7 +447,7 @@ The website features a complete Yu-Gi-Oh! image service covering all eras of mod
 - **Endpoint**: https://api.crystalcommerce.com/v1/
 - **Features**: Complete e-commerce platform, POS system, multi-channel sales
 - **Cost**: $50-100+ monthly subscription
-- **Support**: Daily support calls at 11am and 3pm PT
+- **Support**: Daily support calls at 11 am and 3 pm PT
 - **Phone**: (866) 213-4611
 
 ## 💳 Payment Processing
